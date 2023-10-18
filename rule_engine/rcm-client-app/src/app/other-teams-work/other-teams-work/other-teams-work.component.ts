@@ -45,6 +45,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   currentTeamName:any;
   date: any;
   filteredAgeBracket:any = []; 
+  hasAttachedFilesWithRemark:boolean=false;
   
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
@@ -291,6 +292,10 @@ export class OtherTeamsWorkComponent implements OnInit {
       this.setSelectedFileForComponent(event.claimUuid, event.value);
     } else if(event['action']==='filesSelectedToRemove'){
         this.setSelectedFileToRemove(event.claimUuid,event.value)
+    } else if (event['action']==='fileUploadedSuccess'){
+          this.errorMessage = event.value;
+          this.hasAttachedFilesWithRemark = event.hasAttachedFiles;
+          setTimeout(()=>{this.errorMessage =''},2000)
     }
   }
 
@@ -312,25 +317,26 @@ export class OtherTeamsWorkComponent implements OnInit {
   
   openModalAndValidateFields(data: any) {
     this.currentClaimUuid = data.uuid
-    this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
-    this.removedFiles = this.getSelectedFilesToRemove(data.uuid);
+    // this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
+    // this.removedFiles = this.getSelectedFilesToRemove(data.uuid);
       if(this.submitBtnConfig['remarks'][data.uuid]){
         this.errorMessage = '' ;
-        this.showModal=true;
+        // this.showModal=true;
+        this.submitConfirmation();
      } else{
        data['isInvalid']=true;
      }
-      if(!this.selectedFiles || this.selectedFiles?.length==0){
-        this.selectedFiles= [];
-        if(this.claimDetail.some((item:any)=>item.uuid == data.uuid ? item.attachmentCount : undefined)){
-          this.errorMessage= '';
-      } else{
-        this.errorMessage = "No Files Are Attached !";
-      }
-      }
-      if(!this.removedFiles){
-        this.removedFiles=[];
-      }
+      // if(!this.selectedFiles || this.selectedFiles?.length==0){
+      //   this.selectedFiles= [];
+      //   if(this.claimDetail.some((item:any)=>item.uuid == data.uuid ? item.attachmentCount : undefined)){
+      //     this.errorMessage= '';
+      // } else{
+      //   this.errorMessage = "No Files Are Attached !";
+      // }
+      // }
+      // if(!this.removedFiles){
+      //   this.removedFiles=[];
+      // }
   }
 
 
@@ -338,12 +344,15 @@ export class OtherTeamsWorkComponent implements OnInit {
     const remarks = this.submitBtnConfig['remarks'][this.currentClaimUuid];
     if(!remarks){
       this.errorMessage = "Remarks Are Mandatory !";
-    } else{
-          if(this.isRemoveFileArrayNotEmpty()){
-            this.removeAttachmentFile();
-          } else {
-            this.loopThroughData(this.selectedFiles, 0);
-          }
+    } 
+    else{
+
+      this.AssignClaimWithRemark(this.currentClaimUuid,this.hasAttachedFilesWithRemark);
+          // if(this.isRemoveFileArrayNotEmpty()){
+          //   this.removeAttachmentFile();
+          // } else {
+          //   this.loopThroughData(this.selectedFiles, 0);
+          // }
     }
   }
 
@@ -355,49 +364,50 @@ export class OtherTeamsWorkComponent implements OnInit {
       }
     }
 
-  removeAttachmentFile(){
-    this.appService.removeAttachmentFile(this.removedFiles,(res:any)=>{
-      if(res.status == 200){
-        this.loopThroughData(this.selectedFiles, 0);
-        if(!this.hasAttachmentFilesRemoved){
-          this.errorMessage  = res.data.message;
-        }
-      } else{
-        this.errorMessage  = res.data.message;
-      }
-    })
-  }
+  // removeAttachmentFile(){
+  //   this.appService.removeAttachmentFile(this.removedFiles,(res:any)=>{
+  //     if(res.status == 200){
+  //       // this.loopThroughData(this.selectedFiles, 0);
+  //       if(!this.hasAttachmentFilesRemoved){
+  //         this.errorMessage  = res.data.message;
+  //       }
+  //     } else{
+  //       this.errorMessage  = res.data.message;
+  //     }
+  //   })
+  // }
 
   selectOtherTeam(event:any,claimUuid:any){
       this.submitBtnConfig['otherTeamId'][claimUuid] = event.target.value;
   }
 
-  loopThroughData(dataArray: any[], currentIndex: number) {
-    if (currentIndex >= dataArray.length) {
-      this.AssignClaimWithRemark(dataArray[0]?.claimUuid ? dataArray[0]?.claimUuid : this.currentClaimUuid);
-      return;
-    }
-    const currentData = dataArray[currentIndex];
-    let formData: any = new FormData();
-    formData.append("claimUuid", currentData?.claimUuid ? currentData.claimUuid : this.currentClaimUuid);
-    formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
-    formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
-    this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
-      if (res.data.status) {
-        this.loopThroughData(dataArray, currentIndex + 1);
-      } else {
-        this.errorMessage = res.data.message;
-      }
-    })
-}
+//   loopThroughData(dataArray: any[], currentIndex: number) {
+//     if (currentIndex >= dataArray.length) {
+//       // this.AssignClaimWithRemark(dataArray[0]?.claimUuid ? dataArray[0]?.claimUuid : this.currentClaimUuid);
+//       return;
+//     }
+//     const currentData = dataArray[currentIndex];
+//     let formData: any = new FormData();
+//     formData.append("claimUuid", currentData?.claimUuid ? currentData.claimUuid : this.currentClaimUuid);
+//     formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
+//     formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
+//     this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
+//       if (res.data.status) {
+//         this.loopThroughData(dataArray, currentIndex + 1);
+//       } else {
+//         this.errorMessage = res.data.message;
+//       }
+//     })
+// }
 
-AssignClaimWithRemark(claimUuid:any){
+AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
   let hasRemarks =   this.submitBtnConfig['remarks'][claimUuid];
   if(hasRemarks){
     let params:any= {
       "remark":this.submitBtnConfig['remarks'][claimUuid],
       "claimUuid":claimUuid,
-      "assignToTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : null    //converting string into number using unary operator +
+      "assignToTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : null ,   //converting string into number using unary operator +
+      "attachmentWithRemarks":hasAttachedFiles
     }
   this.appService.AssignClaimWithRemark(params,(res:any)=>{
       if(res.status == 200){

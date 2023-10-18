@@ -5,6 +5,16 @@
                 <div class="main-container">
                     <div class="detail-box">
                         <div class="detail-box-form">
+                            <ng-container *ngIf="errorMessage">
+                                <div class="inner-container">
+                                    <div class="alert alert-success text-center alert-dismissible text-success fade show" role="alert">
+                                        <strong> {{errorMessage}} </strong>
+                                        <button type="button" class="close">
+                                          <span aria-hidde  n="true">&times;</span>
+                                        </button>
+                                      </div>
+                                </div>
+                            </ng-container>
                             <div class="otherTeamBox mt-2 mb-2">
                                 <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
@@ -248,7 +258,7 @@
                                         </thead>
                                         <tbody>
                                             <tr *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
-                                                <td colspan="13" style="min-height:200px;">
+                                                <td colspan="18" style="min-height:200px;">
                                                     <div class="text-center mt-2">
                                                         <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
                                                     </div>
@@ -368,4 +378,5 @@
                     
             </div>
     </div>
+  
         <!-- </div> -->

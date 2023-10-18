@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, Output, ViewEncapsulation } from '@angu
 import { AppConstants } from 'src/app/constants/app.constants';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { DownLoadService } from 'src/app/service/download.service';
+import Utils from 'src/app/util/utils';
 
 @Component({
   selector: 'app-attach-file',
@@ -24,14 +25,21 @@ export class AttachFileComponent {
 
   removeAttachmentFiles: any = [];
   removeClaimAttachmentId: any = [];
+  userEmail:any='';
 
   constructor(public constant: AppConstants, private appService: ApplicationServiceService, private downloadService: DownLoadService) {
+   }
+
+   ngOnInit(){
+    this.userEmail = Utils.currentUserEmail();
    }
 
   openModal() {
     this.showModal = true;
     if (this.inputConfig['isDetailPage'] || (this.inputConfig.attachmentCount > 0 && !this.hasAttachmentFileData && this.removeAttachmentFiles.length == 0)) {
       this.getAttachmentFile();
+      console.log(this.userEmail);
+      
     }
   }
 
@@ -44,14 +52,6 @@ export class AttachFileComponent {
         console.log(res);
         this.attachedFiles = res.data;
         this.emitToParent.emit({action:'clearAttachmentAndRemovedFiles'});
-        // this.hasAttachmentFileData =  true;
-        // if(this.selectedFiles.length==0){
-        //   this.selectedFiles= res.data;
-        // } else{
-        //   res.data.forEach((ele:any) => {
-        //         this.selectedFiles.push(ele);
-        //   });
-        // }
       }
     })
   }
@@ -86,17 +86,33 @@ export class AttachFileComponent {
     let isEmptyAttachment: Boolean = this.isEmptyAttachmentType();
     if (!fileNameExist && !isEmptyAttachment) {
       this.totalFile = this.selectedFiles.length;
-      this.emitToParent.emit({ action: 'fileSelected', value: this.selectedFiles, claimUuid: claimUuid, });
-
-      if (this.removeAttachmentFiles) {
-        this.emitToParent.emit({ action: 'filesSelectedToRemove', value: this.removeAttachmentFiles, claimUuid: claimUuid });
-      }
+      this.loopThroughData(this.selectedFiles, 0);
       this.errorMessage = '';
-      this.closeModal();
     } else {
       fileNameExist ? this.errorMessage = "Same File Already Exist" : this.errorMessage = "Please Select Attachment Type";
     }
   }
+
+  loopThroughData(dataArray: any[], currentIndex: number) {
+    if (currentIndex >= dataArray.length) {
+      this.emitToParent.emit({action:'fileUploadedSuccess',value:this.errorMessage,hasAttachedFiles:true})
+      this.closeModal();
+      return;
+    }
+    const currentData = dataArray[currentIndex];
+    let formData: any = new FormData();
+    formData.append("claimUuid", currentData?.claimUuid ? currentData.claimUuid : this.inputConfig.claimUuid);
+    formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
+    formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
+    this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
+      if (res.data.status) {
+        this.errorMessage = res.data.message;
+        this.loopThroughData(dataArray, currentIndex + 1);
+      } else {
+        this.errorMessage = res.data.message;
+      }
+    })
+}
 
   isFileNameExist() {
     return this.selectedFiles.some((obj: any, index: any) =>
@@ -108,8 +124,6 @@ export class AttachFileComponent {
   }
 
   removePreSelectedFile(file: any) {
-    let deleteFile = confirm("Are You Sure You Want To Delete ?");
-    if (deleteFile) {
       const index = this.attachedFiles.findIndex((e: any) => e.file.name == file.file.name);
       if (index !== -1) {
         this.attachedFiles.splice(index, 1);
@@ -119,8 +133,8 @@ export class AttachFileComponent {
           "claimUuid": this.inputConfig.claimUuid
         };
         this.removeAttachmentFiles = params;
+        this.removeAttachmentFile()
       }
-    }
   }
 
   downloadAttachment(file: any) {
@@ -140,6 +154,20 @@ export class AttachFileComponent {
     } else {
       return false;
     }
+  }
+
+  removeAttachmentFile(){
+    this.appService.removeAttachmentFile(this.removeAttachmentFiles,(res:any)=>{
+      if(res.status == 200){
+        console.log("434");
+        
+        if(!false){
+          this.errorMessage  = res.data.message;
+        }
+      } else{
+        this.errorMessage  = res.data.message;
+      }
+    })
   }
 
 }
