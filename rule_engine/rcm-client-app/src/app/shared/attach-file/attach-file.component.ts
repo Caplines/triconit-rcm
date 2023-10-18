@@ -134,9 +134,8 @@ export class AttachFileComponent {
 
   removePreSelectedFile(file: any) {
     this.loader=true;
-    this.removeClaimAttachmentId.push(file.id);
     let params: any = {
-      "claimAttachmentId": this.removeClaimAttachmentId,
+      "claimAttachmentId": [file.id],
       "claimUuid": this.inputConfig.claimUuid
     };
     this.removeAttachmentFiles = params;
