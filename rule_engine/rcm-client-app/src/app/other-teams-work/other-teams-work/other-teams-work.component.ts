@@ -295,7 +295,9 @@ export class OtherTeamsWorkComponent implements OnInit {
     } else if (event['action']==='fileUploadedSuccess'){
           this.errorMessage = event.value;
           this.hasAttachedFilesWithRemark = event.hasAttachedFiles;
-          setTimeout(()=>{this.errorMessage =''},2000)
+          setTimeout(()=>{this.errorMessage =''},2000);
+    } else if (event['action']==='hasAttachedFileForSameUser'){
+          this.hasAttachedFilesWithRemark = event.hasAttachedFiles;
     }
   }
 

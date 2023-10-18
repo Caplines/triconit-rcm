@@ -26,6 +26,7 @@ export class AttachFileComponent {
   removeAttachmentFiles: any = [];
   removeClaimAttachmentId: any = [];
   userEmail:any='';
+  isAttachedBySameUser:boolean=false;
 
   constructor(public constant: AppConstants, private appService: ApplicationServiceService, private downloadService: DownLoadService) {
    }
@@ -38,8 +39,6 @@ export class AttachFileComponent {
     this.showModal = true;
     if (this.inputConfig['isDetailPage'] || (this.inputConfig.attachmentCount > 0 && !this.hasAttachmentFileData && this.removeAttachmentFiles.length == 0)) {
       this.getAttachmentFile();
-      console.log(this.userEmail);
-      
     }
   }
 
@@ -52,6 +51,7 @@ export class AttachFileComponent {
         console.log(res);
         this.attachedFiles = res.data;
         this.emitToParent.emit({action:'clearAttachmentAndRemovedFiles'});
+        this.isFileAttachedBySameUser();
       }
     })
   }
@@ -95,7 +95,7 @@ export class AttachFileComponent {
 
   loopThroughData(dataArray: any[], currentIndex: number) {
     if (currentIndex >= dataArray.length) {
-      this.emitToParent.emit({action:'fileUploadedSuccess',value:this.errorMessage,hasAttachedFiles:true})
+      this.emitToParent.emit({action:'fileUploadedSuccess',value:this.errorMessage,hasAttachedFiles:this.isAttachedBySameUser})
       this.closeModal();
       return;
     }
@@ -112,7 +112,16 @@ export class AttachFileComponent {
         this.errorMessage = res.data.message;
       }
     })
-}
+  }
+
+  isFileAttachedBySameUser() {
+    this.isAttachedBySameUser = this.attachedFiles.some((item: any) => item.uploadedByUserUuid.toUpperCase() === this.userEmail.toUpperCase());
+    if (this.isAttachedBySameUser) {
+      this.emitToParent.emit({ action: 'hasAttachedFileForSameUser', hasAttachedFiles: this.isAttachedBySameUser });
+    } else {
+      this.emitToParent.emit({ action: 'hasAttachedFileForSameUser', hasAttachedFiles: this.isAttachedBySameUser });
+    }
+  }
 
   isFileNameExist() {
     return this.selectedFiles.some((obj: any, index: any) =>
@@ -124,17 +133,31 @@ export class AttachFileComponent {
   }
 
   removePreSelectedFile(file: any) {
-      const index = this.attachedFiles.findIndex((e: any) => e.file.name == file.file.name);
-      if (index !== -1) {
-        this.attachedFiles.splice(index, 1);
-        this.removeClaimAttachmentId.push(file.id);
-        let params: any = {
-          "claimAttachmentId": this.removeClaimAttachmentId,
-          "claimUuid": this.inputConfig.claimUuid
-        };
-        this.removeAttachmentFiles = params;
-        this.removeAttachmentFile()
+    this.loader=true;
+    this.removeClaimAttachmentId.push(file.id);
+    let params: any = {
+      "claimAttachmentId": this.removeClaimAttachmentId,
+      "claimUuid": this.inputConfig.claimUuid
+    };
+    this.removeAttachmentFiles = params;
+    this.appService.removeAttachmentFile(this.removeAttachmentFiles,(res:any)=>{
+      if(res.data?.fileResponseStatus && res.status == 200){
+            this.loader=false;
+            this.isFileAttachedBySameUser();
+          this.errorMessage  = res.data.message;
+          this.removeAttachedFileFromList(file);
+      } else{
+        this.loader=false;
+        this.errorMessage  = res.data.message ? res.data.message : res.message;
       }
+    })
+  }
+  
+  removeAttachedFileFromList(file:any){
+    const index = this.attachedFiles.findIndex((e: any) => e.file.name == file.file.name);
+    if (index !== -1) {
+      this.attachedFiles.splice(index, 1);
+    }
   }
 
   downloadAttachment(file: any) {
@@ -156,18 +179,5 @@ export class AttachFileComponent {
     }
   }
 
-  removeAttachmentFile(){
-    this.appService.removeAttachmentFile(this.removeAttachmentFiles,(res:any)=>{
-      if(res.status == 200){
-        console.log("434");
-        
-        if(!false){
-          this.errorMessage  = res.data.message;
-        }
-      } else{
-        this.errorMessage  = res.data.message;
-      }
-    })
-  }
 
 }
