@@ -39,6 +39,7 @@ export class SearchClaimsComponent {
   listOfClaimsData: any = [];
   totalPages: any;
   pageNumber: any;
+  activeFilter:number=0;
 
   constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants,
     private datePipe: DatePipe) {
@@ -109,6 +110,7 @@ export class SearchClaimsComponent {
         this.totalPages = res.data[0].totalPages;
         this.pageNumber = res.data[0].pageNumber;
         this.listOfClaimsData = res.data[0].data;
+        this.searchClaimConfig.pageNumber = 1;
       }
       else {
         this.loader = false;
@@ -138,6 +140,27 @@ export class SearchClaimsComponent {
   setDefaultDate() {
     //let today = new Date();
     //this.searchClaimConfig.startDate = this.searchClaimConfig.endDate = this.datePipe.transform(today, 'yyyy-MM-dd').toString();
+  }
+
+  quickFilter(activeTab:number){
+      this.activeFilter = activeTab;
+      if(activeTab == 1 ){
+          this.constants.ageCategory.forEach((e:any)=>{
+              if(e.value>=3){
+                e.checked =true;
+                this.appService.emitOnValueChange({action:'selectDefaultAgeCategory',value:e});
+              }
+          })
+          this.constants.claimStatus.forEach((e:any)=>{
+            if(e.name.toUpperCase() === "BILLED"){
+                e.checked =true;
+                this.appService.emitOnValueChange({action:'selectDefaultClaimStatus',value:e});
+            }
+          })
+          if(this.searchClaimConfig.clientUuid.length>0){
+                this.searchClaims();
+          }
+      }
   }
 
 }

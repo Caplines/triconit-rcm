@@ -41,6 +41,18 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
           this.inputConfig.officeData = JSON.parse(JSON.stringify(event.value))
         } 
       }
+      else if(event.action === 'selectDefaultAgeCategory'){
+            if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+              && this.inputConfig.subType == 'ageCategory') {
+                this.getSelectedValue(event.value.checked,event.value,'searchClaimAge');
+              } 
+      }
+      else if(event.action === 'selectDefaultClaimStatus'){
+            if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+              && this.inputConfig.subType == 'claimStatus') {
+                this.getSelectedValue(event.value.checked,event.value,'searchClaimStatus');
+              } 
+      }
       else return;
     })
  }
@@ -237,8 +249,12 @@ getSelectedValue(status: Boolean, value: any, type: String) {
   }
   else if (type === 'searchClaimAge'){
     if (status) {
-      this.searchClaimsConfig.ageCategory.push(value);
-      this._service.emitOnValueChange({action:'getSelectedAge',value:this.searchClaimsConfig.ageCategory});
+
+      let isExist = this.searchClaimsConfig.ageCategory.some((ele:any)=>ele.name == value.name && ele.checked == value.checked);
+          if(!isExist){
+            this.searchClaimsConfig.ageCategory.push(value)
+            this._service.emitOnValueChange({action:'getSelectedAge',value:this.searchClaimsConfig.ageCategory});
+          }
     } else {
       this.searchClaimsConfig.ageCategory.forEach((e: any, idx: any) => {
         if (e.name == value.name) {
@@ -252,8 +268,11 @@ getSelectedValue(status: Boolean, value: any, type: String) {
   }
   else if (type === 'searchClaimStatus'){
     if (status) {
-      this.searchClaimsConfig.claimStatus.push(value);
-      this._service.emitOnValueChange({action:'getSelectedClaimStatus',value:this.searchClaimsConfig.claimStatus});
+      let isExist = this.searchClaimsConfig.claimStatus.some((ele:any)=>ele.name.toUpperCase() == value.name.toUpperCase() && ele.checked == value.checked);
+      if(!isExist){
+        this.searchClaimsConfig.claimStatus.push(value);
+        this._service.emitOnValueChange({action:'getSelectedClaimStatus',value:this.searchClaimsConfig.claimStatus});
+      }
     } else {
       this.searchClaimsConfig.claimStatus.forEach((e: any, idx: any) => {
         if (e.name == value.name) {

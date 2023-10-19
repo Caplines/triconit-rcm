@@ -10,9 +10,9 @@
                         <div class="detail-box-form">
                             <div class="form-row " id="ruleEngine">
                                 <div class="btn-group filterButtons my-2 mb-2" role="group" aria-label="" style="border:0px;">
-                                    <button type="button" class="btn btn-info"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> 60+ AR</button>
-                                    <button type="button" class="btn btn-info active"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> Overdue Unbilled Medicaid </button>
-                                    <button type="button" class="btn btn-info"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> Overdue Unbilled Non-Medicaid </button>
+                                    <button type="button" class="btn btn-info" [class.active]="activeFilter==1" (click)="quickFilter(1)"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> 60+ AR</button>
+                                    <button type="button" class="btn btn-info" [class.active]="activeFilter==2" (click)="quickFilter(2)"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> Overdue Unbilled Medicaid </button>
+                                    <button type="button" class="btn btn-info" [class.active]="activeFilter==3" (click)="quickFilter(3)"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> Overdue Unbilled Non-Medicaid </button>
                                 </div>
                                 <div class="rowContainer wrap">
                                     <div class="colBox">
@@ -55,7 +55,7 @@
                                     <div class="colName">
                                                                                 Claim Status
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'claimStatus':constants.claimStatus,'isSearchClaims':true,'subType':'ageCategory'}"></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'claimStatus':constants.claimStatus,'isSearchClaims':true,'subType':'claimStatus'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
@@ -98,7 +98,7 @@
                                     </div>
                                     <div class="colAction">
                                     <div class="custom-control custom-switch custom-switch-lg">
-                                    <input type="checkbox" [(ngModel)]="searchClaimConfig.showArchive" class="custom-control-input" id="customSwitch1">
+                                    <input type="checkbox" [(ngModel)]="searchClaimConfig.showArchive"class="custom-control-input" id="customSwitch1">
                                     <label class="custom-control-label" for="customSwitch1"></label>
                                     </div>
                                     </div>
