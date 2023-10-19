@@ -138,8 +138,18 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Assignment of <br />Benefits </label>
-                                        <div>{{claimRcm.assignmentOfBenefits==null ?
-                                            "No":claimRcm.assignmentOfBenefits}}</div>
+                                        <ng-container *ngIf="!(claimRcm.ivfId!=null && claimRcm.ivfId!='')">
+                                            <div>N/A</div>
+                                        </ng-container>
+                                        <ng-container *ngIf="claimRcm.ivfId==null">
+                                            <div>N/A</div>
+                                        </ng-container>
+                                        <ng-container *ngIf="(claimRcm.ivfId!=null && claimRcm.ivfId!='')">
+                                            <div>{{claimRcm.assignmentOfBenefits==null ?
+                                                "No":claimRcm.assignmentOfBenefits}}</div>
+                                        </ng-container>
+
+
                                     </div>
 
 

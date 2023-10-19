@@ -456,9 +456,8 @@ public class ClaimServiceImpl {
 		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyuuid());
 		List<RcmTeam> allTeams = rcmTeamRepo.findAll();
 		InsuranceNameTypeDto insuranceNameTypeDto=null;
-		//For pulling Insurance name always use SimlePoint.
-		RcmCompany companyIns = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);//Uuid(dto.getCompanyuuid());//Always
-		List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(companyIns);
+		//RcmCompany companyIns = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);//Uuid(dto.getCompanyuuid());//Always
+		Map<String,List<InsuranceNameTypeDto>> insuranceTypeDtos =null;// ruleEngineService.pullInsuranceMappingFromSheet(companyIns);
 		List<TimelyFilingLimitDto> timelyFilingLimits = ruleEngineService.pullTimelyFilingLmtMappingFromSheet(company);
 		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
 		RcmClaimStatusType systemStatusReBilling = rcmClaimStatusTypeRepo
@@ -467,7 +466,7 @@ public class ClaimServiceImpl {
 		RcmTeam assignedTeamBilling  = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
 		RcmTeam assignedTeamInternalAudit  = rcmTeamRepo.findById(RcmTeamEnum.INTERNAL_AUDIT.getId());
 		
-		// List<InsuranceNameTypeDto> insuranceTypeDto =
+		 List<InsuranceNameTypeDto> insuranceTypeDto =null;
 		// ruleEngineService.pullInsuranceMappingFromSheet(company);
 		// int logId=-1;
 		RcmMappingTable table = rcmMappingTableRepo.findByNameAndCompany(Constants.RCM_MAPPING_RCM_DATABASE, company);
@@ -521,8 +520,14 @@ public class ClaimServiceImpl {
 
 						if (companies.get(re.getClientName()) == null) {
 							clCompany = rcmCompanyRepo.findByName(re.getClientName());
+							
 							if (clCompany != null) {
 								companies.put(re.getClientName(), clCompany);
+								insuranceTypeDto=insuranceTypeDtos.get(re.getClientName());
+								if (insuranceTypeDto == null) {
+									insuranceTypeDtos.put(re.getClientName(), ruleEngineService.pullInsuranceMappingFromSheet(clCompany));
+									insuranceTypeDto = insuranceTypeDtos.get(re.getClientName());
+								}
 							} else {
 								ruleEngineService.saveRcmIssueClaim(re.getClaimId(), null, user,
 										"Wrong Client Name-" + re.getClientName(), source, claimTypeEnum);
@@ -619,11 +624,11 @@ public class ClaimServiceImpl {
 								 ins.setId(insuranceRepo.save(ins).getId());
 								 }
 								 
-								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim());
+								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim(),re.getClientName());
 							}
 							
 							if (ins.getInsuranceCode()==null) {
-								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim());
+								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim(),re.getClientName());
 								if (insuranceNameTypeDto!=null) {
 									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
 									insuranceRepo.save(ins);
@@ -636,7 +641,7 @@ public class ClaimServiceImpl {
 										insuranceNameTypeDto.getInsuranceCode().trim());
 								
 							}else if(ins.getInsuranceCode()!=null){
-                            	insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim());
+                            	insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim(),re.getClientName());
 								if (insuranceNameTypeDto!=null) {
                             	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
                             			ins.getInsuranceCode().trim());
@@ -799,6 +804,11 @@ public class ClaimServiceImpl {
 							clCompany = rcmCompanyRepo.findByName(re.getClientName());
 							if (clCompany != null) {
 								companies.put(re.getClientName(), clCompany);
+								insuranceTypeDto=insuranceTypeDtos.get(re.getClientName());
+								if (insuranceTypeDto == null) {
+									insuranceTypeDtos.put(re.getClientName(), ruleEngineService.pullInsuranceMappingFromSheet(clCompany));
+									insuranceTypeDto = insuranceTypeDtos.get(re.getClientName());
+								}
 							} else {
 								ruleEngineService.saveRcmIssueClaim(re.getClaimId(), null, user,
 										"Wrong Client Name-" + re.getClientName(), source, claimTypeEnum);
@@ -892,18 +902,18 @@ public class ClaimServiceImpl {
 								    ins.setInsuranceType(rcmInsuranceTypes.get(re.getSecondaryInsuranceName()));
 									ins.setId(insuranceRepo.save(ins).getId());
 								 }
-								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim());
+								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
 							}
 							TimelyFilingLimitDto timely = null;
 							if (ins.getInsuranceCode()==null) {
-								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim());
+								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
 								if (insuranceNameTypeDto!=null) {
 									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
 									insuranceRepo.save(ins);
 								}
 								
 							}else if(ins.getInsuranceCode()!=null){
-                            	insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim());
+                            	insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
 								if (insuranceNameTypeDto!=null) {
                             	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
                             			ins.getInsuranceCode().trim());
@@ -3413,7 +3423,7 @@ public class ClaimServiceImpl {
 						//Reading Sheet Again
 						List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(
 								partialHeader.getCompany());
-						InsuranceNameTypeDto insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByName(insuranceTypeDto, insName);
+						InsuranceNameTypeDto insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, insName,rcmCompany.getName());
 						insCode =(insuranceNameTypeDto==null)?"": insuranceNameTypeDto.getInsuranceCode();//point 39
 						//TO Do Update the Data in InsuranceNameType
 						claim.setPreferredModeOfSubmission(insuranceNameTypeDto.getPreferredModeOfSubmission());
