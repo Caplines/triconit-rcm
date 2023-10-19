@@ -9,6 +9,7 @@ public class ClaimAssignWithRemarkAndTeam {
 	private Integer assignToTeamId;
 	private String remark;
 	
-	private boolean attachmentsWithRemarks;
+	//private boolean attachmentsWithRemarks;
+	private String attachmentsWithRemarks;
 
 }

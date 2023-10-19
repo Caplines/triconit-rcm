@@ -22,31 +22,79 @@
                                 <input type="file" id="fileInput{{inputConfig.claimUuid}}" #fileInput multiple
                                     (change)="onFileChange($event)" class="file-input" />
                             </div>
-                            <div *ngIf="attachedFiles.length > 0" class="text-danger text-left">(Already Attached)</div>
+                            <table class="table">
+                                <thead>
+                                    <tr *ngIf="attachedFiles.length > 0">
+                                        <td colspan="7" class="text-danger">(Already Attached)</td>
+                                    </tr>
+                                    <tr>
+                                        <th>S.No.</th>
+                                        <th>File Name</th>
+                                        <th>Uploaded By</th>
+                                        <th>Uploaded By Team</th>
+                                        <th>Date Uploaded</th>
+                                        <th>Attachment Type</th> 
+                                        <th>Action</th> 
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <ng-container *ngIf="attachedFiles.length > 0">
+
+                                    <tr  *ngFor="let file of attachedFiles;let i=index;">
+                                        <td>{{i+1}}</td>
+                                        <td class="fileEllipsis">{{file.file.name}}</td>
+                                        <td>{{file.uploadedBy}}</td>
+                                        <td>{{file.uploadedByTeam}}</td>
+                                        <td>{{file.uploadedDate|date}}</td>
+                                        <td> <select class="form-control" style="width: 300px; margin-left: 15px;"
+                                            name="type" disabled>
+                                            <ng-container *ngFor="let item of constant.attachmentType">
+                                                <option *ngIf="item.id == file.attachmentId" [value]="file.id">
+                                                    {{item.value}}</option>
+                                            </ng-container>
+                                        </select></td>
+                                        <td style="vertical-align: middle;"> <div class="action-flex">
+                                            <span class="closeBtn" [ngStyle]="{'pointer-events': loader? 'none': ''}" title="Remove" *ngIf="(this.inputConfig['isDetailPage'] || this.inputConfig['isDeleteAllowed'] || this.inputConfig['isOtherTeam']) && (userEmail|uppercase) == (file.uploadedByUserUuid|uppercase) " (click)="removePreSelectedFile(file)">&times;</span>
+                                            <ng-container *ngIf="inputConfig['attachmentCount']>0">
+                                                <button type="button" class="icon-btn download-button"
+                                                    (click)="downloadAttachment(file)" title="Download">
+                                                    <img src="../../assets/img/down-arrow.png" /></button>
+                                            </ng-container>
+                                        </div>
+                                    </td>
+                                    </tr>
+                                </ng-container>
+                                <tr *ngIf="selectedFiles.length > 0">
+                                    <td class="text-success" colspan="7">(New Attached)</td>
+                                </tr>
+                                <ng-container *ngIf="selectedFiles.length > 0">
+                                    <tr *ngFor="let file of selectedFiles;let i=index;">
+                                        <td>{{i+1}}</td>
+                                        <td class="fileEllipsis">{{file.file.name}}</td>
+                                        <td>{{file.uploadedBy}}</td>
+                                        <td>{{file.uploadedByTeam}}</td>
+                                        <td>{{file.uploadedDate | date}}</td>
+                                        <td>   <select class="form-control" [(ngModel)]="file.attachmentTypeId"
+                                            style="width: 300px; margin-left: 15px;" name="type">
+                                            <ng-container *ngFor="let item of constant.attachmentType">
+                                                <option value="" selected="true" hidden="true">Select Attachment Type
+                                                </option>
+                                                <option [value]="item.id">{{item.value}}</option>
+                                            </ng-container>
+                                        </select></td>
+                                        <td><span class="close" (click)="removeItem(file.file)">&times;</span></td>
+                                    </tr>
+                                </ng-container>
+                                </tbody>
+                            </table>
+                            <!-- <div *ngIf="attachedFiles.length > 0" class="text-danger text-left">(Already Attached)</div>
                             <ol class="file-list" *ngIf="attachedFiles.length > 0">
                                 <li *ngFor="let file of attachedFiles;let i=index;">
                                     <span
                                         style="display: inline-flex; align-items: center; justify-content: space-between;">
                                         <span class="fileEllipsis" title="{{ file.file.name }}">{{ file.file.name }}
                                         </span>
-                                        <select class="form-control" style="width: 300px; margin-left: 15px;"
-                                            name="type" disabled>
-                                            <ng-container *ngFor="let item of constant.attachmentType">
-                                                <option *ngIf="item.id == file.attachmentId" [value]="file.id">
-                                                    {{item.value}}</option>
-                                            </ng-container>
-                                        </select>
-                                        
                                     </span>
-                                    <span class="close" *ngIf="this.inputConfig['isDeleteAllowed'] || this.inputConfig['isOtherTeam']" (click)="removePreSelectedFile(file)">&times;</span>
-                                        <ng-container *ngIf="inputConfig['attachmentCount']>0">
-                                            <button type="button" class="icon-btn download-button"
-                                                (click)="downloadAttachment(file)" title="Download">
-                                                <img src="../../assets/img/down-arrow.png" /></button>
-                                            <!-- <a href="javascript:void(0);" (click)="downloadAttachment(file)">Preview Attachment</a> -->
-                                        </ng-container>
-
-                                   
                                 </li>
                             </ol>
                             <div *ngIf="selectedFiles.length > 0" class="text-left text-success mt-2"> (New Attached)</div>
@@ -67,10 +115,10 @@
                                     </span>
                                     <span class="close" (click)="removeItem(file.file)">&times;</span>
                                 </li>
-                            </ol>
+                            </ol> -->
                         </div>
                         <button type="button" class="btn btn btn-primary file-button" *ngIf="!allowUpload"
-                            [disabled]="selectedFiles.length==0 && removeClaimAttachmentId.length==0"
+                            [disabled]="selectedFiles.length==0"
                             (click)="uploadItem(inputConfig.claimUuid)">Upload</button>
                     </div>
                 </div>

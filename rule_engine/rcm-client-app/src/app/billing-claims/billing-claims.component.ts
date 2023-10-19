@@ -205,14 +205,11 @@ export class BillingClaimsComponent {
     });
 
     if (type === 'latter') {
-      this.submitAttachment((res: any) => {
-        if (res.status) {
+     
           ths.inSave = true;
           ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
             ths.inSave = false;
             this.showAlertPopup(callback);
-          });
-        }
       })
     }
     else if (type === 'submit') {
@@ -908,8 +905,6 @@ export class BillingClaimsComponent {
   }
 
   assignToOtherTeam() {
-    this.submitAttachment((res: any) => {
-      if (res.status) {
         let ths = this;
         ths.otherErrormsg = "";
         ths.claimEditModel.assignToOtherTeam = true;
@@ -943,14 +938,9 @@ export class BillingClaimsComponent {
             ths.showAlertPopup(callback);
           });
         }
-      }
-    })
-
   }
 
   assignToLead() {
-    this.submitAttachment((res: any) => {
-      if (res.status) {
         let ths = this;
         ths.tlErrormsg = "";
         this.claimEditModel.assignToTL = true;
@@ -988,8 +978,6 @@ export class BillingClaimsComponent {
             }
           })
         }
-      }
-    })
   }
 
   openUpdateIvPopup(event: any) {
@@ -1189,47 +1177,47 @@ export class BillingClaimsComponent {
     return this.removedFilesMap.get(claimUuid);
   }
 
-  submitAttachment(callback: any) {
-    let removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
-    if (!removedFiles) {
-      removedFiles = [];
-    }
-    const selectedFiles = this.getSelectedFileForComponent(this.claimUUid);
-    if (!Array.isArray(removedFiles)) {
-      this.appService.removeAttachmentFile(removedFiles, (res: any) => {
-        if (res.status == 200 && res.data.fileResponseStatus) {
-          this.finalSubmitAttachment(selectedFiles, 0, callback);
-        } else {
-          this.showAlertPopup(res);
-        }
-      })
-    } else {
-      if (!selectedFiles) {
-        return callback({ 'status': true });
-      } else {
-        this.finalSubmitAttachment(selectedFiles, 0, callback);
-      }
-    }
-  }
+  // submitAttachment(callback: any) {
+  //   let removedFiles = this.getSelectedFilesToRemove(this.claimUUid);
+  //   if (!removedFiles) {
+  //     removedFiles = [];
+  //   }
+  //   const selectedFiles = this.getSelectedFileForComponent(this.claimUUid);
+  //   if (!Array.isArray(removedFiles)) {
+  //     this.appService.removeAttachmentFile(removedFiles, (res: any) => {
+  //       if (res.status == 200 && res.data.fileResponseStatus) {
+  //         this.finalSubmitAttachment(selectedFiles, 0, callback);
+  //       } else {
+  //         this.showAlertPopup(res);
+  //       }
+  //     })
+  //   } else {
+  //     if (!selectedFiles) {
+  //       return callback({ 'status': true });
+  //     } else {
+  //       this.finalSubmitAttachment(selectedFiles, 0, callback);
+  //     }
+  //   }
+  // }
 
 
-  finalSubmitAttachment(dataArray: any[], currentIndex: number, callback: any) {
-    if (currentIndex >= dataArray.length) {
-      return callback({ 'status': true });
-    }
-    const currentData = dataArray[currentIndex];
-    let formData: any = new FormData();
-    formData.append("claimUuid", currentData?.claimUuid ? currentData.claimUuid : this.claimUUid);
-    formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
-    formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
-    this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
-      if (res.data.status) {
-        this.finalSubmitAttachment(dataArray, currentIndex + 1, callback);
-      } else {
-        this.showAlertPopup(res);
-      }
-    })
-  }
+  // finalSubmitAttachment(dataArray: any[], currentIndex: number, callback: any) {
+  //   if (currentIndex >= dataArray.length) {
+  //     return callback({ 'status': true });
+  //   }
+  //   const currentData = dataArray[currentIndex];
+  //   let formData: any = new FormData();
+  //   formData.append("claimUuid", currentData?.claimUuid ? currentData.claimUuid : this.claimUUid);
+  //   formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
+  //   formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
+  //   this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
+  //     if (res.data.status) {
+  //       this.finalSubmitAttachment(dataArray, currentIndex + 1, callback);
+  //     } else {
+  //       this.showAlertPopup(res);
+  //     }
+  //   })
+  // }
 
   clearAttachment() {
     this.selectedFilesMap = new Map();

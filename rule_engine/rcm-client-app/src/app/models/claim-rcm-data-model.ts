@@ -237,6 +237,7 @@ export interface OtherTeamRem {
 	fName?: string;
 	lName?: string;
 	teamName?: string;
+	attchmentsWithRemarks?:number
 }
 
 export interface ClaimDetailModel {

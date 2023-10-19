@@ -301,7 +301,8 @@
                                                 <th>S.No.</th>
                                                 <th>Team Name</th>
                                                 <th>Date of Remarks</th>
-                                                <th class="remark">Remarks</th>
+                                                <th>Remarks</th>
+                                                <th>Attachments</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -311,6 +312,7 @@
                                                     <td>{{rem.teamName}}</td>
                                                     <td>{{rem.cd | date:'MMM dd, YYYY hh:mm:ss a':'UTC '+timeZone}}</td>
                                                     <td>{{rem.comment}}</td>
+                                                    <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}</td>
                                                 </tr>
                                             </ng-container>
                                             <ng-container

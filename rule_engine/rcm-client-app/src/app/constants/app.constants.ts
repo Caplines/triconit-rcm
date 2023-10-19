@@ -192,4 +192,7 @@ export class AppConstants {
             value: 4
         },
     ]
+
+    //attachwithremarks
+    public static ATTACH_WITH_REMARKS:string="AttachWithRemarks";
 }

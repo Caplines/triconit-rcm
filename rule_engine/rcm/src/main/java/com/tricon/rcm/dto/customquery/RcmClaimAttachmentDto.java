@@ -1,5 +1,7 @@
 package com.tricon.rcm.dto.customquery;
 
+import java.util.Date;
+
 public interface RcmClaimAttachmentDto {
 
 	String getFileName();
@@ -11,7 +13,7 @@ public interface RcmClaimAttachmentDto {
 	String getFileLocation();
 	String getRenameFile();
 	String getCreatedBy();
-	String getCreatedDate();
+	Date getCreatedDate();
 	String getUploadedByTeam();
 	String getUploadedByUserUuid();
 	String getUserUuid();
