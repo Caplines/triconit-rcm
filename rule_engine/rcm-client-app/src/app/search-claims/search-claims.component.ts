@@ -71,7 +71,7 @@ export class SearchClaimsComponent {
   ngOnInit(): void {
     this.getcompanyData();
     this.getSerachParams();
-   // this.setDefaultDate();
+    // this.setDefaultDate();
   }
 
 
@@ -118,8 +118,16 @@ export class SearchClaimsComponent {
 
   receiveChildrenEvent(event: any) {
     if (event['action'] == 'getSelectedDateRange') {
-      this.searchClaimConfig['startDate'] = event.value.startDate;
-      this.searchClaimConfig['endDate'] = event.value.endDate;
+      //debugger;
+      if (event.value == 'Invalid Date' || event.value.startDate == null) {
+        this.searchClaimConfig['startDate'] = null;
+        this.searchClaimConfig['endDate'] = null;
+
+      }
+      else {
+        this.searchClaimConfig['startDate'] = event.value.startDate;
+        this.searchClaimConfig['endDate'] = event.value.endDate;
+      }
     }
     else if (event['action'] == 'changePage') {
       this.searchClaimConfig.pageNumber = event.value;
@@ -128,8 +136,8 @@ export class SearchClaimsComponent {
   }
 
   setDefaultDate() {
-    let today = new Date();
-    this.searchClaimConfig.startDate = this.searchClaimConfig.endDate = this.datePipe.transform(today, 'yyyy-MM-dd').toString();
+    //let today = new Date();
+    //this.searchClaimConfig.startDate = this.searchClaimConfig.endDate = this.datePipe.transform(today, 'yyyy-MM-dd').toString();
   }
 
 }
