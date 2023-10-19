@@ -285,7 +285,8 @@ public class RuleEngineService {
 											ins.setAddress(re.getInsuranceCompanyFullAddress());
 											//ins.setInsuranceCode(re.getInsuranceCompanyFullAddress());
 											ins.setInsuranceId(re.getPrimSecInsuranceCompanyId());
-											insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getInsuranceCompanyName().trim());
+											insuranceNameTypeDto= getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getInsuranceCompanyName().trim(),
+													Constants.COMPANY_NAME);
 											//String insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto,
 											//		re.getInsuranceCompanyName());
 											String insuranceType =insuranceNameTypeDto==null?null: insuranceNameTypeDto.getInsuranceType();
@@ -303,7 +304,8 @@ public class RuleEngineService {
 											// id:"+re.getPrimInsuranceCompanyId());
 										}else {
 											if (ins.getInsuranceCode()==null) {
-												insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getInsuranceCompanyName().trim());
+												insuranceNameTypeDto= getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getInsuranceCompanyName().trim(),
+														Constants.COMPANY_NAME);
 												if (insuranceNameTypeDto!=null) {
 													ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
 													insuranceRepo.save(ins);
@@ -320,7 +322,7 @@ public class RuleEngineService {
                                         	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
                                         			insuranceNameTypeDto.getInsuranceCode().trim());
                                         }else if(ins.getInsuranceCode()!=null){
-                                        	insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getInsuranceCompanyName().trim());
+                                        	insuranceNameTypeDto= getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getInsuranceCompanyName().trim(),Constants.COMPANY_NAME);
 											if (insuranceNameTypeDto!=null) {
                                         	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
                                         			ins.getInsuranceCode().trim());
@@ -641,7 +643,8 @@ public class RuleEngineService {
 						insurance.setInsuranceId(re.getInsuranceCompanyId());
 						insurance.setName(re.getName());
 						insurance.setOffice(officeRepo.findByUuid(OfficeUuid));
-						InsuranceNameTypeDto insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, re.getName().trim());
+						InsuranceNameTypeDto insuranceNameTypeDto= getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getName().trim(),
+								Constants.COMPANY_NAME);
 						String insuranceType =insuranceNameTypeDto==null?null: insuranceNameTypeDto.getInsuranceType();
 						if (insuranceType != null) {
 							insurance.setInsuranceType(rcmInsuranceTypeRepo.findByName(insuranceType));
@@ -652,7 +655,8 @@ public class RuleEngineService {
 						if (insuranceOld == null)
 							insuranceRepo.save(insurance);
 						else {
-							insuranceNameTypeDto= getInsuranceTypeFromSheetListByName(insuranceTypeDto, insurance.getName().trim());
+							insuranceNameTypeDto= getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, insurance.getName().trim()
+									,Constants.COMPANY_NAME);
 							//insuranceType = getInsuranceTypeFromSheetList(insuranceTypeDto, insurance.getName());
 							insuranceType =insuranceNameTypeDto==null?null: insuranceNameTypeDto.getInsuranceType();
 							if (insuranceType != null) {
@@ -911,7 +915,8 @@ public class RuleEngineService {
 	 * @param name
 	 * @return
 	 */
-	public InsuranceNameTypeDto getInsuranceTypeFromSheetListByName(List<InsuranceNameTypeDto> sheetData, String name) {
+	public InsuranceNameTypeDto getInsuranceTypeFromSheetListByNameAndClient(List<InsuranceNameTypeDto> sheetData,
+			String name, String clientName) {
 		//String insuranceType = null;
 		InsuranceNameTypeDto dto= null;
 		if (sheetData == null) {
@@ -919,7 +924,9 @@ public class RuleEngineService {
 			return null;
 		}
 		Collection<InsuranceNameTypeDto> ruleGen = Collections2.filter(sheetData,
-				sh -> sh.getInsuranceName().trim().equalsIgnoreCase(name.trim()));
+				sh -> sh.getInsuranceName().trim().equalsIgnoreCase(name.trim())
+				     && sh.getClientName().trim().equalsIgnoreCase(clientName)
+				     );
 		for (InsuranceNameTypeDto gs : ruleGen) {
 			dto  = gs;
 			break;

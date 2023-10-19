@@ -174,7 +174,7 @@ public class ConnectAndReadSheets {
 				continue;
 			try {
 				
-				dto = new InsuranceNameTypeDto(obj.get(++x), obj.get(++x));
+				dto = new InsuranceNameTypeDto(obj.get(++x),obj.get(++x), obj.get(++x));
 				
 
 			} catch (Exception ex) {
@@ -746,7 +746,7 @@ public class ConnectAndReadSheets {
 			int x=-1;
 			//ctr++;
 			try {
-			dto= new ProivderHelpingSheetDto(obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
+			dto= new ProivderHelpingSheetDto(obj.get(++x),obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
 			l.add(dto);
 			}catch(Exception n) {
 				n.printStackTrace();
@@ -795,6 +795,12 @@ public class ConnectAndReadSheets {
 
 				spe = new ProviderCodeWithSpecialty();
 				try {
+					spe.setClientName(obj.get(++x));
+
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				try {
 					spe.setProviderNames(obj.get(++x));
 
 				} catch (Exception e) {
@@ -822,6 +828,12 @@ public class ConnectAndReadSheets {
 				++x;// E is blank
 				off = new ProviderCodeWithOffice();
 
+				try {
+					off.setClientName(obj.get(++x));
+
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
 				try {
 					off.setProviderCode(obj.get(++x));
 

@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class ProviderCodeWithOffice {
 	
+	private String clientName;
 	private String providerCode;
 	private String office;
 	private String esCode;

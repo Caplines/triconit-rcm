@@ -5,6 +5,7 @@ import lombok.Data;
 @Data
 public class ProviderCodeWithSpecialty {
 
+	private String clientName;
 	private String providerNames;
 	private String providerCode;
 	private String status;
