@@ -115,7 +115,9 @@ version="1.0" >
                          <xsl:if test="$cTeamId=7">
                          <td># of RemoteLite Rejections</td>
                          </xsl:if>
+                         <xsl:if test="$cTeamId=7">
                          <td>Total Pendency</td>
+                         </xsl:if>
                      </tr>   
                     <tr style="background-color:d#A9A9A9;">
                     <td >Total</td>
@@ -127,7 +129,9 @@ version="1.0" >
                     <xsl:if test="$cTeamId=7">
                     <td><xsl:value-of select="totalRemLiteReject"/></td>
                     </xsl:if>
+                      <xsl:if test="$cTeamId=7">
                     <td><xsl:value-of select="totalcountAndRemLiteReject"/></td>
+                     </xsl:if>
                      </tr> 
                       <xsl:for-each select="data/data">   
                      <tr class="whiteBg">   
@@ -140,14 +144,9 @@ version="1.0" >
                          <xsl:if test="$cTeamId=7">
                          <td><xsl:value-of select="remoteLiteRejections"/></td>
                          </xsl:if>
-                         <xsl:choose>
-                         <xsl:when test="$cTeamId=7">
+                         <xsl:if test="$cTeamId=7">
                          <td><xsl:value-of select="remoteLiteRejections+count"/></td>
-                         </xsl:when>
-                         <xsl:otherwise>
-                            <td><xsl:value-of select="count"/></td>   
-                         </xsl:otherwise>
-                         </xsl:choose>                
+                         </xsl:if>           
                        </tr>            
                     </xsl:for-each> 
                  </table>

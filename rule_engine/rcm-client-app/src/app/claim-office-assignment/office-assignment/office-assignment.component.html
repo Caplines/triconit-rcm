@@ -168,7 +168,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th>
+                                                <th *ngIf="teamId == 7">
                                                     <div class="dFlex">
                                                         Total Pendency
                                                         <span class="sorting">
@@ -195,7 +195,7 @@
                                                 <td></td>
                                                 <td class="alignRight">{{totalClaimData.totalCount}}</td>
                                                 <td *ngIf="teamId == 7" class="alignRight">{{totalClaimData.totalRemLiteReject}}</td>
-                                                <td class="alignRight">{{totalClaimData.totalcountAndRemLiteReject}}
+                                                <td  *ngIf="teamId == 7" class="alignRight">{{totalClaimData.totalcountAndRemLiteReject}}
                                                 </td>
                                             </tr>
                                             <tr *ngIf="loader.showLoader">
@@ -224,7 +224,7 @@
                                                     <td>{{lg.opdosd}}</td>
                                                     <td class="alignRight">{{lg.count}}</td>
                                                     <td *ngIf="teamId == 7" class="alignRight">{{lg.remoteLiteRejections}}</td>
-                                                    <td class="alignRight">{{lg.totalBillingRejection}}</td>
+                                                    <td *ngIf="teamId == 7" class="alignRight">{{lg.totalBillingRejection}}</td>
                                                 </tr>
                                             </ng-container>
                                         </tbody>
