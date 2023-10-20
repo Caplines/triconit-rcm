@@ -661,8 +661,8 @@
             </tr>
             <tr>
                <td class="dullBlue">D0220/30 (PAs)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0220"/></td>
-                <td class="dullBlue"><xsl:value-of select="d0220Freq"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="percentages11"/></td>
+                <td class="dullBlue"><xsl:value-of select="xrays2"/></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Perio (Surgical)</td>
                 <td class="rowHeading">Pct.</td>
@@ -674,8 +674,8 @@
             </tr>
             <tr>
                   <td class="dullBlue">D0210 (FMX)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0210"/></td>
-                <td class="dullBlue"><xsl:value-of select="d0210Freq"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="percentages16"/></td>
+                <td class="dullBlue"><xsl:value-of select="xrays4"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4381(Arestin)</td>
                 <td class="dullYellow"><xsl:value-of select="d4381"/></td>
@@ -701,7 +701,7 @@
             <tr>
                  <td class="dullBlue">D0272/74 (BWXs)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="bwx"/></td>
-                <td class="dullBlue"><xsl:value-of select="bwxFreq"/></td>
+                <td class="dullBlue"><xsl:value-of select="xrays1"/></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">VAPs</td>
                 <td class="rowHeading">Pct.</td>
