@@ -160,15 +160,16 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
 			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
-			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal from rcm_claims claims "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,rca.created_date pendingSince from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
-			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " inner join office off on off.uuid=claims.office_id "
+			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + " and pending=true"
+			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + " and pending=true and rca.active=1"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 					+ " order by claims.dos asc  ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBilling(@Param("companyId") String companyId, @Param("teamid") int teamid);
@@ -179,15 +180,16 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
 			+ " timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
-			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal from rcm_claims claims "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,rca.created_date pendingSince from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
-			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " inner join office off on off.uuid=claims.office_id "
+			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + " and pending=true "
+			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + " and pending=true and rca.active=1"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 					+ " order by claims.dos asc ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamInternalAudit(@Param("companyId") String companyId, @Param("teamid") int teamid);
