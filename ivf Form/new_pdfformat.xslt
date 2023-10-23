@@ -635,7 +635,7 @@
             <tr>
                 
                 <td class="dullBlue">Does Exams Share Freq? </td>
-                <td class="dullBlue" colspan="2"><xsl:value-of select="doesExamShareFreq"/></td>
+                <td class="dullBlue" colspan="2"><xsl:value-of select="shareFr"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4346(Gingivitis)</td>
                 <td class="dullYellow align-right"><xsl:value-of select="perioMnt6"/></td>
@@ -853,7 +853,7 @@
                 <td class="dullYellow"><xsl:value-of select="extractions1fr"/></td>
                 <td class="borderNone"></td>
                  <td class="dullRed">D6010</td>
-                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implantsCPercentage"/></td>
+                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants1"/></td>
                 <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants5"/></td>
             </tr>
             <tr>
