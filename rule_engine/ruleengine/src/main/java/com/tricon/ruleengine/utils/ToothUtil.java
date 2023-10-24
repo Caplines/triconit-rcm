@@ -105,6 +105,26 @@ public class ToothUtil {
 		return finalTooths.toArray(new String[finalTooths.size()]);
 		
 	}
+	
+    public static String[] getArchToothsFromTooth(String toothNumbers) {
+		
+		List<String> finalTooths=new ArrayList<>();
+		if (toothNumbers==null ) return new String[] {""};
+		String commaLevel[]=toothNumbers.split(",");
+		for(String cl:commaLevel) {
+			String [] dashLevel=cl.split("-");
+			if (dashLevel.length==2) {
+					
+			}else {
+				if (dashLevel[0].equals("LA") || dashLevel[0].equals("UA")) {
+				finalTooths.add(dashLevel[0]);
+				}
+			}
+		}
+		
+		return finalTooths.toArray(new String[finalTooths.size()]);
+		
+	}
 
 	
 	public static boolean commonSurfaceLogic(String a, String b) {

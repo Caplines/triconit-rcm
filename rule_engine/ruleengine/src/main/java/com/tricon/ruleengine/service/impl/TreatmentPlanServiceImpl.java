@@ -2321,6 +2321,163 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 											Constants.rule_log_debug, bw);
 								
 		//END Complete Denture with Extraction
+		//Prophy, Sealants and Fluoride on same DOS with D0140
+							
+							rule = getRulesFromList(rules, Constants.RULE_ID_93);
+							dtoRL = rb.Rule93(tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+									}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_93,
+											Constants.rule_log_debug, bw);
+		//END Prophy, Sealants and Fluoride on same DOS with D0140
+		//Sealant Age limitation
+							rule = getRulesFromList(rules, Constants.RULE_ID_94);
+							dtoRL = rb.Rule94(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+									}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_94,
+											Constants.rule_log_debug, bw);
+		//END Sealant Age limitation
+		//Space Maintainer age and Frq limitation
+							rule = getRulesFromList(rules, Constants.RULE_ID_95);
+							dtoRL = rb.Rule95(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+									}
+							}
+							RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_95,
+											Constants.rule_log_debug, bw);
+		//END Space Maintainer age and Frq limitation	
+		//Recementation Frq Limit D1551
+						rule = getRulesFromList(rules, Constants.RULE_ID_96);
+						dtoRL = rb.Rule96(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw,type);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+						}
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_96,
+											Constants.rule_log_debug, bw);
+		//END Recementation Frq Limit D1551        
+		//Recementation Frq Limit D1552
+						rule = getRulesFromList(rules, Constants.RULE_ID_97);
+						dtoRL = rb.Rule97(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw,type);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+						}
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_97,
+											Constants.rule_log_debug, bw);
+		//END Recementation Frq Limit D1552        
+		//Recementation Frq Limit D1553
+						rule = getRulesFromList(rules, Constants.RULE_ID_98);
+						dtoRL = rb.Rule98(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw,type);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+						}
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_98,
+											Constants.rule_log_debug, bw);
+		//END Recementation Frq Limit D1553        
+		//Space Maintainer Tooth Compatibility for Quads
+						rule = getRulesFromList(rules, Constants.RULE_ID_99);
+						dtoRL = rb.Rule99(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+						}
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_99,
+											Constants.rule_log_debug, bw);
+	    //END Space Maintainer Tooth Compatibility for Quads        
+	    //Space Maintainer Tooth Compatibility for Arch
+						rule = getRulesFromList(rules, Constants.RULE_ID_100);
+						dtoRL = rb.Rule100(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+						}
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_100,
+											Constants.rule_log_debug, bw);
+		//END Space Maintainer Tooth Compatibility for Arch        
+		//Unspecified periodontal procedure - D4999
+						rule = getRulesFromList(rules, Constants.RULE_ID_101);
+						dtoRL = rb.Rule101(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+						}
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_101,
+											Constants.rule_log_debug, bw);
+		//END Unspecified periodontal procedure - D4999        
+		//FCL Dental Plan
+						rule = getRulesFromList(rules, Constants.RULE_ID_102);
+						dtoRL = rb.Rule102(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+						}
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_102,
+											Constants.rule_log_debug, bw);
+		//END FCL Dental Plan        
+						
+		//Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation
+						rule = getRulesFromList(rules, Constants.RULE_ID_103);
+						dtoRL = rb.Rule103(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+						}
+						RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_103,
+											Constants.rule_log_debug, bw);
+		//END Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation        
+							
 		// RULE_ID_79 "Insurance and Address"
 		/*
 		rule = getRulesFromList(rules, Constants.RULE_ID_79);
@@ -2601,9 +2758,163 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_92,
 							Constants.rule_log_debug, bw);
 				
-          //END Immediate Dentures with Extraction				
-		        
+          //END Immediate Dentures with Extraction
+          //Prophy, Sealants and Fluoride on same DOS with D0140
+			
+			rule = getRulesFromList(rules, Constants.RULE_ID_93);
+			dtoRL = rb.Rule93(tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+			}
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_93,
+							Constants.rule_log_debug, bw);
+		//END Prophy, Sealants and Fluoride on same DOS with D0140
+        //Sealant Age limitation
+			rule = getRulesFromList(rules, Constants.RULE_ID_94);
+			dtoRL = rb.Rule94(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+			}
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_94,
+							Constants.rule_log_debug, bw);
+		//END Sealant Age limitation
+		//Space Maintainer age and Frq limitation
+			rule = getRulesFromList(rules, Constants.RULE_ID_95);
+			dtoRL = rb.Rule95(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+			}
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_95,
+							Constants.rule_log_debug, bw);
+		//END Space Maintainer age and Frq limitation	
+		//Recementation Frq Limit D1551
+		rule = getRulesFromList(rules, Constants.RULE_ID_96);
+		dtoRL = rb.Rule96(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw,type);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_96,
+							Constants.rule_log_debug, bw);
+		//END Recementation Frq Limit D1551        
+		//Recementation Frq Limit D1552
+		rule = getRulesFromList(rules, Constants.RULE_ID_97);
+		dtoRL = rb.Rule97(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw,type);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_97,
+							Constants.rule_log_debug, bw);
+		//END Recementation Frq Limit D1552        
+		//Recementation Frq Limit D1553
+		rule = getRulesFromList(rules, Constants.RULE_ID_98);
+		dtoRL = rb.Rule98(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw,type);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_98,
+							Constants.rule_log_debug, bw);
+		//END Recementation Frq Limit D1553        
+		//Space Maintainer Tooth Compatibility for Quads
+		rule = getRulesFromList(rules, Constants.RULE_ID_99);
+		dtoRL = rb.Rule99(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_99,
+							Constants.rule_log_debug, bw);
+		//END Space Maintainer Tooth Compatibility for Quads        
+		//Space Maintainer Tooth Compatibility for Arch
+		rule = getRulesFromList(rules, Constants.RULE_ID_100);
+		dtoRL = rb.Rule100(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_100,
+							Constants.rule_log_debug, bw);
+		//END Space Maintainer Tooth Compatibility for Arch        
+		//Unspecified periodontal procedure - D4999
+		rule = getRulesFromList(rules, Constants.RULE_ID_101);
+		dtoRL = rb.Rule101(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_101,
+							Constants.rule_log_debug, bw);
+		//END Unspecified periodontal procedure - D4999        
+		//FCL Dental Plan
+		rule = getRulesFromList(rules, Constants.RULE_ID_102);
+		dtoRL = rb.Rule102(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_102,
+							Constants.rule_log_debug, bw);
+		//END FCL Dental Plan        
 		
+		//Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation
+		rule = getRulesFromList(rules, Constants.RULE_ID_103);
+		dtoRL = rb.Rule103(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+				if (dtoRL != null) {
+					list.addAll(dtoRL);
+					for (TPValidationResponseDto t : dtoRL) {
+						dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+				}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_103,
+							Constants.rule_log_debug, bw);
+		//END Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation        
 
 		// RULE_ID_79 "Insurance and Address"
 				  /*

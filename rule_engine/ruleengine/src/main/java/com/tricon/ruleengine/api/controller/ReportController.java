@@ -225,7 +225,8 @@ public class ReportController {
 		if (li != null)
 			for (ReportResponseDto d : li) {
 				
-				if (dto.getReportType().equalsIgnoreCase(ReportTypeEnum.ReportType.Teamwise.toString())) {
+				if (dto.getReportType().equalsIgnoreCase(ReportTypeEnum.ReportType.Teamwise.toString())
+					|| dto.getReportType().equalsIgnoreCase(ReportTypeEnum.ReportType.TeamwiseDOS.toString())) {
 					k = (++ctr) + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
 							+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " " + inv + d.getTreatement_plan_id()
 							+ " Run By-" + d.getName();

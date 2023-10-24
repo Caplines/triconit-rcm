@@ -134,7 +134,17 @@ public class Constants {
 	public static final String RULE_ID_90="Schedule Charges";
 	public static final String RULE_ID_91="Immediate Dentures with Extraction";
 	public static final String RULE_ID_92="Complete Denture with Extraction";
-	
+	public static final String RULE_ID_93="Prophy, Sealants and Fluoride on same DOS with D0140";
+	public static final String RULE_ID_94="Sealant Age limitation";
+	public static final String RULE_ID_95="Space Maintainer age and Frq limitation";
+	public static final String RULE_ID_96="Recementation Frq Limit D1551";
+	public static final String RULE_ID_97="Recementation Frq Limit D1552";
+	public static final String RULE_ID_98="Recementation Frq Limit D1553";
+	public static final String RULE_ID_99="Space Maintainer Tooth Compatibility for Quads";
+	public static final String RULE_ID_100="Space Maintainer Tooth Compatibility for Arch";
+	public static final String RULE_ID_101="Unspecified periodontal procedure - D4999";
+	public static final String RULE_ID_102="FCL Dental Plan";//? DXXX
+	public static final String RULE_ID_103="Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation";
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
 

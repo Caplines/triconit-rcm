@@ -460,8 +460,8 @@ public class ClaimServiceImpl {
 		RcmCompany company = rcmCompanyRepo.findByUuid(dto.getCompanyuuid());
 		List<RcmTeam> allTeams = rcmTeamRepo.findAll();
 		InsuranceNameTypeDto insuranceNameTypeDto=null;
-		//RcmCompany companyIns = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);//Uuid(dto.getCompanyuuid());//Always
-		Map<String,List<InsuranceNameTypeDto>> insuranceTypeDtos =null;// ruleEngineService.pullInsuranceMappingFromSheet(companyIns);
+		RcmCompany companyIns = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);//Always
+		Map<String,List<InsuranceNameTypeDto>> insuranceTypeDtos =new HashMap();// ruleEngineService.pullInsuranceMappingFromSheet(companyIns);
 		List<TimelyFilingLimitDto> timelyFilingLimits = ruleEngineService.pullTimelyFilingLmtMappingFromSheet(company);
 		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
 		RcmClaimStatusType systemStatusReBilling = rcmClaimStatusTypeRepo
@@ -529,7 +529,7 @@ public class ClaimServiceImpl {
 								companies.put(re.getClientName(), clCompany);
 								insuranceTypeDto=insuranceTypeDtos.get(re.getClientName());
 								if (insuranceTypeDto == null) {
-									insuranceTypeDtos.put(re.getClientName(), ruleEngineService.pullInsuranceMappingFromSheet(clCompany));
+									insuranceTypeDtos.put(re.getClientName(), ruleEngineService.pullInsuranceMappingFromSheet(companyIns));
 									insuranceTypeDto = insuranceTypeDtos.get(re.getClientName());
 								}
 							} else {
@@ -631,7 +631,7 @@ public class ClaimServiceImpl {
 								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim(),re.getClientName());
 							}
 							
-							if (ins.getInsuranceCode()==null) {
+							if (ins.getInsuranceCode()==null || (ins.getInsuranceCode()!=null && ins.getInsuranceCode().trim().equals(""))) {
 								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim(),re.getClientName());
 								if (insuranceNameTypeDto!=null) {
 									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
@@ -810,7 +810,7 @@ public class ClaimServiceImpl {
 								companies.put(re.getClientName(), clCompany);
 								insuranceTypeDto=insuranceTypeDtos.get(re.getClientName());
 								if (insuranceTypeDto == null) {
-									insuranceTypeDtos.put(re.getClientName(), ruleEngineService.pullInsuranceMappingFromSheet(clCompany));
+									insuranceTypeDtos.put(re.getClientName(), ruleEngineService.pullInsuranceMappingFromSheet(companyIns));
 									insuranceTypeDto = insuranceTypeDtos.get(re.getClientName());
 								}
 							} else {
@@ -909,7 +909,8 @@ public class ClaimServiceImpl {
 								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
 							}
 							TimelyFilingLimitDto timely = null;
-							if (ins.getInsuranceCode()==null) {
+							if (ins.getInsuranceCode()==null || (ins.getInsuranceCode()!=null && ins.getInsuranceCode().trim().equals(""))) {
+							//if (ins.getInsuranceCode()==null) {
 								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
 								if (insuranceNameTypeDto!=null) {
 									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
@@ -1630,7 +1631,21 @@ public class ClaimServiceImpl {
                //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
                String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE_HELPING.format(implDto.getDos());
                //String doc1FromProvider = doc1NameMap.get(officeName + "->" + sheetDate);
-               providers = getDocsFromHelpingData(helpingList,sheetDate,officeName,implDto.getClientName());
+               if (Constants.COMPANY_NAME.equalsIgnoreCase(implDto.getClientName())) {
+            	   providers = getDocsFromHelpingData(helpingList,sheetDate,officeName,implDto.getClientName());
+               }else {
+            	   providers=new ArrayList<>();
+            	   ProivderHelpingSheetDto tempHelp= new ProivderHelpingSheetDto(
+            			   implDto.getClientName(), sheetDate,  implDto.getOfficeName(),  implDto.getTreatingProviderFromSheet(),  "Doc - 1");
+            	   providers.add(tempHelp);
+            	   //tempHelp.setClientName(implDto.getClientName());
+            	   //tempHelp.setDate(date);
+            	   //tempHelp.setOfficeName(officeName);
+            	   //tempHelp.setTreatingProvider(implDto.getTreatingProviderFromSheet());
+            	   //tempHelp.setType("Doc - 1");
+            	   //providers =tempHelp;// implDto.getTreatingProviderFromSheet();
+               }
+               
                //final String  treatingProviderF=treatingProvider;
                List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
    			   
@@ -3298,7 +3313,23 @@ public class ClaimServiceImpl {
 		               //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
 		               String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE_HELPING.format(claim.getDos());
 		               //String doc1FromProvider = doc1NameMap.get(officeName + "->" + sheetDate);
-		               providers = getDocsFromHelpingData(helpingList,sheetDate,officeName,rcmCompany.getName());
+		               if (Constants.COMPANY_NAME.equalsIgnoreCase(rcmCompany.getName())) {
+		            	   providers = getDocsFromHelpingData(helpingList,sheetDate,officeName,rcmCompany.getName());
+		               }else {
+		            	   providers=new ArrayList<>();
+		            	   ProivderHelpingSheetDto tempHelp= new ProivderHelpingSheetDto(
+		            			   rcmCompany.getName(), sheetDate,  off.getName(),  claim.getTreatingProviderFromClaimOnSheet(),  "Doc - 1");
+		            	   providers.add(tempHelp);
+		            	   //tempHelp.setClientName(implDto.getClientName());
+		            	   //tempHelp.setDate(date);
+		            	   //tempHelp.setOfficeName(officeName);
+		            	   //tempHelp.setTreatingProvider(implDto.getTreatingProviderFromSheet());
+		            	   //tempHelp.setType("Doc - 1");
+		            	   //providers =tempHelp;// implDto.getTreatingProviderFromSheet();
+		               }
+		               
+		               
+		               
 		               //final String  treatingProviderF=treatingProvider;
 		               List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>) providerSheetData[1];
 		   			   

@@ -1344,6 +1344,28 @@ public class FreqencyUtils {
 		if (tpCodes.equals("D0140") && historyCode.equals("D0150")) {
 			alikecodepresent = true;
 		}
+		//
+		if (tpCodes.equals("D5110") && historyCode.equals("D5130")) {
+			alikecodepresent = true;
+		}
+		if (tpCodes.equals("D5130") && historyCode.equals("D5110")) {
+			alikecodepresent = true;
+		}
+		if (tpCodes.equals("D5120") && historyCode.equals("D5140")) {
+			alikecodepresent = true;
+		}
+		if (tpCodes.equals("D5140") && historyCode.equals("D5120")) {
+			alikecodepresent = true;
+		}
+		
+		// 3C D5225, D5211, D5213
+		if (compairThreeVlaues(tpCodes, historyCode, "D5225", "D5211", "D5213") != null) {
+			alikecodepresent = true;
+		}
+		// 3C D5226, D5212, D5214
+		if (compairThreeVlaues(tpCodes, historyCode, "D5226", "D5212", "D5214") != null) {
+			alikecodepresent = true;
+		}
 
 		// 3C D2391, M2391, P2391
 		if (compairThreeVlaues(tpCodes, historyCode, "D2391", "M2391", "P2391") != null) {
@@ -1405,7 +1427,8 @@ public class FreqencyUtils {
 			String tpCode, String tooth, ToothHistoryDto historyD, Class<?> clazz, BufferedWriter bw, int CurrentYear,
 			Date planDate, MessageSource messageSource, Rules rule, IVFTableSheet ivf, Date TP_Date, Locale locale,
 			Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVFFinal, Set<String> fcodes, Set<String> surfaces,
-			Set<String> teethC) {
+			Set<String> teethC, String ruleMessageName) {
+		//ruleMessageName="rule21";
 		boolean present = false;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		RuleEngineLogger.generateLogs(clazz, "planDate :" + planDate, Constants.rule_log_debug, bw);
@@ -1692,7 +1715,8 @@ public class FreqencyUtils {
 			String tpCode, String tooth, ToothHistoryDto historyD, Class<?> clazz, BufferedWriter bw, int CurrentYear,
 			Date planDate, MessageSource messageSource, Rules rule, IVFTableSheet ivf, Date TP_Date, Locale locale,
 			Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVFFinal, Set<String> fcodes, Set<String> surfaces,
-			Set<String> teethC) {
+			Set<String> teethC, String ruleMessageName) {
+		ruleMessageName="rule57";
 		boolean present = false;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF) {
