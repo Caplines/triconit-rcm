@@ -71,6 +71,7 @@ import com.tricon.rcm.dto.RcmClaimAppointmentMainRootDto;
 import com.tricon.rcm.dto.RcmClaimDataDto;
 import com.tricon.rcm.dto.RcmClaimDetMainRootDto;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -1096,10 +1097,19 @@ public class RuleEngineService {
 
 		String officeUuid = claim.getOffice().getUuid();
 		String appointmentDate = "";
+		String startDate="";
+		try{
+			SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
+			//sdf.format(claim.getDos());
+			String[] dt=sdf.format(claim.getDos()).split("-");//2023-09-20
+			startDate=(dt[1].startsWith("0")?dt[1].replaceFirst("0", ""):dt[1])+"/"+(dt[2].startsWith("0")?dt[2].replaceFirst("0", ""):dt[2])+"/"+dt[0];
+		}catch(Exception n){
+			
+		}
 		try {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			String param = "?password=" + eagleSoftDBDetailsRepo.findByOffice(off).getPassword() + "&patientId="
-					+ claim.getPatientId() + "&startDate=";
+					+ claim.getPatientId() + "&startDate="+startDate;
 			param = param + "&office=" + officeUuid;
 			
 			//TEST DATA
