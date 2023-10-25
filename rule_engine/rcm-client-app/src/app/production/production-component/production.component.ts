@@ -123,8 +123,10 @@ downloadPdf(){
   let data = {"fileName":"Production","data": this.productionData,"clientName": this.clientName};
   this. appService.productionPdfDownload(data,"pdf",(res: any) => {
     if (res.status === 200){
+      this.date = new Date();
+      this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
       console.log(res.body);
-      this.downloadService.saveBolbData(res.body, "Production.pdf");
+      this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_Production_${this.date}.pdf`);
       this.loader.exportPDFLoader = false;
     }else{
       console.log("something went wrong");

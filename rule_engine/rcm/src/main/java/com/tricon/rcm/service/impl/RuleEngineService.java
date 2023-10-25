@@ -1067,13 +1067,13 @@ public class RuleEngineService {
 							rca.setSystemComment("Claim taken back from Pendency Screen by :"+assignedBy.getEmail());
 							rcmClaimAssignmentRepo.save(rca);
 							
-							rcmClaimAssignmentRepo.assignClaimToUser(assignedBy.getUuid(), 
-									exists.getUser().getUuid(), teamId, rca.getRcmClaimStatus().getId(), Constants.SYSTEM_INITIAL_COMMENT, cl.getClaimUuid());
+//							rcmClaimAssignmentRepo.assignClaimToUser(assignedBy.getUuid(), 
+//									exists.getUser().getUuid(), teamId, rca.getRcmClaimStatus().getId(), Constants.SYSTEM_INITIAL_COMMENT, cl.getClaimUuid());
 						  
 								    
 							
 							
-	;					}
+						}
 					}
 					
 				}
@@ -1081,6 +1081,7 @@ public class RuleEngineService {
 				
 			
 		}
+		this.assignedUnsAssignedClaimsByTeam(company.getUuid(),assignedBy,teamId);   
 		
 		
 	}

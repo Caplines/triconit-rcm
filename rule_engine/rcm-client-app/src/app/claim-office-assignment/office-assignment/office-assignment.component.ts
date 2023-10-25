@@ -277,7 +277,9 @@ export class OfficeAssignmentComponent implements OnInit {
     let data = { "fileName": "Pendancy", "data": this.filteredItems, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName ,"currentTeamId":this.teamId };
     this.appService.pendancyPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
-        this.downloadService.saveBolbData(res.body, "Pendancy.pdf");
+        this.date = new Date();
+       this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`
+        this.downloadService.saveBolbData(res.body, `${this.clientName}_Pendancy_${this.date}.pdf`);
         this.loader.exportPDFLoader = false;
       } else {
         console.log("something went wrong");

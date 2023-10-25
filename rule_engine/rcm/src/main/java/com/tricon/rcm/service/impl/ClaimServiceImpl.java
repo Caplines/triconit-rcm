@@ -3081,11 +3081,13 @@ public class ClaimServiceImpl {
 		}
 		
 		  RcmTeam assignTeam = rcmTeamRepo.findById(assignToTeam);
+		  RcmTeam lastTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
 		  RcmTeam oldTeam = assign.getCurrentTeamId();
 		  RcmUser oldRcmUser = assign.getAssignedTo();
 		  
 		  claim.setUpdatedBy(user);
 		  claim.setCurrentTeamId(assignTeam);
+		  claim.setLastWorkTeamId(lastTeam);
 		  //Edit Assignment Data
 		  assign.setActive(false);
 		  //assign.setCommentAssignedBy(Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+ ":"+assignTeam.getName());

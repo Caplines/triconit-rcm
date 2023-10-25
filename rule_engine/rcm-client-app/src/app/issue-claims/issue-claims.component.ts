@@ -254,7 +254,9 @@ export class IssueClaimComponent {
     let data = {"fileName":this.showIssueClaim ? "Upload Errors" : "Upload Errors Claims-Archived","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimConfig.issueCount: this.archiveClaimConfig.archiveCount,"tabSwitch":this.tabSwitchValue};
     this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
-        this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Upload Errors.pdf" : "Upload Errors Claims-Archived.pdf");
+        this.date = new Date();
+        this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+        this.downloadService.saveBolbData(res.body, this.showIssueClaim ? `${localStorage.getItem("selected_clientName")}_Upload Errors_${this.date}.pdf` : `${localStorage.getItem("selected_clientName")}_Upload Errors Claims-Archived_${this.date}.pdf`);
         this.loader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");
@@ -265,7 +267,7 @@ export class IssueClaimComponent {
     let data = {"fileName":this.showIssueClaim ? "Upload Errors" : "Upload Errors Claims-Archived","data":this.showIssueClaim ? this.filteredItems : this.filtertedArchiveItems,"clientName": this.userInfo.currentClientName,"issueClaimCounts":this.showIssueClaim ? this.issueClaimConfig.issueCount: this.archiveClaimConfig.archiveCount,"tabSwitch":this.tabSwitchValue};
     this.appSer.issueClaimPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
-        this.downloadService.saveBolbData(res.body, this.showIssueClaim ? "Upload Errors.pdf" : "Upload Errors Claims-Archived.pdf");
+        this.downloadService.saveBolbData(res.body, this.showIssueClaim ? `${localStorage.getItem("selected_clientName")}_Upload Errors_${this.date}.pdf` : `${localStorage.getItem("selected_clientName")}_Upload Errors Claims-Archived_${this.date}.pdf`);
         this.loader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");

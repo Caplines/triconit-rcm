@@ -1168,7 +1168,7 @@ public class AdminServiceImpl {
 		List<String> nonExistingTLteamIds = new ArrayList<>();
 		for (int teamId : RcmTeamEnum.getAllTeamsIdIsRoleVisible()) {
 			// now we have to check only BILLING and INTERNAL_AUDIT team exit or not
-			if (teamId == RcmTeamEnum.BILLING.getId() || teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+			if (teamId == RcmTeamEnum.BILLING.getId()) {
 				int exitingTLUserCounts = userCompanyRepo.findExistingTLByClientUuidAndTeam(company.getUuid(), teamId);
 				if (exitingTLUserCounts == 0) {
 					nonExistingTLteamIds.add(RcmTeamEnum.getTeamDescriptionByTeamId(teamId));

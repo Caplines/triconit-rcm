@@ -398,7 +398,9 @@ export class AllPendencyComponent {
     let data = {"fileName":"AllPendancy","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamName":matchedTeam.unFormatedName,"totalCount":this.totalCount,"currentTeamId":this.currentTeamId,"teamsData":teamsData};
     this. _service.allPendancyPdfDownload(data,"pdf",(res: any) => {
       if (res.status === 200){
-        this.downloadService.saveBolbData(res.body, "Pendancy- Other Teams.pdf");
+        this.date = new Date();
+        this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`
+        this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_Pendancy- Other Teams_${this.date}.pdf`);
         this.showLoader.exportPDFLoader = false;
       }else{
         console.log("something went wrong");

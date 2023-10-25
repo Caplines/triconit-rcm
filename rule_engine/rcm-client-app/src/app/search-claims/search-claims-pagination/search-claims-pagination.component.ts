@@ -596,7 +596,7 @@ export class SearchClaimsPaginationComponent {
     this.date = new Date();
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     //console.log(excelData.sort());
-    new ngxCsv(excelData, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
+    new ngxCsv(excelData, `${localStorage.getItem("selected_clientName")}_Search_Claims_${this.date}`, options);
     this.loader.exportCSVLoader = false;
   }
 
@@ -751,8 +751,10 @@ export class SearchClaimsPaginationComponent {
       let data = { "fileName": "Search-claims", "data": this.filteredItems, "clientName": this.clientName };
       this.appService.seacrhClaimsPdfDownload(data, "pdf", (res: any) => {
         if (res.status === 200) {
+          this.date = new Date();
+          this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
           console.log(res.body);
-          this.downloadService.saveBolbData(res.body, "Search-claims.pdf");
+          this.downloadService.saveBolbData(res.body,  `${localStorage.getItem("selected_clientName")}_Search_Claims_${this.date}.pdf`);
           this.loader.exportPDFLoader = false;
         } else {
           console.log("something went wrong");

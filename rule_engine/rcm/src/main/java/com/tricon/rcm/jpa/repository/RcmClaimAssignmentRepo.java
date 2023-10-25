@@ -81,15 +81,15 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			+"  where rca.claim_id=:claim_id and  rt.id<>:teamId  and rca.active is false")
    int claimWorkedBySomeEarlierByTLTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
 	
-	@Transactional
-	@Modifying
-	@Query(nativeQuery = true, value = "  "
-			+" insert into rcm_claim_assignment (created_date,updated_date,active,taken_back,created_by,assigned_by,"
-			+ " assigned_to,current_team_id,status_id,system_comment,"
-			+ "claim_id) values (now(),now(),true,false,:usBy,:usBy,:usTo,:teamId,:statusId,:systemCom,:claimId)")
-   Integer assignClaimToUser(@Param("usBy") String usBy,@Param("usTo") String usTo,
-		   @Param("teamId") int teamId,@Param("statusId") int statusId,@Param("systemCom") String systemCom,
-		   @Param("claimId") String claimId);
+//	@Transactional
+//	@Modifying
+//	@Query(nativeQuery = true, value = "  "
+//			+" insert into rcm_claim_assignment (created_date,updated_date,active,taken_back,created_by,assigned_by,"
+//			+ " assigned_to,current_team_id,status_id,system_comment,"
+//			+ "claim_id) values (now(),now(),true,false,:usBy,:usBy,:usTo,:teamId,:statusId,:systemCom,:claimId)")
+//   Integer assignClaimToUser(@Param("usBy") String usBy,@Param("usTo") String usTo,
+//		   @Param("teamId") int teamId,@Param("statusId") int statusId,@Param("systemCom") String systemCom,
+//		   @Param("claimId") String claimId);
 	
 	@Query(value = "select comment_assigned_by from rcm_claim_assignment where active =false and current_team_id<>:teamId and claim_id=:claimUuid order by created_date desc limit 1", nativeQuery = true)
 	String findLatestClaimCommentByOtherTeam(@Param("claimUuid") String claimUUid,@Param("teamId") int teamId);
