@@ -59,10 +59,11 @@ export class ProductionComponent implements OnInit {
             })
             
    });
+   if(this.productionData.length >0 ){
+    this.sortAvgDays();
+  }
   } else this.alert.alertMsg = callback.message ? callback.message :'Something went wrong';
     });
-
-    this.sortAvgDays();
     
  }
 
@@ -142,7 +143,7 @@ downloadPdf(){
 
 sortAvgDays(){
   this.isSorted['days'] =true;
-  this.sortData(this.productionData,'days','desc','string')
+    this.sortData(this.productionData,'days','desc','number');
 }
 
 sortData(data: any, sortProp: string, order: any, sortType: string) {
