@@ -193,7 +193,7 @@ export class OfficeAssignmentComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Client","Office", "User Assignment", "Oldest Pending Date", "Oldest Pending DOS", "# of Claims to be Billed", this.teamId==7? "# of RemoteLite Rejections" : '', this.teamId==7?"Total Pendency":''],
+      headers: ["Client","Office", "User Assignment", "Days Since Oldest Pending Claim (Upload Date)", " Days Since Oldest Pending Claim (DOS)", "# of Claims to be Billed", this.teamId==7? "# of RemoteLite Rejections" : '', this.teamId==7?"Total Pendency":''],
     }
     let excelData: any = JSON.parse(JSON.stringify(this.filteredItems));
     excelData = excelData.map((e: any) => {
@@ -223,8 +223,8 @@ export class OfficeAssignmentComponent implements OnInit {
         "Client":e.companyName,
         "Office": e.officeName,
         "User Assignment": e.officeAssignedTo,
-        "Oldest Pending Date": e.opdtd,
-        "Oldest Pending DOS": e.opdosd,
+        "Days Since Oldest Pending Claim (Upload Date)": e.opdtd,
+        "Days Since Oldest Pending Claim (DOS)": e.opdosd,
         "# of Claims to be Billed": e.count,
         "# of RemoteLite Rejections": this.teamId ==7 ? e.remoteLiteRejections : '',
         "Total Pendency":  this.teamId==7? e.count + e.remoteLiteRejections  : ''
@@ -236,8 +236,8 @@ export class OfficeAssignmentComponent implements OnInit {
         "Office": 'Total',
         "Client": '-',
         "User Assignment": '-',
-        "Oldest Pending Date": '-',
-        "Oldest Pending DOS": '-',
+        "Days Since Oldest Pending Claim (Upload Date)": '-',
+        "Days Since Oldest Pending Claim (DOS)": '-',
         "# of Claims to be Billed": this.totalClaimData.totalCount,
         "# of RemoteLite Rejections": this.teamId==7? this.totalClaimData.totalRemLiteReject:'',
         "Total Pendency": this.teamId==7?this.totalClaimData.totalcountAndRemLiteReject:''

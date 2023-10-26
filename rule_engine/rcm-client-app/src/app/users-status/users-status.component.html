@@ -32,15 +32,15 @@
                                 </div>
                                 <div class="col-sm-3 find-btn"><button type="button" class="btn btn-secondary" [disabled]="companyName =='' || isFindUserBtnDisable"
                                         (click)="findAllUser(0)"><img src="../assets/img/user-white.png"
-                                            class="search-icon" /> Find All Users</button></div>
+                                            class="search-icon" /> Submit</button></div>
                             </div>
                             <ng-container *ngIf="allUser.length> 0">
                                 <div class="table-heading">All Users </div>
                                 <div class="table-responsive">
                                     <table class="table" id="table">
                                         <tr class="thead-dark">
-                                            <th>Client Name</th>
-                                            <th>Full Name</th>
+                                            <th>Client</th>
+                                            <th>Name</th>
                                             <th>Role</th>
                                             <th>Status</th>
                                         </tr>

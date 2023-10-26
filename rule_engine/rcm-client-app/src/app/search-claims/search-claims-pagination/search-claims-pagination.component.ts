@@ -487,7 +487,7 @@ export class SearchClaimsPaginationComponent {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Claim Id", "Patient ID","Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type","Insurance Name", "Insurance Type", "Estimated Amount"]
+      headers: ["Office", "Claim Id", "Patient ID","Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type","Insurance Name", "Insurance Type", "Est. Amount"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -540,7 +540,7 @@ export class SearchClaimsPaginationComponent {
           "Claim Type": e.claimType,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
-          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
           "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
         }
       })

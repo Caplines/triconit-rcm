@@ -312,7 +312,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 						+"     and rut.team_id=:teamId  and  cl.pending is false and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.first_worked_team_id=:teamId  "
 						//+" 	and  CAST(cl.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
 						//+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') " --
-						+ " left join rcm_claims_submission_details rcsd on cl.claim_uuid= rcsd.calim_id and rcsd.es_date is not null "
+						+ " left join rcm_claims_submission_details rcsd on cl.claim_uuid= rcsd.claim_id and rcsd.es_date is not null "
 						+" 	and  CAST(rcsd.es_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
 						+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
 						+" 	left join office off on off.uuid=cl.office_id  "

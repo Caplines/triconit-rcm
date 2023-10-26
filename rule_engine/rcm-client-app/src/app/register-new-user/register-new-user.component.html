@@ -37,7 +37,7 @@
                                 <div class="row">
                                     <div class="col-sm">
                                         <div class="form-group">
-                                            <label for="email">Email</label>
+                                            <label for="email">Email Address</label>
                                             <input type="email" class="form-control" maxlength="100" formControlName="email" [ngClass]="{'is-invalid':userDetails.controls.email.invalid && userDetails.controls.email.touched,'is-valid':userDetails.controls.email.valid}">
                                             <small class="text-danger" *ngIf="userDetails.controls['email'].touched && userDetails.controls['email'].errors?.required">* Please Provide Your Email.</small>
                                             <small class="text-danger" *ngIf="userDetails.controls['email'].touched && userDetails.controls['email']?.errors?.email">* Please Enter Valid Email.</small>

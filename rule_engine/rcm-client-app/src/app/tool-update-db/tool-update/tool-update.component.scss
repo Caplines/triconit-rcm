@@ -106,3 +106,14 @@
   font-size: 15px;
   color: #2d4047;
 }
+.toolupdateTable {
+  td, th {
+    text-align: center;
+  }
+  & th:first-child {
+    text-align: left;
+  }
+  & td:first-child {
+    text-align: left;
+  }
+}

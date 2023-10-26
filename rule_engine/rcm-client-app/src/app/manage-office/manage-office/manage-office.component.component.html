@@ -23,7 +23,7 @@
                                         <table class="table" id="table">
                                             <tr class="thead-dark">
                                                 <th>KEY</th>
-                                                <th>Office Name <span *ngIf="selectedCompany?.name=='Smilepoint'">(View only)</span></th>
+                                                <th>Office<span *ngIf="selectedCompany?.name=='Smilepoint'">(View only)</span></th>
                                                 <th *ngIf="selectedCompany?.name!='Smilepoint'"></th>
                                                 <th *ngIf="selectedCompany?.name!='Smilepoint'"></th>
                                             </tr>
@@ -58,7 +58,7 @@
                                                     <td scope="col" *ngIf="selectedCompany?.name!='Smilepoint'">
                                                         <button type="button" class="btn btn-edit" [disabled]="!office.editable" (click)="saveOfficeName(office)">
                                                             <img src="../assets/img/save-data-icon.png" alt="edit" style="margin-top:2px;" />
-                                                            {{office['newField'] ? 'Save' : 'Update' }}
+                                                            {{office['newField'] ? 'Save' : 'Save' }}
                                                         </button>
                                                     </td>
                                                 </tr>

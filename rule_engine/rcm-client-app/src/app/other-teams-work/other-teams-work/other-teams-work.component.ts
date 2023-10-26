@@ -468,7 +468,7 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office",  "Claim ID", "Patient ID", "Patient Name", 'DOS', "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type" , "Estimated Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since Date", "Current Team"]
+      headers: ["Office",  "Claim ID", "Patient ID", "Patient Name", 'DOS', "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type" , "Est. Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since Date", "Current Team"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -518,7 +518,7 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
           "Claim Type": e.claimType,
-          "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
           "Last Team that Worked on this claim":  e.lastTeam,
           "Last Team's Remarks" : e.lastTeamRemark,
           "Pending Since Date":e.pendingSince,
