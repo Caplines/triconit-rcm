@@ -416,7 +416,7 @@ export class ApplicationServiceService extends BaseService {
   }
 
   fetchClientNamebyUuid(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['allpendency'] + "/" + uuid, callback)
+    this.getDataWithoutRefreshToken({}, this.httpUrl['allpendency'] + "/" + uuid, callback)
   }
 
   getAttachmentFile(uuid: any, callback: any) {

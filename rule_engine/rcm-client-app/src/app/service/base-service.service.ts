@@ -212,6 +212,19 @@ export class BaseService {
 
   }
 
+  getDataWithoutRefreshToken(d: any, url: string, callback: any) {
+        return this.http.get(environment.API_URL + url, d)
+    .subscribe(
+      (data) => {
+        callback((<any>data));
+      },
+      (error) => {
+        // Handle API call error here.
+      }
+    );
+
+  }
+
   getDataFiles(d: any, url: string, callback: any) {
     let headers = new HttpHeaders();
     headers = headers.append('Accept', 'application/octet-stream; charset=utf-8');

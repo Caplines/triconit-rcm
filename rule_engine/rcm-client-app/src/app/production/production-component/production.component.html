@@ -29,7 +29,18 @@
                                                 <th>Client</th>
                                                 <th>Associate Name</th>
                                                 <th>Total Production</th>
-                                                <th>Average Production (Per Day)</th>
+                                                <th>      <div class="dFlex">Average Production (Per Day)
+                                                    <span class="sorting">
+                                                        <a href="javascript:void(0);" class="arrow-up"
+                                                            [ngClass]="{'selected': !isSorted['days']}"
+                                                            (click)="sortData(productionData,'days','asc','string'); isSorted['days'] = false"></a>
+                                                        <a href="javascript:void(0);" class="arrow-down"
+                                                            [ngClass]="{'selected': isSorted['days']}"
+                                                            (click)="sortData(productionData,'days','desc','string');isSorted['days'] = true"></a>
+                                                    </span>
+                                                     </div> 
+                                                   
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>

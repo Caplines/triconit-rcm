@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
 import Utils from '../../util/utils';
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
@@ -9,7 +9,8 @@ import { DownLoadService } from 'src/app/service/download.service';
 @Component({
   selector: 'app-production-component',
   templateUrl: './production.component.html',
-  styleUrls: ['./production.component.css']
+  styleUrls: ['./production.component.css'],
+  encapsulation:ViewEncapsulation.None
 })
 export class ProductionComponent implements OnInit {
 
@@ -23,6 +24,7 @@ export class ProductionComponent implements OnInit {
   isDataAvailable:boolean=false;
   clientName:string='';
   fetchbtnDisable=true;
+  isSorted:any={};
   constructor(private appService: ApplicationServiceService,private title:Title,private downloadService:DownLoadService) { 
      title.setTitle(Utils.defaultTitle + "Production")
     }
@@ -32,7 +34,7 @@ export class ProductionComponent implements OnInit {
     this.clientName = localStorage.getItem("selected_clientName");
   }
 
- save(){
+  save(){
   this.fetchbtnDisable=false;
   this.loader.showLoader=true;
   this.loader.fetch = true;
@@ -59,6 +61,8 @@ export class ProductionComponent implements OnInit {
    });
   } else this.alert.alertMsg = callback.message ? callback.message :'Something went wrong';
     });
+
+    this.sortAvgDays();
     
  }
 
@@ -135,6 +139,16 @@ downloadPdf(){
   })
 }
 }
+
+sortAvgDays(){
+  this.isSorted['days'] =true;
+  this.sortData(this.productionData,'days','desc','string')
+}
+
+sortData(data: any, sortProp: string, order: any, sortType: string) {
+  this.appService.sortData(data, sortProp, order, sortType);
+}
+
 }
 
 

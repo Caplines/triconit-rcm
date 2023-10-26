@@ -15,17 +15,17 @@
                                     <div>
                                         <div class="btn-group btn-group-toggle" data-toggle="buttons">
                                             <label class="btn btn-light" [ngClass]="{'active':tabSwitch.Fresh}">
-                                                <input class="form-check-input" type="radio" name="options" id="option1"
+                                                <input class="form-check-input" [disabled]="loader.listClaimLoader" type="radio" name="options" id="option1"
                                                     (change)="switchTab('Fresh')">Fresh
                                                 Claims
                                             </label>
                                             <label class="btn btn-light" [ngClass]="{'active':tabSwitch.sendBack}">
-                                                <input class="form-check-input" type="radio" name="options" id="option2"
+                                                <input class="form-check-input" type="radio" name="options" [disabled]="loader.listClaimLoader" id="option2"
                                                     (change)="switchTab('sendBack')">Claims Sent back by Other Teams
                                             </label>
                                             <label class="btn btn-light" [ngClass]="{'active':tabSwitch.MyClaims}"
                                                 *ngIf="isRoleLead">
-                                                <input class="form-check-input" type="radio" name="options" id="option3"
+                                                <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader" name="options" id="option3"
                                                     (change)="switchTab('MyClaims')">My Claims
                                             </label>
                                         </div>

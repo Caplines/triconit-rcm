@@ -8,18 +8,18 @@
                             <div class="btn-group-toggle" data-toggle="buttons">
                                 <label class="btn btn-light" style="min-width: 270px;"
                                     [ngClass]="{'active':tabSwitch.withoutDos}">
-                                    <input class="form-check-input" type="radio" name="options" id="option1"
+                                    <input class="form-check-input" [disabled]="showLoader.loader" type="radio" name="options" id="option1"
                                          (change)="switchTab('withoutDos')">Claims Pending to be BIlled -
                                     Assigned to Other Teams
                                 </label>
                                 <label class="btn btn-light" style="min-width: 270px;"
                                     [ngClass]="{'active':tabSwitch.withDos}">
-                                    <input class="form-check-input" type="radio" (change)="switchTab('withDOS')"
+                                    <input class="form-check-input" [disabled]="showLoader.loader" type="radio" (change)="switchTab('withDOS')"
                                         name="options" id="option2">Pendency From Other Teams (DOS)
                                 </label>
                                 <label class="btn btn-light" style="min-width: 270px;"
                                     [ngClass]="{'active':tabSwitch.withDateOfPending}">
-                                    <input class="form-check-input" type="radio" (change)="switchTab('withDOP')"
+                                    <input class="form-check-input" type="radio" [disabled]="showLoader.loader" (change)="switchTab('withDOP')"
                                         name="options" id="option3">Pendency From Other Teams (Date
                                     Pending)
                                 </label>
