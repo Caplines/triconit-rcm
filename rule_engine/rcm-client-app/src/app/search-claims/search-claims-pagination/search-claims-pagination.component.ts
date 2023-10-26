@@ -4,8 +4,7 @@ import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
-import { Title } from '@angular/platform-browser';
-import { DecimalPipe, formatNumber } from '@angular/common';
+import { formatNumber } from '@angular/common';
 import { DownLoadService } from 'src/app/service/download.service';
 @Component({
   selector: 'app-search-claims-pagination',
@@ -58,31 +57,23 @@ export class SearchClaimsPaginationComponent {
     this.currentTeamId = Utils.selectedTeam();
   }
 
-  async fetchOfficeByUuid() {
-    let checkOfficesExist = JSON.parse(<any>localStorage.getItem("officeByUuid"));
-    if(!checkOfficesExist){
-      await this.appService.fetchOfficeByUuid((res: any) => {
-        if (res.status) {
-          res.data =   res.data.map((e: any) => {
-          return {
-            ...e,
-            "officeName": e.name,
-          }
-        })
-        localStorage.setItem("officeByUuid",JSON.stringify(res.data));
-        this.showFilterOptionOfficeName(res.data);
-      }
-    })
-  } else{
-    this.showFilterOptionOfficeName(checkOfficesExist);
-  }
+   fetchOfficeByUuid() {
+    let filteredOffices=[];
+    filteredOffices =  this.searchInputConfig.selectedOffices.map((data:any)=>{return{
+      'name':data.name,
+      'officeName':data.name,
+      'checked':true
+    }});
+
+    filteredOffices = filteredOffices.sort((a:any,b:any)=>a.name.localeCompare(b.name));
+    this.showFilterOptionOfficeName(filteredOffices);
 
   }
 
 
 
   fetchClaims(subType: string) {
-      this.claimDetail = this.searchInputConfig;
+      this.claimDetail = this.searchInputConfig.listOfClaimsData;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
         this.filterOptionClaimType(subType);
@@ -111,10 +102,6 @@ export class SearchClaimsPaginationComponent {
       this.filteredColumnData.ageBracket = [];
     }
     if (subType == 'Fresh') {
-      this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
-      this.isFilterValueExist = true;
-    }
-    if (subType == 'sendBack') {
       this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
       this.isFilterValueExist = true;
     }
@@ -158,23 +145,6 @@ export class SearchClaimsPaginationComponent {
       }, {}));
       this.isFilterValueExist = true;
     }
-    if (subType == 'sendBack') {
-      this.filteredItems.forEach((e: any) => {
-        if (e.claimId.includes("_P")) {
-          this.filteredColumnData.insuranceName.push({ 'checked': true, 'insuranceName': e.primaryInsurance });
-          e['insuranceName'] = e.primaryInsurance;
-        } else if (e.claimId.includes("_S")) {
-          this.filteredColumnData.insuranceName.push({ 'checked': true, 'insuranceName': e.secondaryInsurance });
-          e['insuranceName'] = e.secondaryInsurance;
-        }
-      });
-      this.filteredColumnData.insuranceName = Object.values(this.filteredColumnData.insuranceName.reduce((acc: any, { insuranceName }: any) => {
-        if (!acc[insuranceName])
-          acc[insuranceName] = { checked: true, insuranceName: insuranceName };
-        return acc;
-      }, {}));
-      this.isFilterValueExist = true;
-    }
     this.sortFiltereData(this.filteredColumnData.insuranceName);
     this.isFilterAllSelected.insuranceName = true;
   }
@@ -191,21 +161,6 @@ export class SearchClaimsPaginationComponent {
         } else if (e.claimId.includes("_S") && e.secName) {
             this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.secName });
             e['insuranceType'] = e.secName;
-        }
-      })
-      this.filteredColumnData.insuranceType = Array.from(new Set(this.filteredColumnData.insuranceType.map((a: any) => a.insuranceType)))
-        .map((insuranceType: any) => {
-          return this.filteredColumnData.insuranceType.find((a: any) => a.insuranceType === insuranceType);
-        });
-    }
-    if (subType == 'sendBack') {
-      this.filteredItems.forEach((e: any) => {
-        if (e.claimId.includes("_P") && e.prName) {
-          this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.prName });
-          e['insuranceType'] = e.prName;
-        } else if (e.claimId.includes("_S") && e.secName) {
-          this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.secName });
-          e['insuranceType'] = e.secName;
         }
       })
       this.filteredColumnData.insuranceType = Array.from(new Set(this.filteredColumnData.insuranceType.map((a: any) => a.insuranceType)))

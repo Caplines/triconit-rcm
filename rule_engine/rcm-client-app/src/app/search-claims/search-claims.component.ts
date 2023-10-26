@@ -41,11 +41,14 @@ export class SearchClaimsComponent {
   pageNumber: any;
   activeFilter:number=0;
 
+  selectedOffices:any=[];
+
   constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants,
     private datePipe: DatePipe) {
     title.setTitle(Utils.defaultTitle + "Search Claims");
     this.appService.subscribeOnValueChange('FromMultiSelect', (event: any) => {
       if (event['action'] == 'getSelectClientName') {
+        this.getOfficesFromSelectedClient(event.value);
         this.searchClaimConfig['clientUuid'] = event.value.map(({ checked, clientName, offices, ...newClient }: any) => newClient.clientUuid);   //removing unused propertieds
         this.searchClaimConfig['officeUuid'] = [];
       } else if (event['action'] == 'getSelectedOffices') {
@@ -65,7 +68,6 @@ export class SearchClaimsComponent {
       } else if (event['action'] == 'getSelectedClaimStatus') {
         this.searchClaimConfig['claimStatus'] = event.value.map(({ checked, ...newClaimAge }: any) => newClaimAge.name);//removing unused propertieds
       }
-      console.log(this.searchClaimConfig);
     })
   }
 
@@ -162,5 +164,17 @@ export class SearchClaimsComponent {
           }
       }
   }
+
+  getOfficesFromSelectedClient(offices:any){
+    this.selectedOffices=[];
+    offices.forEach((ele:any)=>{
+        ele.offices.forEach((item:any)=>{
+          this.selectedOffices.push(item);
+        })
+    })
+
+  }
+
+  
 
 }

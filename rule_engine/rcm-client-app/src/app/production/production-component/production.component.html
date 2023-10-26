@@ -33,10 +33,10 @@
                                                     <span class="sorting">
                                                         <a href="javascript:void(0);" class="arrow-up"
                                                             [ngClass]="{'selected': !isSorted['days']}"
-                                                            (click)="sortData(productionData,'days','asc','string'); isSorted['days'] = false"></a>
+                                                            (click)="sortData(productionData,'days','asc','number'); isSorted['days'] = false"></a>
                                                         <a href="javascript:void(0);" class="arrow-down"
                                                             [ngClass]="{'selected': isSorted['days']}"
-                                                            (click)="sortData(productionData,'days','desc','string');isSorted['days'] = true"></a>
+                                                            (click)="sortData(productionData,'days','desc','number');isSorted['days'] = true"></a>
                                                     </span>
                                                      </div> 
                                                    

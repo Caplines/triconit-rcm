@@ -220,24 +220,24 @@ this.sourceType="";
     }
   }
 
-  selectAll(isAllSelected: any) {
+  selectAll(event: any) {
+    let isAllSelected:boolean = event.target.checked;
     if (isAllSelected) {
       this.log.forEach((e: any) => {
-        console.log(e.update)
         if (!e.update) {
           e.update = true;
-          this.hasUpdateClaims.push(e.officeUuid)
+          this.hasUpdateClaims.push(e.officeUuid);
         }
       })
     } else {
       this.log.forEach((e: any) => {
-        console.log(e.update)
         if (e.update) {
           e.update = false;
           this.hasUpdateClaims = [];
         }
       })
     }
+
   }
 
   exportToCsv() {

@@ -108,10 +108,20 @@
                                                 <th colspan="6">Upload Status</th>
                                                 <th colspan="6">Latest Attempt</th>
                                                 <th colspan="6"># of Claims Uploaded</th>
-                                                <th colspan="6">Select Offices &nbsp; <button class="btn btn-danger"
+                                                <th colspan="6"> 
+                                                     <!-- <button class="btn btn-danger"
                                                         style="min-width: 105px;justify-content: center;"
                                                         (click)="selectAll(hasUpdateClaims.length==0 ? true : false)">{{hasUpdateClaims.length==0
-                                                        ? 'Select All' : 'Unselect All'}}</button></th>
+                                                        ? 'Select All' : 'Unselect All'}}</button> -->
+
+                                                        <div class="dFlex nowrap-text unarchiveAll">  
+                                                            <label class="no-css-checkbox-container" for="unarchive" (change)="selectAll($event)">
+                                                                <input type="checkbox" id="unarchive" #unArchiveSelectBox>
+                                                                <div class="checkmark"></div>
+                                                              </label>  &nbsp;<strong> {{hasUpdateClaims.length==0
+                                                                ? 'Select All Offices' : 'Unselect All'}}</strong> 
+                                                        </div>
+                                                    </th>
 
                                             </tr>
                                         </thead>
