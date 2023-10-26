@@ -3300,8 +3300,10 @@ public class ClaimServiceImpl {
 					if (claim.getProviderOnClaim()==null){
 						claim.setProviderOnClaim("");
 					}
-					
-					if (claim.getProviderOnClaim().equals("")) {
+					if (claim.getTreatingProvider()==null) {
+						claim.setTreatingProvider("");
+					}
+					if (claim.getProviderOnClaim().equals("") || claim.getTreatingProvider().equals("")) {
 						
 						//Provider Sheet
 						String treatingProvider="";
