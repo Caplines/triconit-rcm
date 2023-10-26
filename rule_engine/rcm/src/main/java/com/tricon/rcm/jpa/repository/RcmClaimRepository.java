@@ -543,7 +543,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " off.company_id=:companyId  where pending is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_uuid "
 			+ " not in (select cl.claim_uuid ascl from rcm_claims cl inner join rcm_claim_assignment ass on "
 			+ " ass.claim_id=cl.claim_uuid inner join office off on off.uuid=cl.office_id  where  "
-			+ " cl.pending is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and off.company_id=:companyId )")
+			+ " cl.pending is true and  ass.active=1 and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and off.company_id=:companyId )")
 	List<String> getUnAsignedClaims(@Param("companyId") String companyId);
 	
 	
