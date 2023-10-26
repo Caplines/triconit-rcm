@@ -115,10 +115,20 @@ export class BillingClaimsComponent {
         //-O- Means its delete Intentionally
         if (ths.claimRcm.ivfId != null) {
           ths.claimRcm.ivfId = ths.claimRcm.ivfId.replace("-O-", "");
+          if (ths.claimRcm.ivfId == '') {
+            ths.claimRcm.assignmentOfBenefits = 'N/A';
+          }
+        } else {
+          ths.claimRcm.assignmentOfBenefits = 'N/A';
         }
+        if (ths.claimRcm.assignmentOfBenefits != null && ths.claimRcm.assignmentOfBenefits == '')
+          ths.claimRcm.assignmentOfBenefits = "No";
         if (ths.claimRcm.tpId != null) {
           ths.claimRcm.tpId = ths.claimRcm.tpId.replace("-O-", "");
         }
+
+        this.updatedIvfId = ths.claimRcm.ivfId;
+        this.updatedTpId = ths.claimRcm.tpId;
         ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
         ths.fetchOtherTeamRemarks();
         ths.fetchClaimNotes();
@@ -205,11 +215,11 @@ export class BillingClaimsComponent {
     });
 
     if (type === 'latter') {
-     
-          ths.inSave = true;
-          ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
-            ths.inSave = false;
-            this.showAlertPopup(callback);
+
+      ths.inSave = true;
+      ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
+        ths.inSave = false;
+        this.showAlertPopup(callback);
       })
     }
     else if (type === 'submit') {
@@ -905,84 +915,86 @@ export class BillingClaimsComponent {
   }
 
   assignToOtherTeam() {
-        let ths = this;
-        ths.otherErrormsg = "";
-        ths.claimEditModel.assignToOtherTeam = true;
-        ths.claimEditModel.assignToTL = false;
-        ths.claimEditModel.assignTouuid = '';
-        ths.removeErrorDisplay(document.getElementById("selectTeam"));
-        ths.removeErrorDisplay(document.getElementById("assignToComment"));
-        let valid = true;
+    let ths = this;
+    ths.otherErrormsg = "";
+    ths.claimEditModel.assignToOtherTeam = true;
+    ths.claimEditModel.assignToTL = false;
+    ths.claimEditModel.assignTouuid = '';
+    ths.removeErrorDisplay(document.getElementById("selectTeam"));
+    ths.removeErrorDisplay(document.getElementById("assignToComment"));
+    let valid = true;
 
-        let rem: any = document.getElementById("assignToComment");
-        if (rem.value.trim() === '') {
-          ths.addErrorDisplay(document.getElementById("assignToComment"));
-          valid = false;
-        }
-        //debugger;
-        if (ths.claimEditModel.assignToTeam == -1) {
-          ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
-          valid = false;
-        }
+    let rem: any = document.getElementById("assignToComment");
+    if (rem.value.trim() === '') {
+      ths.addErrorDisplay(document.getElementById("assignToComment"));
+      valid = false;
+    }
+    //debugger;
+    if (ths.claimEditModel.assignToTeam == -1) {
+      ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
+      valid = false;
+    }
 
-        if (valid) {
-          //assign
-          ths.inSave = true;
-          ths.closeModal();
-          console.log(ths.claimEditModel);
+    if (valid) {
+      //assign
+      ths.inSave = true;
+      ths.closeModal();
+      console.log(ths.claimEditModel);
 
-          ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
-            ths.inSave = false;
-            ths.showAlertPopup(callback);
-            ths.claimRcm.allowEdit = false;
-            ths.showAlertPopup(callback);
-          });
-        }
+      ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
+        ths.inSave = false;
+        ths.showAlertPopup(callback);
+        ths.claimRcm.allowEdit = false;
+        ths.showAlertPopup(callback);
+      });
+    }
   }
 
   assignToLead() {
-        let ths = this;
-        ths.tlErrormsg = "";
-        this.claimEditModel.assignToTL = true;
-        ths.claimEditModel.assignToOtherTeam = false;
-        ths.claimEditModel.assignToTeam = 0;
-        let valid = true;
+    let ths = this;
+    ths.tlErrormsg = "";
+    this.claimEditModel.assignToTL = true;
+    ths.claimEditModel.assignToOtherTeam = false;
+    ths.claimEditModel.assignToTeam = 0;
+    let valid = true;
 
-        ths.removeErrorDisplay(document.getElementById("selectLeadName"));
-        ths.removeErrorDisplay(document.getElementById("tlRemark"));
-        let rem: any = document.getElementById("tlRemark");
-        if (rem.value.trim() === '') {
-          ths.addErrorDisplay(document.getElementById("tlRemark"));
-          valid = false;
-        }
-        if (ths.claimEditModel.assignTouuid == "") {
-          ths.addErrorDisplay(document.getElementById("selectLeadName"));
-          valid = false;
-        }
-        if (ths.claimRcm.assignedToUuid === ths.claimEditModel.assignTouuid) {
-          valid = false;
-          ths.tlErrormsg = "Claim Already Assigned to Same TL";
+    ths.removeErrorDisplay(document.getElementById("selectLeadName"));
+    ths.removeErrorDisplay(document.getElementById("tlRemark"));
+    let rem: any = document.getElementById("tlRemark");
+    if (rem.value.trim() === '') {
+      ths.addErrorDisplay(document.getElementById("tlRemark"));
+      valid = false;
+    }
+    if (ths.claimEditModel.assignTouuid == "") {
+      ths.addErrorDisplay(document.getElementById("selectLeadName"));
+      valid = false;
+    }
+    if (ths.claimRcm.assignedToUuid === ths.claimEditModel.assignTouuid) {
+      valid = false;
+      ths.tlErrormsg = "Claim Already Assigned to Same TL";
+
+    }
+    if (valid) {
+      //Save Data
+      ths.claimAssignToTeamModel.claimUuid = ths.claimUUid;
+      ths.claimAssignToTeamModel.otherTeamId = -1;
+      ths.claimAssignToTeamModel.remark = rem.value;
+      ths.claimAssignToTeamModel.teamLeadUuid = ths.claimEditModel.assignTouuid;
+      ths.claimAssignToTeamModel.toLead = true;
+      ths.claimService.assignClaimToTL(ths.claimAssignToTeamModel, (res: any) => {
+        if (res.status === 200) {
+          window.location.reload();
 
         }
-        if (valid) {
-          //Save Data
-          ths.claimAssignToTeamModel.claimUuid = ths.claimUUid;
-          ths.claimAssignToTeamModel.otherTeamId = -1;
-          ths.claimAssignToTeamModel.remark = rem.value;
-          ths.claimAssignToTeamModel.teamLeadUuid = ths.claimEditModel.assignTouuid;
-          ths.claimAssignToTeamModel.toLead = true;
-          ths.claimService.assignClaimToTL(ths.claimAssignToTeamModel, (res: any) => {
-            if (res.status === 200) {
-              window.location.reload();
-
-            }
-          })
-        }
+      })
+    }
   }
 
   openUpdateIvPopup(event: any) {
     event.stopPropagation();
     let popup: any = document.getElementById("ivUpdate");
+    this.updatedIvfId = this.claimRcm.ivfId;
+    this.updatedTpId = this.claimRcm.tpId;
     popup.style.display = 'block';
   }
 
@@ -1014,6 +1026,7 @@ export class BillingClaimsComponent {
 
     this.appService.updateIvId(params, (res: any) => {
       if (res.status) {
+        //debugger;
         if (res.data.success) {
           if (res.data.ivfId != null) this.claimRcm.ivfId = res.data.ivfId;
           if (res.data.ivDos != null) this.claimRcm.ivDos = res.data.ivDos;

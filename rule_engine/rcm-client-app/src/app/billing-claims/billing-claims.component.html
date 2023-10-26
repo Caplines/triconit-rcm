@@ -134,20 +134,14 @@
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">SSN </label>
-                                        <div>{{claimRcm.ssn==null ? "N/A":"claimRcm.ssn"}}</div>
+                                        <div>{{claimRcm.ssn==null ? "N/A":claimRcm.ssn}}</div>
                                     </div>
                                     <div class="custom-row">
                                         <label for="" class="">Assignment of <br />Benefits </label>
-                                        <ng-container
-                                            *ngIf="!(claimRcm.ivfId!=null && claimRcm.ivfId!='') || claimRcm.ivfId==null">
-                                            <div>N/A</div>
-                                        </ng-container>
-
-                                        <ng-container *ngIf="(claimRcm.ivfId!=null && claimRcm.ivfId!='')">
+                                        <ng-container>
                                             <div>{{claimRcm.assignmentOfBenefits==null ?
                                                 "No":claimRcm.assignmentOfBenefits}}</div>
                                         </ng-container>
-
 
                                     </div>
 
@@ -206,6 +200,7 @@
                                             style="cursor: pointer;" (click)="openUpdateIvPopup($event)">Update IV ID /
                                             TX Plan ID
                                             ?</span></a>
+                                    <!--
                                     <a data-toggle="collapse" aria-expanded="false"><span class="passedNum"
                                             *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons && (claimRcm.ivfId!=null && claimRcm.ivfId!='')"
                                             style="cursor: pointer;" (click)="openDeleteIvTPopup($event,'IV')">Remove IV
@@ -215,6 +210,7 @@
                                             *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons && (claimRcm.tpId!=null && claimRcm.tpId!='')"
                                             style="cursor: pointer;" (click)="openDeleteIvTPopup($event,'TP')">TX Plan
                                             ID ?</span></a>
+                                            -->
                                     <div class="down-icon" (click)="showHide(1)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
@@ -1334,7 +1330,7 @@
                             </div>
                             <div class="plan-id-box">
                                 <label>&nbsp;</label>
-                                <button class="btn btn-success" [disabled]="!updatedIvfId  && !updatedTpId "
+                                <button class="btn btn-success"
                                     (click)="updateIV(claimUUid,updatedIvfId,updatedTpId)">Update Values</button>
                             </div>
                         </div>

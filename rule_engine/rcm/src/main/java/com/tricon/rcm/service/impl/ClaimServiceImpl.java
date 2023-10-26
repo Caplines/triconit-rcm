@@ -1823,10 +1823,15 @@ public class ClaimServiceImpl {
 				det.setSsn(ivfDto.getSsn());
 			}
 		}else {
-			det.setIvDos(claim.getIvDos());
-			det.setSsn(claim.getSsn()); 
-			det.setIvfId(claim.getIvfId());
 			det.setSuccess(true);
+			dto.setRemoveIv(true);
+			removeIvIdAndTpId(dto,partialHeader);
+			 claim.setIvfId("-O-");
+			 det.setIvfId("");
+			 claim.setIvDos("");
+			 det.setIvDos("");
+			 claim.setSsn("");
+			 det.setSsn("");
 		}
 		//Fetch Tpid Date based on New Tpid
 		if (dto.getTpId() !=null && !dto.getTpId().equals("")) {
@@ -1853,9 +1858,13 @@ public class ClaimServiceImpl {
 			}
 		}
 	   }else {
-		   det.setSuccess(true); 
-		   det.setTpDos(claim.getTpDos());
-		   det.setTpId(claim.getTpId());
+		   det.setSuccess(true);
+		   dto.setRemoveTp(true);
+		   claim.setTpDos("");
+    	   claim.setTpId("-O-");
+    	   det.setTpDos(claim.getTpDos());
+		   det.setTpId("");
+		   rcmTPDetailRepo.deleteByClaimId(claim.getClaimUuid());
 		   
 	   }
 		if (dto.getTpId()!=null && !dto.getTpId().equals("")) {
