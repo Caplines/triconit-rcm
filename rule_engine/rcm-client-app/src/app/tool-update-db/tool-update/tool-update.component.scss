@@ -80,11 +80,13 @@
   border-top: 0px !important;
   width: 20vw;
 }
-
+.gs-link{
+  font-weight: 600;
+  color: #007bff;
+}
 .gs-link:hover{
   text-decoration: underline !important;
   cursor: pointer !important;
-  color: #0054cb !important;
 }
 
 .gs-btn{
