@@ -514,4 +514,8 @@ export class ApplicationServiceService extends BaseService {
   seacrhClaimsPdfDownload(params: any, pdfcsv: string, callback: any) {
     this.postDataPdf(params, this.httpUrl['search-claims-pdf'] + "/" + pdfcsv, callback);
   }
+
+  sortByAlphabet(data:any,sortBy:string){
+    return data.sort((a:any,b:any)=>a[sortBy].localeCompare(b[sortBy]))
+  }
 }

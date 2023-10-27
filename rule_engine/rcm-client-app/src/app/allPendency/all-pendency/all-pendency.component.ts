@@ -76,6 +76,7 @@ export class AllPendencyComponent {
       this.filterClientName();
       this.setTopOnTotalRow();
 
+
       return;
     }
    else{
@@ -240,6 +241,13 @@ export class AllPendencyComponent {
         }
       })
     })
+    console.log(this.pendencyData);
+    
+    this.sortOfficesOnly(this.pendencyData);
+  }
+
+  sortOfficesOnly(data:any){
+      this.pendencyData =  data.sort((a:any,b:any)=>a.officeName.localeCompare(b.officeName))
     console.log(this.pendencyData);
   }
 

@@ -131,8 +131,7 @@ export class UserStatusComponent implements OnInit {
   getcompanyData() {
     this.appService.fetchCompanyNameData((callback: any) => {
       if (callback.status) {
-        this.companyData = callback.data;
-        console.log(callback)
+        this.companyData = this.appService.sortByAlphabet(callback.data,'name');
       }
     })
   }

@@ -70,7 +70,7 @@ export class RegisterNewUserComponent implements OnInit {
     this.appService.fetchTeamsNameData((callback:any)=>{
       if(callback.status){
         this.showLoader = false;
-        this.teamData = callback.data;
+        this.teamData = this.sortByAlphabet(callback.data,'teamName');
       }
     })
   }
@@ -81,6 +81,7 @@ export class RegisterNewUserComponent implements OnInit {
         this.activeUserClients = this.appService.getActiveClients();
         // this.companyData = [...this.activeUserClients,...callback.data];
         this.companyData = callback.data.filter((objB:any) => this.activeUserClients.some((objA:any) => objA.id === objB.uuid));
+        this.companyData = this.sortByAlphabet(this.companyData,'name');
         console.log(this.companyData);
         
       }
@@ -90,7 +91,7 @@ export class RegisterNewUserComponent implements OnInit {
   getRoles(){
       this.appService.fetchRoles((callback:any)=>{
         if(callback.status){
-          this.userRoleByTeam = callback.data;
+          this.userRoleByTeam = this.sortByAlphabet(callback.data,'roleName')
       }
     })
   }
@@ -143,6 +144,11 @@ export class RegisterNewUserComponent implements OnInit {
     setTimeout(() => {this.alert.showAlertPopup=false;}, 2500);
     scrollTo(0,0);
   }
+
+  sortByAlphabet(data:any,sortBy:string){
+    return this.appService.sortByAlphabet(data,sortBy);
+  }
+
 }
 
   

@@ -38,7 +38,8 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
         this.searchClaimsConfig.offices=[];      
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined
         && this.inputConfig.subType == 'office') {
-          this.inputConfig.officeData = JSON.parse(JSON.stringify(event.value))
+          this.inputConfig.officeData = JSON.parse(JSON.stringify(event.value));
+          this.inputConfig.officeData  = this._service.sortByAlphabet(this.inputConfig.officeData,'name');
         } 
       }
       else if(event.action === 'selectDefaultAgeCategory'){
@@ -81,7 +82,7 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
   
   }
 
-getSelectedValue(status: Boolean, value: any, type: String) {
+getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:string) {
   if (type === 'client') {
     if (status) {
       this.clientCheckedList.push(value);
@@ -190,6 +191,17 @@ getSelectedValue(status: Boolean, value: any, type: String) {
       });
     }
   }
+
+  else if(type === 'selectAll'){
+    this.filteredOptions[filterProperty].forEach((item:any)=>{
+      if(!item.checked){
+        item.checked=true;
+        this.searchClaimsConfig.insuranceNames.push(item);
+        this.searchText= '';
+      } 
+    })
+  }
+
   else if (type === 'insuranceTypes'){
     if (status) {
       this.searchClaimsConfig.insuranceTypes.push(value);
@@ -346,8 +358,20 @@ getSelectedValue(status: Boolean, value: any, type: String) {
 
    
     filterOptions(filterProperty:any) {
-      this.filteredOptions[filterProperty] = this.inputConfig[filterProperty].filter((option:any) =>
-        option.name.toLowerCase().includes(this.searchText.toLowerCase())
-      );
+      this.inputConfig[filterProperty] = this._service.sortByAlphabet(this.inputConfig[filterProperty], 'name');
+      this.filteredOptions[filterProperty] = this.inputConfig[filterProperty].filter((option: any, idx: any) => {
+        if (this.searchClaimsConfig[filterProperty].length > 0) {
+          return option.name.toLowerCase().includes(this.searchText.toLowerCase()) && !this.searchClaimsConfig[filterProperty].some((item: any) => item.name.toLowerCase() == option.name.toLowerCase())
+        } else {
+          return option.name.toLowerCase().includes(this.searchText.toLowerCase());
+        }
+      }
+      )
+
     }
+
+    clearAll(value:string){
+          this.searchClaimsConfig[value] = [];
+    }
+    
 }
