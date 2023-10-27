@@ -143,7 +143,7 @@ downloadPdf(){
 
 sortAvgDays(){
   this.isSorted['days'] =true;
-    this.sortData(this.productionData,'days','desc','number');
+    this.sortData(this.productionData,'days','asc','number');
 }
 
 sortData(data: any, sortProp: string, order: any, sortType: string) {
