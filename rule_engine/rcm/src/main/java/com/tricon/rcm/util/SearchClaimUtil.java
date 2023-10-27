@@ -23,7 +23,7 @@ public class SearchClaimUtil {
 
 	private static final String countColumn = "select count(*) ";
 	
-	private static final String orderBy = " order by claims.dos asc ";
+	private static final String orderBy = " order by off.name asc ";
 
 	private static final String fromClause = "from rcm_claims claims "
 			+ "left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
