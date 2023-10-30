@@ -179,6 +179,7 @@ public class SearchClaimServiceImpl {
 				searchResponseDto.setPrimTotal((float) data[14]);
 				searchResponseDto.setSecTotal((float) data[15]);
 				searchResponseDto.setPrimeSecSubmittedTotal((Float) data[16]);
+				searchResponseDto.setClientName((String) data[17]);
 				searchResponseList.add(searchResponseDto);
 			}
 			paginationDto.setData(searchResponseList);

@@ -90,7 +90,7 @@
                             </div>-->
                             <div class="form-row collapse" style="border-radius: 10px 10px 0px 0px;"
                                 [ngClass]="{'show':expandCollapse.expandTeamRemarks}" id="teamRemarks">
-                                <a *ngIf="issueClaimsCount?.issueCount > 0 || issueClaimsCount?.archiveCount > 0" [routerLink]="['issue-claims']" target="_blank" class="btn btn-danger" title="Issue Claim"><img src="../../assets/img/claim-issue.png"/> </a>
+                                <a *ngIf="issueClaimsCount?.issueCount > 0 || issueClaimsCount?.archiveCount > 0" [routerLink]="['issue-claims']" target="_blank" class="btn btn-danger"><img src="../../assets/img/claim-issue.png"/>Upload Errors </a>
                                 <div class="update-button" style="float: right; margin-right: 12px;"><a
                                         href="javascript:void(0);" [ngClass]="{'disabled':hasUpdateClaims.length==0 || !updateClaimbtnDisable}"
                                         class="btn btn-success" (click)="pullFreshClaims()"><span

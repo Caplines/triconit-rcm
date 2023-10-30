@@ -24,4 +24,5 @@ public class SearchClaimResponseDto {
 	private float primTotal;
 	private float secTotal;
 	private Float primeSecSubmittedTotal;
+	private String clientName;
 }

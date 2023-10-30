@@ -19,11 +19,11 @@ public class SearchClaimUtil {
 			+ ",case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge"
 			+ ",timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount"
 			+ ",claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal"
-			+ ",prime_sec_submitted_total primeSecSubmittedTotal ";
+			+ ",prime_sec_submitted_total primeSecSubmittedTotal,comp.name as clientName ";
 
 	private static final String countColumn = "select count(*) ";
 	
-	private static final String orderBy = " order by off.name asc ";
+	private static final String orderBy = " order by comp.name,off.name asc ";
 
 	private static final String fromClause = "from rcm_claims claims "
 			+ "left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "

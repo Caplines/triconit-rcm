@@ -316,7 +316,7 @@ export class OfficeAssignmentComponent implements OnInit {
       this.calcRemLiteReject(this.filteredItems);
       this.calcCountAndRemLiteReject(this.filteredItems);
       this.addTotalCountAndRemLiterejectField(this.filteredItems);
-      this.sortDosDesc();
+      //this.sortDosDesc();
 
   }
   
@@ -383,8 +383,8 @@ selectAll(event: any, filterProperty: any) {
   }
 }
 
-sortDosDesc(){
-  this.isSorted['opdosd'] = true;
-  this.sortData(this.filteredItems,'opdosd','desc','number');
-}
+// sortDosDesc(){
+//   this.isSorted['opdosd'] = true;
+//   this.sortData(this.filteredItems,'opdosd','desc','number');
+// }
 }

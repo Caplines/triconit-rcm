@@ -33,7 +33,7 @@
                                     <div class="d-flex" style="align-items: center;">
                                     <h6 style="color: black; margin-bottom: 0px;">Upload Errors  
                                         <span class="number-of-claims" style="pointer-events:none;" *ngIf="showIssueClaim">Number of Claims Not Uploaded: {{issueClaimConfig.issueCount}}</span> 
-                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="!showIssueClaim">Number of Archive Claims: {{archiveClaimConfig.archiveCount}}</span>
+                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="!showIssueClaim">Number of Archived Claims: {{archiveClaimConfig.archiveCount}}</span>
                                          
                                     </h6>
                                     <div *ngIf="((loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)) && archiveClaimConfig.archiveCount > 0" class="dFlex nowrap-text unarchiveAll">  
