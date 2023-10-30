@@ -243,7 +243,7 @@ export class AllPendencyComponent {
     })
     console.log(this.pendencyData);
     
-    this.sortOfficesOnly(this.pendencyData);
+    // this.sortOfficesOnly(this.pendencyData);
   }
 
   sortOfficesOnly(data:any){

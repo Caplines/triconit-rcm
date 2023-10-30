@@ -526,10 +526,11 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
 
     }
 
-    clearAll(value:string){
-          this.searchClaimsConfig[value] = [];
-          this.filteredOptions[value].forEach((e:any)=>e.checked=false);
-
+    clearAll(value:string,actions:string){
+       this.searchClaimsConfig[value].forEach((e:any)=>e.checked=false);
+       this.searchClaimsConfig[value]= [];
+       this.filteredOptions[value].forEach((e:any)=>e.checked=false);
+       this._service.emitOnValueChange({action:actions,value:this.searchClaimsConfig.insuranceNames});
     }
 
     toggleSelectedItem(field:any){
