@@ -16,9 +16,6 @@
     float:right;
 }
 
-.insurance-name-dropbox{
-    width: 350px !important;
-}
 .drop-show {
     padding: 4px;
     width: 300px;
@@ -70,4 +67,11 @@
     opacity: 0.4;
     pointer-events: none;
 
+}
+
+.hide-item{
+    height: 33.5px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }

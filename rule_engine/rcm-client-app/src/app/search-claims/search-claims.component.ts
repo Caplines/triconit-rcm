@@ -16,7 +16,7 @@ export class SearchClaimsComponent {
   loader: any = {};
   clients: any = [];
   offices: any = [];
-  teamData: any = this.constants.teamData;
+  teamData: any = [];
   searchParamModel: SearchParamModel;
   searchClaimConfig: any = {
     "clientUuid": [],
@@ -74,6 +74,7 @@ export class SearchClaimsComponent {
   ngOnInit(): void {
     this.getcompanyData();
     this.getSerachParams();
+    this.sortTeamData();
     // this.setDefaultDate();
   }
 
@@ -173,6 +174,10 @@ export class SearchClaimsComponent {
         })
     })
 
+  }
+
+  sortTeamData(){
+    this.teamData = this.appService.sortByAlphabet(this.constants.teamData,'teamName');
   }
 
   

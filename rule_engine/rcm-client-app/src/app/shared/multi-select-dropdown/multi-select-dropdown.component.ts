@@ -28,6 +28,8 @@ export class MultiSelectDropdownComponent {
   searchClaimsConfig:any={'clients':[],'offices':[],"teams":[],'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[],'ageCategory':[],'claimStatus':[]};
   searchText:any='';
   filteredOptions:any={'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[]};
+  showSelectedData:any={};
+  isAllSelected:any={'clients':false,'offices':false,'ageCategory':false,'claimStatus':false,'teams':false};
 
 
 constructor(private _service:ApplicationServiceService,private constants:AppConstants) {
@@ -40,18 +42,19 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
         && this.inputConfig.subType == 'office') {
           this.inputConfig.officeData = JSON.parse(JSON.stringify(event.value));
           this.inputConfig.officeData  = this._service.sortByAlphabet(this.inputConfig.officeData,'name');
+          this.isAllSelected['offices'] = false;
         } 
       }
       else if(event.action === 'selectDefaultAgeCategory'){
             if (this.inputConfig != undefined && this.inputConfig.subType != undefined
               && this.inputConfig.subType == 'ageCategory') {
-                this.getSelectedValue(event.value.checked,event.value,'searchClaimAge');
+                this.getSelectedValue(event.value.checked,event.value,'searchClaimAge','ageCategory');
               } 
       }
       else if(event.action === 'selectDefaultClaimStatus'){
             if (this.inputConfig != undefined && this.inputConfig.subType != undefined
               && this.inputConfig.subType == 'claimStatus') {
-                this.getSelectedValue(event.value.checked,event.value,'searchClaimStatus');
+                this.getSelectedValue(event.value.checked,event.value,'searchClaimStatus','claimStatus');
               } 
       }
       else return;
@@ -129,6 +132,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
   
     this.shareCheckedlist('team');
   }
+
   else if (type === 'userSettingTeam') {
     if (status) {
       this.teamCheckedList.push(value);
@@ -149,20 +153,29 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     }
     this.shareCheckedlist('team');
   }
-  else if (type === 'searchClaimClient'){
+  else if (type === 'searchClaimClient') {
     if (status) {
       this.searchClaimsConfig.clients.push(value);
-      this._service.emitOnValueChange({action:'getSelectClientName',value:this.searchClaimsConfig.clients});
+      this._service.emitOnValueChange({ action: 'getSelectClientName', value: this.searchClaimsConfig.clients });
     } else {
       this.searchClaimsConfig.clients.forEach((e: any, idx: any) => {
         if (e.clientUuid == value.clientUuid) {
           this.searchClaimsConfig.clients.splice(idx, 1);
-          this._service.emitOnValueChange({action:'getSelectClientName',value:this.searchClaimsConfig.clients});
+          this._service.emitOnValueChange({ action: 'getSelectClientName', value: this.searchClaimsConfig.clients });
         }
       });
-      
+
     }
-    this.addOfficessCrossClient();
+    console.log(45);
+
+    if (this.searchClaimsConfig.clients.length == this.inputConfig.clientData.length) {
+      this.isAllSelected[filterProperty] = true;
+    } else {
+      this.isAllSelected[filterProperty] = false;
+    }
+    setTimeout(() => {
+      this.addOfficessCrossClient();
+    }, 0);
   }
   else if (type === 'searchClaimOffices'){
     if (status) {
@@ -176,6 +189,14 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
         }
       });
       
+    }
+
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.officeData.length) {
+      this.isAllSelected[filterProperty] = true;
+      this._service.emitOnValueChange({ action: 'getSelectedOffices', value: this.searchClaimsConfig[filterProperty] });
+    } else {
+      this.isAllSelected[filterProperty] = false;
+      this._service.emitOnValueChange({ action: 'getSelectedOffices', value: this.searchClaimsConfig[filterProperty] });
     }
   }
   else if (type === 'insuranceNames'){
@@ -196,10 +217,55 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     this.filteredOptions[filterProperty].forEach((item:any)=>{
       if(!item.checked){
         item.checked=true;
-        this.searchClaimsConfig.insuranceNames.push(item);
+        this.searchClaimsConfig[filterProperty].push(item);
         this.searchText= '';
       } 
     })
+  }
+
+  else if (type === 'selectAllClient') {
+    if (status) {
+      this.inputConfig.clientData.forEach((item: any) => {
+        if (!item.checked) {
+          item.checked = true;
+          this.searchClaimsConfig[filterProperty].push(item);
+        }
+      })
+    } else {
+      this.inputConfig.clientData.forEach((item: any) => item.checked = false)
+      this.searchClaimsConfig[filterProperty] = [];
+    }
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.clientData.length) {
+      this.isAllSelected[filterProperty] = true;
+      this._service.emitOnValueChange({ action: 'getSelectClientName', value: this.searchClaimsConfig.clients });
+    } else {
+      this.isAllSelected[filterProperty] = false;
+      this._service.emitOnValueChange({ action: 'getSelectClientName', value: this.searchClaimsConfig.clients });
+    }
+    setTimeout(() => {
+      this.addOfficessCrossClient();
+    }, 0);
+  }
+
+  else if (type === 'selectAllOffice') {
+    if (status) {
+      this.inputConfig.officeData.forEach((item: any) => {
+        if (!item.checked) {
+          item.checked = true;
+          this.searchClaimsConfig[filterProperty].push(item);
+        }
+      })
+    } else {
+      this.inputConfig.officeData.forEach((item: any) => item.checked = false)
+      this.searchClaimsConfig[filterProperty] = [];
+    }
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.officeData.length) {
+      this.isAllSelected[filterProperty] = true;
+      this._service.emitOnValueChange({ action: 'getSelectedOffices', value: this.searchClaimsConfig[filterProperty] });
+    } else {
+      this.isAllSelected[filterProperty] = false;
+      this._service.emitOnValueChange({ action: 'getSelectedOffices', value: this.searchClaimsConfig[filterProperty] });
+    }
   }
 
   else if (type === 'insuranceTypes'){
@@ -257,11 +323,41 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
       });
       
     }
+
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.teamData.length) {
+      this.isAllSelected[filterProperty] = true;
+      this._service.emitOnValueChange({ action: 'getSelectedTeams', value: this.searchClaimsConfig[filterProperty] });
+    } else {
+      this.isAllSelected[filterProperty] = false;
+      this._service.emitOnValueChange({ action: 'getSelectedTeams', value: this.searchClaimsConfig[filterProperty] });
+    }
     
   }
+
+  else if (type === 'selectAllTeams') {
+    if (status) {
+      this.inputConfig.teamData.forEach((item: any) => {
+        if (!item.checked) {
+          item.checked = true;
+          this.searchClaimsConfig[filterProperty].push(item);
+        }
+      })
+    } else {
+      this.inputConfig.teamData.forEach((item: any) => item.checked = false)
+      this.searchClaimsConfig[filterProperty] = [];
+    }
+
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.teamData.length) {
+      this.isAllSelected[filterProperty] = true;
+      this._service.emitOnValueChange({ action: 'getSelectedTeams', value: this.searchClaimsConfig[filterProperty] });
+    } else {
+      this.isAllSelected[filterProperty] = false;
+      this._service.emitOnValueChange({ action: 'getSelectedTeams', value: this.searchClaimsConfig[filterProperty] });
+    }
+  }
+
   else if (type === 'searchClaimAge'){
     if (status) {
-
       let isExist = this.searchClaimsConfig.ageCategory.some((ele:any)=>ele.name == value.name && ele.checked == value.checked);
           if(!isExist){
             this.searchClaimsConfig.ageCategory.push(value)
@@ -274,10 +370,40 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
           this._service.emitOnValueChange({action:'getSelectedAge',value:this.searchClaimsConfig.ageCategory});
         }
       });
-      
+    }
+
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig[filterProperty].length) {
+      this.isAllSelected[filterProperty] = true;
+      this._service.emitOnValueChange({ action: 'getSelectedAge', value: this.searchClaimsConfig[filterProperty] });
+    } else {
+      this.isAllSelected[filterProperty] = false;
+      this._service.emitOnValueChange({ action: 'getSelectedAge', value: this.searchClaimsConfig[filterProperty] });
     }
     
   }
+
+  else if (type === 'selectAllAge') {
+    if (status) {
+      this.inputConfig[filterProperty].forEach((item: any) => {
+        if (!item.checked) {
+          item.checked = true;
+          this.searchClaimsConfig[filterProperty].push(item);
+        }
+      })
+    } else {
+      this.inputConfig[filterProperty].forEach((item: any) => item.checked = false)
+      this.searchClaimsConfig[filterProperty] = [];
+    }
+
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig[filterProperty].length) {
+      this.isAllSelected[filterProperty] = true;
+      this._service.emitOnValueChange({ action: 'getSelectedAge', value: this.searchClaimsConfig[filterProperty] });
+    } else {
+      this.isAllSelected[filterProperty] = false;
+      this._service.emitOnValueChange({ action: 'getSelectedAge', value: this.searchClaimsConfig[filterProperty] });
+    }
+  }
+
   else if (type === 'searchClaimStatus'){
     if (status) {
       let isExist = this.searchClaimsConfig.claimStatus.some((ele:any)=>ele.name.toUpperCase() == value.name.toUpperCase() && ele.checked == value.checked);
@@ -292,10 +418,40 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
           this._service.emitOnValueChange({action:'getSelectedClaimStatus',value:this.searchClaimsConfig.claimStatus});
         }
       });
-      
+    }
+
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig[filterProperty].length) {
+      this.isAllSelected[filterProperty] = true;
+      this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: this.searchClaimsConfig[filterProperty] });
+    } else {
+      this.isAllSelected[filterProperty] = false;
+      this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: this.searchClaimsConfig[filterProperty] });
     }
     
   }
+
+  else if (type === 'selectAllClaimStatus') {
+    if (status) {
+      this.inputConfig[filterProperty].forEach((item: any) => {
+        if (!item.checked) {
+          item.checked = true;
+          this.searchClaimsConfig[filterProperty].push(item);
+        }
+      })
+    } else {
+      this.inputConfig[filterProperty].forEach((item: any) => item.checked = false)
+      this.searchClaimsConfig[filterProperty] = [];
+    }
+
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig[filterProperty].length) {
+      this.isAllSelected[filterProperty] = true;
+      this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: this.searchClaimsConfig[filterProperty] });
+    } else {
+      this.isAllSelected[filterProperty] = false;
+      this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: this.searchClaimsConfig[filterProperty] });
+    }
+  }
+
 }
   shareCheckedlist(action: any) {
     this.shareCheckedList.emit({ 'action': action, value: action == 'team' ? this.teamCheckedList : this.clientCheckedList });
@@ -372,6 +528,16 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
 
     clearAll(value:string){
           this.searchClaimsConfig[value] = [];
+          this.filteredOptions[value].forEach((e:any)=>e.checked=false);
+
+    }
+
+    toggleSelectedItem(field:any){
+      if(field in this.showSelectedData){
+        this.showSelectedData[field] = !this.showSelectedData[field];
+      } else{
+        this.showSelectedData[field] = true;
+      }
     }
     
 }

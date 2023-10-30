@@ -27,6 +27,49 @@
                                             [ngClass]="{'addLast':isLastTeam,'fetchFresh' : tabSwitch.Fresh, 'fetchSendBack' : tabSwitch.sendBack, 'fetchMyClaims' : tabSwitch.MyClaims}" id="table" *ngIf="claimDetail">
                                             <thead>
                                                 <tr>
+                                                    <th style="z-index: 10;">
+                                                        <div class="dFlex">
+                                                            Clients
+                                                             <span class="sorting">
+                                                                <a href="javascript:void(0);" class="arrow-up"
+                                                                    [ngClass]="{'selected': !isSorted['clientName']}"
+                                                                    (click)="sortData(filteredItems,'clientName','asc','string'); isSorted['clientName'] = false"></a>
+                                                                <a href="javascript:void(0);" class="arrow-down"
+                                                                    [ngClass]="{'selected': isSorted['clientName']}"
+                                                                    (click)="sortData(filteredItems,'clientName','desc','string');isSorted['clientName'] = true"></a>
+                                                            </span>
+                                                            <div class="dropdown">
+                                                                <img  (click)="showHideFilteredDropdown('clientName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                    *ngIf="showFilteredDropdown.clientName">
+                                                                    <div class="clearClose">
+                                                                        <label class="mx-1">
+                                                                            <input type="checkbox"
+                                                                                [checked]="isFilterAllSelected.clientName"
+                                                                                value="selectAll"
+                                                                                (change)="selectAll($event,'clientName')">
+                                                                            {{isFilterAllSelected.clientName ? 'Clear All':'Select All'}}</label>
+                                                                        <button
+                                                                            (click)="showFilteredDropdown.clientName=false;"
+                                                                            type="button" class="close"
+                                                                            data-dismiss="modal"
+                                                                            aria-label="Close"><span>&times;</span></button>
+                                                                </div>
+                                                                    <!-- <ng-container
+                                                                        *ngFor="let data of filteredClientName">
+                                                                        <label class="mx-1">
+                                                                            <input type="checkbox" checked="true"
+                                                                                [(ngModel)]="data.checked"
+                                                                                value="{{data.clientName}}"
+                                                                                (change)="filterClientName($event,'clientName')">
+                                                                            {{data.clientName}}
+                                                                        </label>
+                                                                    </ng-container> -->
+                                                                </div>
+                                                            </div> <span class="sorting">
+                                                            </span>
+                                                        </div>
+                                                    </th>
                                                     <th>
                                                         <div class="dFlex">
                                                             Office <div class="dropdown">
@@ -342,6 +385,7 @@
                                                                     class="loader-data "></span> </td>
                                                         </tr>
                                                         <tr>
+                                                            <td>{{det.clientName}}</td>
                                                             <td>{{det.officeName}}</td>
                                                             <td class="noWrape"><a
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
