@@ -394,7 +394,7 @@
                                                                     [routerLink]="['/billing-claims/', det.uuid]"
                                                                     target="_blank">{{det.patientId}}</a></td>                                                   
                                                             <td><a [ngClass]="{'changeColor' : det.colorChange}" [routerLink]="['/billing-claims/', det.uuid]"
-                                                                    target="_blank">{{det.patientName}}</a></td>
+                                                                    target="_blank">{{det.patientName | titlecase}}</a></td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
