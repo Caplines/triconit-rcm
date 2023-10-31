@@ -109,7 +109,7 @@
             </span>
             <i class="fa fa-angle-down"></i>
         </button>
-        <div class="drop-show no-css-search-claim" *ngIf="showDropDown">
+        <div class="drop-show search-claim-dropdown" *ngIf="showDropDown">
             <label>
                 <input type="checkbox" (change)="getSelectedValue(!isAllSelected['ageCategory'],'','selectAllAge','ageCategory')" [checked]="isAllSelected['ageCategory']">
                 <span>{{inputConfig.ageCategory.length == searchClaimsConfig.ageCategory.length ? 'Clear All' : 'Select All'}}</span>
@@ -134,7 +134,7 @@
             </span>
             <i class="fa fa-angle-down"></i>
         </button>
-        <div class="drop-show no-css-search-claim" *ngIf="showDropDown">
+        <div class="drop-show search-claim-dropdown" *ngIf="showDropDown">
             <label>
                 <input type="checkbox" (change)="getSelectedValue(!isAllSelected['claimStatus'],'','selectAllClaimStatus','claimStatus')" [checked]="isAllSelected['claimStatus']">
                 <span>{{inputConfig.claimStatus.length == searchClaimsConfig.claimStatus.length ? 'Clear All' : 'Select All'}}</span>

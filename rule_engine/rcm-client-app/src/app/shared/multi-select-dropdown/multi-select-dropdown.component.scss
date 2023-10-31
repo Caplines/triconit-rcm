@@ -70,9 +70,11 @@
 }
 
 .hide-item{
+    height: 21px;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    margin-right: 10px;
 }
 
 .filter-box{
@@ -87,4 +89,10 @@
         font-weight: 600;
         cursor: pointer;
     }
+}
+
+.search-claim-dropdown{
+    height: auto!important;
+    width: auto;
+    min-width: 179px;
 }
