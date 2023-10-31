@@ -108,6 +108,7 @@ version="1.0" >
                           <td colspan="14" class="tableHeading">Search_claims (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
+                         <td>Client</td>
                          <td>Office</td>
                          <td>Claim ID</td>
                          <td>Patient ID</td>
@@ -125,6 +126,7 @@ version="1.0" >
 
                      <tr class="whiteBg">   
 
+                         <td><xsl:value-of select="clientName"/></td>
                          <td><xsl:value-of select="officeName"/></td>
                           <td><xsl:value-of select="newClaimId"/></td>
                          <td><xsl:value-of select="patientId"/></td>

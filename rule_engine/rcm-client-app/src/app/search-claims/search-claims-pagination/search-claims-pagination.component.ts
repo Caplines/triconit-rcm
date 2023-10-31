@@ -487,7 +487,7 @@ export class SearchClaimsPaginationComponent {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Claim Id", "Patient ID","Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type","Insurance Name", "Insurance Type", "Est. Amount"]
+      headers: ["Clients","Office", "Claim Id", "Patient ID","Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type","Insurance Name", "Insurance Type", "Est. Amount"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -530,6 +530,7 @@ export class SearchClaimsPaginationComponent {
 
       excelData = excelData.map((e: any) => {
         return {
+          "Clients":e.clientName,
           "Office Name": e.officeName,
           "Claim Id":e.newClaimId,
           "Patient ID": e.patientId,

@@ -232,11 +232,7 @@
 .form-check-inline-radio span label {
     margin-bottom: 0px;
 }
-.login-radio-box .font-weight-bolder{ 
-    width: 140px;
-    text-align: left;
-    padding-left: 42px;
-}
+
 .login-radio-box .form-check-inline-radio {
     width: 227px;
     text-align: left;
@@ -417,4 +413,12 @@
         border-left: 5px solid transparent;
         border-right: 5px solid transparent;
         z-index: -1;
+    }
+    .switchBox { 
+        display: flex; align-items: center;
+    }
+    .font-weight-bolder {
+        width: 120px!important;
+        text-align: left;
+        padding-left: 15px;
     }

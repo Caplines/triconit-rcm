@@ -176,7 +176,7 @@
                                                     <td></td>
                                                     <ng-container *ngFor="let ct of totalCount;let last;">
                                                         <ng-container *ngIf="ct.teamId != currentTeamId">
-                                                            <td class="alignRight">{{ct.count}}</td>
+                                                            <td class="text-center">{{ct.count}}</td>
                                                         </ng-container>
                                                     </ng-container>
                                                     <td></td>
@@ -197,7 +197,7 @@
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData;">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
-                                                                <td class="alignRight">
+                                                                <td class="text-center">
                                                                     {{office.counts1[team.unFormatedName|uppercase]}}
                                                                 </td>
                                                             </ng-container>
@@ -343,7 +343,7 @@
                                                         <ng-container *ngFor="let team of teamData">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
                                                        
-                                                                <td>
+                                                                <td class="text-center">
 
                                                                     <div class="nowrap-div">
                                                                         {{office.dates1[team.unFormatedName|uppercase] ?
@@ -494,7 +494,7 @@
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
-                                                                <td>
+                                                                <td class="text-center">
                                                                     <div class="nowrap-div">
                                                                         {{office.datesPending[team.unFormatedName|uppercase] ?
                                                                         (office.datesPending[team.unFormatedName|uppercase]| date: 'MMM dd, YYYY') : "-"}}

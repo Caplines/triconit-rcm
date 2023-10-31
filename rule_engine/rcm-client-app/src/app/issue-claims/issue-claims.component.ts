@@ -466,7 +466,7 @@ selectClaimsToArchive(e:any,id:any){
 
   closeConfirmationModal(hasUnarchivedAll:boolean){
     this.showUnArchiveModal = false;
-    this.unArchiveSelectBox.nativeElement.checked=false;
+    // this.unArchiveSelectBox.nativeElement.checked=false;
     if(hasUnarchivedAll) location.reload();
   }
 }

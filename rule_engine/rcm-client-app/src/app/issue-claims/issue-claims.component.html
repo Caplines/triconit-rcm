@@ -29,27 +29,28 @@
                                             <input class="form-check-input" type="radio" name="options" id="option2"
                                             (click)="switchTab('Archive Claim')">Archived Claims
                                         </label>
-                                    </div>
-                                    <div class="d-flex" style="align-items: center;">
-                                    <h6 style="color: black; margin-bottom: 0px;">Upload Errors  
-                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="showIssueClaim">Number of Claims Not Uploaded: {{issueClaimConfig.issueCount}}</span> 
-                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="!showIssueClaim">Number of Archived Claims: {{archiveClaimConfig.archiveCount}}</span>
-                                         
-                                    </h6>
-                                    <div *ngIf="((loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)) && archiveClaimConfig.archiveCount > 0" class="dFlex nowrap-text unarchiveAll">  
-                                        <label class="no-css-checkbox-container" for="unarchive" (change)="UnarchiveClaimsConfirmModal()">
-                                            <input type="checkbox" id="unarchive" #unArchiveSelectBox>
-                                            <div class="checkmark"></div>
-                                          </label>  &nbsp;<strong> UnArchive All Claims</strong> 
-                                    </div>
-                                </div>
-                                    <div>
+                                        <div class="pull-right">
                                         <button type="button" class="icon-btn" (click)="downloadPdf()" [disabled]="(showIssueClaim ? issueClaimConfig.issueCount ==0  : archiveClaimConfig.archiveCount==0) || loader.exportPDFLoader">
                                             <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
                                             class="spinner-border text-danger mx-1"></span>
                                         <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="(showIssueClaim ? issueClaimConfig.issueCount ==0  : archiveClaimConfig.archiveCount==0)">
                                             <img src="../../assets/img/xls.png" /></button><span *ngIf="loader.exportCSVLoader"
                                             class="spinner-border text-success mx-1"></span>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex" style="align-items: center;">
+                                    <h6 style="color: black; margin-bottom: 0px; padding-left: 5px;">Upload Errors  
+                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="showIssueClaim">Number of Claims Not Uploaded: {{issueClaimConfig.issueCount}}</span> 
+                                        <span class="number-of-claims" style="pointer-events:none;" *ngIf="!showIssueClaim">Number of Archived Claims: {{archiveClaimConfig.archiveCount}}</span>
+                                         
+                                    </h6>
+
+
+                                </div>
+                                    <div style="width: 15.7vw">
+                                        <button type="button" class="btn btn-danger" (click)="UnarchiveClaimsConfirmModal()" *ngIf="((loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)) && archiveClaimConfig.archiveCount > 0">
+                                            <strong> UnArchive All Claims</strong> </button>
+                                       
                                     </div>
                                     <div class="table-responsive" >
                                         <table class="table table-wrapper-scroll-y table-inner-scrollbar" #modalElement (scroll)="onModalScroll()"   id="issuetable" >

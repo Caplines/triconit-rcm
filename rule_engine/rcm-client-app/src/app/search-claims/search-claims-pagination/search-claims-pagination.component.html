@@ -385,47 +385,47 @@
                                                                     class="loader-data "></span> </td>
                                                         </tr>
                                                         <tr>
-                                                            <td>{{det.clientName}}</td>
-                                                            <td>{{det.officeName}}</td>
-                                                            <td class="noWrape"><a
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" >{{det.clientName}}</td>
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}">{{det.officeName}}</td>
+                                                            <td class="noWrape"><a [ngClass]="{'changeColor' : det.colorChange}"
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
-                                                            <td class="alignRight"><a
+                                                            <td class="alignRight"><a [ngClass]="{'changeColor' : det.colorChange}"
                                                                     [routerLink]="['/billing-claims/', det.uuid]"
                                                                     target="_blank">{{det.patientId}}</a></td>                                                   
-                                                            <td><a [routerLink]="['/billing-claims/', det.uuid]"
+                                                            <td><a [ngClass]="{'changeColor' : det.colorChange}" [routerLink]="['/billing-claims/', det.uuid]"
                                                                     target="_blank">{{det.patientName}}</a></td>
-                                                            <td class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
-                                                            <td class="alignRight" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
                                                             <!-- Claim Type START-->
-                                                            <td *ngIf="det.claimId | claimTypeFilter">Primary</td>
-                                                            <td *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">Primary</td>
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
                                                             <!-- Claim Type END-->
                                                             <!-- Insurance Name START-->
-                                                            <td *ngIf="det.claimId | claimTypeFilter">
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">
                                                                 {{det.primaryInsurance}}
                                                             </td>
-                                                            <td *ngIf="! (det.claimId | claimTypeFilter)">
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">
                                                                 {{det.secondaryInsurance}}</td>
                                                             <!-- Insurance Name END -->
                                                             <!-- Insurance Type START-->
-                                                            <td *ngIf="det.claimId | claimTypeFilter">{{det.prName}}</td>
-                                                            <td *ngIf="! (det.claimId | claimTypeFilter)">{{det.secName}}
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">{{det.prName}}</td>
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">{{det.secName}}
                                                             </td>
                                                             <!-- Insurance Type START-->
                                                             <!-- Insurance Type START-->
-                                                            <td class="alignRight" *ngIf="det.claimId | claimTypeFilter">
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight" *ngIf="det.claimId | claimTypeFilter">
                                                                 {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
                                                             </td>
-                                                            <td class="alignRight"
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight"
                                                                 *ngIf="! (det.claimId | claimTypeFilter)">
                                                                 {{det.secTotal | currency:'USD':true:'.0-0'}}
                                                             </td>
                                                             <!-- Insurance Type START-->
-                                                            <td *ngIf="tabSwitch.sendBack">{{det.billedAmount |
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="tabSwitch.sendBack">{{det.billedAmount |
                                                                 currency:'USD':true:'.0-0'}}</td>
-                                                            <td *ngIf="isLastTeam" class="NA">
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="isLastTeam" class="NA">
                                                                 {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
                                                         </tr>
                                                     </ng-container>

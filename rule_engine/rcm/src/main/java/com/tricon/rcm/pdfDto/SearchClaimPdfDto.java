@@ -22,4 +22,5 @@ public class SearchClaimPdfDto {
 	private String uuid;
 	private String primeSecSubmittedTotal;
 	private String newClaimId;
+	private String clientName;
 }

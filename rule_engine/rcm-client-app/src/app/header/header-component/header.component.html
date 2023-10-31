@@ -136,10 +136,9 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
-                        <div class="col-sm">
+
                             <ng-container *ngIf="selectedRole == 'SUPER_ADMIN'" style="align-items: flex-start;">
-                                <div class="form-group d-flex login-radio-box">
+                                <div class="form-group login-radio-box switchBox">
                                     <label class="font-weight-bolder">Login As</label>
                                     <div class="form-check-inline-radio ">
                                         <span>
@@ -157,11 +156,8 @@
                                     </div>
                                 </div>
                             </ng-container>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm">
-                            <div class="form-group d-flex justify-content-around">
+
+                            <div class="form-group  switchBox">
                                 <label class="font-weight-bolder">Client Names</label>
                                 <select class="form-control" id="selectClientAC" name="selectClientAC"
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedClient"
@@ -172,11 +168,9 @@
                                     </ng-container>
                                 </select>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row" [hidden]="cwModel?.roles?.length == 1 ? true : false">
-                        <div class="col-sm">
-                            <div class="form-group d-flex justify-content-around">
+
+
+                            <div class="form-group  switchBox"  [hidden]="cwModel?.roles?.length == 1 ? true : false">
                                 <label class="font-weight-bolder">Select Roles</label>
                                 <select class="form-control" id="selectRolesAC" name="selectRolesAC"
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedRole"
@@ -187,11 +181,9 @@
                                     </ng-container>
                                 </select>
                             </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm">
-                            <div class="form-group d-flex justify-content-around">
+
+
+                            <div class="form-group switchBox">
                                 <label class="font-weight-bolder">Team Name</label>
                                 <select class="form-control" id="selectTeamAC" name="selectTeamAC"
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedTeam"
@@ -202,8 +194,6 @@
                                             tl.teamName}}</option>
                                     </ng-container>
                                 </select>
-                            </div>
-                        </div>
                     </div>
                 </div>
                 <div class="modal-footer">

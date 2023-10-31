@@ -193,9 +193,9 @@
                                                 <td></td>
                                                 <td></td>
                                                 <td></td>
-                                                <td class="alignRight">{{totalClaimData.totalCount}}</td>
-                                                <td *ngIf="teamId == 7" class="alignRight">{{totalClaimData.totalRemLiteReject}}</td>
-                                                <td  *ngIf="teamId == 7" class="alignRight">{{totalClaimData.totalcountAndRemLiteReject}}
+                                                <td class="text-center">{{totalClaimData.totalCount}}</td>
+                                                <td *ngIf="teamId == 7" class="text-center">{{totalClaimData.totalRemLiteReject}}</td>
+                                                <td  *ngIf="teamId == 7" class="text-center">{{totalClaimData.totalcountAndRemLiteReject}}
                                                 </td>
                                             </tr>
                                             <tr *ngIf="loader.showLoader">
@@ -220,11 +220,11 @@
                                                         </select>
 
                                                     </td>
-                                                    <td>{{lg.opdtd}}</td>
-                                                    <td>{{lg.opdosd}}</td>
-                                                    <td class="alignRight">{{lg.count}}</td>
-                                                    <td *ngIf="teamId == 7" class="alignRight">{{lg.remoteLiteRejections}}</td>
-                                                    <td *ngIf="teamId == 7" class="alignRight">{{lg.totalBillingRejection}}</td>
+                                                    <td class="text-center">{{lg.opdtd}}</td>
+                                                    <td class="text-center">{{lg.opdosd}}</td>
+                                                    <td class="text-center">{{lg.count}}</td>
+                                                    <td *ngIf="teamId == 7" class="text-center">{{lg.remoteLiteRejections}}</td>
+                                                    <td *ngIf="teamId == 7" class="text-center">{{lg.totalBillingRejection}}</td>
                                                 </tr>
                                             </ng-container>
                                         </tbody>
