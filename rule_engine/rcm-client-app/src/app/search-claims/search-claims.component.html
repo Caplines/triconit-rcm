@@ -216,7 +216,7 @@
                     </div>
 
                 </div>
-                <app-search-claims-pagination *ngIf='listOfClaimsData.length>0' [searchInputConfig]="{'listOfClaimsData':listOfClaimsData,'selectedOffices':selectedOffices}"  ></app-search-claims-pagination>
+                <app-search-claims-pagination *ngIf='listOfClaimsData.length>0' [searchInputConfig]="{'listOfClaimsData':listOfClaimsData,'selectedOffices':selectedOffices,'selectedClients':selectedClients}"  ></app-search-claims-pagination>
                 <div *ngIf="listOfClaimsData.length==0 && !loader" class="d-flex justify-content-center align-items-center">No Data Found</div>
                <pagination *ngIf='listOfClaimsData.length>0' [isSearchClaimsPage]="true" [currentPage]="pageNumber"[totalPages]="totalPages" (emitToParent)="receiveChildrenEvent($event)"></pagination>
             </div> 

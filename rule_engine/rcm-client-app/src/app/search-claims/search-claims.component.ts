@@ -42,6 +42,7 @@ export class SearchClaimsComponent {
   activeFilter:number=0;
 
   selectedOffices:any=[];
+  selectedClients:any=[];
 
   constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants,
     private datePipe: DatePipe) {
@@ -168,7 +169,9 @@ export class SearchClaimsComponent {
 
   getOfficesFromSelectedClient(offices:any){
     this.selectedOffices=[];
+    this.selectedClients=[];
     offices.forEach((ele:any)=>{
+      this.selectedClients.push(ele.clientName);
         ele.offices.forEach((item:any)=>{
           this.selectedOffices.push(item);
         })

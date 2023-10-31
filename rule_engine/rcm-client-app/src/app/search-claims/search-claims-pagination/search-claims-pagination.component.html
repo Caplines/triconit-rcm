@@ -38,7 +38,7 @@
                                                                     [ngClass]="{'selected': isSorted['clientName']}"
                                                                     (click)="sortData(filteredItems,'clientName','desc','string');isSorted['clientName'] = true"></a>
                                                             </span>
-                                                            <div class="dropdown">
+                                                            <!-- <div class="dropdown">
                                                                 <img  (click)="showHideFilteredDropdown('clientName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
                                                                 <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.clientName">
@@ -55,7 +55,7 @@
                                                                             data-dismiss="modal"
                                                                             aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                    <!-- <ng-container
+                                                                    <ng-container
                                                                         *ngFor="let data of filteredClientName">
                                                                         <label class="mx-1">
                                                                             <input type="checkbox" checked="true"
@@ -64,10 +64,10 @@
                                                                                 (change)="filterClientName($event,'clientName')">
                                                                             {{data.clientName}}
                                                                         </label>
-                                                                    </ng-container> -->
+                                                                    </ng-container>
                                                                 </div>
                                                             </div> <span class="sorting">
-                                                            </span>
+                                                            </span> -->
                                                         </div>
                                                     </th>
                                                     <th style="z-index: 10;">

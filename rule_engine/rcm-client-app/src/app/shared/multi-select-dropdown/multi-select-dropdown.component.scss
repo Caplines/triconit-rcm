@@ -74,3 +74,17 @@
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
+.filter-box{
+    position: relative;
+    
+    .clearAll{
+        position: absolute;
+        top: -27px;
+        right: 2px;
+        font-size: 13px;
+        color: red;
+        font-weight: 600;
+        cursor: pointer;
+    }
+}

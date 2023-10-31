@@ -148,9 +148,9 @@
     </div>
 
      <!-- Insurance Name -->
-    <div class="search-claims-insuranceNames" (mouseleave)="showDropDown = false"
+    <div class="search-claims-insuranceNames filter-box" (mouseleave)="showDropDown = false"
          *ngIf="inputConfig?.isSearchClaims && inputConfig?.insuranceNames">
-         <span (click)="clearAll('insuranceNames','getinsuranceNames')" *ngIf="searchClaimsConfig.insuranceNames.length>0">(Clear All)</span>
+         <span (click)="clearAll('insuranceNames','getinsuranceNames')" *ngIf="searchClaimsConfig.insuranceNames.length>0" class="clearAll">(Clear All)</span>
         <button class="drop-toggle insurance-name-dropbox btn flat" (click)="toggleSelectedItem('insuranceNames')" *ngIf="searchClaimsConfig?.insuranceNames.length>0">
             <span [ngClass]="{'hide-item':showSelectedData['insuranceNames']}">
                 <ng-container *ngFor="let item of searchClaimsConfig.insuranceNames; let last = last">
@@ -179,9 +179,9 @@
     </div>
 
         <!-- Insurance Types -->
-        <div class="search-claims-insuranceTypes" (mouseleave)="showDropDown = false"
+        <div class="search-claims-insuranceTypes filter-box" (mouseleave)="showDropDown = false"
              *ngIf="inputConfig?.isSearchClaims && inputConfig?.insuranceTypes">
-             <span (click)="clearAll('insuranceTypes','getinsuranceTypes')" *ngIf="searchClaimsConfig.insuranceTypes.length>0">(Clear All)</span>
+             <span (click)="clearAll('insuranceTypes','getinsuranceTypes')" *ngIf="searchClaimsConfig.insuranceTypes.length>0" class="clearAll">(Clear All)</span>
             <button class="drop-toggle btn flat" (click)="toggleSelectedItem('insuranceTypes')" *ngIf="searchClaimsConfig?.insuranceTypes.length>0">
                 <span [ngClass]="{'hide-item':showSelectedData['insuranceTypes']}">
                     <ng-container *ngFor="let item of searchClaimsConfig.insuranceTypes; let last = last">
@@ -209,9 +209,9 @@
         </div>
 
         <!-- providerNames -->
-        <div class="search-claims-providerNames" (mouseleave)="showDropDown = false"
+        <div class="search-claims-providerNames filter-box" (mouseleave)="showDropDown = false"
              *ngIf="inputConfig?.isSearchClaims && inputConfig?.providerNames">
-             <span (click)="clearAll('providerNames','getproviderNames')" *ngIf="searchClaimsConfig.providerNames.length>0">(Clear All)</span>
+             <span (click)="clearAll('providerNames','getproviderNames')" *ngIf="searchClaimsConfig.providerNames.length>0" class="clearAll">(Clear All)</span>
             <button class="drop-toggle btn flat" (click)="toggleSelectedItem('providerNames')"  *ngIf="searchClaimsConfig?.providerNames.length>0">
                 <span [ngClass]="{'hide-item':showSelectedData['providerNames']}">
                     <ng-container *ngFor="let item of searchClaimsConfig.providerNames; let last = last">
@@ -239,9 +239,9 @@
                 </div>
 
             <!-- providerTypes -->
-        <div class="search-claims-providerTypes" (mouseleave)="showDropDown = false"
+        <div class="search-claims-providerTypes filter-box" (mouseleave)="showDropDown = false"
              *ngIf="inputConfig?.isSearchClaims && inputConfig?.providerTypes">
-             <span (click)="clearAll('providerTypes','getproviderTypes')" *ngIf="searchClaimsConfig.providerTypes.length>0">(Clear All)</span>
+             <span (click)="clearAll('providerTypes','getproviderTypes')" *ngIf="searchClaimsConfig.providerTypes.length>0" class="clearAll">(Clear All)</span>
             <button class="drop-toggle btn flat" (click)="toggleSelectedItem('providerTypes')" *ngIf="searchClaimsConfig?.providerTypes.length>0">
                 <span [ngClass]="{'hide-item':showSelectedData['providerTypes']}">
                     <ng-container *ngFor="let item of searchClaimsConfig.providerTypes; let last = last">
