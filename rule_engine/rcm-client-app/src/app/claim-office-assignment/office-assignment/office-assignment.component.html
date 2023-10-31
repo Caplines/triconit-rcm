@@ -208,7 +208,7 @@
                                                     <td>{{lg.companyName}}</td>
                                                     <td>{{lg.officeName}}</td>
                                                     <td>
-                                                        <select class="form-control select-editable" name="" id=""
+                                                        <select class="form-control select-editable" name="" id="" [ngClass]="{'border-red':!lg.assignedUser}"
                                                             (change)="selectNewAssignedUser($event,lg.officeUuid);">
                                                             <option value="{{lg.assignedUser}}">{{lg.fname}}
                                                                 {{lg.lname}}</option>
@@ -220,11 +220,11 @@
                                                         </select>
 
                                                     </td>
-                                                    <td class="text-center">{{lg.opdtd}}</td>
-                                                    <td class="text-center">{{lg.opdosd}}</td>
-                                                    <td class="text-center">{{lg.count}}</td>
-                                                    <td *ngIf="teamId == 7" class="text-center">{{lg.remoteLiteRejections}}</td>
-                                                    <td *ngIf="teamId == 7" class="text-center">{{lg.totalBillingRejection}}</td>
+                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.opdtd == 0 }">{{lg.opdtd}}</td>
+                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.opdosd == 0 }">{{lg.opdosd}}</td>
+                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.count == 0 }">  {{lg.count}}</td>
+                                                    <td *ngIf="teamId == 7" class="text-center" [ngClass]="{'opac-zero':lg.remoteLiteRejections == 0 }">{{lg.remoteLiteRejections}}</td>
+                                                    <td *ngIf="teamId == 7" class="text-center" [ngClass]="{'opac-zero':lg.totalBillingRejection == 0 }">{{lg.totalBillingRejection}}</td>
                                                 </tr>
                                             </ng-container>
                                         </tbody>

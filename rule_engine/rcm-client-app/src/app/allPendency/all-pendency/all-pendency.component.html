@@ -197,7 +197,7 @@
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData;">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
-                                                                <td class="text-center">
+                                                                <td class="text-center" [ngClass]="{'opac-zero':office.counts1[team.unFormatedName|uppercase] == 0 }">
                                                                     {{office.counts1[team.unFormatedName|uppercase]}}
                                                                 </td>
                                                             </ng-container>
