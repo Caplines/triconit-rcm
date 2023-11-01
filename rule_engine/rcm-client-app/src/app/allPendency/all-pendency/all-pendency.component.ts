@@ -14,7 +14,7 @@ import { AppConstants } from 'src/app/constants/app.constants';
 export class AllPendencyComponent {
 
   pendencyData: any = [];
-  teamData: any = this.constants.teamData;
+  teamData: any = this.constants.teamData.sort((a:any,b:any)=>a.teamName.localeCompare(b.teamName));
   currentTeamId: any;
   showLoader: any = { 'loader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
   date: any;

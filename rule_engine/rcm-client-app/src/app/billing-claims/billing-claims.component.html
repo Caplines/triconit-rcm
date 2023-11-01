@@ -266,21 +266,7 @@
                                     </div>
                                 </div>
                             </ng-container>
-                            <ng-container *ngIf="attachmentConfig['showAttachment']">
-                                <div class="bold-b-text">
-                                    <a data-toggle="collapse" aria-expanded="false">Attachments</a>
-                                    <div class="down-icon" (click)="showHide(1)">
-                                        <a href="javascript:void(0)"></a>
-                                    </div>
-                                </div>
-                                <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show"
-                                    id="attachment-files">
-                                    <app-attach-file
-                                        [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit && (isBilling || isInternalAudit)}"
-                                        (emitToParent)="receiveChildEvent($event)"></app-attach-file>
-                                </div>
-                            </ng-container>
+                        
                             <div class="bold-b-text">
                                 <a data-toggle="collapse" aria-expanded="false">Remarks by Other RCM Teams</a>
                                 <div class="down-icon" (click)="showHide(2)">
@@ -318,10 +304,25 @@
                                     </table>
                                 </div>
                             </div>
+                            <ng-container *ngIf="attachmentConfig['showAttachment']">
+                                <div class="bold-b-text">
+                                    <a data-toggle="collapse" aria-expanded="false">Attachments</a>
+                                    <div class="down-icon" (click)="showHide(3)">
+                                        <a href="javascript:void(0)"></a>
+                                    </div>
+                                </div>
+                                <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
+                                <div *ngIf="!loader.linkToRelatedDoc" class="collapse show"
+                                    id="attachment-files">
+                                    <app-attach-file
+                                        [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit && (isBilling || isInternalAudit)}"
+                                        (emitToParent)="receiveChildEvent($event)"></app-attach-file>
+                                </div>
+                            </ng-container>
                             <div class="bold-b-text">
                                 <a data-toggle="collapse" aria-expanded="false">Additional Requirements for Rebilled
                                     Claims</a>
-                                <div class="down-icon" (click)="showHide(3)">
+                                <div class="down-icon" (click)="showHide(4)">
                                     <a href="javascript:void(0)"></a>
                                 </div>
                             </div>
@@ -357,7 +358,7 @@
                                     <a data-toggle="collapse" aria-expanded="false">Claim Level Validations (Automated)
                                         <span class="passedNum">Pass:{{countA.pass}}</span> <span
                                             class="passedNum fail">Fail:{{countA.fail}}</span></a>
-                                    <div class="down-icon" (click)="showHide(4)">
+                                    <div class="down-icon" (click)="showHide(5)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
@@ -434,7 +435,7 @@
                             <ng-container>
                                 <div class="bold-b-text">
                                     <a data-toggle="collapse" aria-expanded="false">Claim Level Validations (Manual)</a>
-                                    <div class="down-icon" (click)="showHide(5)">
+                                    <div class="down-icon" (click)="showHide(6)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
@@ -766,7 +767,7 @@
                                     <a data-toggle="collapse" aria-expanded="false" id="serviceCodeValidationsM">Service
                                         Code Level
                                         Validations (Manual)</a>
-                                    <div class="down-icon" (click)="showHide(6)">
+                                    <div class="down-icon" (click)="showHide(7)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
@@ -849,7 +850,7 @@
                                         Validations (Automated)
                                         <span class="passedNum">Pass:{{countAS.pass}}</span> <span
                                             class="passedNum fail">Fail:{{countAS.fail}}</span></a>
-                                    <div class="down-icon" (click)="showHide(7)">
+                                    <div class="down-icon" (click)="showHide(8)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
@@ -909,7 +910,7 @@
                             <ng-container *ngIf="smilePoint && !isInternalAudit">
                                 <div class="bold-b-text">
                                     <a data-toggle="collapse" aria-expanded="false">Rule Engine Validations</a>
-                                    <div class="down-icon" (click)="showHide(8)">
+                                    <div class="down-icon" (click)="showHide(9)">
                                         <a href="javascript:void(0)"></a>
                                     </div>
                                 </div>
@@ -973,7 +974,7 @@
                             <div class="bold-b-text" *ngIf="!isInternalAuditLogin">
                                 <a data-toggle="collapse" aria-expanded="false">Enter
                                     Claim Submission Details</a>
-                                <div class="down-icon" (click)="showHide(9)">
+                                <div class="down-icon" (click)="showHide(10)">
                                     <a href="javascript:void(0)"></a>
                                 </div>
                             </div>

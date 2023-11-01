@@ -254,3 +254,26 @@ h1 {
     }
 .download-button { margin-top: 0px;margin-bottom: 0px;}
 }
+
+.detail-attachment-container{
+    max-width: 100%;
+    padding: 0;
+    margin-bottom: 35px;
+
+    .upload-container{
+        background-color: white !important;
+
+        .file-button-attachment{
+            margin:0px 0px 10px;
+        }
+        .table {
+            th, td {
+                border: 0px;
+                text-align: left;
+            }
+            tr{
+                border-bottom:1px solid #ccc ;
+            }
+        }
+    }
+}
