@@ -11,7 +11,7 @@
                 class="text-danger">({{errorMessage}})</small></h5>
         <div class="form">
             <div class="wrapper">
-                <div class="container">
+                <div class="container detail-attachment-container">
                     <div class="upload-container">
                         <div class="border-container">
                             <div class="dragDrop" *ngIf="!allowUpload">
@@ -38,11 +38,11 @@
 
                                     <tr  *ngFor="let file of attachedFiles;let i=index;">
                                         <td *ngIf="this.inputConfig['isDetailPage']">{{i+1}}</td>
-                                        <td class="fileEllipsis">{{file.file.name}}</td>
+                                        <td><div class="fileEllipsis">{{file.file.name}}</div></td>
                                         <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedBy}}</td>
                                         <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedByTeam}}</td>
                                         <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedDate|date}}</td>
-                                        <td> <select class="form-control" style="width: 300px; margin-left: 15px;"
+                                        <td> <select class="form-control" style="width: 300px;"
                                             name="type" disabled>
                                             <ng-container *ngFor="let item of constant.attachmentType">
                                                 <option *ngIf="item.id == file.attachmentId" [value]="file.id">
@@ -65,13 +65,13 @@
                                 </tr>
                                 <ng-container *ngIf="selectedFiles.length > 0">
                                     <tr *ngFor="let file of selectedFiles;let i=index;">
-                                        <td>{{i+1}}</td>
-                                        <td class="fileEllipsis">{{file.file.name}}</td>
-                                        <td>{{file.uploadedBy}}</td>
-                                        <td>{{file.uploadedByTeam}}</td>
-                                        <td>{{file.uploadedDate | date}}</td>
+                                        <td *ngIf="this.inputConfig['isDetailPage']">{{i+1}}</td>
+                                        <td><div class="fileEllipsis">{{file.file.name}}</div></td>
+                                        <td *ngIf="this.inputConfig['isDetailPage']"> {{file.uploadedBy}}</td>
+                                        <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedByTeam}}</td>
+                                        <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedDate | date}}</td>
                                         <td>   <select class="form-control" [(ngModel)]="file.attachmentTypeId"
-                                            style="width: 300px; margin-left: 15px;" name="type">
+                                            style="width: 300px;" name="type">
                                             <ng-container *ngFor="let item of constant.attachmentType">
                                                 <option value="" selected="true" hidden="true">Select Attachment Type
                                                 </option>
