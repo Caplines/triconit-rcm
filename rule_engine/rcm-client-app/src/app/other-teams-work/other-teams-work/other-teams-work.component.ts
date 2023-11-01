@@ -112,7 +112,7 @@ export class OtherTeamsWorkComponent implements OnInit {
         this.fetchOfficeByUuid();
         this.filterOptionAgeBracket();
         this.showClaimIdWithDigits();
-        this.showAgeBracket();
+        this.showAgeBracket_WithColor_AndClaimIdDigits();
       }
     });
   }
@@ -468,7 +468,7 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office",  "Claim ID", "Patient ID", "Patient Name", 'DOS', "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type" , "Est. Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since Date", "Current Team"]
+      headers: ["Office",  "Claim ID", "Patient ID", "Patient Name", 'DOS',"Claim Age", "TFL", "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type" , "Est. Amount", "Last Team that Worked on this claim" , "Last Team's Remarks", "Pending Since Date", "Current Team"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -514,6 +514,8 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
           "Patient ID": e.patientId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
+          "Claim Age": e.claimAge,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
           'Age Bracket': e.ageBracket,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
@@ -544,16 +546,27 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
 
   }
 
-  showAgeBracket(){
+  showAgeBracket_WithColor_AndClaimIdDigits(){
+    let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
     this.filteredItems.forEach((e:any) => {
       if(e.dos){
            let dos:any = new Date(e.dos);
-           let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
            const diffTime = Math.abs(currentDate - dos);
            let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
            e.ageBracket = (diffDays <= 30) ? `0-30`  : (diffDays > 30 && diffDays <= 60) ?  `31-60` : (diffDays > 60 && diffDays <= 90) ? `61-90` : (diffDays > 90) ? `90+` : '';
       }
+      if(e.claimId){
+        e.newClaimId = e.claimId.replace('_P',"").replace('_S',"")
+      }
+     if(e.claimAge && e.timelyFilingLimitData){
+       if(Number(e.timelyFilingLimitData) - e.claimAge < 30){
+       e.colorChange = true;
+      }
+      else{
+        e.colorChange = false;
+      }
+     }
     });
-  }
+  } 
 
 }

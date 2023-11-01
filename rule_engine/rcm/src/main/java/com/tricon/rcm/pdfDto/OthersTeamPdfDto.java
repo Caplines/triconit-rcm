@@ -24,4 +24,6 @@ public class OthersTeamPdfDto {
 	private String pendingSince;
 	private String ageBracket;
 	private String newClaimId;
+	private String claimAge;
+	private String timelyFilingLimitData;
 }
