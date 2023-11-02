@@ -478,10 +478,11 @@ selectClaimsToArchive(e:any,id:any){
     })
 
     this.appSer.unarchiveCurrentpageClaims(urachiveCurrentPageClaims,(res:any)=>{
-      if (res.status == 200 && res.data?.unArchiveStatus) {
+      if (res.status == 200 && res?.data?.unArchiveStatus) {
         this.showMessage = { 'msg': res.data?.message, 'status': res.status };
         this.loader.unarchive = false;
         this.showHideMessage();
+        location.reload();
       } 
       else if (res.status == 200 && !res.data?.unArchiveStatus) {
         this.showMessage = { 'msg': res.data?.message, 'status': res.status };
