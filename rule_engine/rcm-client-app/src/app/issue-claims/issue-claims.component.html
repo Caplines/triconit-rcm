@@ -47,7 +47,9 @@
 
 
                                 </div>
-                                    <div style="width: 15.7vw">
+                                    <div class="d-flex">
+                                        <button type="button" class="btn btn-danger mx-2" (click)="UnarchiveCurrentPageClaims()" *ngIf="((loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)) && archiveClaimConfig.archiveCount > 0">
+                                            <strong> UnArchive Current Page Claims</strong> </button>
                                         <button type="button" class="btn btn-danger" (click)="UnarchiveClaimsConfirmModal()" *ngIf="((loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)) && archiveClaimConfig.archiveCount > 0">
                                             <strong> UnArchive All Claims</strong> </button>
                                        

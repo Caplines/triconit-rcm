@@ -469,4 +469,26 @@ selectClaimsToArchive(e:any,id:any){
     // this.unArchiveSelectBox.nativeElement.checked=false;
     if(hasUnarchivedAll) location.reload();
   }
+
+  UnarchiveCurrentPageClaims(){
+    this.loader.unarchive = true;
+    let urachiveCurrentPageClaims:any = {'unarchiveClaims':[]};
+    this.filtertedArchiveItems.forEach((item:any)=>{
+      urachiveCurrentPageClaims.unarchiveClaims.push({'claimId':item.claimId,'id':item.id});
+    })
+
+    this.appSer.unarchiveCurrentpageClaims(urachiveCurrentPageClaims,(res:any)=>{
+        if(res.status == 200 && res.data){
+          this.showMessage = { 'msg': res.data.message, 'status': res.status };
+          this.loader.unarchive = false;
+          this.showHideMessage();
+          setTimeout(() => {
+            location.reload();
+          }, 0);
+        }
+    })
+
+    console.log(this.filtertedArchiveItems);
+    
+  }
 }

@@ -104,6 +104,7 @@ export class BaseService {
     'search-claims': '/api/search-claims',
     'search-params': '/api/searchparams',
     'search-claims-pdf': '/api/search-claim/d',
+    'unarchive-claims': '/api/unarchive-claims',
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

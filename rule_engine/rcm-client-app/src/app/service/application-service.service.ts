@@ -515,6 +515,10 @@ export class ApplicationServiceService extends BaseService {
     this.postDataPdf(params, this.httpUrl['search-claims-pdf'] + "/" + pdfcsv, callback);
   }
 
+  unarchiveCurrentpageClaims(params: any,callback: any) {
+    this.postData(params, this.httpUrl['unarchive-claims'],callback);
+  }
+
   sortByAlphabet(data:any,sortBy:string){
     return data.sort((a:any,b:any)=>a[sortBy].localeCompare(b[sortBy]))
   }
