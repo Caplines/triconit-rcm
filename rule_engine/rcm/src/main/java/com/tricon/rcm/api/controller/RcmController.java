@@ -29,6 +29,7 @@ import com.tricon.rcm.dto.RcmArchiveClaimsDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
+import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
 import com.tricon.rcm.dto.SearchParamDto;
 import com.tricon.rcm.dto.UnArchiveClaimDto;
 import com.tricon.rcm.dto.UnArchivedResponseDto;
@@ -733,6 +734,31 @@ public class RcmController extends BaseHeaderController{
 			return null;
 		try {
 			response = claimServiceImpl.getSearchParams();
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@PostMapping("api/unarchive-claims")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<?> unArchiveClaimsByIds(@RequestBody RcmUnarchiveClaimsDto dto, Model model) {
+		UnArchivedResponseDto response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+
+		if (dto.getUnarchiveClaims().stream().anyMatch(x -> x.getClaimId() == null || x.getClaimId().isEmpty())
+				|| dto.getUnarchiveClaims().stream().anyMatch(x -> x.getId() == null)) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+
+		try {
+			response = claimServiceImpl.unArchiveAllClaimsByIds(dto, partialHeader.getJwtUser());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

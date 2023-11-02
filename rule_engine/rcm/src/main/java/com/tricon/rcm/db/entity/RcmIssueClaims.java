@@ -40,7 +40,7 @@ public class RcmIssueClaims extends BaseAuditEntity implements Serializable{
 	@Column(name = "issue", nullable = false,columnDefinition="text")
 	private String issue;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "office_id", referencedColumnName = "uuid", nullable = true)
 	private RcmOffice office;
 	

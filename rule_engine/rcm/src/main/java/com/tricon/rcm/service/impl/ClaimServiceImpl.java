@@ -109,6 +109,7 @@ import com.tricon.rcm.dto.customquery.RcmClaimNoteDto;
 import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.RuleRemarkDto;
 import com.tricon.rcm.dto.SearchParamDto;
@@ -117,6 +118,7 @@ import com.tricon.rcm.dto.TPValidationResponseDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.dto.UnArchiveClaimDto;
 import com.tricon.rcm.dto.UnArchivedResponseDto;
+import com.tricon.rcm.dto.UnarchiveClaimsPayloadDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDateDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
@@ -3933,19 +3935,25 @@ public class ClaimServiceImpl {
 		}else {  //if single claim is unarchived then below code is executed
 		String[] removePrefix = dto.getClaimId().split(Constants.ARCHIVE_PREFIX);
 		if (removePrefix.length < 2) {
+			logger.error("Prefix not match of ClaimId>>>>>>>>>>>>>" + dto.getClaimId());
 			return UnArchivedResponseDto.builder().unArchiveStatus(false).build();
 		}
 
 		Optional<RcmIssueClaims> archivedClaim = rcmIssueClaimsRepo.findById(dto.getId());
-		if (!archivedClaim.isPresent())
+		if (!archivedClaim.isPresent()) {
+			logger.error("claim does't exist>>>>>>>>>>>>>");
 			return UnArchivedResponseDto.builder().unArchiveStatus(false).build();
+		}
 
-		if (archivedClaim.isPresent() && !archivedClaim.get().isArchive())
+		if (archivedClaim.isPresent() && !archivedClaim.get().isArchive()) {
+			logger.error("Already UNARCHIVED>>>>>>>>>>>>>"+archivedClaim.get().getClaimId());
 			return UnArchivedResponseDto.builder().message("Already UNARCHIVED").unArchiveStatus(false).build();
+		}
 
 		String existingClaim = rcmIssueClaimsRepo.fetchClaimByClaimIdAndCompany(removePrefix[1],
 				archivedClaim.get().getOffice().getCompany().getUuid());
 		if (existingClaim != null) {
+			logger.error(MessageConstants.CLAIM_NOT_UNARCHIVED+">>>>"+archivedClaim.get().getClaimId());
 			return UnArchivedResponseDto.builder().message(MessageConstants.CLAIM_NOT_UNARCHIVED).unArchiveStatus(false).build();
 		}
 		int status = rcmClaimRepository.updateIssueClaimsUnArchiveStatus(dto.getId(), updatedBy, removePrefix[1]);
@@ -4012,9 +4020,18 @@ public class ClaimServiceImpl {
 			for (IssueClaimDto data : listOfUnarchiveClaims) {
 				status = 0;
 				String[] removePrefix = data.getClaimId().split(Constants.ARCHIVE_PREFIX);
+				String existingClaim = rcmIssueClaimsRepo.fetchClaimByClaimIdAndCompany(removePrefix[1],
+						associatedClientsFromClaims);
 				if (removePrefix.length < 2) {
 					logger.error("Prefix not match of ClaimId>>>>>>>>>>>>>" + data.getClaimId());
 					break; // if any condition is unmatch then show error claim in ui for error
+				} else if (!data.getIsArchive()) {
+					logger.error("Already UNARCHIVED>>>>>>>>>>>>>" + data.getClaimId());
+					return UnArchivedResponseDto.builder().message("Already UNARCHIVED").unArchiveStatus(false).build();
+				} else if (existingClaim != null) {
+					logger.error(MessageConstants.CLAIM_NOT_UNARCHIVED + ">>>>" + data.getClaimId());
+					return UnArchivedResponseDto.builder().message(MessageConstants.CLAIM_NOT_UNARCHIVED)
+							.unArchiveStatus(false).build();
 				} else {
 					status = rcmClaimRepository.updateIssueClaimsUnArchiveStatus(data.getId(), updatedBy,
 							removePrefix[1]);
@@ -4032,6 +4049,24 @@ public class ClaimServiceImpl {
 			response = UnArchivedResponseDto.builder().message("All Claims Are Unarchived Already")
 					.unArchiveStatus(true).build();
 
+		}
+		return response;
+	}
+
+	public UnArchivedResponseDto unArchiveAllClaimsByIds(RcmUnarchiveClaimsDto dto, JwtUser jwtUser) throws Exception {
+		UnArchivedResponseDto response = null;
+		UnArchiveClaimDto unarchiveDto = null;
+		if (!dto.getUnarchiveClaims().isEmpty()) {
+			for (UnarchiveClaimsPayloadDto data : dto.getUnarchiveClaims()) {
+				unarchiveDto = new UnArchiveClaimDto();
+				unarchiveDto.setClaimId(data.getClaimId());
+				unarchiveDto.setId(data.getId());
+				unarchiveDto.setUnArchiveAll(false);
+				response = this.saveUnArchivedClaims(unarchiveDto, jwtUser, null);
+				if (response == null || !response.getUnArchiveStatus()) {
+					break;
+				}
+			}
 		}
 		return response;
 	}

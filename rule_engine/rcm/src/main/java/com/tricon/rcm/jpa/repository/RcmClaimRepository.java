@@ -3,6 +3,8 @@ package com.tricon.rcm.jpa.repository;
 import java.util.List;
 import java.util.Set;
 
+import javax.transaction.Transactional;
+
 import org.apache.tomcat.util.bcel.classfile.Constant;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -665,6 +667,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	String fetchClaimIdByClaimIdAnCompany(@Param("claimId")  String claimId,@Param("companyId")  String companyId) ;
 	
 	@Modifying
+	@Transactional
 	@Query(nativeQuery = true, value = "update rcm_issue_claims set is_archive=false,claim_id=:claimId,updated_by=:updatedBy,updated_date=CURRENT_TIMESTAMP where id =:id AND resolved is false")
 	int updateIssueClaimsUnArchiveStatus(@Param("id")int id,@Param("updatedBy")RcmUser updatedBy,@Param("claimId")String claimId);
 	
