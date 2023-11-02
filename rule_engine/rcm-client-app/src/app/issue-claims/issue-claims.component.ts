@@ -427,8 +427,8 @@ selectClaimsToArchive(e:any,id:any){
     this.loader.showLoader = true;
 
     this.appSer.saveUnarchiveClaims(param, (res: any) => {
-      if (res.status == 200 && res.data.unArchiveStatus) {
-        this.showMessage = { 'msg': res.data.message, 'status': res.status };
+      if (res.status == 200 && res.data?.unArchiveStatus) {
+        this.showMessage = { 'msg': res.data?.message, 'status': res.status };
           this.loader.showLoader = false;
           this.showHideMessage();
           this.filtertedArchiveItems = this.removeUnArchivedItem(data);
@@ -437,8 +437,8 @@ selectClaimsToArchive(e:any,id:any){
           this.closeConfirmationModal(hasUnarchivedAll);
           this.loader.unarchive = false;
       }
-      else if(res.status == 200 && !res.data.unArchiveStatus) {
-        this.showMessage = { 'msg': res.data.message, 'status': res.status };
+      else if(res.status == 200 && !res.data?.unArchiveStatus) {
+        this.showMessage = { 'msg': res.data?.message, 'status': res.status };
         this.loader.showLoader = false;
         this.closeConfirmationModal(false);
         this.showHideMessage();
@@ -478,14 +478,23 @@ selectClaimsToArchive(e:any,id:any){
     })
 
     this.appSer.unarchiveCurrentpageClaims(urachiveCurrentPageClaims,(res:any)=>{
-        if(res.status == 200 && res.data){
-          this.showMessage = { 'msg': res.data.message, 'status': res.status };
-          this.loader.unarchive = false;
-          this.showHideMessage();
-          setTimeout(() => {
-            location.reload();
-          }, 0);
-        }
+      if (res.status == 200 && res.data?.unArchiveStatus) {
+        this.showMessage = { 'msg': res.data?.message, 'status': res.status };
+        this.loader.unarchive = false;
+        this.showHideMessage();
+      } 
+      else if (res.status == 200 && !res.data?.unArchiveStatus) {
+        this.showMessage = { 'msg': res.data?.message, 'status': res.status };
+        this.loader.showLoader = false;
+        this.showHideMessage();
+        this.loader.unarchive = false;
+      }
+      else {
+        this.showMessage = { 'msg': res.message, 'status': res.status };
+        this.loader.showLoader = false;
+        this.showHideMessage();
+        this.loader.unarchive = false;
+      }
     })
 
     console.log(this.filtertedArchiveItems);
