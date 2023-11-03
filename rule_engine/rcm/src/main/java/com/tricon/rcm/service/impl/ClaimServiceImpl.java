@@ -97,6 +97,7 @@ import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
+import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.FreshClaimDataViewDto;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
@@ -282,6 +283,13 @@ public class ClaimServiceImpl {
 	
 	@Autowired
 	 RcmClaimAttachmentRepo attachmentRepo;
+	
+	@Autowired
+	RcmUserCompanyRepo userCompanyRepo;
+	
+	@Autowired
+	RcmClaimRepository claimRepo;
+	
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -4069,5 +4077,30 @@ public class ClaimServiceImpl {
 			}
 		}
 		return response;
+	}
+
+	public boolean findTeamLeadExistForOtherTeams(FindTLExistDto dto, JwtUser jwtUser) throws Exception {
+		RcmUser user = userRepo.findByEmail(jwtUser.getUsername());
+		RcmClaims claim = claimRepo.findByClaimUuid(dto.getClaimUuid());
+		if (claim == null || !claim.isPending())
+			return false;
+
+		// match given office with loggedin user office
+
+		List<String> companies = rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(user.getUuid());
+		boolean isValidClient = companies.contains(claim.getOffice().getCompany().getUuid());
+		if (isValidClient) {
+			int exitingTLUserCounts = userCompanyRepo.findExistingTLByClientUuidAndTeam(
+					claim.getOffice().getCompany().getUuid(), dto.getAssignToTeamId());
+			if (exitingTLUserCounts == 0) {
+				logger.info("For Client:" + claim.getOffice().getCompany().getName() + ",TL Not exist for team Id:"
+						+ RcmTeamEnum.getTeamDescriptionByTeamId(dto.getAssignToTeamId()));
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
 	}
 }

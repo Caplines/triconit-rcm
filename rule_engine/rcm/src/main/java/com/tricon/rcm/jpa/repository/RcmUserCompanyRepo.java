@@ -28,13 +28,15 @@ public interface RcmUserCompanyRepo extends JpaRepository<RcmUserCompany, Intege
 	
 	@Query(nativeQuery = true, value = "select count(uc.rcm_user_id) from rcm_user_company uc "
 			+ "inner join rcm_user_role ur on ur.uuid=uc.rcm_user_id "
+			+ "inner join rcm_user user on user.uuid=ur.uuid "
 			+ "inner join rcm_user_team ut on ut.rcm_user_id=uc.rcm_user_id "
-			+ "where uc.company_id=:clientUuid and ur.role='"+Constants.ROLE_PREFIX+Constants.TEAMLEAD+"' and ut.team_id=:teamId")
+			+ "where uc.company_id=:clientUuid and ur.role='"+Constants.ROLE_PREFIX+Constants.TEAMLEAD+"' and ut.team_id=:teamId and user.active is true")
 	int findExistingTLByClientUuidAndTeam(@Param("clientUuid") String clientUuid, @Param("teamId") int teamId);
 	
 	@Query(nativeQuery = true, value = "select ut.team_id as TeamId ,uc.rcm_user_id as UserUuid from rcm_user_company uc "
 			+ "inner join rcm_user_role ur on ur.uuid=uc.rcm_user_id "
+			+ "inner join rcm_user user on user.uuid=ur.uuid "
 			+ "inner join rcm_user_team ut on ut.rcm_user_id=uc.rcm_user_id "
-			+ "where uc.company_id=:clientUuid and ur.role='"+Constants.ROLE_PREFIX+Constants.TEAMLEAD+"' and ut.team_id=:teamId limit 1")
+			+ "where uc.company_id=:clientUuid and ur.role='"+Constants.ROLE_PREFIX+Constants.TEAMLEAD+"' and ut.team_id=:teamId and user.active is true limit 1")
 	AssignOfficeDto findAnyExistingTLByClientUuidAndTeamId(@Param("clientUuid") String clientUuid,@Param("teamId") int teamId);
 }
