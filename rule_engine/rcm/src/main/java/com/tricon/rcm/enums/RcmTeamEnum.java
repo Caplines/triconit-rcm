@@ -186,4 +186,16 @@ public enum RcmTeamEnum {
 		}
 		return null;
 	}
+	
+	public static int validateTeamIdWithRoleVisible(int teamId) {
+		int id = 0;
+		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() == teamId).findFirst();
+		if (teamEnum.isPresent()) {
+			if (teamEnum.get().isRoleVisible) {
+				id = teamEnum.get().getId();
+				return id;
+			}
+		}
+		return 0;
+	}
 }
