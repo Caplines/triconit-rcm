@@ -3936,25 +3936,25 @@ public class ClaimServiceImpl {
 		String[] removePrefix = dto.getClaimId().split(Constants.ARCHIVE_PREFIX);
 		if (removePrefix.length < 2) {
 			logger.error("Prefix not match of ClaimId>>>>>>>>>>>>>" + dto.getClaimId());
-			return UnArchivedResponseDto.builder().unArchiveStatus(false).build();
+			return UnArchivedResponseDto.builder().message("Prefix not match").unArchiveStatus(false).build();
 		}
 
 		Optional<RcmIssueClaims> archivedClaim = rcmIssueClaimsRepo.findById(dto.getId());
 		if (!archivedClaim.isPresent()) {
 			logger.error("claim does't exist>>>>>>>>>>>>>");
-			return UnArchivedResponseDto.builder().unArchiveStatus(false).build();
+			return UnArchivedResponseDto.builder().message("claim [" +removePrefix[1]+"] does't exist").unArchiveStatus(false).build();
 		}
 
 		if (archivedClaim.isPresent() && !archivedClaim.get().isArchive()) {
 			logger.error("Already UNARCHIVED>>>>>>>>>>>>>"+archivedClaim.get().getClaimId());
-			return UnArchivedResponseDto.builder().message("Already UNARCHIVED").unArchiveStatus(false).build();
+			return UnArchivedResponseDto.builder().message("Already UNARCHIVED Claim is [" +removePrefix[1]+"]").unArchiveStatus(false).build();
 		}
 
 		String existingClaim = rcmIssueClaimsRepo.fetchClaimByClaimIdAndCompany(removePrefix[1],
 				archivedClaim.get().getOffice().getCompany().getUuid());
 		if (existingClaim != null) {
 			logger.error(MessageConstants.CLAIM_NOT_UNARCHIVED+">>>>"+archivedClaim.get().getClaimId());
-			return UnArchivedResponseDto.builder().message(MessageConstants.CLAIM_NOT_UNARCHIVED).unArchiveStatus(false).build();
+			return UnArchivedResponseDto.builder().message(MessageConstants.CLAIM_NOT_UNARCHIVED+" Claim is [" +removePrefix[1]+"]").unArchiveStatus(false).build();
 		}
 		int status = rcmClaimRepository.updateIssueClaimsUnArchiveStatus(dto.getId(), updatedBy, removePrefix[1]);
 		response = status > 0
@@ -4027,10 +4027,10 @@ public class ClaimServiceImpl {
 					break; // if any condition is unmatch then show error claim in ui for error
 				} else if (!data.getIsArchive()) {
 					logger.error("Already UNARCHIVED>>>>>>>>>>>>>" + data.getClaimId());
-					return UnArchivedResponseDto.builder().message("Already UNARCHIVED").unArchiveStatus(false).build();
+					return UnArchivedResponseDto.builder().message("Already UNARCHIVED Claim is [" +removePrefix[1]+"]").unArchiveStatus(false).build();
 				} else if (existingClaim != null) {
 					logger.error(MessageConstants.CLAIM_NOT_UNARCHIVED + ">>>>" + data.getClaimId());
-					return UnArchivedResponseDto.builder().message(MessageConstants.CLAIM_NOT_UNARCHIVED)
+					return UnArchivedResponseDto.builder().message(MessageConstants.CLAIM_NOT_UNARCHIVED+" Claim is [" +removePrefix[1]+"]")
 							.unArchiveStatus(false).build();
 				} else {
 					status = rcmClaimRepository.updateIssueClaimsUnArchiveStatus(data.getId(), updatedBy,
