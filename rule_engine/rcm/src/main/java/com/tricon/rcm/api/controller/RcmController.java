@@ -44,6 +44,7 @@ import com.tricon.rcm.dto.ClaimStatusUpdate;
 import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.FindRulesDto;
+import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
@@ -61,6 +62,7 @@ import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
+import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 
 import io.swagger.annotations.ApiOperation;
@@ -768,13 +770,26 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	@GetMapping("api/others-teams-tl-exit/{teamId}")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
-	public ResponseEntity<?> findteamLeadExistForOtherTeams(@PathVariable("teamId") int teamId, Model model) {
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	public ResponseEntity<?> findteamLeadExistForOtherTeams(@RequestBody FindTLExistDto dto, Model model) {
 		boolean response = true;
+		int validateTeamId = 0;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, false));
+
+		// if buttonType 1 then no need to check TL exist or not
+		if (dto.getAssignToTeamId() == null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+		}
+
+		validateTeamId = RcmTeamEnum.validateTeamIdWithRoleVisible(dto.getAssignToTeamId());
+
+		if ((dto.getClaimUuid() == null || dto.getClaimUuid().isEmpty()) || validateTeamId == 0) {
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, false));
+		}
 
 		try {
 			// response = claimServiceImpl.findTeamLeadExistForOtherTeams(dto,
