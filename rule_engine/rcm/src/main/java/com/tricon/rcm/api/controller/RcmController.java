@@ -769,7 +769,7 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@GetMapping("api/others-teams-tl-exit/{teamId}")
+	@PostMapping("api/others-teams-tl-exit")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> findteamLeadExistForOtherTeams(@RequestBody FindTLExistDto dto, Model model) {
 		boolean response = true;
@@ -779,7 +779,7 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, false));
 
-		// if buttonType 1 then no need to check TL exist or not
+		// if buttonType 1(claim send back to team who assigned the claim) then no need to check TL exist or not
 		if (dto.getAssignToTeamId() == null) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 		}
@@ -792,8 +792,7 @@ public class RcmController extends BaseHeaderController{
 		}
 
 		try {
-			// response = claimServiceImpl.findTeamLeadExistForOtherTeams(dto,
-			// partialHeader.getJwtUser());
+			response = claimServiceImpl.findTeamLeadExistForOtherTeams(dto, partialHeader.getJwtUser());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
