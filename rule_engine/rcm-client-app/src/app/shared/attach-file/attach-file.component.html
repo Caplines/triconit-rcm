@@ -11,17 +11,17 @@
                 class="text-danger">({{errorMessage}})</small></h5>
         <div class="form">
             <div class="wrapper">
-                <div class="container detail-attachment-container">
+                <div class="container"  [ngClass]="{'detail-attachment-container':inputConfig['isDetailPage']}">
                     <div class="upload-container">
                         <div class="border-container">
                             <div class="dragDrop" *ngIf="!allowUpload">
-                                <button type="button" class="btn btn-success file-button"
+                                <button type="button" class="btn btn-success"
                                     (click)="fileInput.click()">Select
                                     Files</button>
                                 <input type="file" id="fileInput{{inputConfig.claimUuid}}" #fileInput multiple
                                     (change)="onFileChange($event)" class="file-input" />
                             </div>
-                            <table class="table">
+                            <table class="table" [ngStyle]="{'background-color':!inputConfig['isDetailPage'] ? 'white':''}">
                                 <thead>
                                     <tr>
                                         <th *ngIf="this.inputConfig['isDetailPage']">S.No.</th>

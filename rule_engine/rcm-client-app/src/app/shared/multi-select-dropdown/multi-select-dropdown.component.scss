@@ -82,12 +82,13 @@
     
     .clearAll{
         position: absolute;
-        top: -27px;
-        right: 2px;
+        top: -23px;
+        right: 8px;
         font-size: 13px;
         color: red;
         font-weight: 600;
         cursor: pointer;
+        line-height: normal;
     }
 }
 
