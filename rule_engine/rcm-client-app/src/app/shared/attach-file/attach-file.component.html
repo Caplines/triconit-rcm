@@ -60,9 +60,9 @@
                                     </td>
                                     </tr>
                                 </ng-container>
-                                <tr *ngIf="selectedFiles.length > 0">
+                                <!-- <tr *ngIf="selectedFiles.length > 0">
                                     <td class="text-success" colspan="7">(New Attached)</td>
-                                </tr>
+                                </tr> -->
                                 <ng-container *ngIf="selectedFiles.length > 0">
                                     <tr *ngFor="let file of selectedFiles;let i=index;">
                                         <td *ngIf="this.inputConfig['isDetailPage']">{{i+1}}</td>
@@ -78,7 +78,8 @@
                                                 <option [value]="item.id">{{item.value}}</option>
                                             </ng-container>
                                         </select></td>
-                                        <td><span class="close" (click)="removeItem(file.file)">&times;</span></td>
+                                        <td><div class="action-flex"><span class="closeBtn" style="margin: 0 10px;" (click)="removeItem(file.file)">&times;</span>
+                                            </div></td>
                                     </tr>
                                 </ng-container>
                                 </tbody>
@@ -175,17 +176,17 @@
                             </td>
                             </tr>
                         </ng-container>
-                        <tr *ngIf="selectedFiles.length > 0">
+                        <!-- <tr *ngIf="selectedFiles.length > 0">
                             <td class="text-success" colspan="7">(New Attached)</td>
-                        </tr>
+                        </tr> -->
                         <ng-container *ngIf="selectedFiles.length > 0">
                             <tr *ngFor="let file of selectedFiles;let i=index;">
                                 <td>{{i+1}}</td>
-                                <td class="fileEllipsis">{{file.file.name}}</td>
+                                <td ><div class="fileEllipsis">{{file.file.name}}</div></td>
                                 <td>{{file.uploadedBy}}</td>
                                 <td>{{file.uploadedByTeam}}</td>
                                 <td>{{file.uploadedDate | date}}</td>
-                                <td>   <select class="form-control" [(ngModel)]="file.attachmentTypeId"
+                                <td><select class="form-control" [(ngModel)]="file.attachmentTypeId"
                                     style="width: 300px; margin-left: 15px;" name="type">
                                     <ng-container *ngFor="let item of constant.attachmentType">
                                         <option value="" selected="true" hidden="true">Select Attachment Type
@@ -193,7 +194,8 @@
                                         <option [value]="item.id">{{item.value}}</option>
                                     </ng-container>
                                 </select></td>
-                                <td><span class="close" (click)="removeItem(file.file)">&times;</span></td>
+                                <td><div class="action-flex"><span class="closeBtn" style="margin: 0 10px;" (click)="removeItem(file.file)">&times;</span>
+                                </div></td>
                             </tr>
                         </ng-container>
                         </tbody>

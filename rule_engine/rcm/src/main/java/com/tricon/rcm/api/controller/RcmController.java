@@ -766,5 +766,25 @@ public class RcmController extends BaseHeaderController{
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
+	
+	@GetMapping("api/others-teams-tl-exit/{teamId}")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	public ResponseEntity<?> findteamLeadExistForOtherTeams(@PathVariable("teamId") int teamId, Model model) {
+		boolean response = true;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+
+		try {
+			// response = claimServiceImpl.findTeamLeadExistForOtherTeams(dto,
+			// partialHeader.getJwtUser());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 
 }
