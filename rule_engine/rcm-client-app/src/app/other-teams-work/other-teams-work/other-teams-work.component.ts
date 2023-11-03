@@ -318,7 +318,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   }
   
   openModalAndValidateFields(data: any) {
-    this.currentClaimUuid = data.uuid
+    this.currentClaimUuid = data.uuid;
     // this.selectedFiles = this.getSelectedFileForComponent(data.uuid);
     // this.removedFiles = this.getSelectedFilesToRemove(data.uuid);
       if(this.submitBtnConfig['remarks'][data.uuid]){
@@ -403,27 +403,33 @@ export class OtherTeamsWorkComponent implements OnInit {
 // }
 
 AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
-  let hasRemarks =   this.submitBtnConfig['remarks'][claimUuid];
-  if(hasRemarks){
-    let params:any= {
-      "remark":this.submitBtnConfig['remarks'][claimUuid],
-      "claimUuid":claimUuid,
-      "assignToTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : null ,   //converting string into number using unary operator +
-      "attachmentsWithRemarks":AppConstants.ATTACH_WITH_REMARKS
 
-    }
-  this.appService.AssignClaimWithRemark(params,(res:any)=>{
-      if(res.status == 200){
-          console.log(res);
-          this.showModal=false;
-          this.errorMessage='';
-          this.removeSubmittedClaimRow(claimUuid);
+  this.isOtherTLExist((res: any) => {
+    if (res) {
+      let hasRemarks = this.submitBtnConfig['remarks'][claimUuid];
+      if (hasRemarks) {
+        let params: any = {
+          "remark": this.submitBtnConfig['remarks'][claimUuid],
+          "claimUuid": claimUuid,
+          "assignToTeamId": this.submitBtnConfig['otherTeamId'][claimUuid] ? +this.submitBtnConfig['otherTeamId'][claimUuid] : null,   //converting string into number using unary operator +
+          "attachmentsWithRemarks": AppConstants.ATTACH_WITH_REMARKS
+
+        }
+        this.appService.AssignClaimWithRemark(params, (res: any) => {
+          if (res.status == 200) {
+            console.log(res);
+            this.showModal = false;
+            this.errorMessage = '';
+            this.removeSubmittedClaimRow(claimUuid);
+          }
+        })
+      } else {
+        this.errorMessage = "Remarks Are Mandatory";
       }
-    })
-  } else{
-    this.errorMessage = "Remarks Are Mandatory";
-  }
+    }
+  })
 }
+
 
   removeSubmittedClaimRow(claimUuid:any){
     let index  = this.filteredItems.findIndex((item:any)=>item.uuid == claimUuid);
@@ -568,5 +574,19 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
      }
     });
   } 
+
+  isOtherTLExist(callback:any){
+    let params:any = { 
+      "claimUuid": this.currentClaimUuid,
+      "assignToTeamId": this.submitBtnConfig['otherTeamId'][this.currentClaimUuid] ? +this.submitBtnConfig['otherTeamId'][this.currentClaimUuid] : null, 
+    };
+
+    console.log(params);
+    this.appService.isOtherTeamTLExist(params,(res:any)=>{
+      if(res.status){
+        callback(res.data);
+      }
+    })
+  }
 
 }

@@ -915,39 +915,45 @@ export class BillingClaimsComponent {
   }
 
   assignToOtherTeam() {
-    let ths = this;
-    ths.otherErrormsg = "";
-    ths.claimEditModel.assignToOtherTeam = true;
-    ths.claimEditModel.assignToTL = false;
-    ths.claimEditModel.assignTouuid = '';
-    ths.removeErrorDisplay(document.getElementById("selectTeam"));
-    ths.removeErrorDisplay(document.getElementById("assignToComment"));
-    let valid = true;
+    console.log(this.claimEditModel.assignToTeam);
+    this.isOtherTLExist((res: any) => {
+      if (res) {
 
-    let rem: any = document.getElementById("assignToComment");
-    if (rem.value.trim() === '') {
-      ths.addErrorDisplay(document.getElementById("assignToComment"));
-      valid = false;
-    }
-    //debugger;
-    if (ths.claimEditModel.assignToTeam == -1) {
-      ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
-      valid = false;
-    }
+        let ths = this;
+        ths.otherErrormsg = "";
+        ths.claimEditModel.assignToOtherTeam = true;
+        ths.claimEditModel.assignToTL = false;
+        ths.claimEditModel.assignTouuid = '';
+        ths.removeErrorDisplay(document.getElementById("selectTeam"));
+        ths.removeErrorDisplay(document.getElementById("assignToComment"));
+        let valid = true;
 
-    if (valid) {
-      //assign
-      ths.inSave = true;
-      ths.closeModal();
-      console.log(ths.claimEditModel);
+        let rem: any = document.getElementById("assignToComment");
+        if (rem.value.trim() === '') {
+          ths.addErrorDisplay(document.getElementById("assignToComment"));
+          valid = false;
+        }
+        //debugger;
+        if (ths.claimEditModel.assignToTeam == -1) {
+          ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
+          valid = false;
+        }
 
-      ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
-        ths.inSave = false;
-        ths.showAlertPopup(callback);
-        ths.claimRcm.allowEdit = false;
-        ths.showAlertPopup(callback);
-      });
-    }
+        if (valid) {
+          //assign
+          ths.inSave = true;
+          ths.closeModal();
+          console.log(ths.claimEditModel);
+
+          ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
+            ths.inSave = false;
+            ths.showAlertPopup(callback);
+            ths.claimRcm.allowEdit = false;
+            ths.showAlertPopup(callback);
+          });
+        }
+      }
+    })
   }
 
   assignToLead() {
@@ -1408,5 +1414,17 @@ export class BillingClaimsComponent {
       name = ths.claimRcm.secInsurance;
     }
     return name.toLowerCase().includes("medicaid");
+  }
+
+  isOtherTLExist(callback:any){
+    let params:any = { 
+      "claimUuid": this.claimUUid,
+      "assignToTeamId": +this.claimEditModel.assignToTeam
+    };
+    this.appService.isOtherTeamTLExist(params,(res:any)=>{
+      if(res.status){
+        callback(res.data);
+      }
+    })
   }
 }    

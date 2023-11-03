@@ -83,7 +83,14 @@ export class SearchClaimsComponent {
   getcompanyData() {
     this.appService.fetchClientsByUser((callback: any) => {
       if (callback.status) {
-        this.clients = this.appService.sortByAlphabet(callback.data,'clientName');
+        
+        this.clients = callback.data.map((e:any)=>
+        {
+          return{
+          ...e,'name':e.clientName
+        }
+      })
+        this.clients = this.appService.sortByAlphabet(this.clients,'name');
 
       }
     })

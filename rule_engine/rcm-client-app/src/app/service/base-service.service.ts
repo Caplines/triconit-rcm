@@ -105,6 +105,7 @@ export class BaseService {
     'search-params': '/api/searchparams',
     'search-claims-pdf': '/api/search-claim/d',
     'unarchive-claims': '/api/unarchive-claims',
+    'others-teams-tl-exit': '/api/others-teams-tl-exit',
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

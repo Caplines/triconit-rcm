@@ -168,7 +168,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     }
     console.log(45);
 
-    if (this.searchClaimsConfig.clients.length == this.inputConfig.clientData.length) {
+    if (this.searchClaimsConfig.clients.length == this.inputConfig.clients.length) {
       this.isAllSelected[filterProperty] = true;
     } else {
       this.isAllSelected[filterProperty] = false;
@@ -225,17 +225,17 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
 
   else if (type === 'selectAllClient') {
     if (status) {
-      this.inputConfig.clientData.forEach((item: any) => {
+      this.inputConfig.clients.forEach((item: any) => {
         if (!item.checked) {
           item.checked = true;
           this.searchClaimsConfig[filterProperty].push(item);
         }
       })
     } else {
-      this.inputConfig.clientData.forEach((item: any) => item.checked = false)
+      this.inputConfig.clients.forEach((item: any) => item.checked = false)
       this.searchClaimsConfig[filterProperty] = [];
     }
-    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.clientData.length) {
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.clients.length) {
       this.isAllSelected[filterProperty] = true;
       this._service.emitOnValueChange({ action: 'getSelectClientName', value: this.searchClaimsConfig.clients });
     } else {
@@ -514,6 +514,8 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
 
    
     filterOptions(filterProperty:any) {
+      console.log(12);
+      
       this.inputConfig[filterProperty] = this._service.sortByAlphabet(this.inputConfig[filterProperty], 'name');
       this.filteredOptions[filterProperty] = this.inputConfig[filterProperty].filter((option: any, idx: any) => {
         if (this.searchClaimsConfig[filterProperty].length > 0) {
@@ -524,13 +526,16 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
       }
       )
 
+      console.log(this.filteredOptions[filterProperty]);
+      
+
     }
 
     clearAll(value:string,actions:string){
        this.searchClaimsConfig[value].forEach((e:any)=>e.checked=false);
        this.searchClaimsConfig[value]= [];
        this.filteredOptions[value].forEach((e:any)=>e.checked=false);
-       this._service.emitOnValueChange({action:actions,value:this.searchClaimsConfig.insuranceNames});
+       this._service.emitOnValueChange({action:actions,value:this.searchClaimsConfig[value]});
     }
 
     toggleSelectedItem(field:any){

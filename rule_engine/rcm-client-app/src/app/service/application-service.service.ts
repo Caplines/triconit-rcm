@@ -519,6 +519,10 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['unarchive-claims'],callback);
   }
 
+  isOtherTeamTLExist(params: any,callback: any) {
+    this.postData(params, this.httpUrl['others-teams-tl-exit'],callback);
+  }
+
   sortByAlphabet(data:any,sortBy:string){
     return data.sort((a:any,b:any)=>a[sortBy].localeCompare(b[sortBy]))
   }
