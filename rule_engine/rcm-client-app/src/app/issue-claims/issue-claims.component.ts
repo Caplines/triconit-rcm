@@ -44,6 +44,8 @@ export class IssueClaimComponent {
   @ViewChild('archiveSelectBox')archiveSelectBox!:ElementRef;
   @ViewChild('unArchiveSelectBox')unArchiveSelectBox!:ElementRef;
   
+
+  selectedClaimsToUnArchiveData:any=[];
   
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -328,6 +330,7 @@ selectClaimsToArchive(e:any,id:any){
   
   receiveChildEvent(event:any){
     if(event['action'] === 'pageNum'){
+      this.selectedClaimsToUnArchiveData=[];
       this.getArchiveClaims(event.value);
     }
   }
@@ -344,6 +347,7 @@ selectClaimsToArchive(e:any,id:any){
           if(e.claimId.startsWith(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`)){
             e.newClaimId = e.claimId.replace(`${e.id}_${this.appConstant.ARCHIVE_PREFIX}`,'')
          }
+         e['unArchive']=false;
         })
         this.totalArchivePages = res?.data[0].totalPages;
         this.pagnationPages();
@@ -499,6 +503,72 @@ selectClaimsToArchive(e:any,id:any){
     })
 
     console.log(this.filtertedArchiveItems);
+    
+  }
+
+  selectClaimsToUnArchive(claimId:any,id:any){
+    if (this.selectedClaimsToUnArchiveData.length == 0) {
+      this.selectedClaimsToUnArchiveData.push({'id': id, 'claimId': claimId});
+    } else {
+      let exist = this.selectedClaimsToUnArchiveData.some((item: any) => item.id == id);
+      if (!exist) {
+        this.selectedClaimsToUnArchiveData.push({'id': id, 'claimId': claimId});
+      } else {
+        let indx = this.selectedClaimsToUnArchiveData.findIndex((item: any) => item.id == id);
+        this.selectedClaimsToUnArchiveData.splice(indx, 1);
+      }
+    }
+
+    console.log(this.selectedClaimsToUnArchiveData);
+    
+  }
+
+  unArchiveSelectedClaims(){
+      let params:any={
+        'unarchiveClaims':this.selectedClaimsToUnArchiveData
+      };
+
+      this.appSer.unarchiveCurrentpageClaims(params,(res:any)=>{
+        if (res.status == 200 && res?.data?.unArchiveStatus) {
+          this.showMessage = { 'msg': res.data?.message, 'status': res.status };
+          this.loader.unarchive = false;
+          this.showHideMessage();
+          location.reload();
+        } 
+        else if (res.status == 200 && !res.data?.unArchiveStatus) {
+          this.showMessage = { 'msg': res.data?.message, 'status': res.status };
+          this.loader.showLoader = false;
+          this.showHideMessage();
+          this.loader.unarchive = false;
+        }
+        else {
+          this.showMessage = { 'msg': res.message, 'status': res.status };
+          this.loader.showLoader = false;
+          this.showHideMessage();
+          this.loader.unarchive = false;
+        }
+      })
+  }
+
+  selectAllUnArchieveClaims(event:any){
+    let isAllSelected:boolean = event.target.checked;
+    if (isAllSelected) {
+      this.filtertedArchiveItems.forEach((e: any) => {
+        if (!e.unArchive) {
+          e.unArchive = true;
+          this.selectedClaimsToUnArchiveData.push({'id': e.id, 'claimId': e.claimId});
+        }
+      });
+    } else {
+      this.filtertedArchiveItems.forEach((e: any) => {
+        if (e.unArchive) {
+          e.unArchive = false;
+          this.selectedClaimsToUnArchiveData = [];
+        }
+      });
+    }
+
+    console.log(this.selectedClaimsToUnArchiveData);
     
   }
 }

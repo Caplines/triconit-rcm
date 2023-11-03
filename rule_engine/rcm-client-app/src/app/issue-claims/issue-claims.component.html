@@ -48,113 +48,113 @@
 
                                 </div>
                                     <div class="d-flex">
-                                        <button type="button" class="btn btn-danger mx-2" (click)="UnarchiveCurrentPageClaims()" *ngIf="((loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)) && archiveClaimConfig.archiveCount > 0">
-                                            <strong> UnArchive Current Page Claims</strong> </button>
+                                        <!-- <button type="button" class="btn btn-danger mx-2" (click)="UnarchiveCurrentPageClaims()" *ngIf="((loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)) && archiveClaimConfig.archiveCount > 0">
+                                            <strong> UnArchive Current Page Claims</strong> </button> -->
                                         <button type="button" class="btn btn-danger" (click)="UnarchiveClaimsConfirmModal()" *ngIf="((loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)) && archiveClaimConfig.archiveCount > 0">
                                             <strong> UnArchive All Claims</strong> </button>
                                        
                                     </div>
-                                    <div class="table-responsive" >
-                                        <table class="table table-wrapper-scroll-y table-inner-scrollbar" #modalElement (scroll)="onModalScroll()"   id="issuetable" >
+                                    <div class="table-responsive">
+                                        <table class="table table-wrapper-scroll-y table-inner-scrollbar" #modalElement (scroll)="onModalScroll()"
+                                            id="issuetable">
                                             <thead>
                                                 <tr class="totalRow">
                                                     <th colspan="6">
                                                         <div class="dFlex">
                                                             Office Name <div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('officeName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                                <img (click)="showHideFilteredDropdown('officeName')" src="../../assets/img/filterIcon.png"
+                                                                    style="cursor: pointer; margin-left: 6px;" />
                                                                 <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.officeName">
                                                                     <div class="clearClose">
                                                                         <label class="mx-1">
-                                                                            <input type="checkbox"
-                                                                                [checked]="isFilterAllSelected.officeName"
-                                                                                value="selectAll"
-                                                                                (change)="selectAll($event,'officeName')">
+                                                                            <input type="checkbox" [checked]="isFilterAllSelected.officeName"
+                                                                                value="selectAll" (change)="selectAll($event,'officeName')">
                                                                             {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
-                                                                        <button
-                                                                            (click)="showFilteredDropdown.officeName=false;"
-                                                                            type="button" class="close"
-                                                                            data-dismiss="modal"
-                                                                            aria-label="Close"><span>&times;</span></button>
+                                                                        <button (click)="showFilteredDropdown.officeName=false;" type="button" class="close"
+                                                                            data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
                                                                     </div>
                                                                     <ng-container *ngFor="let data of this.filteredOfficeName">
                                                                         <label class="mx-1">
-                                                                            <input type="checkbox" checked="true"
-                                                                            [(ngModel)]="data.checked"
-                                                                                value="{{data.name}}"
-                                                                                (change)="filterOfficeName($event,'officeName')">
+                                                                            <input type="checkbox" checked="true" [(ngModel)]="data.checked"
+                                                                                value="{{data.name}}" (change)="filterOfficeName($event,'officeName')">
                                                                             {{data.name}}
                                                                         </label>
                                                                     </ng-container>
                                                                 </div>
                                                             </div><span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted['officeName']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted['officeName']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
-                                                        </span>                                                         
+                                                                <a href="javascript:void(0);" class="arrow-up"
+                                                                    [ngClass]="{'selected': !isSorted['officeName']}"
+                                                                    (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
+                                                                <a href="javascript:void(0);" class="arrow-down"
+                                                                    [ngClass]="{'selected': isSorted['officeName']}"
+                                                                    (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
+                                                            </span>
                                                         </div>
                                                     </th>
-                                                    <th colspan="6" >
+                                                    <th colspan="6">
                                                         <div class="dFlex">Claim ID</div>
                                                     </th>
                                                     <th colspan="6">
-                                                        <div class="dFlex">  
+                                                        <div class="dFlex">
                                                             Upload Date <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted['createdDate']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'createdDate','asc','dateOnly'); isSorted['createdDate'] = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted['createdDate']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'createdDate','desc','dateOnly');isSorted['createdDate'] = true"></a>
+                                                                <a href="javascript:void(0);" class="arrow-up"
+                                                                    [ngClass]="{'selected': !isSorted['createdDate']}"
+                                                                    (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'createdDate','asc','dateOnly'); isSorted['createdDate'] = false"></a>
+                                                                <a href="javascript:void(0);" class="arrow-down"
+                                                                    [ngClass]="{'selected': isSorted['createdDate']}"
+                                                                    (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'createdDate','desc','dateOnly');isSorted['createdDate'] = true"></a>
                                                             </span>
                                                         </div>
                                                     </th>
                                                     <th colspan="6" style="min-width: 170px;">
-                                                        <div class="dFlex">  
-                                                        Issue due to which Claim could not be Uploaded <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted['issue']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'issue','asc','string'); isSorted['issue'] = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted['issue']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'issue','desc','string');isSorted['issue'] = true"></a>
+                                                        <div class="dFlex">
+                                                            Issue due to which Claim could not be Uploaded <span class="sorting">
+                                                                <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['issue']}"
+                                                                    (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'issue','asc','string'); isSorted['issue'] = false"></a>
+                                                                <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['issue']}"
+                                                                    (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'issue','desc','string');isSorted['issue'] = true"></a>
                                                             </span>
                                                         </div>
                                                     </th>
                                                     <th colspan="6">
-                                                        <div class="dFlex">  
-                                                        Source <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up"
-                                                                [ngClass]="{'selected': !isSorted['source']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'source','asc','string'); isSorted['source'] = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down"
-                                                                [ngClass]="{'selected': isSorted['source']}"
-                                                                (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'source','desc','string');isSorted['source'] = true"></a>
+                                                        <div class="dFlex">
+                                                            Source <span class="sorting">
+                                                                <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['source']}"
+                                                                    (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'source','asc','string'); isSorted['source'] = false"></a>
+                                                                <a href="javascript:void(0);" class="arrow-down"
+                                                                    [ngClass]="{'selected': isSorted['source']}"
+                                                                    (click)="sortData(showIssueClaim ? filteredItems : filtertedArchiveItems,'source','desc','string');isSorted['source'] = true"></a>
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th colspan="6" *ngIf="(loginUserType == 'TL' && showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && showIssueClaim)">
-                                                        <div class="dFlex nowrap-text">  
-                                                            <label class="no-css-checkbox-container"  (change)="selectAllArchieveClaims($event)">
+                                                    <th colspan="6"
+                                                        *ngIf="(loginUserType == 'TL' && showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && showIssueClaim)">
+                                                        <div class="dFlex nowrap-text">
+                                                            <label class="no-css-checkbox-container" (change)="selectAllArchieveClaims($event)">
                                                                 <input type="checkbox" #archiveSelectBox>
                                                                 <div class="checkmark"></div>
-                                                              </label>  &nbsp;
-                                                              {{selectedClaimsToArchiveData.length ==0 ? 'Select All' : 'Unselect All'}} Archive Claims
-                                                             <!-- <button class="btn btn-danger"
-                                                            style="min-width: 105px;justify-content: center;"
-                                                            (click)="selectAllArchieveClaims(archiveClaimsData.length==0 ? true : false)">{{archiveClaimsData.length==0
-                                                                ? 'Select All' : 'Unselect All'}}</button> -->
+                                                            </label> &nbsp;
+                                                            {{selectedClaimsToArchiveData.length ==0 ? 'Select All' : 'Unselect All'}} UnArchive Claims
+                                                            <!-- <button class="btn btn-danger"
+                                                                                                style="min-width: 105px;justify-content: center;"
+                                                                                                (click)="selectAllArchieveClaims(archiveClaimsData.length==0 ? true : false)">{{archiveClaimsData.length==0
+                                                                                                    ? 'Select All' : 'Unselect All'}}</button> -->
                                                         </div>
-                                                        
+                                    
                                                     </th>
-                    
-                                                    <th colspan="6" *ngIf="(loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)">UnArchive  
-            
+                                    
+                                                    <th colspan="6"
+                                                        *ngIf="(loginUserType == 'TL' && !showIssueClaim) || (loginUserType == 'SUPER_ADMIN' && !showIssueClaim)">
+                                                        <div class="dFlex nowrap-text">
+                                                            <label class="no-css-checkbox-container" (change)="selectAllUnArchieveClaims($event)">
+                                                                <input type="checkbox" #unArchiveSelectBox>
+                                                                <div class="checkmark"></div>
+                                                            </label> &nbsp;
+                                                            {{selectedClaimsToArchiveData.length ==0 ? 'Select All' : 'Unselect All'}} Archived Claims
+                                                        </div>
                                                     </th>
-                                                    
+                                    
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -181,43 +181,56 @@
                                                         <td colspan="6">{{aCl.createdDate | date:'MMM dd, YYYY HH:mm:ss'}}</td>
                                                         <td colspan="6">{{aCl.issue}}</td>
                                                         <td colspan="6">{{aCl.source}}</td>
-                                                        <td colspan="6"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button"
-                                                                class="btn btn-danger file-button" (click)="UnarchiveClaims(aCl,false)">UnArchive</button></td>
+                                                        <td colspan="6">
+                                                            <a href="javascript:void(0);"></a><input type="checkbox" [(ngModel)]="aCl.unArchive"
+                                                                (change)="selectClaimsToUnArchive(aCl.claimId,aCl.id)" />
+                                                        </td>
                                                     </tr>
                                                 </ng-container>
                                             </tbody>
                                         </table>
+                                        <div class="text-center" *ngIf="tabSwitch.ArchiveClaims">
+                                            <button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button"
+                                                class="btn btn-success file-button" [disabled]="selectedClaimsToUnArchiveData.length==0"
+                                                (click)="unArchiveSelectedClaims()"><span *ngIf="loader.showLoader" class="spinner-grow spinner-grow-sm"
+                                                    role="status" aria-hidden="true"></span>UnArchive</button>
+                                        </div>
                                     </div>
-            
-    </div>
+                                    
+                                    </div>
+                                    </div>
+    <pagination *ngIf="!showIssueClaim && totalArchivePages > 1" [paginationPages]="paginationPages"
+        (emitToParent)="receiveChildEvent($event)"></pagination>
+    <div class="text-center" *ngIf="showIssueClaim"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')"
+            type="button" class="btn btn-success file-button" [disabled]="selectedClaimsToArchiveData.length==0"
+            (click)="archiveSelectedClaims()"><span *ngIf="loader.showLoader" class="spinner-grow spinner-grow-sm"
+                role="status" aria-hidden="true"></span>Archive</button></div>
     </div>
     
-      <pagination *ngIf="!showIssueClaim && totalArchivePages > 1" [paginationPages]="paginationPages" (emitToParent)="receiveChildEvent($event)"></pagination> 
-    <div class="text-center" *ngIf="showIssueClaim"><button *ngIf="(loginUserType == 'TL' || loginUserType=='SUPER_ADMIN')" type="button" class="btn btn-success file-button" [disabled]="selectedClaimsToArchiveData.length==0" (click)="archiveSelectedClaims()"><span *ngIf="loader.showLoader" class="spinner-grow spinner-grow-sm" role="status"
-        aria-hidden="true"></span>Archive</button></div>
     </div>
     </div>
-</div>
-</div>
-</div>
-</div>
-</div>
+    </div>
+    </div>
+    </div>
+    </div>
 <div class="modal-backdrop fade show" [ngClass]="{'modalShow':loader.unarchive}"></div>
 
-<div class="modal" tabindex="-1" role="dialog"  *ngIf="showUnArchiveModal">
+<div class="modal" tabindex="-1" role="dialog" *ngIf="showUnArchiveModal">
     <div class="modal-dialog delete-modal" role="document">
-     <div class="modal-content">
-       <div class="modal-header flex-row">
-         <h4 class="modal-title w-100">Are you sure?</h4>	
-                 <button (click)="closeConfirmationModal(false)" type="button" class="btn btn-sm btn-ligt close">&times;</button>
-       </div>
-       <div class="modal-body">
-         <p>Do you really want to unarchive all the claims?</p>
-       </div>
-       <div class="modal-footer justify-content-center">
-         <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="closeConfirmationModal(false)">Cancel</button>
-         <button type="button" class="btn btn-danger" (click)="UnarchiveClaims('',true)">UnArchive</button>
-       </div>
-     </div>
-   </div>
+        <div class="modal-content">
+            <div class="modal-header flex-row">
+                <h4 class="modal-title w-100">Are you sure?</h4>
+                <button (click)="closeConfirmationModal(false)" type="button"
+                    class="btn btn-sm btn-ligt close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to unarchive all the claims?</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    (click)="closeConfirmationModal(false)">Cancel</button>
+                <button type="button" class="btn btn-danger" (click)="UnarchiveClaims('',true)">UnArchive</button>
+            </div>
+        </div>
+    </div>
 </div>
