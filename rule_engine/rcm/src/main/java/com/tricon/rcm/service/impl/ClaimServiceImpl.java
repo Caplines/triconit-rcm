@@ -110,6 +110,7 @@ import com.tricon.rcm.dto.customquery.RcmClaimNoteDto;
 import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmResponseMessageDto;
 import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.RuleRemarkDto;
@@ -289,6 +290,9 @@ public class ClaimServiceImpl {
 	
 	@Autowired
 	RcmClaimRepository claimRepo;
+	
+	@Autowired
+	RcmCompanyRepo companyRepo;
 	
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
@@ -4079,14 +4083,17 @@ public class ClaimServiceImpl {
 		return response;
 	}
 
-	public boolean findTeamLeadExistForOtherTeams(FindTLExistDto dto, JwtUser jwtUser) throws Exception {
+	public RcmResponseMessageDto findTeamLeadExistForOtherTeams(FindTLExistDto dto, JwtUser jwtUser) throws Exception {
+		RcmResponseMessageDto responseDto = new RcmResponseMessageDto();
 		RcmUser user = userRepo.findByEmail(jwtUser.getUsername());
 		RcmClaims claim = claimRepo.findByClaimUuid(dto.getClaimUuid());
-		if (claim == null || !claim.isPending())
-			return false;
+		if (claim == null || !claim.isPending()) {
+			responseDto.setResponseStatus(false);
+			return responseDto;
+		}
 
 		String clientUuidAssociatedWithClaims = claim.getOffice().getCompany().getUuid();
-
+		
 		// match given client with loggedin user client
 		List<String> companies = rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(user.getUuid());
 		boolean isValidClient = companies.contains(clientUuidAssociatedWithClaims);
@@ -4096,9 +4103,15 @@ public class ClaimServiceImpl {
 			if (exitingTLUserCounts == 0) {
 				logger.info("For Client:" + clientUuidAssociatedWithClaims + ",TL Not exist for team Id:"
 						+ RcmTeamEnum.getTeamDescriptionByTeamId(dto.getAssignToTeamId()));
-				return false;
-			} else { return true;}
+				responseDto.setResponseStatus(false);
+				responseDto.setMessage("For this client (" + companyRepo.findByUuid(clientUuidAssociatedWithClaims).getName()
+						+ "), no Team Lead exist for this team. Please make Team Lead first for missing team and then assign to other team.");
+				return responseDto;
+			} else {
+				responseDto.setResponseStatus(true);
+				return responseDto;
+			}
 		}
-		return false;
+		return responseDto;
 	}
 }

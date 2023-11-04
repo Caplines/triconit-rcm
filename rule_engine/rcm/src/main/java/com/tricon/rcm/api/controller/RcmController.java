@@ -29,6 +29,7 @@ import com.tricon.rcm.dto.RcmArchiveClaimsDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
 import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
+import com.tricon.rcm.dto.RcmResponseMessageDto;
 import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
 import com.tricon.rcm.dto.SearchParamDto;
 import com.tricon.rcm.dto.UnArchiveClaimDto;
@@ -772,32 +773,36 @@ public class RcmController extends BaseHeaderController{
 	@PostMapping("api/others-teams-tl-exit")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> findteamLeadExistForOtherTeams(@RequestBody FindTLExistDto dto, Model model) {
-		boolean response = false;
+		RcmResponseMessageDto response = new RcmResponseMessageDto();
 		int validateTeamId = 0;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if (partialHeader == null)
+		if (partialHeader == null) {
+	        response.setResponseStatus(false);
 			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, false));
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, response));}
 
 		// if buttonType 1(claim send back to team who assigned the claim) then no need
 		// to check TL exist or not
 		if (dto.getAssignToTeamId() == null) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", true));
+			response.setResponseStatus(true);
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 		}
 
 		validateTeamId = RcmTeamEnum.validateTeamIdWithRoleVisible(dto.getAssignToTeamId());
 
 		if ((dto.getClaimUuid() == null || dto.getClaimUuid().isEmpty()) || validateTeamId == 0) {
+			response.setResponseStatus(false);
 			return ResponseEntity
-					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, false));
+					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, response));
 		}
 
 		try {
 			response = claimServiceImpl.findTeamLeadExistForOtherTeams(dto, partialHeader.getJwtUser());
 		} catch (Exception e) {
+		    response.setResponseStatus(false);
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", false));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", response));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
