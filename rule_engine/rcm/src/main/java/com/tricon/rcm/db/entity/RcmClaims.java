@@ -104,7 +104,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "patient_birth_date")
 	private Date patientBirthDate;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "office_id", referencedColumnName = "uuid")
 	private RcmOffice office;
 

@@ -772,16 +772,17 @@ public class RcmController extends BaseHeaderController{
 	@PostMapping("api/others-teams-tl-exit")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> findteamLeadExistForOtherTeams(@RequestBody FindTLExistDto dto, Model model) {
-		boolean response = true;
+		boolean response = false;
 		int validateTeamId = 0;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, false));
 
-		// if buttonType 1(claim send back to team who assigned the claim) then no need to check TL exist or not
+		// if buttonType 1(claim send back to team who assigned the claim) then no need
+		// to check TL exist or not
 		if (dto.getAssignToTeamId() == null) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", true));
 		}
 
 		validateTeamId = RcmTeamEnum.validateTeamIdWithRoleVisible(dto.getAssignToTeamId());
@@ -796,7 +797,7 @@ public class RcmController extends BaseHeaderController{
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", false));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}

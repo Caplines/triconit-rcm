@@ -135,7 +135,7 @@ export class ManageOfficeComponent implements OnInit {
             this.alert.showAlertPopup = true;
             this.alert.isError=true;
             this.isAnyTLExist=false;
-            this.alert.alertMsg = `For this client: Team Lead of  ${nonExistingTeam}  doesn't exist.Please make Team Lead first for missing team and then add new office.`;     
+            this.alert.alertMsg = `For this client: Team Lead of  ${nonExistingTeam}  doesn't exist. Please make Team Lead first for missing team and then add new office.`;     
       } 
       else if(callback.status == 500){
         this.alert.showAlertPopup = true;

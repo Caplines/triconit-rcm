@@ -4085,22 +4085,20 @@ public class ClaimServiceImpl {
 		if (claim == null || !claim.isPending())
 			return false;
 
-		// match given office with loggedin user office
+		String clientUuidAssociatedWithClaims = claim.getOffice().getCompany().getUuid();
 
+		// match given client with loggedin user client
 		List<String> companies = rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(user.getUuid());
-		boolean isValidClient = companies.contains(claim.getOffice().getCompany().getUuid());
+		boolean isValidClient = companies.contains(clientUuidAssociatedWithClaims);
 		if (isValidClient) {
-			int exitingTLUserCounts = userCompanyRepo.findExistingTLByClientUuidAndTeam(
-					claim.getOffice().getCompany().getUuid(), dto.getAssignToTeamId());
+			int exitingTLUserCounts = userCompanyRepo.findExistingTLByClientUuidAndTeam(clientUuidAssociatedWithClaims,
+					dto.getAssignToTeamId());
 			if (exitingTLUserCounts == 0) {
-				logger.info("For Client:" + claim.getOffice().getCompany().getName() + ",TL Not exist for team Id:"
+				logger.info("For Client:" + clientUuidAssociatedWithClaims + ",TL Not exist for team Id:"
 						+ RcmTeamEnum.getTeamDescriptionByTeamId(dto.getAssignToTeamId()));
 				return false;
-			} else {
-				return true;
-			}
-		} else {
-			return false;
+			} else { return true;}
 		}
+		return false;
 	}
 }
