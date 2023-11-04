@@ -583,8 +583,13 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
 
     console.log(params);
     this.appService.isOtherTeamTLExist(params,(res:any)=>{
-      if(res.status){
+      if(res.data){
         callback(res.data);
+      }else{
+          this.errorMessage = "No Team Lead exist for this team. Please make Team Lead first for missing team and then assign to other team.";
+          setTimeout(() => {
+            this.errorMessage='';
+          }, 3000);
       }
     })
   }
