@@ -73,9 +73,9 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 		x+",rep.patient_dob as dob,"
 			 		+ " rep.patient_name as patient_name,rep.patient_id as patient_id,rep.ivf_form_id as ivf_form_id," + 
 			 		"rd.rule_id as rule_id,rd.error_message as error_message,rl.name as rule_name FROM " + 
-		            t+",rules as rl " + 
+		            t+"  left join  rules as rl  on rl.id=rd.rule_id  and rd.rule_id is not null " + 
 			 		" ,user as us ,office as offi where rep.office_id='"+dto.getOfficeId()+"' and " + 
-			 		" rep.id=rd.report_id and rl.id=rd.rule_id and rd.rule_id is not null  " + 
+			 		" rep.id=rd.report_id   " + 
 			 		" and us.uuid=rd.created_by and offi.uuid=rep.office_id ";
 			 if (dto.getIvformTypeId()!=null && !dto.getIvformTypeId().equals("")) {
 				 queryString= queryString + " and iv_form_type_id="+dto.getIvformTypeId()+" " ;
@@ -183,13 +183,13 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 					 queryString= queryString + " and " +batchrest;
 						 
 			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.Teamwise.toString())) {
-				 queryString="SELECT DATE_FORMAT(rep.created_date,'%m/%d/%Y %T') as rep_create_date,rep.created_by as rep_created_by, "+
+				 queryString="SELECT DATE_FORMAT(rd.updated_date,'%m/%d/%Y %T') as rep_create_date,rd.created_by as rep_created_by, "+
 						 " CONCAT( first_name ,' ' ,last_name ) as name ,CAST(COALESCE(rd.message_type, -200) as UNSIGNED) as messageType "
 				 		+ ", DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as rd_created_date," + 
 				 		"us.email as email,offi.name as office_name,rep.group_run as rep_group_run,rd.group_run as rd_group_run, " + 
 				 		x+",rep.patient_dob as dob,"
 				 		+ " rep.patient_name as patient_name,rep.patient_id as patient_id,rep.ivf_form_id as ivf_form_id," + 
-				 		"rd.rule_id as rule_id,rd.error_message as error_message,pd.apt_date , pd.ins_name FROM " + 
+				 		"rd.rule_id as rule_id,rd.error_message as error_message,pd.apt_date , pd.ins_name,pd.plan_type FROM " + 
 			            t+ 
 				 		" ,user as us ,office as offi,patient_detail as pd where "+(!dto.getOfficeId().equals("")?"rep.office_id='"+dto.getOfficeId()+"' and ":" ")+ 
 				 		" rep.id=rd.report_id  and rd.rule_id is not null  and pd.id=ivf_form_id  " + 
@@ -197,15 +197,40 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 				 if (dto.getIvformTypeId()!=null && !dto.getIvformTypeId().equals("")) {
 					 queryString= queryString + " and iv_form_type_id="+dto.getIvformTypeId()+" " ;
 				 }
-				 queryString= queryString+	"  and (" + 
-							"  (rd.created_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
-							"                 or" + 
-							"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
-							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
+				 queryString= queryString+	"  and " + 
+							"  rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') ";
+							//"                 or" + 
+						//	"  (rd.updated_date between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+						//	"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') )" + 
 						
-							" )  " ;//and rd.created_by='"+dto.getEmployerName() +"'" ;
+						//	" )  " ;//and rd.created_by='"+dto.getEmployerName() +"'" ;
 					 //}
+					
+					 queryString= queryString + " and " +batchrest;
+					 queryString= queryString + " group by rd.report_id ";
+						 
+			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.TeamwiseDOS.toString())) {
+				 queryString="SELECT DATE_FORMAT(rd.updated_date,'%m/%d/%Y %T') as rep_create_date,rd.created_by as rep_created_by, "+
+						 " CONCAT( first_name ,' ' ,last_name ) as name ,CAST(COALESCE(rd.message_type, -200) as UNSIGNED) as messageType "
+				 		+ ", DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as rd_created_date," + 
+				 		"us.email as email,offi.name as office_name,rep.group_run as rep_group_run,rd.group_run as rd_group_run, " + 
+				 		x+",rep.patient_dob as dob,"
+				 		+ " rep.patient_name as patient_name,rep.patient_id as patient_id,rep.ivf_form_id as ivf_form_id," + 
+				 		"rd.rule_id as rule_id,rd.error_message as error_message,pd.apt_date , pd.ins_name,pd.plan_type FROM " + 
+			            t+ 
+				 		" ,user as us ,office as offi,patient_detail as pd where "+(!dto.getOfficeId().equals("")?"rep.office_id='"+dto.getOfficeId()+"' and ":" ")+ 
+				 		" rep.id=rd.report_id  and rd.rule_id is not null  and pd.id=ivf_form_id  " + 
+				 		" and us.uuid=rd.created_by and offi.uuid=rep.office_id ";
+				 if (dto.getIvformTypeId()!=null && !dto.getIvformTypeId().equals("")) {
+					 queryString= queryString + " and iv_form_type_id="+dto.getIvformTypeId()+" " ;
+				 }//2019-11-04
+				 queryString= queryString+	"  and (" + 
+							"  STR_TO_DATE(apt_date,'%Y-%m-%d') between STR_TO_DATE( '"+dto.getReportField1()+" 00:00:00', '%m/%d/%Y %H:%i:%s')" + 
+							"  and STR_TO_DATE('"+dto.getReportField2()+" 23:59:59', '%m/%d/%Y %H:%i:%s') " + 
+							
+							"" + 
+							" )" ;
 					
 					 queryString= queryString + " and " +batchrest;
 					 queryString= queryString + " group by rd.report_id ";
@@ -610,9 +635,9 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 					+ " FROM reports r "+reportDateLogic+" where  treatement_plan_id='"+Constants.sealanthmode+"'" +reportDateLogicQ;
 			
 					
-			queryString= queryString+	" and patient_id in ("+dto.getPatientId()+")  group by patient_id ) a, report_detail rd, "
-					+ "rules as rl,user as us ,office as offi "
-					+ " where a.office_id='"+dto.getOfficeId()+"' and  a.rep_group_run=rd.group_run and a.id=rd.report_id and rl.id=rd.rule_id"
+			queryString= queryString+	" and patient_id in ("+dto.getPatientId()+")  group by patient_id ) a, report_detail rd "
+					+ " left join  rules as rl  on rl.id=rd.rule_id  and rd.rule_id is not null ,user as us ,office as offi "
+					+ " where a.office_id='"+dto.getOfficeId()+"' and  a.rep_group_run=rd.group_run and a.id=rd.report_id "
 					+ " and us.uuid=rd.created_by and offi.uuid=a.office_id ";
 			 	 if (dto.getReportField1()==null) dto.setReportField1("");
 				 if (dto.getReportField2()==null) dto.setReportField2("");

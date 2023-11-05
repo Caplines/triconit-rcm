@@ -955,7 +955,7 @@ public class RuleEngineService {
 			RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 			//
 			RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUUid);
-			if (claim.getFirstWorkedTeamId().getId() == teamId) {
+			//if (claim.getFirstWorkedTeamId().getId() == teamId) {
 			UserAssignOffice assignedUser = userAssignOfficeRepo
 					.findByOfficeUuidAndTeamId(claim.getOffice().getUuid(), teamId);
 			 
@@ -970,7 +970,7 @@ public class RuleEngineService {
 							+ teamId + " ");
 				}
 			}
-			}
+			//}
 			
 		}
 		}catch(Exception ex) {

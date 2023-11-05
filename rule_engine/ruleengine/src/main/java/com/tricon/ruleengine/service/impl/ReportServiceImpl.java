@@ -782,25 +782,26 @@ public class ReportServiceImpl implements ReportService {
 	        
       	   row = sheet.createRow(1);
       	   cell = row.createCell(0);
-    	  cell.setCellValue("S.No");
-      	   cell = row.createCell(++columnCount);
-      	  cell.setCellValue("Created Date");
-      	  cell = row.createCell(++columnCount);
-      	  cell.setCellValue("Patient Id");
-      	  cell = row.createCell(++columnCount);
-      	  cell.setCellValue("Patient Name");
-      	  cell = row.createCell(++columnCount);
-      	  cell.setCellValue("IVF Id");
-      	  cell = row.createCell(++columnCount);
-      	  cell.setCellValue("TP ID");
-      	  cell = row.createCell(++columnCount);
-      	  cell.setCellValue("Run By");
-      	  cell = row.createCell(++columnCount);
-      	  cell.setCellValue("Insurance Name");
-      	  cell = row.createCell(++columnCount);
-      	  cell.setCellValue("Appointment Date");
-      	  cell = row.createCell(++columnCount);
-     	  cell.setCellValue("Office Name");
+    	   //cell.setCellValue("S.No");
+      	   //cell = row.createCell(++columnCount);
+      	   // row = sheet.createRow(1);
+    	   //cell = row.createCell(0);
+  	       //cell.setCellValue("S.No");
+    	   //cell = row.createCell(++columnCount);
+    	   cell.setCellValue("Office Name");
+    	   cell = row.createCell(++columnCount);
+    	   cell.setCellValue("Patient Id");
+    	   cell = row.createCell(++columnCount);
+    	   cell.setCellValue("Insurance Name");
+    	   cell = row.createCell(++columnCount);
+    	   cell.setCellValue("Pan Type");
+    	   cell = row.createCell(++columnCount);
+    	   cell.setCellValue("Run By");
+    	   cell = row.createCell(++columnCount);
+    	   cell.setCellValue("Appointment Date");
+    	   cell = row.createCell(++columnCount);
+    	   cell.setCellValue("Date Created");
+
       	  
       	  
 	        Map<String, List<ReportResponseDto>> data = dto.getData(); 
@@ -811,26 +812,24 @@ public class ReportServiceImpl implements ReportService {
 	        	  
 	        	   columnCount = -1;
 	        	   row = sheet.createRow(++rowCount);
-	        	   cell = row.createCell(++columnCount);
-		          cell.setCellValue(rowCount-1);
+	        	   //cell = row.createCell(++columnCount);
+		           //cell.setCellValue(rowCount-1);
 		       	  cell = row.createCell(++columnCount);
-	        	  cell.setCellValue(d.getRd_created_date());
+	        	  cell.setCellValue(d.getOffice_name());
 	        	  cell = row.createCell(++columnCount);
 	        	  cell.setCellValue(d.getPatient_id());
 	        	  cell = row.createCell(++columnCount);
-	        	  cell.setCellValue(d.getPatient_name());
+	        	  cell.setCellValue(d.getIns_name());
 	        	  cell = row.createCell(++columnCount);
-	        	  cell.setCellValue(d.getIvf_form_id());
-	        	  cell = row.createCell(++columnCount);
-	        	  cell.setCellValue(d.getTreatement_plan_id());
+	        	  cell.setCellValue(d.getPlan_type());
 	        	  cell = row.createCell(++columnCount);
 	        	  cell.setCellValue(d.getName());
 	        	  cell = row.createCell(++columnCount);
-	        	  cell.setCellValue(d.getIns_name());
-	        	  cell = row.createCell(++columnCount);
 	        	  cell.setCellValue(d.getApt_date());
 	        	  cell = row.createCell(++columnCount);
-	        	  cell.setCellValue(d.getOffice_name());
+	        	  cell.setCellValue(d.getRep_create_date());
+	        	  cell = row.createCell(++columnCount);
+	        	  
 	        	  
 	          }
 	        }

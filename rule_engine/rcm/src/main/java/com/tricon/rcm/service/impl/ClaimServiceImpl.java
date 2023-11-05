@@ -4091,8 +4091,8 @@ public class ClaimServiceImpl {
 			responseDto.setResponseStatus(false);
 			return responseDto;
 		}
-
-		String clientUuidAssociatedWithClaims = claim.getOffice().getCompany().getUuid();
+        RcmOffice office= officeRepo.findByUuid(claim.getOffice().getUuid());
+		String clientUuidAssociatedWithClaims = office.getCompany().getUuid();
 		
 		// match given client with loggedin user client
 		List<String> companies = rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(user.getUuid());

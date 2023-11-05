@@ -26,6 +26,7 @@ public class ReportResponseDto {
     private String iv_date;
     private String apt_date;
     private String ins_name;
+    private String plan_type;
     
     
 	
@@ -159,6 +160,12 @@ public class ReportResponseDto {
 	}
 	public void setIns_name(String ins_name) {
 		this.ins_name = ins_name;
+	}
+	public String getPlan_type() {
+		return plan_type;
+	}
+	public void setPlan_type(String plan_type) {
+		this.plan_type = plan_type;
 	}
 
 	
