@@ -67,6 +67,19 @@
                                     <div class="colAction"><multi-select-dropdown [inputConfig]="{'ageCategory':constants.ageCategory,'isSearchClaims':true,'subType':'ageCategory'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
+                                        <div class="colName">
+                                            Show Archived?
+                                        </div>
+                                        <div class="colAction">
+                                            <div class="custom-control custom-switch custom-switch-lg">
+                                                <input type="checkbox" [(ngModel)]="searchClaimConfig.showArchive" class="custom-control-input"
+                                                    id="customSwitch1">
+                                                <label class="custom-control-label" for="customSwitch1"></label>
+                                            </div>
+                                        </div>
+                                    
+                                    </div>
+                                    <div class="colBox">
                                     <div class="colName">
                                                                                 Claim Status
                                     </div>
@@ -106,18 +119,6 @@
                                     <div class="colAction">
                                     <multi-select-dropdown [inputConfig]="{'teamData':teamData,'isSearchClaims':true}"></multi-select-dropdown>
                                     </div>
-                                    </div>
-                                    <div class="colBox">
-                                    <div class="colName">
-                                                                                Show Archived?
-                                    </div>
-                                    <div class="colAction">
-                                    <div class="custom-control custom-switch custom-switch-lg">
-                                    <input type="checkbox" [(ngModel)]="searchClaimConfig.showArchive"class="custom-control-input" id="customSwitch1">
-                                    <label class="custom-control-label" for="customSwitch1"></label>
-                                    </div>
-                                    </div>
-
                                     </div>
                                     <div class="colBox" style="margin-top:32px">
                                         <div  class="colAction">

@@ -1422,12 +1422,12 @@ export class BillingClaimsComponent {
       "assignToTeamId": +this.claimEditModel.assignToTeam
     };
     this.appService.isOtherTeamTLExist(params,(res:any)=>{
-      if(res.data){
-        callback(res.data);
+      if(res.data.responseStatus){
+        callback(res.data.responseStatus);
       }
       else{
         this.alert.showAlertPopup = true;
-        this.alert.alertMsg = "No Team Lead exist for this team. Please make Team Lead first for missing team and then assign to other team. ";
+        this.alert.alertMsg =res.data.message ;
         this.alert.isError = false;
         setTimeout(() => {
           this.alert= {};
