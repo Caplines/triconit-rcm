@@ -70,6 +70,8 @@ export class SearchClaimsComponent {
         this.searchClaimConfig['ageCategory'] = event.value.map(({ checked, name, ...newAge }: any) => newAge.value);//removing unused propertieds
       } else if (event['action'] == 'getSelectedClaimStatus') {
         this.searchClaimConfig['claimStatus'] = event.value.map(({ checked, ...newClaimAge }: any) => newClaimAge.name);//removing unused propertieds
+        console.log(this.searchClaimConfig.claimStatus);
+        
       }
     })
   }
@@ -170,10 +172,24 @@ export class SearchClaimsComponent {
                 this.appService.emitOnValueChange({action:'selectDefaultClaimStatus',value:e});
             }
           })
-          if(this.searchClaimConfig.clientUuid.length>0){
-                this.searchClaims();
-          }
+      } else if(activeTab == 2){
+        this.searchParamModel.insuranceTypes.forEach((e:any)=>{
+            if(e.name.toLowerCase().includes("medicaid")){
+                e.checked=true;
+                this.appService.emitOnValueChange({action:'filterUnbilledMedicaid',value:e});
+            }
+        })
+      } else if(activeTab == 3){
+        this.searchParamModel.insuranceTypes.forEach((e:any)=>{
+            if(!e.name.toLowerCase().includes("medicaid")){
+                e.checked=true;
+                this.appService.emitOnValueChange({action:'filterUnbilledNonMedicaid',value:e});
+            }
+        })
       }
+      if(this.searchClaimConfig.clientUuid.length>0){
+        this.searchClaims();
+  }
   }
 
   getOfficesFromSelectedClient(offices:any){

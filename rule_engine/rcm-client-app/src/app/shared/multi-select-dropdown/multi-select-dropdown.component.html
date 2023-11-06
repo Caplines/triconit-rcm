@@ -137,8 +137,11 @@
         <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown;toggleSelectedItem('claimStatus')">
             <span *ngIf="searchClaimsConfig.claimStatus.length<=0">Select</span>
             <span *ngIf="searchClaimsConfig.claimStatus.length>0" [ngClass]="{'hide-item':showSelectedData['claimStatus']}">
-                <ng-container *ngFor="let item of searchClaimsConfig.claimStatus; let last = last"> {{ item.name
-                    }}{{last ? '': ','}}</ng-container>
+                <ng-container *ngFor="let item of searchClaimsConfig.claimStatus; let last = last">
+                 <span *ngIf="item.checked">
+                    {{ item.name}}{{last ? '': ','}}
+                 </span>
+                </ng-container>
             </span>
             <i class="fa fa-angle-down"></i>
         </button>

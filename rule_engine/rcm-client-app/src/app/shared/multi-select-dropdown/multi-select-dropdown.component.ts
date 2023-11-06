@@ -43,6 +43,10 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
           this.inputConfig.officeData = JSON.parse(JSON.stringify(event.value));
           this.inputConfig.officeData  = this._service.sortByAlphabet(this.inputConfig.officeData,'name');
           this.isAllSelected['offices'] = false;
+          this.showSelectedData={};
+          this.showSelectedData['offices']=false;
+          console.log(32432);
+          
         } 
       }
       else if(event.action === 'selectDefaultAgeCategory'){
@@ -55,6 +59,30 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
             if (this.inputConfig != undefined && this.inputConfig.subType != undefined
               && this.inputConfig.subType == 'claimStatus') {
                 this.getSelectedValue(event.value.checked,event.value,'searchClaimStatus','claimStatus');
+              } 
+      }
+      else if(event.action === 'filterUnbilledMedicaid'){
+            if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+              && this.inputConfig.subType == 'insuranceTypes') {
+                this.getSelectedValue(event.value.checked,event.value,'insuranceTypes','insuranceTypes');
+                let value =  {'name':'Unbilled','checked':true};
+                this._service.emitOnValueChange({ action: 'setDefaultfilterClaimStatus', value: value });
+              } 
+            }
+            else if(event.action === 'filterUnbilledNonMedicaid'){
+              if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+                && this.inputConfig.subType == 'insuranceTypes') {
+                  
+                  this.getSelectedValue(event.value.checked,event.value,'insuranceTypes','insuranceTypes');
+                let value =  {'name':'Unbilled','checked':true};
+                this._service.emitOnValueChange({ action: 'setDefaultfilterClaimStatus', value: value });
+              }
+            } 
+            else if(event.action === 'setDefaultfilterClaimStatus'){
+              if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+                && this.inputConfig.subType == 'claimStatus') {
+                  this.getSelectedValue(event.value.checked,event.value,'searchClaimStatus','claimStatus');
+                  console.log(this.searchClaimsConfig.claimStatus);
               } 
       }
       else return;
@@ -418,9 +446,10 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
           this._service.emitOnValueChange({action:'getSelectedClaimStatus',value:this.searchClaimsConfig.claimStatus});
         }
       });
+      
     }
 
-    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig[filterProperty].length) {
+    if (this.inputConfig[filterProperty]?.length && this.searchClaimsConfig[filterProperty]?.length && this.searchClaimsConfig[filterProperty].length == this.inputConfig[filterProperty].length) {
       this.isAllSelected[filterProperty] = true;
       this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: this.searchClaimsConfig[filterProperty] });
     } else {
