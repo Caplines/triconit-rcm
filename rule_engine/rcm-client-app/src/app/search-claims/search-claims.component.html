@@ -8,12 +8,27 @@
                 <div class="main-container">
                     <div class="detail-box">
                         <div class="detail-box-form">
-                            <div class="form-row " id="ruleEngine">
+                            <div class="form-row d-block" id="ruleEngine">
+                                <div class="box d-flex justify-content-between">
                                 <div class="btn-group filterButtons my-2 mb-2" role="group" aria-label="" style="border:0px;">
                                     <button type="button" class="btn btn-info" [class.active]="activeFilter==1" (click)="quickFilter(1)"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> 60+ AR</button>
                                     <button type="button" class="btn btn-info" [class.active]="activeFilter==2" (click)="quickFilter(2)"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> Overdue Unbilled Medicaid </button>
                                     <button type="button" class="btn btn-info" [class.active]="activeFilter==3" (click)="quickFilter(3)"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> Overdue Unbilled Non-Medicaid </button>
                                 </div>
+                                <div class="download-btn">
+                                    <button type="button" class="icon-btn" (click)="downloadPdf()"
+                                        [disabled]="listOfClaimsData.length==0 || loader.exportPDFLoader">
+                                        <img src="../../assets/img/pdf.png" /></button><span
+                                        *ngIf="loader.exportPDFLoader"
+                                        class="spinner-border text-danger mx-1"></span>
+                                    <button type="button" class="icon-btn" (click)="exportToCsv()"
+                                        [disabled]="listOfClaimsData.length==0">
+                                        <img src="../../assets/img/xls.png" /></button><span
+                                        *ngIf="loader.exportCSVLoader"
+                                        class="spinner-border text-success mx-1"></span>
+                                </div>
+                            </div>
+
                                 <div class="rowContainer wrap">
                                     <div class="colBox">
                                     <div class="colName">
@@ -50,6 +65,19 @@
                                                                                 Age Category
                                     </div>
                                     <div class="colAction"><multi-select-dropdown [inputConfig]="{'ageCategory':constants.ageCategory,'isSearchClaims':true,'subType':'ageCategory'}"></multi-select-dropdown> </div>
+                                    </div>
+                                    <div class="colBox">
+                                        <div class="colName">
+                                            Show Archived?
+                                        </div>
+                                        <div class="colAction">
+                                            <div class="custom-control custom-switch custom-switch-lg">
+                                                <input type="checkbox" [(ngModel)]="searchClaimConfig.showArchive" class="custom-control-input"
+                                                    id="customSwitch1">
+                                                <label class="custom-control-label" for="customSwitch1"></label>
+                                            </div>
+                                        </div>
+                                    
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
@@ -91,18 +119,6 @@
                                     <div class="colAction">
                                     <multi-select-dropdown [inputConfig]="{'teamData':teamData,'isSearchClaims':true}"></multi-select-dropdown>
                                     </div>
-                                    </div>
-                                    <div class="colBox">
-                                    <div class="colName">
-                                                                                Show Archived?
-                                    </div>
-                                    <div class="colAction">
-                                    <div class="custom-control custom-switch custom-switch-lg">
-                                    <input type="checkbox" [(ngModel)]="searchClaimConfig.showArchive"class="custom-control-input" id="customSwitch1">
-                                    <label class="custom-control-label" for="customSwitch1"></label>
-                                    </div>
-                                    </div>
-
                                     </div>
                                     <div class="colBox" style="margin-top:32px">
                                         <div  class="colAction">

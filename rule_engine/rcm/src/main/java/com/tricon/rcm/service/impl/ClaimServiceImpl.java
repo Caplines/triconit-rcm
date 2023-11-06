@@ -4110,7 +4110,7 @@ public class ClaimServiceImpl {
 						+ RcmTeamEnum.getTeamDescriptionByTeamId(dto.getAssignToTeamId()));
 				responseDto.setResponseStatus(false);
 				responseDto.setMessage("For this client (" + companyRepo.findByUuid(clientUuidAssociatedWithClaims).getName()
-						+ "), no Team Lead exist for this team. Please make Team Lead first for missing team and then assign to other team.");
+						+ "), no Team Lead exist for "+RcmTeamEnum.getTeamDescriptionByTeamId(dto.getAssignToTeamId())+". Please make Team Lead first for missing team and then assign to other team.");
 				return responseDto;
 			} else {
 				responseDto.setResponseStatus(true);
