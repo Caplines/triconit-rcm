@@ -32,6 +32,7 @@ export class AttachFileComponent {
    }
 
    ngOnInit(){
+    this.errorMessage = '';
     this.userEmail = Utils.currentUserEmail();
     if(this.inputConfig['isDetailPage']){
       this.getAttachmentFile();
@@ -62,6 +63,8 @@ export class AttachFileComponent {
   closeModal() {
     this.showModal = false;
     this.totalFile = this.selectedFiles.length;
+    this.errorMessage = '';
+    this.removeAttachmentFiles=[];
   }
 
   onFileChange(event: any) {
@@ -99,6 +102,7 @@ export class AttachFileComponent {
   loopThroughData(dataArray: any[], currentIndex: number) {
     if (currentIndex >= dataArray.length) {
       this.emitToParent.emit({action:'fileUploadedSuccess',value:this.errorMessage,hasAttachedFiles:this.isAttachedBySameUser})
+      this.errorMessage='';
       this.closeModal();
 
       if(this.inputConfig['isDetailPage']){
@@ -116,11 +120,11 @@ export class AttachFileComponent {
     formData.append("attachmentTypeId", currentData?.attachmentTypeId ? currentData.attachmentTypeId : 0);
     formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
     this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
-      if (res.data.status) {
+      if (res?.data.status) {
         this.errorMessage = res.data.message;
         this.loopThroughData(dataArray, currentIndex + 1);
       } else {
-        this.errorMessage = res.data.message;
+        this.errorMessage = res.data.message ? res.data.message : res.messages;
       }
     })
   }
