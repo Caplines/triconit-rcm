@@ -118,7 +118,7 @@
                             </ol> -->
                         </div>
                         <button type="button" class="btn btn btn-primary file-button" *ngIf="!allowUpload"
-                            [disabled]="selectedFiles.length==0 || uploadButton"
+                            [disabled]="selectedFiles.length==0"
                             (click)="uploadItem(inputConfig.claimUuid)">Upload</button>
                     </div>
                 </div>
@@ -130,9 +130,9 @@
 
 <div class="form" *ngIf="inputConfig['isDetailPage']">
     <div class="wrapper">
-        <!-- <ng-container *ngIf="fileloader">
+        <ng-container *ngIf="fileloader">
             <div class="text-center"><span class="loader-data"></span> </div>
-        </ng-container> -->
+        </ng-container>
         <div class="container detail-attachment-container">
             <div class="upload-container">
                 <div class="border-container">

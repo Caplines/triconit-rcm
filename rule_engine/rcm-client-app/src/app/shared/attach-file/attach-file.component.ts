@@ -29,6 +29,7 @@ export class AttachFileComponent {
   isAttachedBySameUser:boolean=false;
   fileloader:boolean = false;
   uploadButton:boolean=false;
+  
 
   constructor(public constant: AppConstants, private appService: ApplicationServiceService, private downloadService: DownLoadService) {
    }
@@ -96,6 +97,8 @@ export class AttachFileComponent {
     let isEmptyAttachment: Boolean = this.isEmptyAttachmentType();
     if (!fileNameExist && !isEmptyAttachment) {
       this.totalFile = this.selectedFiles.length;
+      this.fileloader= true;
+      this.uploadButton=true;
       this.loopThroughData(this.selectedFiles, 0);
       this.errorMessage = '';
     } else {
@@ -104,14 +107,14 @@ export class AttachFileComponent {
   }
 
   loopThroughData(dataArray: any[], currentIndex: number) {
-    this.fileloader= true;
-    this.uploadButton=true;
+   
     if (currentIndex >= dataArray.length) {
       this.emitToParent.emit({action:'fileUploadedSuccess',value:this.errorMessage,hasAttachedFiles:this.isAttachedBySameUser})
       this.errorMessage='';
       this.closeModal();
-
       if(this.inputConfig['isDetailPage']){
+        this.fileloader= false;
+        this.uploadButton=false;
         this.selectedFiles=[];
         this.getAttachmentFile();
         setTimeout(() => {
@@ -127,8 +130,6 @@ export class AttachFileComponent {
     formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
     this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
       if (res?.data.status) {
-        this.fileloader= false;
-        this.uploadButton=false;
         this.errorMessage = res.data.message;
         this.loopThroughData(dataArray, currentIndex + 1);
       } else {
