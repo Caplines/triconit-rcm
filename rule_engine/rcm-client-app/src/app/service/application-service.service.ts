@@ -474,7 +474,7 @@ export class ApplicationServiceService extends BaseService {
 
   subscribeOnValueChange(name: any, callback: any) {
     this.seviceEventEmitterReference[name] = this.seviceEventEmitter.subscribe((header) => {
-      callback(header)
+      callback(header);
     });
   }
   editUserInfo(params: any, callback: any) {

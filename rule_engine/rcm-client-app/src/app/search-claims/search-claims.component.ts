@@ -1,15 +1,16 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
 import Utils from '../util/utils';
 import { AppConstants } from '../constants/app.constants';
 import { SearchParamModel } from '../models/search_param_model';
 import { DatePipe } from '@angular/common';
+import { SearchClaimsPaginationComponent } from './search-claims-pagination/search-claims-pagination.component';
 @Component({
   selector: 'app-search-claims',
   templateUrl: './search-claims.component.html',
   styleUrls: ['./search-claims.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class SearchClaimsComponent {
 
@@ -43,6 +44,7 @@ export class SearchClaimsComponent {
 
   selectedOffices:any=[];
   selectedClients:any=[];
+  @ViewChild(SearchClaimsPaginationComponent)child!:SearchClaimsPaginationComponent;
 
   constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants,
     private datePipe: DatePipe) {
@@ -190,6 +192,13 @@ export class SearchClaimsComponent {
     this.teamData = this.appService.sortByAlphabet(this.constants.teamData,'teamName');
   }
 
-  
+
+  downloadPdf(){
+    this.child.downloadPdf();
+  }
+
+  exportToCsv(){
+    this.child.exportToCsv();
+  }
 
 }
