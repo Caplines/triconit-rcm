@@ -11,6 +11,9 @@
                 class="text-danger">({{errorMessage}})</small></h5>
         <div class="form">
             <div class="wrapper">
+                <ng-container *ngIf="fileloader">
+                    <div class="text-center"><span class="loader-data"></span> </div>
+                </ng-container>
                 <div class="container"  [ngClass]="{'detail-attachment-container':inputConfig['isDetailPage']}">
                     <div class="upload-container">
                         <div class="border-container">
@@ -115,7 +118,7 @@
                             </ol> -->
                         </div>
                         <button type="button" class="btn btn btn-primary file-button" *ngIf="!allowUpload"
-                            [disabled]="selectedFiles.length==0"
+                            [disabled]="selectedFiles.length==0 || uploadButton"
                             (click)="uploadItem(inputConfig.claimUuid)">Upload</button>
                     </div>
                 </div>
@@ -127,6 +130,9 @@
 
 <div class="form" *ngIf="inputConfig['isDetailPage']">
     <div class="wrapper">
+        <!-- <ng-container *ngIf="fileloader">
+            <div class="text-center"><span class="loader-data"></span> </div>
+        </ng-container> -->
         <div class="container detail-attachment-container">
             <div class="upload-container">
                 <div class="border-container">
@@ -233,7 +239,7 @@
                 class="text-danger">({{errorMessage}})</small>
                 </div>
                 <button type="button" class="btn btn btn-primary file-button" *ngIf="!allowUpload"
-                    [disabled]="selectedFiles.length==0"
+                    [disabled]="selectedFiles.length==0 || uploadButton"
                     (click)="uploadItem(inputConfig.claimUuid)">Upload</button>
             </div>
         </div>

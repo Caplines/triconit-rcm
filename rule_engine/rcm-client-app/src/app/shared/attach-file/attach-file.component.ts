@@ -27,6 +27,8 @@ export class AttachFileComponent {
   removeClaimAttachmentId: any = [];
   userEmail:any='';
   isAttachedBySameUser:boolean=false;
+  fileloader:boolean = false;
+  uploadButton:boolean=false;
 
   constructor(public constant: AppConstants, private appService: ApplicationServiceService, private downloadService: DownLoadService) {
    }
@@ -40,6 +42,8 @@ export class AttachFileComponent {
    }
 
   openModal() {
+    this.fileloader= false;
+    this.uploadButton=false;
     this.showModal = true;
     if (this.inputConfig['isDetailPage'] || (this.inputConfig.attachmentCount > 0 && !this.hasAttachmentFileData && this.removeAttachmentFiles.length == 0)) {
       this.getAttachmentFile();
@@ -100,6 +104,8 @@ export class AttachFileComponent {
   }
 
   loopThroughData(dataArray: any[], currentIndex: number) {
+    this.fileloader= true;
+    this.uploadButton=true;
     if (currentIndex >= dataArray.length) {
       this.emitToParent.emit({action:'fileUploadedSuccess',value:this.errorMessage,hasAttachedFiles:this.isAttachedBySameUser})
       this.errorMessage='';
@@ -121,6 +127,8 @@ export class AttachFileComponent {
     formData.append("file", currentData?.file ? currentData.file : new File([""], "filename"));
     this.appService.submitFilesToAssignedClaims(formData, (res: any) => {
       if (res?.data.status) {
+        this.fileloader= false;
+        this.uploadButton=false;
         this.errorMessage = res.data.message;
         this.loopThroughData(dataArray, currentIndex + 1);
       } else {
