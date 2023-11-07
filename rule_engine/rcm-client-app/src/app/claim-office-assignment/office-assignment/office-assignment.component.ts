@@ -43,6 +43,7 @@ export class OfficeAssignmentComponent implements OnInit {
   filteredCompanyName:any=[];
   filteredItems: any = [];
   filterName:any;
+  isRoleAssociate:boolean;
 
   constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
@@ -54,6 +55,7 @@ export class OfficeAssignmentComponent implements OnInit {
     this.fetchClaimAssignments();
     this.teamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
+    this.isRoleAssociate=Utils.isRoleAsso();
     this.getUserByTeamId();
     this.assignOfficeDetails.teamId = this.teamId;
     this.setTopOnTotalRow();

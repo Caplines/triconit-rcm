@@ -209,7 +209,7 @@
                                                     <td>{{lg.officeName}}</td>
                                                     <td>
                                                         <select class="form-control select-editable" name="" id="" [ngClass]="{'border-red':!lg.assignedUser}"
-                                                            (change)="selectNewAssignedUser($event,lg.officeUuid);">
+                                                            (change)="selectNewAssignedUser($event,lg.officeUuid);" [disabled]="isRoleAssociate">
                                                             <option value="{{lg.assignedUser}}">{{lg.fname}}
                                                                 {{lg.lname}}</option>
                                                             <ng-container *ngFor="let user of userByTeam;">
