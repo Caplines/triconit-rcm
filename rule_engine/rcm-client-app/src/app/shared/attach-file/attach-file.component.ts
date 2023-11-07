@@ -113,14 +113,14 @@ export class AttachFileComponent {
       this.errorMessage='';
       this.closeModal();
       if(this.inputConfig['isDetailPage']){
-        this.fileloader= false;
-        this.uploadButton=false;
         this.selectedFiles=[];
         this.getAttachmentFile();
         setTimeout(() => {
           this.errorMessage = '';
         }, 1000);
       }
+      this.fileloader= false;
+      this.uploadButton=false;
       return;
     }
     const currentData = dataArray[currentIndex];

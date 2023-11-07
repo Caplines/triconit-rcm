@@ -118,7 +118,7 @@
                             </ol> -->
                         </div>
                         <button type="button" class="btn btn btn-primary file-button" *ngIf="!allowUpload"
-                            [disabled]="selectedFiles.length==0"
+                            [disabled]="selectedFiles.length==0 || uploadButton"
                             (click)="uploadItem(inputConfig.claimUuid)">Upload</button>
                     </div>
                 </div>
