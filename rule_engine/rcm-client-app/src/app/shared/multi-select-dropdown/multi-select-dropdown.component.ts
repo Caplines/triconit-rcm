@@ -91,12 +91,17 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
     else if (event.action === 'setDefaultfilterClaimStatus') {
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined
         && this.inputConfig.subType == 'claimStatus') {
+        this.inputConfig.claimStatus.find((e:any)=>e.name === 'Unbilled' ? e.checked = true: '');
         this.getSelectedValue(event.value.checked, event.value, 'searchClaimStatus', 'claimStatus');
       }
     }
     else if (event.action === 'clearAllDefaultValuesInsurance') {
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined
         && (this.inputConfig.subType == 'claimStatus' || this.inputConfig.subType == 'insuranceTypes')) {
+
+          if(this.inputConfig?.claimStatus?.length>0){
+            this.inputConfig.claimStatus.forEach((e:any)=>e.checked=false);     
+          }
           this.searchClaimsConfig.insuranceTypes.forEach((e:any)=>e.checked=false);
         this.searchClaimsConfig.claimStatus.forEach((e: any) => e.checked = false);
         this.searchClaimsConfig.insuranceTypes = [];
