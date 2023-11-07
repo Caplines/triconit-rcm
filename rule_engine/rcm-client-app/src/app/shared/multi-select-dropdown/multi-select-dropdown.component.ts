@@ -80,6 +80,7 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined
         && this.inputConfig.subType == 'insuranceTypes') {
           this._service.emitOnValueChange({ action: 'clearAllDefaultValuesAge' });
+
         this.searchClaimsConfig.insuranceTypes = [];
         event.value.forEach((e: any) => {
           this.getSelectedValue(e.checked, e, 'insuranceTypes', 'insuranceTypes');
@@ -120,7 +121,6 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
         this.searchClaimsConfig.claimStatus = [];
         this._service.emitOnValueChange({ action: 'getSelectedAge', value: [] });
         this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: [] });
-        console.log(this.searchClaimsConfig.insuranceTypes);
       }
     }
 
@@ -603,6 +603,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
 
     clearAll(value:string,actions:string){
        this.searchClaimsConfig[value].forEach((e:any)=>e.checked=false);
+       this.inputConfig[value].forEach((e:any)=>e.checked=false);
        this.searchClaimsConfig[value]= [];
        this.filteredOptions[value].forEach((e:any)=>e.checked=false);
        this._service.emitOnValueChange({action:actions,value:this.searchClaimsConfig[value]});
