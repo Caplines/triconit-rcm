@@ -182,7 +182,7 @@
                 </label>
                 <label *ngFor="let item of filteredOptions.insuranceNames">
                     <input type="checkbox" [(ngModel)]="item.checked"
-                           (change)="getSelectedValue(item.checked,item,'insuranceNames')" id="{{ item.name }}">
+                           (change)="getSelectedValue(item.checked,item,'insuranceNames','insuranceNames')" id="{{ item.name }}">
                     <span>{{item.name}}</span>
                 </label>
             </div>
@@ -212,7 +212,7 @@
                     </label>
                     <label *ngFor="let item of filteredOptions.insuranceTypes">
                         <input type="checkbox" [(ngModel)]="item.checked"
-                               (change)="getSelectedValue(item.checked,item,'insuranceTypes')" id="{{ item.name }}">
+                               (change)="getSelectedValue(item.checked,item,'insuranceTypes','insuranceTypes')" id="{{ item.name }}">
                         <span>{{item.name}}</span>
                     </label>
                 </div>
@@ -242,7 +242,7 @@
                     </label>
                     <label *ngFor="let item of filteredOptions.providerNames">
                         <input type="checkbox" [(ngModel)]="item.checked"
-                               (change)="getSelectedValue(item.checked,item,'providerNames')" id="{{ item.name }}">
+                               (change)="getSelectedValue(item.checked,item,'providerNames','providerNames')" id="{{ item.name }}">
                         <span>{{item.name}}</span>
                     </label>
                 </div>
@@ -272,7 +272,7 @@
                     </label>
                     <label *ngFor="let item of filteredOptions.providerTypes">
                         <input type="checkbox" [(ngModel)]="item.checked"
-                               (change)="getSelectedValue(item.checked,item,'providerTypes')" id="{{ item.name }}">
+                               (change)="getSelectedValue(item.checked,item,'providerTypes','providerTypes')" id="{{ item.name }}">
                         <span>{{item.name}}</span>
                     </label>
                 </div>

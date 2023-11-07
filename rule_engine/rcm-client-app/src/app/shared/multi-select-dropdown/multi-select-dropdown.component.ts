@@ -37,56 +37,90 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
   
   this._service.subscribeOnValueChange('MultiSelect',(event:any)=>{
     if (event.action === 'selectedClientsOffices') {
-        this.searchClaimsConfig.offices=[];      
+      this.searchClaimsConfig.offices = [];
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined
         && this.inputConfig.subType == 'office') {
-          this.inputConfig.officeData = JSON.parse(JSON.stringify(event.value));
-          this.inputConfig.officeData  = this._service.sortByAlphabet(this.inputConfig.officeData,'name');
-          this.isAllSelected['offices'] = false;
-          this.showSelectedData={};
-          this.showSelectedData['offices']=false;
-          console.log(32432);
-          
-        } 
+        this.inputConfig.officeData = JSON.parse(JSON.stringify(event.value));
+        this.inputConfig.officeData = this._service.sortByAlphabet(this.inputConfig.officeData, 'name');
+        this.isAllSelected['offices'] = false;
+        this.showSelectedData = {};
+        this.showSelectedData['offices'] = false;
       }
-      else if(event.action === 'selectDefaultAgeCategory'){
-            if (this.inputConfig != undefined && this.inputConfig.subType != undefined
-              && this.inputConfig.subType == 'ageCategory') {
-                this.getSelectedValue(event.value.checked,event.value,'searchClaimAge','ageCategory');
-              } 
+    }
+    else if (event.action === 'selectDefaultAgeCategory') {
+      if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+        && this.inputConfig.subType == 'ageCategory') {
+        this._service.emitOnValueChange({ action: 'clearAllDefaultValuesInsurance' });
+        event.value.forEach((e: any) => {
+          this.getSelectedValue(e.checked, e, 'searchClaimAge', 'ageCategory');
+        });
       }
-      else if(event.action === 'selectDefaultClaimStatus'){
-            if (this.inputConfig != undefined && this.inputConfig.subType != undefined
-              && this.inputConfig.subType == 'claimStatus') {
-                this.getSelectedValue(event.value.checked,event.value,'searchClaimStatus','claimStatus');
-              } 
+    }
+    else if (event.action === 'selectDefaultClaimStatus') {
+      if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+        && this.inputConfig.subType == 'claimStatus') {
+        event.value.forEach((e: any) => {
+          this.getSelectedValue(e.checked, e, 'searchClaimStatus', 'claimStatus');
+        })
       }
-      else if(event.action === 'filterUnbilledMedicaid'){
-            if (this.inputConfig != undefined && this.inputConfig.subType != undefined
-              && this.inputConfig.subType == 'insuranceTypes') {
-                this.getSelectedValue(event.value.checked,event.value,'insuranceTypes','insuranceTypes');
-                let value =  {'name':'Unbilled','checked':true};
-                this._service.emitOnValueChange({ action: 'setDefaultfilterClaimStatus', value: value });
-              } 
-            }
-            else if(event.action === 'filterUnbilledNonMedicaid'){
-              if (this.inputConfig != undefined && this.inputConfig.subType != undefined
-                && this.inputConfig.subType == 'insuranceTypes') {
-                  
-                  this.getSelectedValue(event.value.checked,event.value,'insuranceTypes','insuranceTypes');
-                let value =  {'name':'Unbilled','checked':true};
-                this._service.emitOnValueChange({ action: 'setDefaultfilterClaimStatus', value: value });
-              }
-            } 
-            else if(event.action === 'setDefaultfilterClaimStatus'){
-              if (this.inputConfig != undefined && this.inputConfig.subType != undefined
-                && this.inputConfig.subType == 'claimStatus') {
-                  this.getSelectedValue(event.value.checked,event.value,'searchClaimStatus','claimStatus');
-                  console.log(this.searchClaimsConfig.claimStatus);
-              } 
+    }
+    else if (event.action === 'filterUnbilledMedicaid') {
+      if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+        && this.inputConfig.subType == 'insuranceTypes') {
+          this._service.emitOnValueChange({ action: 'clearAllDefaultValuesAge' });
+        this.searchClaimsConfig.insuranceTypes = [];
+        event.value.forEach((e: any) => {
+          this.getSelectedValue(e.checked, e, 'insuranceTypes', 'insuranceTypes');
+        })
+        let value = { 'name': 'Unbilled', 'checked': true };
+        this._service.emitOnValueChange({ action: 'setDefaultfilterClaimStatus', value: value });
       }
-      else return;
-    })
+    }
+    else if (event.action === 'filterUnbilledNonMedicaid') {
+      if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+        && this.inputConfig.subType == 'insuranceTypes') {
+          this._service.emitOnValueChange({ action: 'clearAllDefaultValuesAge' });
+        this.searchClaimsConfig.insuranceTypes = [];
+        event.value.forEach((e: any) => {
+          this.getSelectedValue(e.checked, e, 'insuranceTypes', 'insuranceTypes');
+        })
+        let value = { 'name': 'Unbilled', 'checked': true };
+        this._service.emitOnValueChange({ action: 'setDefaultfilterClaimStatus', value: value });
+      }
+    }
+    else if (event.action === 'setDefaultfilterClaimStatus') {
+      if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+        && this.inputConfig.subType == 'claimStatus') {
+        this.getSelectedValue(event.value.checked, event.value, 'searchClaimStatus', 'claimStatus');
+      }
+    }
+    else if (event.action === 'clearAllDefaultValuesInsurance') {
+      if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+        && (this.inputConfig.subType == 'claimStatus' || this.inputConfig.subType == 'insuranceTypes')) {
+          this.searchClaimsConfig.insuranceTypes.forEach((e:any)=>e.checked=false);
+        this.searchClaimsConfig.claimStatus.forEach((e: any) => e.checked = false);
+        this.searchClaimsConfig.insuranceTypes = [];
+        this.searchClaimsConfig.claimStatus = [];
+        this._service.emitOnValueChange({ action: 'getinsuranceTypes', value: [] });
+        this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: [] });
+        console.log(this.searchClaimsConfig.insuranceTypes);
+      }
+    }
+    else if (event.action === 'clearAllDefaultValuesAge') {
+      if (this.inputConfig != undefined && this.inputConfig.subType != undefined
+        && (this.inputConfig.subType == 'ageCategory' || this.inputConfig.subType == 'claimStatus')) {
+        this.searchClaimsConfig.ageCategory.forEach((e:any)=>e.checked=false);
+        this.searchClaimsConfig.ageCategory = [];
+        this.searchClaimsConfig.claimStatus.forEach((e:any)=>e.checked=false);
+        this.searchClaimsConfig.claimStatus = [];
+        this._service.emitOnValueChange({ action: 'getSelectedAge', value: [] });
+        this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: [] });
+        console.log(this.searchClaimsConfig.insuranceTypes);
+      }
+    }
+
+    else return;
+  })
  }
 
  ngOnInit(){
@@ -481,6 +515,8 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     }
   }
 
+    this.showSelectedData[filterProperty] =true;
+
 }
   shareCheckedlist(action: any) {
     this.shareCheckedList.emit({ 'action': action, value: action == 'team' ? this.teamCheckedList : this.clientCheckedList });
@@ -565,14 +601,12 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
        this.searchClaimsConfig[value]= [];
        this.filteredOptions[value].forEach((e:any)=>e.checked=false);
        this._service.emitOnValueChange({action:actions,value:this.searchClaimsConfig[value]});
+       if(value === 'clients'){
+        this.addOfficessCrossClient();
+       }
     }
 
     toggleSelectedItem(field:any){
-      if(field in this.showSelectedData){
         this.showSelectedData[field] = !this.showSelectedData[field];
-      } else{
-        this.showSelectedData[field] = true;
-      }
     }
-    
 }

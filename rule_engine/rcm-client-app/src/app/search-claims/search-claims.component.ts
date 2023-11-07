@@ -160,32 +160,40 @@ export class SearchClaimsComponent {
   quickFilter(activeTab:number){
       this.activeFilter = activeTab;
       if(activeTab == 1 ){
+        const filteredAgeData:any = [];
           this.constants.ageCategory.forEach((e:any)=>{
               if(e.value>=3){
                 e.checked =true;
-                this.appService.emitOnValueChange({action:'selectDefaultAgeCategory',value:e});
+                filteredAgeData.push(e);
               }
-          })
+            })
+          this.appService.emitOnValueChange({action:'selectDefaultAgeCategory',value:filteredAgeData});
+          const filteredClaimData:any = [];
           this.constants.claimStatus.forEach((e:any)=>{
             if(e.name.toUpperCase() === "BILLED"){
                 e.checked =true;
-                this.appService.emitOnValueChange({action:'selectDefaultClaimStatus',value:e});
-            }
-          })
+                filteredClaimData.push(e);
+              }
+            })
+            this.appService.emitOnValueChange({action:'selectDefaultClaimStatus',value:filteredClaimData});
       } else if(activeTab == 2){
+        let filteredData:any = [];
         this.searchParamModel.insuranceTypes.forEach((e:any)=>{
             if(e.name.toLowerCase().includes("medicaid")){
                 e.checked=true;
-                this.appService.emitOnValueChange({action:'filterUnbilledMedicaid',value:e});
-            }
-        })
+                filteredData.push(e);
+              }
+            })
+        this.appService.emitOnValueChange({action:'filterUnbilledMedicaid',value:filteredData});
       } else if(activeTab == 3){
+        let filteredData:any = [];
         this.searchParamModel.insuranceTypes.forEach((e:any)=>{
             if(!e.name.toLowerCase().includes("medicaid")){
                 e.checked=true;
-                this.appService.emitOnValueChange({action:'filterUnbilledNonMedicaid',value:e});
-            }
-        })
+                filteredData.push(e);
+              }
+            })
+            this.appService.emitOnValueChange({action:'filterUnbilledNonMedicaid',value:filteredData});
       }
       if(this.searchClaimConfig.clientUuid.length>0){
         this.searchClaims();
