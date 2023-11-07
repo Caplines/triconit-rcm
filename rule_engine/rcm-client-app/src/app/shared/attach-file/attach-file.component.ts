@@ -67,7 +67,7 @@ export class AttachFileComponent {
 
   closeModal() {
     this.showModal = false;
-    this.totalFile = this.selectedFiles.length;
+    this.totalFile = this.attachedFiles.length + this.selectedFiles.length;
     this.errorMessage = '';
     this.removeAttachmentFiles=[];
   }
@@ -88,7 +88,7 @@ export class AttachFileComponent {
     const index = this.selectedFiles.findIndex((e: any) => e.file == file);
     if (index !== -1) {
       this.selectedFiles.splice(index, 1);
-      this.totalFile = this.selectedFiles.length;
+      this.totalFile = this.attachedFiles.length;
     }
   }
 
@@ -96,7 +96,7 @@ export class AttachFileComponent {
     let fileNameExist: Boolean = this.isFileNameExist();
     let isEmptyAttachment: Boolean = this.isEmptyAttachmentType();
     if (!fileNameExist && !isEmptyAttachment) {
-      this.totalFile = this.selectedFiles.length;
+      this.totalFile = this.attachedFiles.length;
       this.fileloader= true;
       this.uploadButton=true;
       this.loopThroughData(this.selectedFiles, 0);
