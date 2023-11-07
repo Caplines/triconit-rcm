@@ -254,7 +254,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  inner join company cmp on cmp.uuid=off.company_id  "
 			+ "  inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where  off.company_id in (:companyIds) and off.active is true  group by off.uuid order by opdos desc ")
+			+ "  where  off.company_id in (:companyIds) and off.active is true  group by off.uuid order by companyName asc,opdos desc ")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUser(
 			@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst,@Param("teamId") int teamId,@Param("userId") String userId);
 	
@@ -268,7 +268,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where off.company_id in (:companyIds) and off.active is true  group by off.uuid order by opdos desc ")
+			+ "  where off.company_id in (:companyIds) and off.active is true  group by off.uuid order by companyName asc,opdos desc ")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeam(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 	
