@@ -70,7 +70,7 @@ export class ReportComponent implements OnInit {
 		TreatmentId: false, IvfId: false, Date: false, PatientName: false,
 		ivfRDBMS: false, DateFromTo: false, UserName: false, DateFromToUserName: false,
 		ivfRDBMSWebsiteParse:false,ruledatasheet:false,sealantElig:false,
-		Teamwise: false
+		Teamwise: false,TeamwiseDOS:false
 	}
 
 	constructor(public applicationService: ApplicationService, public router: Router, private datePipe: DatePipe, private route: ActivatedRoute) {
@@ -204,7 +204,7 @@ export class ReportComponent implements OnInit {
 				submit = true;
 			}
 		}
-		if (this.report.reportType == 'Teamwise') {
+		if (this.report.reportType == 'Teamwise' || this.report.reportType == 'TeamwiseDOS') {
 			if (this.dateRange(15)){
 				submit = false;
 			}

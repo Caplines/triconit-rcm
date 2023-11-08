@@ -126,11 +126,15 @@ export class TreatmentPlanComponent implements OnInit {
   
   initializeIgnoreData(d,v){
 	  let ths=this;
+	  let ut =Utils.fetchUserTypeFromLocalStorage();
 	  ths.ignoreDataArray=[];
 	  d.forEach( (element,i) => {
 		  let ig:IgnoreDataModel = new IgnoreDataModel();
 			  ig.serviceCode=element.serviceCode;
-			  ig.description=element.treatmentPlanDetails.description;
+			  if (ut=='1')
+			      ig.description=element.treatmentPlanDetails.description;
+			  else  
+				  ig.description=element.details.description;  
 			  ig.tooth=element.tooth;
 			  ig.surface=element.surface;
 			  ig.selected=true;

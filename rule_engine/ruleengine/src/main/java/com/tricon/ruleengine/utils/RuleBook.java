@@ -13911,7 +13911,7 @@ public class RuleBook {
 						Method hss = c2.getMethod(hs);
 						String code = (String) hcm.invoke(hisSheet);
 
-						if (codes.contains(code)) {
+						if (codes.contains(code) && fcodes.contains(code)) {
 							historyCodes.add(code);
 							if (!((String) hss.invoke(hisSheet)).equals(""))
 							historySurfaces.add((String) hss.invoke(hisSheet));
@@ -13935,7 +13935,7 @@ public class RuleBook {
 
 					if (code.equals(""))
 						continue;
-					if (codes.contains(code)) {
+					if (codes.contains(code) && fcodes.contains(code)) {
 						historyCodes.add(code);
 						if (!((String) hss.invoke(hisShee)).equals(""))
 						historySurfaces.add((String) hss.invoke(hisShee));
@@ -13962,20 +13962,20 @@ public class RuleBook {
 						return dList;
 					}
 
-					/*if (historyCodes.size() == 0) {
+					if (historyCodes.size() == 0) {
 						pass = true;
-					} else if (age[0] >= 1 && age[0] <= 12) {
+					} else if (historyCodes.size() > 0 && age[0] >= 1 && age[0] <= 12) {
 						pass = true;
 					} else {
 						pass = false;
-					}*/
+					}
 					
-					if (!(age[0] >= 1 && age[0] <= 12)) {
+					/*if (!(age[0] >= 1 && age[0] <= 12)) {
 						pass = false;
 					}
 					if (historyCodes.size() > 0) {
 						pass = false;
-					}
+					}*/
 				}
 			} else {
 				pass = true;
@@ -14043,7 +14043,7 @@ public class RuleBook {
 					if (userType == Constants.userType_CL) {
 						TP_Date = Constants.SIMPLE_DATE_FORMAT.parse(tp.getCdDetails().getDateLastUpdated());
 					}
-					if (code.equalsIgnoreCase("D1551")) {
+					if (code.equalsIgnoreCase("D1551") || code.equalsIgnoreCase("D1510")) {
 						subCodes = true;
 						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
@@ -14073,7 +14073,7 @@ public class RuleBook {
 						String code = (String) hcm.invoke(hisSheet);
 						String hisDos = (String) hdm.invoke(hisSheet);
 
-						if (code.equalsIgnoreCase("D1510")) {
+						if (code.equalsIgnoreCase("D1551") || code.equalsIgnoreCase("D1510")) {
 							// Check For 12 Months
 							dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(hisDos);
 							RuleEngineLogger.generateLogs(clazz, "History DOS-" + hisDos, Constants.rule_log_debug, bw);
@@ -14103,7 +14103,7 @@ public class RuleBook {
 					String hisDos = (String) hdm.invoke(hisShee);
 					if (code.equals(""))
 						continue;
-					if (code.equalsIgnoreCase("D1510")) {
+					if (code.equalsIgnoreCase("D1551") || code.equalsIgnoreCase("D1510")) {
 						// Check For 12 Months
 						dos = Constants.SIMPLE_DATE_FORMAT_IVF.parse(hisDos);
 						RuleEngineLogger.generateLogs(clazz, "History DOS-" + hisDos, Constants.rule_log_debug, bw);
@@ -14112,8 +14112,8 @@ public class RuleBook {
 
 						} else {
 							historyCodes.add(code);
-							historySurfaces.add((String) hss.invoke(hisSheet));
-							historyTooths.add((String) htm.invoke(hisSheet));
+							historySurfaces.add((String) hss.invoke(hisShee));
+							historyTooths.add((String) htm.invoke(hisShee));
 							historyDates.add(hisDos);
 						}
 					}

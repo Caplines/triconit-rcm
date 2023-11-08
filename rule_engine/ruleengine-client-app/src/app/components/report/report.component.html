@@ -25,7 +25,8 @@
 								(Website Parsed Data) </a></li>
 						<li><a href="javascript:void(0)" (click)="reportParam('sealantElig',$event)">Sealant
 								Eligibility</a></li>
-						<li><a href="javascript:void(0)" (click)="reportParam('Teamwise',$event)">Team Wise Report</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('Teamwise',$event)">Team Wise Report (Created Date)</a></li>
+						<li><a href="javascript:void(0)" (click)="reportParam('TeamwiseDOS',$event)">Team Wise Report (Appointment Date)</a></li>
 					</ul>
 				</div>
 				<!-- <div class="form-top">
@@ -119,7 +120,7 @@
 									class="error-msg">Please select valid Date To and from Date.</div>
 
 							</div>
-							<div *ngIf="showParam.Teamwise" class="date-dropdown">
+							<div *ngIf="showParam.Teamwise  || showParam.TeamwiseDOS" class="date-dropdown">
 								
 								<ng-datepicker [(ngModel)]="report.reportField1" name="datepicker1" id="datepicker1"
 									[options]="dateOptions1" class="ngx-start-date"></ng-datepicker>
@@ -261,7 +262,7 @@
 								<option value="">Office Name...</option>
 								<option *ngFor="let title of offices" [value]="title.uuid">{{title.name}}</option>
 							</select>
-							<div *ngIf="f.submitted && report.officeId=='' && !showParam.Teamwise" class="error-msg">Office
+							<div *ngIf="f.submitted && report.officeId=='' && !showParam.Teamwise && !showParam.TeamwiseDOS" class="error-msg">Office
 								Name is required</div>
 						</div>
 
@@ -285,7 +286,7 @@
 		<div *ngIf="!showDetailsData">
 		
 			<div class="close-btn">
-			 <a  *ngIf="report.reportType=='Teamwise' && !showLoading" href="javascript:void(0)" (click)="downloadTeamWiseCSV()">
+			 <a  *ngIf="(report.reportType=='Teamwise' || report.reportType=='TeamwiseDOS') && !showLoading" href="javascript:void(0)" (click)="downloadTeamWiseCSV()">
 					Download Data </a>
 				<a href="javascript:void(0)" (click)="goBack()"  *ngIf="!showLoadingMoreDate"> Go
 					Back </a>
@@ -296,7 +297,7 @@
 				</div>
 			</ng-container>
 			<ng-container *ngIf="report.reportType!='ivfRDBMS' && report.reportType!='ivfRDBMSWebsiteParse' 
-			   && report.reportType!='ruledatasheet' && report.reportType!='sealantElig' && report.reportType!='Teamwise'">
+			   && report.reportType!='ruledatasheet' && report.reportType!='sealantElig' && report.reportType!='Teamwise' && report.reportType!='TeamwiseDOS'">
 				<div *ngFor="let key of arrayOfKeys" class="table-container">
 					<h3>{{key}}</h3>
 					<table class="table table-bordered table-striped">
@@ -321,35 +322,33 @@
 					<div *ngIf="showLoadingMoreDate" class="loader"></div>
 			        </ng-container>
 			</ng-container>
-			<ng-container *ngIf="report.reportType=='Teamwise'">
+			<ng-container *ngIf="report.reportType=='Teamwise' || report.reportType=='TeamwiseDOS'">
 				
 			<table class="table table-bordered table-striped table-container">
 			<thead>
 							<tr>
-								<th class="date-width">Created Date</th>
-								<th>Patient Id</th>
-								<th>Patient Name</th>
-								<th>IVF ID</th>
-								<th>TR ID</th>
-								<th>Run By</th>
-								<th>Ins Name</th>
-								<th>Appt. Date</th>
-								<th>Office Name</th>
+							<th>Office Name</th>
+							<th>Patient Id</th>
+							<th>Ins Name</th>
+							<th>Plan Type</th>
+							<th>Run By</th>
+							<th>Appt. Date</th>
+							<th class="date-width">Date Created</th>	
 							</tr>
 						</thead>
 			<tbody>
 				<ng-container *ngFor="let key of arrayOfKeys" class="table-container">
 					
 								<tr *ngFor="let data of reportData[key]">
-								<td><span [innerHTML]="data.rd_created_date"></span></td>
-								<td><span [innerHTML]="data.patient_id"></span></td>
-								<td><span [innerHTML]="data.patient_name"></span></td>
-								<td><span [innerHTML]="data.ivf_form_id"></span></td>
-								<td><span [innerHTML]="data.treatement_plan_id"></span></td>
-								<td><span [innerHTML]="data.name"></span></td>
-								<td><span [innerHTML]="data.ins_name"></span></td>
-								<td><span [innerHTML]="data.apt_date"></span></td>
 								<td><span [innerHTML]="data.office_name"></span></td>
+								<td><span [innerHTML]="data.patient_id"></span></td>
+								<td><span [innerHTML]="data.ins_name"></span></td>
+								<td><span [innerHTML]="data.plan_type"></span></td>
+								<td><span [innerHTML]="data.name"></span></td>
+								<td><span [innerHTML]="data.apt_date"></span></td>
+								<td><span [innerHTML]="data.rd_created_date"></span></td>
+								
+								
 							<tr>
 						
 				</ng-container>

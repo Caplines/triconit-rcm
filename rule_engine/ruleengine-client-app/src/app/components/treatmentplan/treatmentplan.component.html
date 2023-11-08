@@ -85,8 +85,10 @@
 					     </tr>
 					     <tr *ngFor="let data1 of tpclDetail[data.treatmentPlanId]; let ii=index">
 					      <td>{{data1.serviceCode}}</td>
-					      <td>{{data1.treatmentPlanDetails.dateLastUpdated}}</td>
-					      <td>{{data1.treatmentPlanDetails.description}}</td>
+					      <td *ngIf="data1.treatmentPlanDetails!=undefined">{{data1.treatmentPlanDetails.dateLastUpdated}}</td>
+					      <td *ngIf="data1.treatmentPlanDetails==undefined">{{data1.details.dateLastUpdated}}</td>
+					      <td *ngIf="data1.treatmentPlanDetails!=undefined">{{data1.treatmentPlanDetails.description}}</td>
+					       <td *ngIf="data1.treatmentPlanDetails==undefined">{{data1.details.description}}</td>
 					      <td>{{data1.tooth}}</td>
 					      <td>{{data1.surface}}</td>
 					      <td>{{data1.status}}</td>
@@ -124,8 +126,10 @@
 					       <ng-container *ngIf="data1.selected">
 					       
 					          <td>{{data1.serviceCode}}</td>
-						      <td>{{data1.treatmentPlanDetails.dateLastUpdated}}</td>
-						      <td>{{data1.treatmentPlanDetails.description}}</td>
+						      <td *ngIf="data1.treatmentPlanDetails!=undefined" >{{data1.treatmentPlanDetails.dateLastUpdated}}</td>
+						      <td *ngIf="data1.treatmentPlanDetails!=undefined">{{data1.treatmentPlanDetails.description}}</td>
+						       <td *ngIf="data1.treatmentPlanDetails==undefined" >{{data1.details.dateLastUpdated}}</td>
+						      <td *ngIf="data1.treatmentPlanDetails==undefined">{{data1.details.description}}</td>
 						      <td>{{data1.tooth}}</td>
 						      <td>{{data1.surface}}</td>
 						      <td>{{data1.status}}</td>
@@ -135,8 +139,10 @@
 					      </ng-container>
 					      <ng-container *ngIf="!data1.selected">
 					          <td class="tr-strike"><s>{{data1.serviceCode}}</s></td>
-						      <td class="tr-strike"><s>{{data1.treatmentPlanDetails.dateLastUpdated}}</s></td>
-						      <td class="tr-strike"><s>{{data1.treatmentPlanDetails.description}}</s></td>
+						      <td class="tr-strike" *ngIf="data1.treatmentPlanDetails!=undefined" ><s>{{data1.treatmentPlanDetails.dateLastUpdated}}</s></td>
+						      <td class="tr-strike" *ngIf="data1.treatmentPlanDetails!=undefined" ><s>{{data1.treatmentPlanDetails.description}}</s></td>
+						      <td class="tr-strike" *ngIf="data1.treatmentPlanDetails==undefined" ><s>{{data1.details.dateLastUpdated}}</s></td>
+						      <td class="tr-strike" *ngIf="data1.treatmentPlanDetails==undefined" ><s>{{data1.details.description}}</s></td>
 						      <td class="tr-strike"><s>{{data1.tooth}}</s></td>
 						      <td class="tr-strike"><s>{{data1.surface}}</s></td>
 						      <td class="tr-strike"><s>{{data1.status}}</s></td>
