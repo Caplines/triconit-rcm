@@ -766,6 +766,8 @@ public class CaplineIVFFormDto {
 	private String d511020Percentage;
 	private String d513040Percentage;
 	private String d5810CPercentage;
+	private String d9310;
+	private String d9310fr;
 	
     //END
     
@@ -3961,6 +3963,22 @@ public class CaplineIVFFormDto {
 
 	public void setD5810CPercentage(String d5810cPercentage) {
 		d5810CPercentage = d5810cPercentage;
+	}
+
+	public String getD9310() {
+		return d9310;
+	}
+
+	public void setD9310(String d9310) {
+		this.d9310 = d9310;
+	}
+
+	public String getD9310fr() {
+		return d9310fr;
+	}
+
+	public void setD9310fr(String d9310fr) {
+		this.d9310fr = d9310fr;
 	}
 
 	

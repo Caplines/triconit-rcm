@@ -362,6 +362,11 @@
                 <td colspan="2" class="dullBlue"><xsl:value-of select="d8692"/></td>
                 <td colspan="3" class="dullBlue"><xsl:value-of select="d8692fr"/></td>
             </tr>
+            <tr>
+                <td colspan="3" class="dullBlue">D9310</td>
+                <td colspan="2" class="dullBlue"><xsl:value-of select="d9310"/></td>
+                <td colspan="3" class="dullBlue"><xsl:value-of select="d9310fr"/></td>
+            </tr>
 
         </table>
         <br />
