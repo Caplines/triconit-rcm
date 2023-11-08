@@ -611,6 +611,11 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "d5810_c_percentage", length = 15)
 	private String d5810CPercentage;
 	
+	@Column(name = "d9310", length = 15)
+	private String d9310;
+	
+	@Column(name = "d9310_fr", length = 15)
+	private String d9310fr;
 	
 
 	public String getNpi() {
@@ -2182,6 +2187,22 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setD5810CPercentage(String d5810cPercentage) {
 		d5810CPercentage = d5810cPercentage;
+	}
+
+	public String getD9310() {
+		return d9310;
+	}
+
+	public void setD9310(String d9310) {
+		this.d9310 = d9310;
+	}
+
+	public String getD9310fr() {
+		return d9310fr;
+	}
+
+	public void setD9310fr(String d9310fr) {
+		this.d9310fr = d9310fr;
 	}
 
 	
