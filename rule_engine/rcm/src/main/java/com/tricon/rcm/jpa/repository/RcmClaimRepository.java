@@ -663,8 +663,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	@Query(nativeQuery = true, value = " select  claim_id  "+
 			"  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
-			"  where cmp.uuid=:companyId and claim_id=:claimId")
-	String fetchClaimIdByClaimIdAnCompany(@Param("claimId")  String claimId,@Param("companyId")  String companyId) ;
+			"  where cmp.uuid=:companyId and claim_id=:claimId and off.uuid=:officeId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+"")
+	String fetchClaimIdByClaimIdAnCompany(@Param("claimId")  String claimId,@Param("companyId")  String companyId,@Param("officeId") String officeId) ;
 	
 	@Modifying
 	@Transactional

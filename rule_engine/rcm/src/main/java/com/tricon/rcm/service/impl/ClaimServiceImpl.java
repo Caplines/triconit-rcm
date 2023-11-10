@@ -3917,7 +3917,7 @@ public class ClaimServiceImpl {
 		if (validateClaimRight) {
 			
 			String claimId=claim.getClaimId().split(Constants.HYPHEN+Constants.ARCHIVE_PREFIX)[1];
-			String existingClaimId= rcmClaimRepository.fetchClaimIdByClaimIdAnCompany(claimId,rcmCompany.getUuid());
+			String existingClaimId= rcmClaimRepository.fetchClaimIdByClaimIdAnCompany(claimId,rcmCompany.getUuid(),off.getUuid());
 			if (existingClaimId!=null) {
 				
 				return "Already Exists with Same Claim Id. Can not be UNARCHIVED.";
@@ -3968,7 +3968,7 @@ public class ClaimServiceImpl {
 		}
 
 		String existingClaim = rcmIssueClaimsRepo.fetchClaimByClaimIdAndCompany(removePrefix[1],
-				archivedClaim.get().getOffice().getCompany().getUuid());
+				archivedClaim.get().getOffice().getCompany().getUuid(),archivedClaim.get().getOffice().getUuid());
 		if (existingClaim != null) {
 			logger.error(MessageConstants.CLAIM_NOT_UNARCHIVED+">>>>"+archivedClaim.get().getClaimId());
 			return UnArchivedResponseDto.builder().message(MessageConstants.CLAIM_NOT_UNARCHIVED+" Claim is [" +removePrefix[1]+"]").unArchiveStatus(false).build();
@@ -4038,7 +4038,7 @@ public class ClaimServiceImpl {
 				status = 0;
 				String[] removePrefix = data.getClaimId().split(Constants.ARCHIVE_PREFIX);
 				String existingClaim = rcmIssueClaimsRepo.fetchClaimByClaimIdAndCompany(removePrefix[1],
-						associatedClientsFromClaims);
+						associatedClientsFromClaims,data.getOfficeUuid());
 				if (removePrefix.length < 2) {
 					logger.error("Prefix not match of ClaimId>>>>>>>>>>>>>" + data.getClaimId());
 					break; // if any condition is unmatch then show error claim in ui for error

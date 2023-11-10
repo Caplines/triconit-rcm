@@ -11,5 +11,6 @@ public interface IssueClaimDto {
 	Date getCreatedDate(); 
 	int getId();
 	boolean getIsArchive();
+	String getOfficeUuid();
 	
 }
