@@ -7,7 +7,7 @@
 <head>
     <meta charset="utf-8" />
     <title></title>
-    <style>
+ <style>
         body {
             font-family: helvetica;
             font-size: 12px;
@@ -145,6 +145,39 @@
             padding: 3px 5px;
             color: #000;
         }
+        .table td.innerTableBox {
+            padding: 0;
+        }
+                .innerTable {
+            border-collapse: collapse;
+            float: left;
+            width: 33.333%;
+        }
+        .innerTable tr td:first-child {
+            border-left:0px;
+        }
+            .innerTable:last-child tr td:last-child {
+                border-right: 0px;
+            }
+            .innerTable tr td {
+                border-top: 0px;
+            }
+            .innerTable tr:last-child td {
+                border-bottom: 0px;
+            }
+                    .rowHeading {
+            background-color: #666666;
+            color: #fff;
+            font-size: 14px;
+        }
+                    .historyBackground{
+
+                 background-color:  #FFFFFF
+
+            }
+         @page{
+            size: landscape;
+            }
         
     </style>
 </head>
@@ -152,174 +185,518 @@
     <form>
         <table class="table" vertical-align="top">
             <tr>
-                <td colspan="8" class="tableHeading">
-                    Smilepoint Ortho Form
+                <td colspan="12" class="tableHeading">
+                    Oral Surgery IV Form
                 </td>
             </tr>
             <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="tableHeading">Subscriber and Insurance Details</td>
+            </tr>
+            <tr>
+                <td class="width-10">Office Name</td>
+                <td class="width-8"><xsl:value-of select="basicInfo1"/></td>
+                <td class="width-8">Patient ID</td>
+                <td class="width-8"><xsl:value-of select="basicInfo21"/></td>
+                <td class="width-10">Subscriber's Name</td>
+                <td class="width-8"><xsl:value-of select="basicInfo5"/></td>
+                <td class="width-8">Subscriber's DOB </td>
+                <td class="width-8"><xsl:value-of select="basicInfo9"/></td>
+                <td class="width-8">Patient's Name</td>
+                <td class="width-8"><xsl:value-of select="basicInfo2"/></td>
+                <td class="width-8">Patient's DOB</td>
+                <td class="width-8"><xsl:value-of select="basicInfo6"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td>CSR Name </td>
+                <td><xsl:value-of select="basicInfo8"/></td>
+                <td>Ref# </td>
+                <td><xsl:value-of select="basicInfo12"/></td>
+                <td>Provider's Name</td>
+                <td><xsl:value-of select="basicInfo19"/></td>
+                <td>Tax ID </td>
+                <td><xsl:value-of select="basicInfo4"/></td>
+                <td>NPI</td>
+                <td><xsl:value-of select="npi"/></td>
+                <td>Licence#</td>
+                <td><xsl:value-of select="licence"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td>Plan Type</td>
+                <td><xsl:value-of select="osPlanType"/></td>
+                <td>Network</td>
+                <td><xsl:value-of select="policy3"/></td>
+                <td>SSN#</td>
+                <td><xsl:value-of select="basicInfo13"/></td>
+                <td>Member ID</td>
+                <td><xsl:value-of select="basicInfo16"/></td>
+                <td>Effective Date</td>
+                <td><xsl:value-of select="policy5"/></td>
+                <td>CY/FY</td>
+                <td><xsl:value-of select="policy6"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td>Employer's Name</td>
+                <td><xsl:value-of select="basicInfo10"/></td>
+                <td>Group Number</td>
+                <td><xsl:value-of select="basicInfo14"/></td>
+                <td>Insurance Name</td>
+                <td ><xsl:value-of select="basicInfo3"/></td>
+                <td>Insurance Telephone</td>
+                <td><xsl:value-of select="basicInfo7"/></td>
+                <td>Insurance address</td>
+                <td><xsl:value-of select="basicInfo20"/></td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td>Fee Schedule</td>
+                <td ><xsl:value-of select="policy4"/></td>
+                <td>Dependents covered upto age?</td>
+                <td><xsl:value-of select="policy11"/></td>
+                <td>Coordination of benefits</td>
+                <td><xsl:value-of select="corrdOfBenefits"/></td>
+                <td>Payor Id</td>
+                <td><xsl:value-of select="basicInfo18"/></td>
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td>What is allowed amount for D7210</td>
+                <td><xsl:value-of select="whatAmountD7210"/></td>
+                <td>Maximum $</td>
+                <td><xsl:value-of select="policy7"/></td>
+                <td>Deductible</td>
+                <td><xsl:value-of select="policy9"/></td>
+                <td> Appointment Date</td>
+                <td><xsl:value-of select="basicInfo17"/></td>
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td>What is allowed amount for D7240</td>
+                <td><xsl:value-of select="allowAmountD7240"/></td>
+                <td>Remaining benefits $</td>
+                <td><xsl:value-of select="policy8"/></td>
+                <td>Remaining Deductible</td>
+                <td><xsl:value-of select="policy10"/></td>
+                <td>Is there a MTC?</td>
+                <td><xsl:value-of select="radio3"/></td>
+               <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td>Eligible for D3330?</td>
+                <td><xsl:value-of select="radio4"/></td>
+                <td>Is there any waiting period?</td>
+                <td><xsl:value-of select="radio5"/></td>
+                <td>Waiting period Duration</td>
+                <td><xsl:value-of select="waitingPeriodDuration"/></td>
+                <td>Out of network benefits</td>
+                <td><xsl:value-of select="radio1"/></td>
+                <td>Do you file OS under medical first?</td>
+                <td><xsl:value-of select="radio2"/></td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="tableHeading">Coverage &amp; Frequency Information</td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""><strong>Exams:</strong></td>
+            </tr>
+            <tr>
+                <td>D0140(%)</td>
+                <td><xsl:value-of select="d0140"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="exams2"/></td>
+                <td> D9310(%)</td>
+                <td><xsl:value-of select="posterior8"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="posterior9"/></td>
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+
+            <tr>
+                <td colspan="12" class=""><strong>Extractions</strong></td>
+            </tr>
+
+            <tr>
+                <td>D7210/D7220/D7230(%)</td>
+                <td><xsl:value-of select="d7210"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7210fr"/></td>
+                <td>D7240(%)</td>
+                <td><xsl:value-of select="d7240"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7240fr"/></td>
+                <td>D7250(%)</td>
+                <td><xsl:value-of select="d7250"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7250fr"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td>D7251(%)</td>
+                <td><xsl:value-of select="d7251"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7251fr"/></td>
+                <td>D7285/D7286(%)</td>
+                <td><xsl:value-of select="d7285"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7285fr"/></td>
+                <td>D7951/D7952(%)</td>
+                <td><xsl:value-of select="d7951"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7951fr"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+
+            <tr>
+                <td colspan="12" class=""><strong>Sedation</strong></td>
+            </tr>
+            <tr>
+                <td>D9230(%) </td>
+                <td><xsl:value-of select="sedations1"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="sedations1fr"/></td>
+                <td>D9248(%) </td>
+                <td><xsl:value-of select="sedations3"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="sedations3fr"/></td>
+                <td>D9239(%)</td>
+                <td><xsl:value-of select="d9239"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d9239fr"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td>D9243(%) </td>
+                <td ><xsl:value-of select="sedations2"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="sedations2fr"/></td>
+                <td colspan="8"></td>
+
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""><strong>Endo</strong></td>
+            </tr>
+            <tr>
+                <td>D3310/D3320/D3330(%)</td>
+                <td ><xsl:value-of select="d3310"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d3310fr"/></td>
                 <td colspan="8"></td>
             </tr>
             <tr>
-                <td colspan="8" class="tableHeading">Subscriber and Insurance Details</td>
+                <td colspan="12" class=""></td>
             </tr>
             <tr>
-                <td class="width-15">Office Name</td>
-                <td class="width-7"><xsl:value-of select="basicInfo1"/></td>
-                <td class="width-10">Patient Name </td>
-                <td class="width-7"><xsl:value-of select="basicInfo2"/></td>
-                <td class="width-13">Insurance Name</td>
-                <td class="width-7"><xsl:value-of select="basicInfo3"/></td>
-                <td class="width-7">Provider Name</td>
-                <td class="width-7"><xsl:value-of select="basicInfo19"/></td>
-            </tr>
-            <tr class="lightGray">
-                <td>Tax ID</td>
-                <td><xsl:value-of select="basicInfo4"/></td>
-                <td>Patient DOB</td>
-                <td class="white"><xsl:if test="string-length(basicInfo6) &gt; 9"><xsl:value-of select="concat(substring(basicInfo6,9,2),'/',substring(basicInfo6,6,2),'/',substring(basicInfo6,1,4))" /></xsl:if></td>
-                <td>Insurance Contact</td>
-                <td><xsl:value-of select="basicInfo7"/></td>
-                <td>Provider Network</td>
-                <td><xsl:value-of select="policy3"/></td>
+                <td colspan="12" class=""><strong>Implants:</strong></td>
             </tr>
             <tr>
-                <td>ES/Patient ID</td>
-                <td><xsl:value-of select="basicInfo21"/></td>
-                <td>Policy Holder Name</td>
-                <td><xsl:value-of select="basicInfo5"/></td>
-                <td>Appointment Type</td>
-                <td><xsl:value-of select="apptype"/></td>
-                <td>Source</td>
-                <td><xsl:value-of select="basicInfo8"/></td>
-            </tr>
-            <tr class="lightGray">
-                <td>Member ID/SSN</td>
-                <td><xsl:value-of select="basicInfo16"/></td>
-                <td>Policy Holder DOB</td>
-                <td class="white"><xsl:if test="string-length(basicInfo9) &gt; 9"><xsl:value-of select="concat(substring(basicInfo9,9,2),'/',substring(basicInfo9,6,2),'/',substring(basicInfo9,1,4))" /></xsl:if></td> 
-                <td>Appointment Date</td>
-                <td class="white"><xsl:if test="string-length(basicInfo17) &gt; 9"><xsl:value-of select="concat(substring(basicInfo17,9,2),'/',substring(basicInfo17,6,2),'/',substring(basicInfo17,1,4))" /></xsl:if></td>
-                <td>Ref #</td>
-                <td><xsl:value-of select="basicInfo12"/></td>
+                <td>D6010(%)</td>
+                <td><xsl:value-of select="implants1"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="implants5"/></td>
+                <td>D6057(%)</td>
+                <td><xsl:value-of select="implants2"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="implants6"/></td>
+                <td>D6065/D6068(%)</td>
+                <td><xsl:value-of select="implants4"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="implants7"/></td>
             </tr>
             <tr>
-                <td>Waiting Period</td>
-                <td class="red blackClr"><xsl:value-of select="waitingPeriod"/></td>
-                <td>Payor ID</td>
-                <td class="yellow"><xsl:value-of select="basicInfo18"/></td>
-                <td class="yellow">Insurance Address</td>
-                <td colspan="3" class="yellow"><xsl:value-of select="basicInfo20"/></td>
+                <td colspan="12" class=""></td>
             </tr>
+            <tr>
+                <td>D6190(%)</td>
+                <td ><xsl:value-of select="implants3"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="implants8"/></td>
+                <td>D6011(%)</td>
+                <td><xsl:value-of select="d6011"/></td>
+                <td>Frequency</td>
+                <td ><xsl:value-of select="d6011fr"/></td>
+                <td>D5862(%)</td>
+                <td><xsl:value-of select="d5862"/></td>
+                <td>Frequency</td>
+                <td ><xsl:value-of select="d5862fr"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""><strong>Perio:</strong></td>
+            </tr>
+            <tr>
+                <td>D4341(%)</td>
+                <td ><xsl:value-of select="perio1"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="perio1fr"/></td>
+                <td>D4249(%)</td>
+                <td><xsl:value-of select="oral1"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="oral1fr"/></td>
+                <td>D4266/D4267(%)</td>
+                <td><xsl:value-of select="d4266"/></td>
+                <td>Frequency</td>
+                <td ><xsl:value-of select="d4266fr"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""><strong>Dentures:</strong></td>
+            </tr>
+            <tr>
+                <td>D5110/D5120(%)</td>
+                <td><xsl:value-of select="d5110"/></td>
+                <td>Frequency</td>
+                <td ><xsl:value-of select="d5110fr"/></td>
+                <td>D5130/D5140(%)</td>
+                <td ><xsl:value-of select="d5130"/></td>
+                <td>Frequency</td>
+                <td ><xsl:value-of select="d5130fr"/></td>
+                <td>D5860/D5865(%)</td>
+                <td><xsl:value-of select="d5860"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d5860fr"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td>D6114/D6115(%)</td>
+                <td ><xsl:value-of select="d6114"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d6114fr"/></td>
+                <td colspan="8"></td>
+
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""><strong>Oral Surgery:</strong></td>
+            </tr>
+            <tr>
+                <td>D7310(%) </td>
+                <td ><xsl:value-of select="d7310"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7310fr"/></td>
+                <td>D7311(%) </td>
+                <td><xsl:value-of select="d7311"/></td>
+                <td>Frequency</td>
+                <td ><xsl:value-of select="d7311fr"/></td>
+                <td>D7320(%)</td>
+                <td ><xsl:value-of select="d7320"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7320fr"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td>D7321(%)</td>
+                <td ><xsl:value-of select="d7321"/></td>
+                <td>Frequency</td>
+                <td ><xsl:value-of select="d7321fr"/></td>
+                <td>D7472/D7473(%)</td>
+                <td><xsl:value-of select="d7472"/></td>
+                <td>Frequency</td>
+                <td class="width-8"><xsl:value-of select="d7472fr"/></td>
+                <td colspan="4"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td>D7280(%)</td>
+                <td><xsl:value-of select="d7280"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7280fr"/></td>
+                <td>D7282(%)</td>
+                <td ><xsl:value-of select="d7282"/></td>
+                <td>Frequency</td>
+                <td><xsl:value-of select="d7282fr"/></td>
+                <td>D7283(%)</td>
+                <td><xsl:value-of select="d7283"/></td>
+                <td>Frequency</td>
+                <td ><xsl:value-of select="d7283fr"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td>
+                    D7311-7320 Can be combined with D7210-
+                    D7240?
+                </td>
+                <td><xsl:value-of select="d7311Select"/></td>
+                <td colspan="10"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""><strong>Guielines for IV Sedations?</strong></td>
+            </tr>
+            <tr>
+                 <td colspan="12"><xsl:value-of select="ivSedation"/></td>
+            </tr>
+            <tr>
+                <td class=""><strong>Assignment of Benefits:</strong></td>
+            </tr>
+            <tr>
+                 <td><xsl:value-of select="policy15"/></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <!-- <tr>
+                <td class=""><strong>History:</strong></td>
+                <td colspan="11"></td>
+            </tr>
+            <tr>
+                <td>ADA Code </td>
+                <td></td>
+                <td>Tooth No</td>
+                <td></td>
+                <td>DOS</td>
+                <td>mm/dd/yyyy</td>
+                <td>ADA Code</td>
+                <td></td>
+                <td>Tooth No. </td>
+                <td></td>
+                <td>DOS</td>
+                <td>mm/dd/yyyy</td>
+            </tr> -->
+            <tr>
+
+              <td colspan="12"><strong>History:</strong></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="innerTableBox">
+                    <table class="innerTable" vertical-align="top">
+                        <tr>
+                            <td class="rowHeading width-15">ADA Code</td>
+                            <td class="rowHeading width-7">T/S/Q/A</td>
+                            <td class="rowHeading width-10">DOS</td>
+                        </tr>
+                        <xsl:for-each select="hdto1/hisall1">
+                         <tr>
+                            <td class="historyBackground"><xsl:value-of select="historyCode"/></td>
+                            <td class="historyBackground"><xsl:value-of select="historyTooth"/></td>
+                            <td class="historyBackground align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                        </tr>
+                        </xsl:for-each>
+                       
+                    </table>
+
+                    <table class="innerTable" vertical-align="top">
+                        <tr>
+                            <td class="rowHeading width-15">ADA Code</td>
+                            <td class="rowHeading width-7">T/S/Q/A</td>
+                            <td class="rowHeading width-10">DOS</td>
+                        </tr>
+                       
+                       <xsl:for-each select="hdto2/hisall2">
+                         <tr>
+                            <td class="historyBackground"><xsl:value-of select="historyCode"/></td>
+                            <td class="historyBackground"><xsl:value-of select="historyTooth"/></td>
+                            <td class="historyBackground align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                        </tr>
+                        </xsl:for-each>
+                    </table>
+                    <table class="innerTable" vertical-align="top">
+                        <tr>
+                            <td class="rowHeading width-15">ADA Code</td>
+                            <td class="rowHeading width-7">T/S/Q/A</td>
+                            <td class="rowHeading width-10">DOS</td>
+                        </tr>
+                        <xsl:for-each select="hdto3/hisall3">
+                         <tr>
+                            <td class="historyBackground"><xsl:value-of select="historyCode"/></td>
+                            <td class="historyBackground"><xsl:value-of select="historyTooth"/></td>
+                            <td class="historyBackground align-right"><xsl:if test="string-length(historyDos) &gt; 9"><xsl:value-of select="concat(substring(historyDos,6,2),'/',substring(historyDos,9,2),'/',substring(historyDos,1,4))" /></xsl:if></td>
+                        </tr>
+                        </xsl:for-each>
+                    </table>
+                </td>
+            </tr> 
+
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class=""><strong>Comments:</strong></td>
+            </tr>
+            <tr>
+                <td colspan="12"><xsl:value-of select="comments"/></td>
+            </tr>
+            <tr>
+                <td colspan="12"></td>
+            </tr>
+            <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
+            <tr>
+                <td><strong>Benefits Verified by:</strong></td>
+                <td><xsl:value-of select="benefits"/></td>
+                <td colspan="7" class="borderNone"></td>
+                <td>Date: </td>
+                <td colspan="2"><xsl:value-of select="date"/></td>
+            </tr>
+
+
         </table>
         <br />
         <br />
 
-        <table class="table" vertical-align="top">
-            <tr>
-                <td colspan="8" class="tableHeading">Policy Plan Info</td>             
-            </tr>
-
-            <tr>
-                <td class="width-15">Plan Type</td>
-                <td class="width-7"><xsl:value-of select="policy1"/></td>
-                <td class="width-10">Group/Employer Name</td>
-                <td class="width-7"><xsl:value-of select="basicInfo10"/></td>
-                <td class="width-13">Group No</td>
-                <td class="width-7"><xsl:value-of select="basicInfo14"/></td>
-                <td class="width-7">Effective Date</td>
-                <td class="width-7"><xsl:if test="string-length(policy5) &gt; 9"><xsl:value-of select="concat(substring(policy5,9,2),'/',substring(policy5,6,2),'/',substring(policy5,1,4))" /></xsl:if></td>
-            </tr>
-            <tr class="lightGray">
-                <td>Ortho Max</td>
-                <td><xsl:value-of select="ortho2"/></td>
-                <td>Individual Deductible</td>
-                <td><xsl:value-of select="policy9"/></td>
-                <td>Work In Progress</td>
-                <td><span class="notCover"><xsl:value-of select="wip"/></span></td>
-                <td>Term Date</td>
-                <td><xsl:if test="string-length(policy2) &gt; 9"><xsl:value-of select="concat(substring(policy2,9,2),'/',substring(policy2,6,2),'/',substring(policy2,1,4))" /></xsl:if></td>
-            </tr>
-            <tr>
-
-                <td>Ortho Max Remaining</td>
-                <td><xsl:value-of select="ortho5"/></td>
-                <td>Individual Ded Remaining</td>
-                <td><xsl:value-of select="policy10"/></td>
-                <td>Insurance Billing cycle</td>
-                <td><span class="quaterly"><xsl:value-of select="insBillingC"/></span></td>
-                <td>Benefit Period</td>
-                <td><xsl:value-of select="benefitPeriod"/></td>
-            </tr>
-            <tr class="lightGray">
-                <td>Dependent Covered Up To age</td>
-                <td><xsl:value-of select="policy11"/></td>
-                <td>Age Limit For ortho</td>
-                <td><xsl:value-of select="ortho3"/></td>
-                <td>Timely Filing Limit</td>
-                <td><xsl:value-of select="percentages12"/></td>
-                <td>COB Status</td>
-                <td><xsl:value-of select="basicInfo15"/></td>
-            </tr>
-
-        </table>
-        <br />
-        <br />
-        <table class="table" vertical-align="top">
-            <tr>
-                <td colspan="8" class="tableHeading">Plan Details</td>
-            </tr>
-            <tr>
-                <td colspan="3" class="width-32 rowHeading">Ortho</td>
-                <td colspan="2" class="width-20 rowHeading">%</td>
-                <td colspan="3" class="width-21 rowHeading">Frequency</td>
-            </tr>
-            <tr>
-                <td colspan="3" class="dullBlue">D8070</td>
-                <td colspan="2" class="dullBlue"><xsl:value-of select="d8070"/></td>
-                <td colspan="3" class="dullBlue"><xsl:value-of select="d8070fr"/></td>
-            </tr>
-            <tr>
-                <td colspan="3" class="dullBlue">D8080</td>
-                <td colspan="2" class="dullBlue"><xsl:value-of select="d8080"/></td>
-                <td colspan="3" class="dullBlue"><xsl:value-of select="d8080fr"/></td>
-            </tr>
-            <tr>
-                <td colspan="3" class="dullBlue">D8090</td>
-                <td colspan="2" class="dullBlue"><xsl:value-of select="d8090"/></td>
-                <td colspan="3" class="dullBlue"><xsl:value-of select="d8090fr"/></td>
-            </tr>
-            <tr>
-                <td colspan="3" class="dullBlue">D8670</td>
-                <td colspan="2" class="dullBlue"><xsl:value-of select="d8670"/></td>
-                <td colspan="3" class="dullBlue"><xsl:value-of select="d8670fr"/></td>
-            </tr>
-            <tr>
-                <td colspan="3" class="dullBlue">D8680</td>
-                <td colspan="2" class="dullBlue"><xsl:value-of select="d8680"/></td>
-                <td colspan="3" class="dullBlue"><xsl:value-of select="d8680fr"/></td>
-            </tr>
-            <tr>
-                <td colspan="3" class="dullBlue">D8690</td>
-                <td colspan="2" class="dullBlue"><xsl:value-of select="d8690"/></td>
-                <td colspan="3" class="dullBlue"><xsl:value-of select="d8690fr"/></td>
-            </tr>
-
-        </table>
-        <br />
-        <br />
-        <table class="table" vertical-align="top">
-            <tr>
-                <td class="dullGreen width-15">Benefits Verified by</td>
-                <td colspan="2" class="width-17"><xsl:value-of select="benefits"/></td>
-                <td class="dullGreen width-7">Submission Date</td>
-                <td class="width-13"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,9,2),'/',substring(date,6,2),'/',substring(date,1,4))" /></xsl:if></td>
-                <td class="width-21 borderNone" colspan="3"></td>
-            </tr>
-        </table>
     </form>
-
 </body>
-
 </html>
 </xsl:template>
 </xsl:stylesheet>

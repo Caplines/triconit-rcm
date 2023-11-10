@@ -387,11 +387,17 @@
         </table>
         <br />
         <br />
-        <xsl:if test="(translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'geha' or translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='fep') and translate(basicInfo15, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='secondary' ">
+        <xsl:if test="translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'geha' and translate(basicInfo15, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='secondary' ">
         <div class="red-clr">
         <strong>Alert-</strong> Patient have BCBS Medical policy as primary &amp; we can directly bill them even if we do not have insurance details.
         </div>
         </xsl:if>
+        <xsl:if test="contains(translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'fep') and translate(basicInfo15, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='secondary' ">
+        <div class="red-clr">
+        <strong>Alert-</strong> Patient have BCBS Medical policy as primary &amp; we can directly bill them even if we do not have insurance details.
+        </div>
+        </xsl:if>
+
         <xsl:if test="(translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'guardian')">
         <div class="red-clr">
         <strong>Alert-</strong> D0140 only Covered with x rays, If performed with other treatment amounts to be collected from patient and WO to insurance at $0.
