@@ -34,9 +34,9 @@
                 <span>{{a.name}}</span>
             </label>
         </div>
-        <div class="drop-show-team" *ngIf="showDropDown && isTeam">
+        <div class="drop-show-teams" *ngIf="showDropDown && isTeam">
             <label>
-                <input type="checkbox" (change)="selectAll($event,'team')" [checked]="selectAllChecked">
+                <input type="checkbox" (change)="selectAll($event,'teams')" [checked]="selectAllChecked">
                 <span>{{list.length == teamCheckedList.length ? 'Clear All' : 'Select All'}}</span>
             </label>
             <label *ngFor="let a of list;let idx = index">
@@ -281,7 +281,7 @@
         </div>
             <!-- teams -->
             <div class="search-claims-teams" (mouseleave)="showDropDown = false"
-                 *ngIf="inputConfig?.isSearchClaims && inputConfig?.teamData">
+                 *ngIf="inputConfig?.isSearchClaims && inputConfig?.teams">
                 <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown;toggleSelectedItem('teams')">
                     <span *ngIf="searchClaimsConfig.teams.length<=0">Select</span>
                     <span *ngIf="searchClaimsConfig.teams.length>0" [ngClass]="{'hide-item':showSelectedData['teams']}">
@@ -297,9 +297,9 @@ last ?
                 <div class="drop-show no-css-search-claim" *ngIf="showDropDown">
                     <label>
                         <input type="checkbox" (change)="getSelectedValue(!isAllSelected['teams'],'','selectAllTeams','teams')" [checked]="isAllSelected['teams']">
-                        <span>{{inputConfig.teamData.length == searchClaimsConfig.teams.length ? 'Clear All' : 'Select All'}}</span>
+                        <span>{{inputConfig.teams.length == searchClaimsConfig.teams.length ? 'Clear All' : 'Select All'}}</span>
                     </label>
-                    <label *ngFor="let item of inputConfig.teamData;let idx = index">
+                    <label *ngFor="let item of inputConfig.teams;let idx = index">
                         <input type="checkbox" [(ngModel)]="item.checked"
                                (change)="getSelectedValue(item.checked,item,'searchClaimTeam','teams')" />
                         <span>{{item.teamName}}</span>

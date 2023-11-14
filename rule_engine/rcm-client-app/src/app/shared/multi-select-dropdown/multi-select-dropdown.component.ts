@@ -24,7 +24,7 @@ export class MultiSelectDropdownComponent {
   teamCheckedList : any[];
   clients:any=[]
   selectAllChecked:boolean=false;
-  teamData:any=this.constants.teamData;
+  teams:any=this.constants.teamData;
   searchClaimsConfig:any={'clients':[],'offices':[],"teams":[],'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[],'ageCategory':[],'claimStatus':[]};
   searchText:any='';
   filteredOptions:any={'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[]};
@@ -39,7 +39,7 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
     if (event.action === 'selectedClientsOffices') {
       this.searchClaimsConfig.offices = [];
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined
-        && this.inputConfig.subType == 'office') {
+        && this.inputConfig.subType == 'offices') {
         this.inputConfig.officeData = JSON.parse(JSON.stringify(event.value));
         this.inputConfig.officeData = this._service.sortByAlphabet(this.inputConfig.officeData, 'name');
         this.isAllSelected['offices'] = false;
@@ -121,6 +121,17 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
         this.searchClaimsConfig.claimStatus = [];
         this._service.emitOnValueChange({ action: 'getSelectedAge', value: [] });
         this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: [] });
+      }
+    } 
+    else if(event.action === 'resetAllField'){
+      if (this.inputConfig != undefined && this.inputConfig.subType != undefined){
+        this.searchClaimsConfig[this.inputConfig.subType].forEach((e:any)=>e.checked=false);
+        this.searchClaimsConfig[this.inputConfig.subType] = [];
+        this._service.emitOnValueChange({ action: this.inputConfig['emitAction'], value: [] });
+
+        if(this.inputConfig?.subType === 'clients'){
+          this._service.emitOnValueChange({ action: 'selectedClientsOffices', value: [] });
+        }
       }
     }
 
@@ -213,7 +224,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     if(this.teamCheckedList.length==0){
       this.selectAllChecked=false;
     }
-    else if (this.teamData.length === this.teamCheckedList.length){
+    else if (this.teams.length === this.teamCheckedList.length){
       this.selectAllChecked=true;
     } else{
       this.selectAllChecked=false;
@@ -391,7 +402,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
       
     }
 
-    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.teamData.length) {
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.teams.length) {
       this.isAllSelected[filterProperty] = true;
       this._service.emitOnValueChange({ action: 'getSelectedTeams', value: this.searchClaimsConfig[filterProperty] });
     } else {
@@ -403,18 +414,18 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
 
   else if (type === 'selectAllTeams') {
     if (status) {
-      this.inputConfig.teamData.forEach((item: any) => {
+      this.inputConfig.teams.forEach((item: any) => {
         if (!item.checked) {
           item.checked = true;
           this.searchClaimsConfig[filterProperty].push(item);
         }
       })
     } else {
-      this.inputConfig.teamData.forEach((item: any) => item.checked = false)
+      this.inputConfig.teams.forEach((item: any) => item.checked = false)
       this.searchClaimsConfig[filterProperty] = [];
     }
 
-    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.teamData.length) {
+    if (this.searchClaimsConfig[filterProperty].length == this.inputConfig.teams.length) {
       this.isAllSelected[filterProperty] = true;
       this._service.emitOnValueChange({ action: 'getSelectedTeams', value: this.searchClaimsConfig[filterProperty] });
     } else {
@@ -550,7 +561,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     } 
     else if(from === "team"){
       if (isChecked) {
-        this.teamData.forEach((e: any) => {
+        this.teams.forEach((e: any) => {
           let isTeamExist = this.teamCheckedList.some((ele: any) => e.teamId == ele.teamId);
           if (!isTeamExist) {
             this.teamCheckedList.push(e)
