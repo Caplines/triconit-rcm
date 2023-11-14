@@ -1427,6 +1427,8 @@ public class ClaimServiceImpl {
 					claim.setIvfId(ivfId);
 					claim.setIvfIdSystem(ivfId);
 					claim.setIvDos(ivDos);	
+					claim.setSsn(ivfDto.getSsn());
+					implDto.setSsn(ivfDto.getSsn());
 					if (!implDto.isPrimary()) {
 						
 						
@@ -2035,6 +2037,7 @@ public class ClaimServiceImpl {
 					// Save Data in Table First Time.
 					RcmClaimsServiceRuleValidation v = null;
 					for (Map.Entry<String, List<ClaimServiceValidationGSheetData>> entry : sheetServiceData.entrySet()) {
+						
 						logger.info("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 						//for (ClaimServiceValidationGSheet d : entry.getValue()) {
 							for (ClaimServiceValidationGSheetData qq : entry.getValue()) {

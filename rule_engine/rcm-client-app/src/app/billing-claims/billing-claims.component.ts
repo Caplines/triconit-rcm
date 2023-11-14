@@ -78,11 +78,12 @@ export class BillingClaimsComponent {
   serialNoArray = new Map<string, number>();
   deleteType = "";
   deleteLoaderIVTP = false;
-  readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
+  noProviderNoteCodes: Array<string> = [];
+  /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
     "D2331", "D2332", "D2335", "D2391", "D2392", "D2393", "D2394", "D0431",
-    "D2140", "D2150", "D2160", "D2161"];
+    "D2140", "D2150", "D2160", "D2161"];*/
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
     private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService,
@@ -551,6 +552,7 @@ export class BillingClaimsComponent {
       if (res.status === 200) {
         this.loader.serviceCode = false;
         ths.claimServiceLevelModel = res.data;
+        ths.ignoreSomeRules();
         if (ths.claimServiceLevelModel.esDate != null) {
           if (ths.claimServiceLevelModel.esDate != "") {
             //ths.claimRcm.dateLastUpdatedES = ths.claimServiceLevelModel.esDate;
@@ -1416,23 +1418,57 @@ export class BillingClaimsComponent {
     return name.toLowerCase().includes("medicaid");
   }
 
-  isOtherTLExist(callback:any){
-    let params:any = { 
+  isOtherTLExist(callback: any) {
+    let params: any = {
       "claimUuid": this.claimUUid,
       "assignToTeamId": +this.claimEditModel.assignToTeam
     };
-    this.appService.isOtherTeamTLExist(params,(res:any)=>{
-      if(res.data.responseStatus){
+    this.appService.isOtherTeamTLExist(params, (res: any) => {
+      if (res.data.responseStatus) {
         callback(res.data.responseStatus);
       }
-      else{
+      else {
         this.alert.showAlertPopup = true;
-        this.alert.alertMsg =res.data.message ;
+        this.alert.alertMsg = res.data.message;
         this.alert.isError = false;
         setTimeout(() => {
-          this.alert= {};
+          this.alert = {};
         }, 3000);
-    }
+      }
     })
   }
+
+  ignoreSomeRules() {
+    let ths = this;
+    ths.noProviderNoteCodes = [];
+    //We have a service level validation  named "FDH Certification" in the RCM Tool, we don't need that for below given offices because these offices are in a different state.
+    //1. San Mateo
+    //2. Rio Bravo
+    if (ths.smilePoint && ths.claimServiceLevelModel.dto != undefined && (ths.claimRcm.officeName === 'San Mateo' || ths.claimRcm.officeName === 'Rio Bravo')) {
+      //614c4beb-7df2-11e8-8432-8c16451459cd
+      let tmp: Array<ServiceLevelCodeDataModel> = ths.claimServiceLevelModel.dto;
+      tmp.forEach((x, i) => {
+        //debugger;
+        if (x.manualAuto == 'Automated' && x.ruleId == 308) {
+          ths.claimServiceLevelModel.dto.splice(i, 1);
+        }
+
+      });
+    }
+
+    if (ths.smilePoint && ths.claimServiceLevelModel.dto) {
+      //614c4beb-7df2-11e8-8432-8c16451459cd
+      let tmp: Array<ServiceLevelCodeDataModel> = ths.claimServiceLevelModel.dto;
+      tmp.forEach((x, i) => {
+        if (x.manualAuto == 'Manual' && x.name == 'Provider Notes' && x.value == 'Required') {
+          ths.claimServiceLevelModel.dto.splice(i, 1);
+          if (x.value == 'Required') {
+            ths.noProviderNoteCodes.push(x.serviceCode);
+          }
+        }
+
+      });
+    }
+  }
+
 }    

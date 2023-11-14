@@ -450,7 +450,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	Object fetchInsuranceCodeOfClaim(@Param("claimUuid")  String claimUuid) ;
 
 	//9 May 2023 and IV Date is 5th May 2023 -
-	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos,policy_holder_dob pdob,policy_holder pdName " + 
+	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos,policy_holder_dob pdob,policy_holder pdName, "
+			+ " pd.member_ssn ssn " + 
 			" from  patient p , patient_detail pd where pd.patient_id=p.id and p.patient_id=:patientId " + 
 			" and p.office_id=:officeId and pd.cob_status in (:insTypes) " + 
 			" and STR_TO_DATE(:dos,'%Y-%m-%d')>=STR_TO_DATE(general_date_iv_wasdone,'%Y-%m-%d') order by " + 
