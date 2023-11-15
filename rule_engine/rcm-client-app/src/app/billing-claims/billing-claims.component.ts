@@ -225,7 +225,7 @@ export class BillingClaimsComponent {
     }
     else if (type === 'submit') {
       //do From Validation
-
+      //debugger;
       let valid = ths.validateData();
       if (valid) {
 
@@ -472,15 +472,19 @@ export class BillingClaimsComponent {
     }
     if (document.getElementById("claimValidationsRE") != null) ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
     if (this.smilePoint && ths.isRuleEnginevalidationNeeded()) {
-
+      //debugger;
+      let inRE: boolean = false;
       ths.ruleEngineReport.forEach(x => {
-
+        inRE = true;
         if (x.mtype === '1' && (x.remark == null || x.remark.trim() === '')) {
           ths.addErrorDisplay(document.getElementById("ENG_REP_" + x.ruleId));
           valid = false;
         }
       });
-
+      if (!inRE) {
+        if (document.getElementById("claimValidationsRE") != null) ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
+        valid = false;
+      }
 
 
     }
