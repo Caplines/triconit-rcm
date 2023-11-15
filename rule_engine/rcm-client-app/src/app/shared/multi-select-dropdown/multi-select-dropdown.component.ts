@@ -180,7 +180,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
       this.clientCheckedList.push(value);
     } else {
       this.clientCheckedList.forEach((e: any, idx: any) => {
-        if (e.id === value.uuid || e.id === value.id) {
+        if (value.uuid == e.uuid) {
           this.clientCheckedList.splice(idx, 1);
         }
       })
@@ -546,7 +546,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
 
 }
   shareCheckedlist(action: any) {
-    console.log(this.teamCheckedList);
+    console.log(this.clientCheckedList);
     
     this.shareCheckedList.emit({ 'action': action, value: action == 'team' ? this.teamCheckedList : this.clientCheckedList });
   }
@@ -558,10 +558,10 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     let isChecked:boolean=event.target.checked;
     if (from === "client") {
       if (isChecked) {
-        this.clients.forEach((e: any) => {
-          let isClientExist = this.clientCheckedList.some((ele: any) => e.id == ele.id || e.id == ele.uuid);
+        this.list.forEach((e: any) => {
+          let isClientExist = this.clientCheckedList.some((ele: any) => e.uuid == ele.uuid);
           if (!isClientExist) {
-            this.clientCheckedList.push(e)
+            this.clientCheckedList.push({ ...e, 'checked': true });
           }
         })
         this.list = this.clientCheckedList.map((e: any) => ({ ...e, 'checked': true }));
@@ -574,7 +574,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
         this.shareCheckedlist('client');
       }
     } 
-    else if(from === "teams"){
+    else if(from === "team"){
       if (isChecked) {
         this.teams.forEach((e: any) => {
           let isTeamExist = this.teamCheckedList.some((ele: any) => e.teamId == ele.teamId);
