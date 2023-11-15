@@ -44,11 +44,11 @@ export class DateRangePickerComponent {
 
     $('#config-demo').daterangepicker(options, (start: any, end: any, label: any) => {
       //TRICON if condition
-      if (start == null || isNaN(start._i)) {
-        this.emitToParent.emit({ action: 'getSelectedDateRange', value: { startDate: null, endDate: null } });
-      } else {
+      // if (start == null || isNaN(start._i)) {
+      //   this.emitToParent.emit({ action: 'getSelectedDateRange', value: { startDate: null, endDate: null } });
+      // } else {
         this.emitToParent.emit({ action: 'getSelectedDateRange', value: { startDate: start.format("YYYY-MM-DD"), endDate: end.format("YYYY-MM-DD") } });
-      }
+      // }
 
     }).click();;
 

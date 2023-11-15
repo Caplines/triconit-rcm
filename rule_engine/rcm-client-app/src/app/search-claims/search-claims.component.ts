@@ -135,8 +135,7 @@ export class SearchClaimsComponent {
 
   receiveChildrenEvent(event: any) {
     if (event['action'] == 'getSelectedDateRange') {
-      //debugger;
-      if (event.value == 'Invalid Date' || event.value.startDate == null) {
+      if (event.value?.startDate == 'Invalid date') {
         this.searchClaimConfig['startDate'] = null;
         this.searchClaimConfig['endDate'] = null;
 
@@ -223,6 +222,36 @@ export class SearchClaimsComponent {
 
   exportToCsv(){
     this.child.exportToCsv();
+  }
+
+
+  resetClaims(){
+    this.appService.emitOnValueChange({action:'resetAllField'});
+    this.listOfClaimsData = [];
+    this.loader=true;
+    console.log(this.listOfClaimsData);
+    
+    this.resetSearchClaimConfig();
+  }
+
+  resetSearchClaimConfig(){
+    this.searchClaimConfig = {
+      "clientUuid": [],
+      "officeUuid": [],
+      "claimId": "",
+      "patientId": "",
+      "startDate": "",
+      "endDate": "",
+      "ageCategory": [],
+      "claimStatus": [],
+      "insuranceName": [],
+      "insuranceType": [],
+      "providerName": [],
+      "providerType": [],
+      "responsibleTeam": [],
+      "showArchive": false,
+      "pageNumber": 1
+    };
   }
 
 }

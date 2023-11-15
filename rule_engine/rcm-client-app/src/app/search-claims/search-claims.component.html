@@ -34,13 +34,13 @@
                                     <div class="colName">
                                                                                 Client Name
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'clients':clients,'isSearchClaims':true}" (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'clients':clients,'isSearchClaims':true,'subType':'clients','emitAction':'getSelectClientName'}" (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Office Name
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'officeData':offices,'isSearchClaims':true,'subType':'office'}">"></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'officeData':offices,'isSearchClaims':true,'subType':'offices','emitAction':'selectedClientsOffices'}">"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
@@ -76,19 +76,19 @@
                                     <div class="colName">
                                                                                 Insurance Name
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'insuranceNames':searchParamModel?.insuranceNames,'isSearchClaims':true,'subType':'insuranceNames'}"></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'insuranceNames':searchParamModel?.insuranceNames,'isSearchClaims':true,'subType':'insuranceNames','emitAction':'getinsuranceNames'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Insurance Type
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'insuranceTypes':searchParamModel?.insuranceTypes,'isSearchClaims':true,'subType':'insuranceTypes'}"></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'insuranceTypes':searchParamModel?.insuranceTypes,'isSearchClaims':true,'subType':'insuranceTypes','emitAction':'getinsuranceTypes'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Provider Name
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'providerNames':searchParamModel?.providerNames,'isSearchClaims':true,'subType':'providerNames'}"></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'providerNames':searchParamModel?.providerNames,'isSearchClaims':true,'subType':'providerNames','emitAction':'getproviderNames'}"></multi-select-dropdown> </div>
                                     </div>
                                     
                                      
@@ -97,14 +97,14 @@
                                     <div class="colName">
                                                                                 Provider Type
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown  [inputConfig]="{'providerTypes':searchParamModel?.providerTypes,'isSearchClaims':true,'subType':'providerTypes'}"></multi-select-dropdown> </div>
+                                    <div class="colAction"><multi-select-dropdown  [inputConfig]="{'providerTypes':searchParamModel?.providerTypes,'isSearchClaims':true,'subType':'providerTypes','emitAction':'getproviderTypes'}"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
                                                                                 Currently Responsible Team
                                     </div>
                                     <div class="colAction">
-                                    <multi-select-dropdown [inputConfig]="{'teamData':teamData,'isSearchClaims':true}"></multi-select-dropdown>
+                                    <multi-select-dropdown [inputConfig]="{'teams':teamData,'isSearchClaims':true,'subType':'teams','emitAction':'getSelectedTeams'}"></multi-select-dropdown>
                                     </div>
                                     </div>
                                     <div class="colBox">
@@ -123,6 +123,11 @@
                                     <div class="colBox" style="margin-top:30px">
                                         <div  class="colAction">
                                             <a href="javascript:void(0);" [ngClass]="{'disabled':searchClaimConfig.clientUuid.length==0}" (click)="searchClaims()" class="btn text-light btn-success btn-lg"><img _ngcontent-fcp-c53="" src="../assets/img/search.png" class="search-icon">Search</a>
+                                            </div>
+                                    </div>
+                                    <div class="colBox" style="margin-top:30px">
+                                        <div  class="colAction">
+                                            <a href="javascript:void(0);" [ngClass]="{'disabled':searchClaimConfig.clientUuid.length==0}" (click)="resetClaims()" class="btn text-light btn-danger btn-lg">Reset</a>
                                             </div>
                                     </div>
                                     </div>
