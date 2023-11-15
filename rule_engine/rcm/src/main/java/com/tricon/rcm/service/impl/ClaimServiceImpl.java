@@ -4106,14 +4106,14 @@ public class ClaimServiceImpl {
 		List<String> companies = rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(user.getUuid());
 		boolean isValidClient = companies.contains(clientUuidAssociatedWithClaims);
 		if (isValidClient) {
-			int exitingTLUserCounts = userCompanyRepo.findExistingTLByClientUuidAndTeam(clientUuidAssociatedWithClaims,
-					dto.getAssignToTeamId());
+			int exitingTLUserCounts = rcmUserCompanyRepo.findExistingTLByClientUuidAndTeamAndOffice(clientUuidAssociatedWithClaims,
+					dto.getAssignToTeamId(),office.getUuid());
 			if (exitingTLUserCounts == 0) {
 				logger.info("For Client:" + clientUuidAssociatedWithClaims + ",TL Not exist for team Id:"
 						+ RcmTeamEnum.getTeamDescriptionByTeamId(dto.getAssignToTeamId()));
 				responseDto.setResponseStatus(false);
 				responseDto.setMessage("For this client (" + companyRepo.findByUuid(clientUuidAssociatedWithClaims).getName()
-						+ "), no Team Lead exist for "+RcmTeamEnum.getTeamDescriptionByTeamId(dto.getAssignToTeamId())+". Please make Team Lead first for missing team and then assign to other team.");
+						+ "),and office ("+office.getName()+") no Team Lead or Associate exist for "+RcmTeamEnum.getTeamDescriptionByTeamId(dto.getAssignToTeamId())+". Please make Team Lead or Associate first for missing team and then assign to other team.");
 				return responseDto;
 			} else {
 				responseDto.setResponseStatus(true);
