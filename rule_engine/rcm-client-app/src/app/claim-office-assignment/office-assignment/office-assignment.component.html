@@ -216,7 +216,7 @@
                                                             <ng-container *ngFor="let user of userByTeam">
                                                                 <ng-container *ngIf="user.clientName === lg.companyName">
                                                                     <ng-container *ngFor="let users of user.users">
-                                                                        <option
+                                                                        <option *ngIf="users.uuid != lg.assignedUser"
                                                                         value="{{users.uuid}}">{{users.fullName}}</option>
                                                                     </ng-container>
                                                                 </ng-container>

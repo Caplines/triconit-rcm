@@ -34,7 +34,7 @@
                 <span>{{a.name}}</span>
             </label>
         </div>
-        <div class="drop-show-teams" *ngIf="showDropDown && isTeam">
+        <div class="drop-show no-css-search-claim" *ngIf="showDropDown && isTeam">
             <label>
                 <input type="checkbox" (change)="selectAll($event,'teams')" [checked]="selectAllChecked">
                 <span>{{list.length == teamCheckedList.length ? 'Clear All' : 'Select All'}}</span>

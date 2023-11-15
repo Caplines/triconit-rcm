@@ -70,7 +70,6 @@ export class SearchClaimsComponent {
         this.searchClaimConfig['ageCategory'] = event.value.map(({ checked, name, ...newAge }: any) => newAge.value);//removing unused propertieds
       } else if (event['action'] == 'getSelectedClaimStatus') {
         this.searchClaimConfig['claimStatus'] = event.value.map(({ checked, ...newClaimAge }: any) => newClaimAge.name);//removing unused propertieds
-        console.log(this.searchClaimConfig.claimStatus);
         
       }
     })

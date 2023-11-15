@@ -93,7 +93,9 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined
         && this.inputConfig.subType == 'claimStatus') {
         this.inputConfig.claimStatus.find((e:any)=>e.name === 'Unbilled' ? e.checked = true: '');
-        this.getSelectedValue(event.value.checked, event.value, 'searchClaimStatus', 'claimStatus');
+        setTimeout(() => {
+          this.getSelectedValue(event.value.checked, event.value, 'searchClaimStatus', 'claimStatus');
+        }, 0);
       }
     }
     else if (event.action === 'clearAllDefaultValuesInsurance') {
@@ -107,8 +109,10 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
         this.searchClaimsConfig.claimStatus.forEach((e: any) => e.checked = false);
         this.searchClaimsConfig.insuranceTypes = [];
         this.searchClaimsConfig.claimStatus = [];
-        this._service.emitOnValueChange({ action: 'getinsuranceTypes', value: [] });
-        this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: [] });
+        setTimeout(() => {
+          this._service.emitOnValueChange({ action: 'getinsuranceTypes', value: [] });
+          this._service.emitOnValueChange({ action: 'getSelectedClaimStatus', value: [] });
+        }, 0);
         console.log(this.searchClaimsConfig.insuranceTypes);
       }
     }
@@ -127,15 +131,22 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined){
         this.searchClaimsConfig[this.inputConfig.subType].forEach((e:any)=>e.checked=false);
         this.searchClaimsConfig[this.inputConfig.subType] = [];
-        this._service.emitOnValueChange({ action: this.inputConfig['emitAction'], value: [] });
-
+        setTimeout(() => {
+          this._service.emitOnValueChange({ action: this.inputConfig['emitAction'], value: [] });
+        }, 0);
         if(this.inputConfig?.subType === 'clients'){
           this._service.emitOnValueChange({ action: 'selectedClientsOffices', value: [] });
         }
+        if(this.inputConfig.subType == 'claimStatus'){
+          console.log(4);
+          this.searchClaimsConfig[this.inputConfig.subType].forEach((e:any)=>e.checked=false);
+          
+          
+        }
       }
     }
-
     else return;
+    console.log(this.inputConfig);
   })
  }
 
@@ -535,10 +546,14 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
 
 }
   shareCheckedlist(action: any) {
+    console.log(this.teamCheckedList);
+    
     this.shareCheckedList.emit({ 'action': action, value: action == 'team' ? this.teamCheckedList : this.clientCheckedList });
   }
 
   selectAll(event:any,from:any){
+    console.log(435);
+    
     this.selectAllChecked=!this.selectAllChecked;
     let isChecked:boolean=event.target.checked;
     if (from === "client") {
@@ -559,7 +574,7 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
         this.shareCheckedlist('client');
       }
     } 
-    else if(from === "team"){
+    else if(from === "teams"){
       if (isChecked) {
         this.teams.forEach((e: any) => {
           let isTeamExist = this.teamCheckedList.some((ele: any) => e.teamId == ele.teamId);
