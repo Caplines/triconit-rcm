@@ -212,10 +212,16 @@
                                                             (change)="selectNewAssignedUser($event,lg.officeUuid);" [disabled]="isRoleAssociate">
                                                             <option value="{{lg.assignedUser}}">{{lg.fname}}
                                                                 {{lg.lname}}</option>
-                                                            <ng-container *ngFor="let user of userByTeam;">
+
+                                                            <ng-container *ngFor="let user of userByTeam">
+                                                                <ng-container *ngIf="user.clientName === lg.companyName">
+                                                                    <ng-container *ngFor="let users of user.users">
+                                                                        <option
+                                                                        value="{{users.uuid}}">{{users.fullName}}</option>
+                                                                    </ng-container>
+                                                                </ng-container>
                                                                 <!-- <option *ngIf="lg.assignedUser !== user.uuid" value="{{user.fullName}},{{user.uuid}},{{lg.officeUuid}}">{{user.fullName}}</option> -->
-                                                                <option *ngIf="lg.assignedUser !== user.uuid"
-                                                                    value="{{user.uuid}}">{{user.fullName}}</option>
+                                                             
                                                             </ng-container>
                                                         </select>
 
