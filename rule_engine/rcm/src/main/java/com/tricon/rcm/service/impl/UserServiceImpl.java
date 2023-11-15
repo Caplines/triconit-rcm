@@ -23,6 +23,7 @@ import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UploadErrorCountsDto;
+import com.tricon.rcm.dto.UsersByTeamsAndCompanyDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.dto.customquery.TreatmentPlanLinkDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -102,15 +103,24 @@ public class UserServiceImpl {
 
 	}
 
-	public List<RcmUserToDto> getUsersByTeamIdAndCompany(int teamId,RcmCompany company) throws Exception {
-		    List<RcmUserToDto> data = null;
-			teamId=RcmTeamEnum.validateTeamId(teamId);
-			if (teamId != 0) {
-		data = userRepo.findUsersByTeamIdAndCompanyId(teamId, company.getUuid());
-				return data;
-			}
-		
-		return null;
+	public List<UsersByTeamsAndCompanyDto> getUsersByTeamIdAndCompany(int teamId, JwtUser jwtUser) throws Exception {
+		List<RcmUserToDto> users = null;
+		UsersByTeamsAndCompanyDto dto = null;
+		teamId = RcmTeamEnum.validateTeamId(teamId);
+		if (teamId == 0) {
+			return null;
+		}
+		List<UsersByTeamsAndCompanyDto> listOfUsers = new ArrayList<>();
+		List<RcmCompany> clients = jwtUser.getCompanies();
+		for (RcmCompany client : clients) {
+			dto = new UsersByTeamsAndCompanyDto();
+			users = userRepo.findUsersByTeamIdAndCompanyId(teamId, client.getUuid());
+			dto.setClientName(client.getName());
+			dto.setClientUuid(client.getUuid());
+			dto.setUsers(users);
+			listOfUsers.add(dto);
+		}
+		return listOfUsers;
 	}
 
 	/**

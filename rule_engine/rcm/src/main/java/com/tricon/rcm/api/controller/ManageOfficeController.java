@@ -25,6 +25,7 @@ import com.tricon.rcm.dto.AssignOfficesToBillingUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmUserToDto;
+import com.tricon.rcm.dto.UsersByTeamsAndCompanyDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.ManageOfficeServiceImpl;
@@ -75,15 +76,11 @@ public class ManageOfficeController extends BaseHeaderController {
 	@RequestMapping(value = "/users/team", method = RequestMethod.GET)
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> getUsersByTeamId(Model model) {
-	    List<RcmUserToDto> response = null;
+		List<UsersByTeamsAndCompanyDto> response = null;
 	    PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
-		
-		
 		try {
-			response = userService.getUsersByTeamIdAndCompany(partialHeader.getTeamId(),partialHeader.getCompany());
-			
-			
+			response = userService.getUsersByTeamIdAndCompany(partialHeader.getTeamId(),partialHeader.getJwtUser());
 			if(response==null) {
 				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 			}
