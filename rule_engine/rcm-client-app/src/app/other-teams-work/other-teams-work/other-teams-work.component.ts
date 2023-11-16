@@ -46,6 +46,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   date: any;
   filteredAgeBracket:any = []; 
   hasAttachedFilesWithRemark:boolean=false;
+  alert:any= {'alertMsg':'','showAlert':false}
   
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
@@ -293,9 +294,10 @@ export class OtherTeamsWorkComponent implements OnInit {
     } else if(event['action']==='filesSelectedToRemove'){
         this.setSelectedFileToRemove(event.claimUuid,event.value)
     } else if (event['action']==='fileUploadedSuccess'){
-          this.errorMessage = event.value;
+          this.alert.alertMsg = event.value;
+          this.alert.showAlert=true;
           this.hasAttachedFilesWithRemark = event.hasAttachedFiles;
-          setTimeout(()=>{this.errorMessage =''},2000);
+          setTimeout(()=>{this.alert.alertMsg =''; this.alert.showAlert=false;},2000);
     } else if (event['action']==='hasAttachedFileForSameUser'){
           this.hasAttachedFilesWithRemark = event.hasAttachedFiles;
     }
@@ -589,9 +591,13 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
           this.errorMessage = res.data.message;
           setTimeout(() => {
             this.errorMessage='';
-          }, 3000);
+          }, 6000);
       }
     })
+  }
+
+  closeError(){
+    this.errorMessage= '';
   }
 
 }

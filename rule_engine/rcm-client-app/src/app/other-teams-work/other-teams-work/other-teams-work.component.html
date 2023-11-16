@@ -7,9 +7,19 @@
                         <div class="detail-box-form">
                             <ng-container *ngIf="errorMessage">
                                 <div class="inner-container">
-                                    <div class="alert alert-success text-center alert-dismissible text-success fade show" role="alert">
+                                    <div class="alert text-center alert-danger alert-dismissible fade show" role="alert">
                                         <strong> {{errorMessage}} </strong>
-                                        <button type="button" class="close">
+                                        <button type="button" class="close" (click)="closeError();">
+                                          <span aria-hidde  n="true">&times;</span>
+                                        </button>
+                                      </div>
+                                </div>
+                            </ng-container>
+                            <ng-container *ngIf="alert.showAlert">
+                                <div class="inner-container">
+                                    <div class="alert text-center alert-dismissible fade show alert-success" role="alert">
+                                        <strong> {{alert.alertMsg}} </strong>
+                                        <button type="button" class="close" (click)="closeError();">
                                           <span aria-hidde  n="true">&times;</span>
                                         </button>
                                       </div>

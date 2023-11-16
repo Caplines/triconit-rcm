@@ -13,7 +13,7 @@
 .notRun {
     display: inline-flex;
     align-items: center;
-    background: #00915f;
+
     border-radius: 50%;
     min-width: 30px;
     min-height: 30px;
@@ -29,7 +29,7 @@
     border: 2px solid #ffebb2;
 }
 
-.passed img,
+
 .failed img {
     filter: brightness(0) invert(1);
 
@@ -111,4 +111,12 @@
         padding: 13px;
         background: url('../../assets/img/up-arrow.png') no-repeat right center !important;
     }
+}
+.form-control { width: 100%;}
+.date-control{
+    max-width: 300px;
+
+}
+.not-found{
+    padding-left: 10px;
 }

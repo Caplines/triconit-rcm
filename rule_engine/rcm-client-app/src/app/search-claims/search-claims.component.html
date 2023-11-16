@@ -120,16 +120,13 @@
                                         </div>
                                     
                                     </div>
-                                    <div class="colBox" style="margin-top:30px">
+                                    <div class="colBox filterAction" style="margin-top:30px" >
                                         <div  class="colAction">
                                             <a href="javascript:void(0);" [ngClass]="{'disabled':searchClaimConfig.clientUuid.length==0}" (click)="searchClaims()" class="btn text-light btn-success btn-lg"><img _ngcontent-fcp-c53="" src="../assets/img/search.png" class="search-icon">Search</a>
+                                            <a href="javascript:void(0);" [ngClass]="{'disabled':searchClaimConfig.clientUuid.length==0}" (click)="resetClaims()" class="btn text-light btn-danger btn-lg ml-3">Reset</a>
                                             </div>
                                     </div>
-                                    <div class="colBox" style="margin-top:30px">
-                                        <div  class="colAction">
-                                            <a href="javascript:void(0);" [ngClass]="{'disabled':searchClaimConfig.clientUuid.length==0}" (click)="resetClaims()" class="btn text-light btn-danger btn-lg">Reset</a>
-                                            </div>
-                                    </div>
+
                                     </div>
 
                                 <!-- <div class="table-responsive">

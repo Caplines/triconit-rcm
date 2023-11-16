@@ -19,6 +19,8 @@
                                     <label>Select Date Range </label>
                                     <input type="date" (change)="selectDate($event,'start')" class="form-control" id="sDate">
                                     <input type="date" (change)="selectDate($event,'end')" class="form-control" id="eDate">
+                                    <button  [ngClass]="{'disabled':!selectedDate.startDate || !selectedDate.endDate || !fetchbtnDisable,'btn-success':selectedDate.startDate && selectedDate.endDate}" type="button" class="btn rangeBtn"
+                                    (click)="save()"><span *ngIf="loader.fetch" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>Submit</button>
                                     <!-- <app-date-range></app-date-range> -->
                                 </div>
 
@@ -49,16 +51,16 @@
                                                 <tr class="totalRow">
                                                     <td>Total</td>
                                                     <td></td>
-                                                <td>{{total}}</td>
-                                                <td>{{days}}</td>
+                                                <td>{{total |number}}</td>
+                                                <td>{{days |number}}</td>
                                             </tr>
                                             
                                             <ng-container *ngFor="let data of productionData;">
                                                 <tr >
                                                     <td>{{data.companyName}}</td>
                                                     <td>{{data.fname}} {{data.lname}}</td>
-                                                    <td>{{data.total}}</td>
-                                                    <td>{{data.days}}</td>
+                                                    <td>{{data.total | number}}</td>
+                                                    <td>{{data.days | number}}</td>
                                                 </tr>
                                             </ng-container>
                                         </ng-container>
@@ -72,11 +74,7 @@
                                     <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
                                 </div>
                             </ng-container>
-                            <div class="text-center">
-                                <button  [ngClass]="{'disabled':!selectedDate.startDate || !selectedDate.endDate || !fetchbtnDisable,'btn-success':selectedDate.startDate && selectedDate.endDate}" type="button" class="btn "
-                                    (click)="save()"><span *ngIf="loader.fetch" class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>Fetch</button>
-                            </div>
-                           
+
                         </div>
                     </div>
 

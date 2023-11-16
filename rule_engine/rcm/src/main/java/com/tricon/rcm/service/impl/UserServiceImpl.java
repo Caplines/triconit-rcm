@@ -106,7 +106,7 @@ public class UserServiceImpl {
 	public List<UsersByTeamsAndCompanyDto> getUsersByTeamIdAndCompany(int teamId, JwtUser jwtUser) throws Exception {
 		List<RcmUserToDto> users = null;
 		UsersByTeamsAndCompanyDto dto = null;
-		teamId = RcmTeamEnum.validateTeamId(teamId);
+		teamId = RcmTeamEnum.validateTeamIdWithRoleVisible(teamId);
 		if (teamId == 0) {
 			return null;
 		}

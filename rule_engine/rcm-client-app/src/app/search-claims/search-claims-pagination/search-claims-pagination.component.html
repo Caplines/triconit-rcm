@@ -1,450 +1,426 @@
 <ng-container>
-    <div class="">
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-12 pt-3">
-                    <div class="main-container">
-                        <div class="detail-box">
-                            <div class="detail-box-form">
-                                <div class="form-row  collapse" [ngClass]="{'show':expandCollapse}" id="ruleEngine">
-                                    <div class="listClaimBox mt-2 mb-1">
-                                        <!-- <div></div> -->
-                                        <!-- <div>
-                                            <button type="button" class="icon-btn" (click)="downloadPdf()"
-                                                [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
-                                                <img src="../../assets/img/pdf.png" /></button><span
-                                                *ngIf="loader.exportPDFLoader"
-                                                class="spinner-border text-danger mx-1"></span>
-                                            <button type="button" class="icon-btn" (click)="exportToCsv()"
-                                                [disabled]="filteredItems.length==0">
-                                                <img src="../../assets/img/xls.png" /></button><span
-                                                *ngIf="loader.exportCSVLoader"
-                                                class="spinner-border text-success mx-1"></span>
-                                        </div> -->
-                                    </div>
-                                    <div class="table-responsive" style="min-height:300px;">
-                                        <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar"
-                                            [ngClass]="{'addLast':isLastTeam,'fetchFresh' : tabSwitch.Fresh, 'fetchSendBack' : tabSwitch.sendBack, 'fetchMyClaims' : tabSwitch.MyClaims}" id="table" *ngIf="claimDetail">
-                                            <thead>
-                                                <tr>
-                                                    <th style="z-index: 10;">
-                                                        <div class="dFlex">
-                                                            Clients
-                                                             <span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['clientName']}"
-                                                                    (click)="sortData(filteredItems,'clientName','asc','string'); isSorted['clientName'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['clientName']}"
-                                                                    (click)="sortData(filteredItems,'clientName','desc','string');isSorted['clientName'] = true"></a>
-                                                            </span>
-                                                            <!-- <div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('clientName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
-                                                                    *ngIf="showFilteredDropdown.clientName">
-                                                                    <div class="clearClose">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox"
-                                                                                [checked]="isFilterAllSelected.clientName"
-                                                                                value="selectAll"
-                                                                                (change)="selectAll($event,'clientName')">
-                                                                            {{isFilterAllSelected.clientName ? 'Clear All':'Select All'}}</label>
-                                                                        <button
-                                                                            (click)="showFilteredDropdown.clientName=false;"
-                                                                            type="button" class="close"
-                                                                            data-dismiss="modal"
-                                                                            aria-label="Close"><span>&times;</span></button>
-                                                                </div>
-                                                                    <ng-container
-                                                                        *ngFor="let data of filteredClientName">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox" checked="true"
-                                                                                [(ngModel)]="data.checked"
-                                                                                value="{{data.clientName}}"
-                                                                                (change)="filterClientName($event,'clientName')">
-                                                                            {{data.clientName}}
-                                                                        </label>
-                                                                    </ng-container>
-                                                                </div>
-                                                            </div> <span class="sorting">
-                                                            </span> -->
-                                                        </div>
-                                                    </th>
-                                                    <th style="z-index: 10;">
-                                                        <div class="dFlex">
-                                                            Office <div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('officeName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu"
-                                                                    (mouseleave)="onMouseLeave($event)"
-                                                                    *ngIf="showFilteredDropdown.officeName">
-                                                                    <div class="clearClose">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox"
-                                                                                [checked]="isFilterAllSelected.officeName"
-                                                                                value="selectAll"
-                                                                                (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
-                                                                        <button
-                                                                            (click)="showFilteredDropdown.officeName=false;"
-                                                                            type="button" class="close" data-dismiss="modal"
-                                                                            aria-label="Close"><span>&times;</span></button>
-                                                                    </div>
-                                                                    <ng-container *ngFor="let data of filteredOfficeName">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox" checked="true"
-                                                                                [(ngModel)]="data.checked"
-                                                                                value="{{data.name}}"
-                                                                                (change)="filterOfficeName($event,'officeName')">
-                                                                            {{data.name}}
-                                                                        </label>
-                                                                    </ng-container>
-                                                                </div>
-                                                            </div> <span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['officeName']}"
-                                                                    (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['officeName']}"
-                                                                    (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
-                                                            </span>
-    
-                                                        </div>
-                                                    </th>
-                                                    <th class="width-90">
-                                                        <div class="dFlex">
-                                                            Claim ID
-                                                            <!-- <span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['claimId']}"
-                                                                    (click)="sortData(filteredItems,'claimId','asc','string'); isSorted['claimId'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['claimId']}"
-                                                                    (click)="sortData(filteredItems,'claimId','desc','string');isSorted['claimId'] = true"></a>
-                                                            </span> -->
-                                                        </div>
-                                                    </th>
-                                                    <th class="width-90">
-                                                        <div class="dFlex">
-                                                            Patient ID<span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['patientId']}"
-                                                                    (click)="sortData(filteredItems,'patientId','asc','number'); isSorted['patientId'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['patientId']}"
-                                                                    (click)="sortData(filteredItems,'patientId','desc','number');isSorted['patientId'] = true"></a>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <th class="width-115">
-                                                        <div class="dFlex">
-                                                            Patient Name<span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['patientName']}"
-                                                                    (click)="sortData(filteredItems,'patientName','asc','string'); isSorted['patientName'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['patientName']}"
-                                                                    (click)="sortData(filteredItems,'patientName','desc','string');isSorted['patientName'] = true"></a>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <th>
-                                                        <div class="dFlex">
-                                                            DOS<span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['dos']}"
-                                                                    (click)="sortData(filteredItems,'dos','asc','dateOnly'); isSorted['dos'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['dos']}"
-                                                                    (click)="sortData(filteredItems,'dos','desc','dateOnly');isSorted['dos'] = true"></a>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <th>
-                                                        <div class="dFlex">
-                                                            Claim Age<span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['claimAge']}"
-                                                                    (click)="sortData(filteredItems,'claimAge','asc','number'); isSorted['claimAge'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['claimAge']}"
-                                                                    (click)="sortData(filteredItems,'claimAge','desc','number');isSorted['claimAge'] = true"></a>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <th>
-                                                        <div class="dFlex">
-                                                            TFL
-                                                            <!-- <span class="sorting">
-                                                              <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['officeName']}" (click)="isSorted['officeName'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['officeName']}" (click)="isSorted['officeName'] = true"></a>
-                                                            </span> -->
-                                                        </div>
-                                                    </th>
-                                                    <th>
-                                                        <div class="dFlex">
-                                                            Claim Type<div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('claimType')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu"
-                                                                    (mouseleave)="onMouseLeave($event)"
-                                                                    *ngIf="showFilteredDropdown.claimType">
-                                                                    <div class="clearClose">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox"
-                                                                                [checked]="isFilterAllSelected.claimType"
-                                                                                value="selectAll"
-                                                                                (change)="selectAll($event,'claimType')">
-                                                                            {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
-                                                                        <button
-                                                                            (click)="showFilteredDropdown.claimType=false;"
-                                                                            type="button" class="close" data-dismiss="modal"
-                                                                            aria-label="Close"><span>&times;</span></button>
-                                                                    </div>
-                                                                    <ng-container *ngFor="let data of filteredColumnData.claimType">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox" checked="true"
-                                                                                [(ngModel)]="data.checked"
-                                                                                value="{{data.claimType}}"
-                                                                                (change)="filterClaimType('claimType')">
-                                                                            {{data.claimType}}
-                                                                        </label>
-                                                                    </ng-container>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </th>
-                                                    <th class="insuranceName">
-                                                        <div class="dFlex">
-                                                            Insurance Name<div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('insuranceName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                               
-                                                                <div class="dropdown-menu filter-dropdown-menu"
-                                                                    (mouseleave)="onMouseLeave($event)"
-                                                                    *ngIf="showFilteredDropdown.insuranceName">
-                                                                    <div class="clearClose">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox"
-                                                                                [checked]="isFilterAllSelected.insuranceName"
-                                                                                value="selectAll"
-                                                                                (change)="selectAll($event,'insuranceName')">
-                                                                            {{isFilterAllSelected.insuranceName? 'Clear All':'Select All'}}</label>
-                                                                        <button
-                                                                            (click)="showFilteredDropdown.insuranceName=false;"
-                                                                            type="button" class="close" data-dismiss="modal"
-                                                                            aria-label="Close"><span>&times;</span></button>
-                                                                    </div>
-                                                                    <ng-container
-                                                                        *ngFor="let data of filteredColumnData.insuranceName">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox" checked="true"
-                                                                                [(ngModel)]="data.checked"
-                                                                                value="{{data.claimType}}"
-                                                                                (change)="filterInsuranceName('insuranceName')">
-                                                                            {{data.insuranceName}}
-                                                                        </label>
-                                                                    </ng-container>
-                                                                </div>
-                                                            </div>
-                                                            <span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['primaryInsurance']}"
-                                                                    (click)="sortData(filteredItems,'primaryInsurance','asc','string'); isSorted['primaryInsurance'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['primaryInsurance']}"
-                                                                    (click)="sortData(filteredItems,'primaryInsurance','desc','string');isSorted['primaryInsurance'] = true"></a>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <th class="insuranceType">
-                                                        <div class="dFlex">
-                                                            Insurance Type<div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('insuranceType')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu searchClaim "
-                                                                    (mouseleave)="onMouseLeave($event)"
-                                                                    *ngIf="showFilteredDropdown.insuranceType">
-                                                                    <div class="clearClose">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox"
-                                                                                [checked]="isFilterAllSelected.insuranceType"
-                                                                                value="selectAll"
-                                                                                (change)="selectAll($event,'insuranceType')">
-                                                                            {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
-                                                                        <button
-                                                                            (click)="showFilteredDropdown.insuranceType=false;"
-                                                                            type="button" class="close" data-dismiss="modal"
-                                                                            aria-label="Close"><span>&times;</span></button>
-                                                                    </div>
-                                                                    <ng-container
-                                                                        *ngFor="let data of filteredColumnData.insuranceType">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox" checked="true"
-                                                                                [(ngModel)]="data.checked"
-                                                                                value="{{data.claimType}}"
-                                                                                (change)="filterInsuranceType('insuranceType')">
-                                                                            {{data.insuranceType}}
-                                                                        </label>
-                                                                    </ng-container>
-                                                                </div>
-                                                            </div>
-                                                            <span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['prName']}"
-                                                                    (click)="sortData(filteredItems,'prName','asc','string'); isSorted['prName'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['prName']}"
-                                                                    (click)="sortData(filteredItems,'prName','desc','string');isSorted['prName'] = true"></a>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <th>
-                                                        <div class="dFlex">
-                                                            Est. Amount<span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['EstAmount']}"
-                                                                    (click)="sortData(filteredItems,'EstAmount','asc','number'); isSorted['EstAmount'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['EstAmount']}"
-                                                                    (click)="sortData(filteredItems,'EstAmount','desc','number');isSorted['EstAmount'] = true"></a>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                    <ng-container *ngIf="tabSwitch.sendBack">
-                                                        <th>
-                                                            <div class="dFlex">
-                                                                Billing Amount<span class="sorting">
-                                                                    <a href="javascript:void(0);" class="arrow-up"
-                                                                        [ngClass]="{'selected': !isSorted['billedAmount']}"
-                                                                        (click)="sortData(filteredItems,'billedAmount','asc','number'); isSorted['billedAmount'] = false"></a>
-                                                                    <a href="javascript:void(0);" class="arrow-down"
-                                                                        [ngClass]="{'selected': isSorted['billedAmount']}"
-                                                                        (click)="sortData(filteredItems,'billedAmount','desc','number');isSorted['billedAmount'] = true"></a>
-                                                                </span>
-                                                            </div>
-                                                        </th>
+    <div class="main-container" style="margin-top: -20px;">
+        <div class="detail-box">
+            <div class="detail-box-form">
+                <div class="form-row  collapse" [ngClass]="{'show':expandCollapse}" id="ruleEngine">
+                    <div class="table-responsive" style="min-height:300px;">
+                        <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar"
+                            [ngClass]="{'addLast':isLastTeam,'fetchFresh' : tabSwitch.Fresh, 'fetchSendBack' : tabSwitch.sendBack, 'fetchMyClaims' : tabSwitch.MyClaims}" id="table" *ngIf="claimDetail">
+                            <thead>
+                                <tr>
+                                    <th style="z-index: 10;">
+                                        <div class="dFlex">
+                                            Clients
+                                             <span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['clientName']}"
+                                                    (click)="sortData(filteredItems,'clientName','asc','string'); isSorted['clientName'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['clientName']}"
+                                                    (click)="sortData(filteredItems,'clientName','desc','string');isSorted['clientName'] = true"></a>
+                                            </span>
+                                            <!-- <div class="dropdown">
+                                                <img  (click)="showHideFilteredDropdown('clientName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                    *ngIf="showFilteredDropdown.clientName">
+                                                    <div class="clearClose">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox"
+                                                                [checked]="isFilterAllSelected.clientName"
+                                                                value="selectAll"
+                                                                (change)="selectAll($event,'clientName')">
+                                                            {{isFilterAllSelected.clientName ? 'Clear All':'Select All'}}</label>
+                                                        <button
+                                                            (click)="showFilteredDropdown.clientName=false;"
+                                                            type="button" class="close"
+                                                            data-dismiss="modal"
+                                                            aria-label="Close"><span>&times;</span></button>
+                                                </div>
+                                                    <ng-container
+                                                        *ngFor="let data of filteredClientName">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox" checked="true"
+                                                                [(ngModel)]="data.checked"
+                                                                value="{{data.clientName}}"
+                                                                (change)="filterClientName($event,'clientName')">
+                                                            {{data.clientName}}
+                                                        </label>
                                                     </ng-container>
-                                                    <th class="lc3Row lastTeam" *ngIf="isLastTeam">
-                                                        <div class="dFlex">
-                                                            Last Team that Worked on this claim
-                                                            <div class="dropdown">
-                                                                <!-- <svg (click)="showHideFilteredDropdown('lastTeamWorked')" style="cursor:pointer;display: inline-block; float: left;background: #e5e5e5;border-radius: 5px;padding: 1px;/* margin-right: 3px; */margin-left: 6px;" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" fill="#d88627"><style type="text/css">
-                                                                    .st0{opacity:0.2;fill:none;stroke:#000000;stroke-width:5.000000e-02;stroke-miterlimit:10;}</style><g id="grid_system"></g><g id="_icons"><path d="M4,17h8.1c0.4,1.7,2,3,3.9,3s3.4-1.3,3.9-3H20c0.6,0,1-0.4,1-1s-0.4-1-1-1h-0.1c-0.4-1.7-2-3-3.9-3s-3.4,1.3-3.9,3H4 c-0.6,0-1,0.4-1,1S3.4,17,4,17z M16,14c1.1,0,2,0.9,2,2s-0.9,2-2,2s-2-0.9-2-2S14.9,14,16,14z"></path><path d="M4,9h0.1c0.4,1.7,2,3,3.9,3s3.4-1.3,3.9-3H20c0.6,0,1-0.4,1-1s-0.4-1-1-1h-8.1c-0.4-1.7-2-3-3.9-3S4.6,5.3,4.1,7H4 C3.4,7,3,7.4,3,8S3.4,9,4,9z M8,6c1.1,0,2,0.9,2,2s-0.9,2-2,2S6,9.1,6,8S6.9,6,8,6z"></path></g></svg>  -->
-                                                                <div class="dropdown-menu filter-dropdown-menu"
-                                                                    *ngIf="showFilteredDropdown.lastTeamWorked">
-                                                                    <div class="clearClose">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox"
-                                                                                [checked]="isFilterAllSelected.lastTeamWorked"
-                                                                                value="selectAll"
-                                                                                (change)="selectAll($event,'lastTeam')">
-                                                                            {{isFilterAllSelected.lastTeamWorked ? 'Clear All':'Select All'}}</label>
-                                                                        <button
-                                                                            (click)="showFilteredDropdown.lastTeamWorked=false;"
-                                                                            type="button" class="close" data-dismiss="modal"
-                                                                            aria-label="Close"><span>&times;</span></button>
-                                                                    </div>
-                                                                    <ng-container
-                                                                        *ngFor="let data of filteredColumnData.lastTeamWorked">
-                                                                        <label class="mx-1">
-                                                                            <input type="checkbox" checked="true"
-                                                                                [(ngModel)]="data.checked"
-                                                                                value="{{data.claimType}}"
-                                                                                (change)="filterLastTeamWorked('lastTeam')">
-                                                                            {{data.lastTeam}}
-                                                                        </label>
-                                                                    </ng-container>
-                                                                </div>
-                                                            </div><span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted}"
-                                                                    (click)="sortData(filteredItems,'lastTeam','asc','string'); isSorted = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted}"
-                                                                    (click)="sortData(filteredItems,'lastTeam','desc','string');isSorted = true"></a>
-                                                            </span>
-                                                        </div>
-                                                    </th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
-                                                    <td colspan="16" style="min-height:200px;">
-                                                        <div class="text-center mt-2">
-                                                            <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <ng-container *ngIf="!loader.listClaimLoader">
-                                                    <!-- <ng-container *ngFor="let data of filteredOfficeName">
-                                                            <label>
-                                                                <input type="checkbox"  value="{{data.officeName}}" (change)="filterItems($event)" >
-                                                                {{data.officeName}}
-                                                            </label>
-                                                        </ng-container> -->
-                                                    <ng-container *ngFor="let det of filteredItems">
-                                                        <tr *ngIf="loader.listClaimLoader">
-                                                            <td colspan="7" class="text-center"><span
-                                                                    class="loader-data "></span> </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" >{{det.clientName}}</td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}">{{det.officeName}}</td>
-                                                            <td class="noWrape"><a [ngClass]="{'changeColor' : det.colorChange}"
-                                                                [routerLink]="['/billing-claims/', det.uuid]"
-                                                                target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
-                                                            <td class="alignRight"><a [ngClass]="{'changeColor' : det.colorChange}"
-                                                                    [routerLink]="['/billing-claims/', det.uuid]"
-                                                                    target="_blank">{{det.patientId}}</a></td>                                                   
-                                                            <td><a [ngClass]="{'changeColor' : det.colorChange}" [routerLink]="['/billing-claims/', det.uuid]"
-                                                                    target="_blank">{{det.patientName | titlecase}}</a></td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
-                                                            <!-- Claim Type START-->
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">Primary</td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
-                                                            <!-- Claim Type END-->
-                                                            <!-- Insurance Name START-->
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">
-                                                                {{det.primaryInsurance}}
-                                                            </td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">
-                                                                {{det.secondaryInsurance}}</td>
-                                                            <!-- Insurance Name END -->
-                                                            <!-- Insurance Type START-->
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">{{det.prName}}</td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">{{det.secName}}
-                                                            </td>
-                                                            <!-- Insurance Type START-->
-                                                            <!-- Insurance Type START-->
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight" *ngIf="det.claimId | claimTypeFilter">
-                                                                {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
-                                                            </td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight"
-                                                                *ngIf="! (det.claimId | claimTypeFilter)">
-                                                                {{det.secTotal | currency:'USD':true:'.0-0'}}
-                                                            </td>
-                                                            <!-- Insurance Type START-->
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="tabSwitch.sendBack">{{det.billedAmount |
-                                                                currency:'USD':true:'.0-0'}}</td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="isLastTeam" class="NA">
-                                                                {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
-                                                        </tr>
+                                                </div>
+                                            </div> <span class="sorting">
+                                            </span> -->
+                                        </div>
+                                    </th>
+                                    <th style="z-index: 10;">
+                                        <div class="dFlex">
+                                            Office <div class="dropdown">
+                                                <img  (click)="showHideFilteredDropdown('officeName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                    (mouseleave)="onMouseLeave($event)"
+                                                    *ngIf="showFilteredDropdown.officeName">
+                                                    <div class="clearClose">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox"
+                                                                [checked]="isFilterAllSelected.officeName"
+                                                                value="selectAll"
+                                                                (change)="selectAll($event,'officeName')">
+                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
+                                                        <button
+                                                            (click)="showFilteredDropdown.officeName=false;"
+                                                            type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close"><span>&times;</span></button>
+                                                    </div>
+                                                    <ng-container *ngFor="let data of filteredOfficeName">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox" checked="true"
+                                                                [(ngModel)]="data.checked"
+                                                                value="{{data.name}}"
+                                                                (change)="filterOfficeName($event,'officeName')">
+                                                            {{data.name}}
+                                                        </label>
                                                     </ng-container>
-                                                </ng-container>
-                                            </tbody>
-                                        </table>
-                                        <ng-container *ngIf="loader.listClaimLoader">
-                                            <div class="text-center"><span class="loader-data"></span> </div>
-                                        </ng-container>
-                                    </div>
-                                </div>
-    
-                            </div>
-                        </div>
-    
+                                                </div>
+                                            </div> <span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['officeName']}"
+                                                    (click)="sortData(filteredItems,'officeName','asc','string'); isSorted['officeName'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['officeName']}"
+                                                    (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
+                                            </span>
+
+                                        </div>
+                                    </th>
+                                    <th class="width-90">
+                                        <div class="dFlex">
+                                            Claim ID
+                                            <!-- <span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['claimId']}"
+                                                    (click)="sortData(filteredItems,'claimId','asc','string'); isSorted['claimId'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['claimId']}"
+                                                    (click)="sortData(filteredItems,'claimId','desc','string');isSorted['claimId'] = true"></a>
+                                            </span> -->
+                                        </div>
+                                    </th>
+                                    <th class="width-90">
+                                        <div class="dFlex">
+                                            Patient ID<span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['patientId']}"
+                                                    (click)="sortData(filteredItems,'patientId','asc','number'); isSorted['patientId'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['patientId']}"
+                                                    (click)="sortData(filteredItems,'patientId','desc','number');isSorted['patientId'] = true"></a>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="width-115">
+                                        <div class="dFlex">
+                                            Patient Name<span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['patientName']}"
+                                                    (click)="sortData(filteredItems,'patientName','asc','string'); isSorted['patientName'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['patientName']}"
+                                                    (click)="sortData(filteredItems,'patientName','desc','string');isSorted['patientName'] = true"></a>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="dFlex">
+                                            DOS<span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['dos']}"
+                                                    (click)="sortData(filteredItems,'dos','asc','dateOnly'); isSorted['dos'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['dos']}"
+                                                    (click)="sortData(filteredItems,'dos','desc','dateOnly');isSorted['dos'] = true"></a>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="dFlex">
+                                            Claim Age<span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['claimAge']}"
+                                                    (click)="sortData(filteredItems,'claimAge','asc','number'); isSorted['claimAge'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['claimAge']}"
+                                                    (click)="sortData(filteredItems,'claimAge','desc','number');isSorted['claimAge'] = true"></a>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="dFlex">
+                                            TFL
+                                            <!-- <span class="sorting">
+                                              <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['officeName']}" (click)="isSorted['officeName'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['officeName']}" (click)="isSorted['officeName'] = true"></a>
+                                            </span> -->
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="dFlex">
+                                            Claim Type<div class="dropdown">
+                                                <img  (click)="showHideFilteredDropdown('claimType')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                    (mouseleave)="onMouseLeave($event)"
+                                                    *ngIf="showFilteredDropdown.claimType">
+                                                    <div class="clearClose">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox"
+                                                                [checked]="isFilterAllSelected.claimType"
+                                                                value="selectAll"
+                                                                (change)="selectAll($event,'claimType')">
+                                                            {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
+                                                        <button
+                                                            (click)="showFilteredDropdown.claimType=false;"
+                                                            type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close"><span>&times;</span></button>
+                                                    </div>
+                                                    <ng-container *ngFor="let data of filteredColumnData.claimType">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox" checked="true"
+                                                                [(ngModel)]="data.checked"
+                                                                value="{{data.claimType}}"
+                                                                (change)="filterClaimType('claimType')">
+                                                            {{data.claimType}}
+                                                        </label>
+                                                    </ng-container>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </th>
+                                    <th class="insuranceName">
+                                        <div class="dFlex">
+                                            Insurance Name<div class="dropdown">
+                                                <img  (click)="showHideFilteredDropdown('insuranceName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                               
+                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                    (mouseleave)="onMouseLeave($event)"
+                                                    *ngIf="showFilteredDropdown.insuranceName">
+                                                    <div class="clearClose">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox"
+                                                                [checked]="isFilterAllSelected.insuranceName"
+                                                                value="selectAll"
+                                                                (change)="selectAll($event,'insuranceName')">
+                                                            {{isFilterAllSelected.insuranceName? 'Clear All':'Select All'}}</label>
+                                                        <button
+                                                            (click)="showFilteredDropdown.insuranceName=false;"
+                                                            type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close"><span>&times;</span></button>
+                                                    </div>
+                                                    <ng-container
+                                                        *ngFor="let data of filteredColumnData.insuranceName">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox" checked="true"
+                                                                [(ngModel)]="data.checked"
+                                                                value="{{data.claimType}}"
+                                                                (change)="filterInsuranceName('insuranceName')">
+                                                            {{data.insuranceName}}
+                                                        </label>
+                                                    </ng-container>
+                                                </div>
+                                            </div>
+                                            <span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['primaryInsurance']}"
+                                                    (click)="sortData(filteredItems,'primaryInsurance','asc','string'); isSorted['primaryInsurance'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['primaryInsurance']}"
+                                                    (click)="sortData(filteredItems,'primaryInsurance','desc','string');isSorted['primaryInsurance'] = true"></a>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th class="insuranceType">
+                                        <div class="dFlex">
+                                            Insurance Type<div class="dropdown">
+                                                <img  (click)="showHideFilteredDropdown('insuranceType')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                <div class="dropdown-menu filter-dropdown-menu searchClaim "
+                                                    (mouseleave)="onMouseLeave($event)"
+                                                    *ngIf="showFilteredDropdown.insuranceType">
+                                                    <div class="clearClose">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox"
+                                                                [checked]="isFilterAllSelected.insuranceType"
+                                                                value="selectAll"
+                                                                (change)="selectAll($event,'insuranceType')">
+                                                            {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
+                                                        <button
+                                                            (click)="showFilteredDropdown.insuranceType=false;"
+                                                            type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close"><span>&times;</span></button>
+                                                    </div>
+                                                    <ng-container
+                                                        *ngFor="let data of filteredColumnData.insuranceType">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox" checked="true"
+                                                                [(ngModel)]="data.checked"
+                                                                value="{{data.claimType}}"
+                                                                (change)="filterInsuranceType('insuranceType')">
+                                                            {{data.insuranceType}}
+                                                        </label>
+                                                    </ng-container>
+                                                </div>
+                                            </div>
+                                            <span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['prName']}"
+                                                    (click)="sortData(filteredItems,'prName','asc','string'); isSorted['prName'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['prName']}"
+                                                    (click)="sortData(filteredItems,'prName','desc','string');isSorted['prName'] = true"></a>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="dFlex">
+                                            Est. Amount<span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted['EstAmount']}"
+                                                    (click)="sortData(filteredItems,'EstAmount','asc','number'); isSorted['EstAmount'] = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted['EstAmount']}"
+                                                    (click)="sortData(filteredItems,'EstAmount','desc','number');isSorted['EstAmount'] = true"></a>
+                                            </span>
+                                        </div>
+                                    </th>
+                                    <ng-container *ngIf="tabSwitch.sendBack">
+                                        <th>
+                                            <div class="dFlex">
+                                                Billing Amount<span class="sorting">
+                                                    <a href="javascript:void(0);" class="arrow-up"
+                                                        [ngClass]="{'selected': !isSorted['billedAmount']}"
+                                                        (click)="sortData(filteredItems,'billedAmount','asc','number'); isSorted['billedAmount'] = false"></a>
+                                                    <a href="javascript:void(0);" class="arrow-down"
+                                                        [ngClass]="{'selected': isSorted['billedAmount']}"
+                                                        (click)="sortData(filteredItems,'billedAmount','desc','number');isSorted['billedAmount'] = true"></a>
+                                                </span>
+                                            </div>
+                                        </th>
+                                    </ng-container>
+                                    <th class="lc3Row lastTeam" *ngIf="isLastTeam">
+                                        <div class="dFlex">
+                                            Last Team that Worked on this claim
+                                            <div class="dropdown">
+                                                <!-- <svg (click)="showHideFilteredDropdown('lastTeamWorked')" style="cursor:pointer;display: inline-block; float: left;background: #e5e5e5;border-radius: 5px;padding: 1px;/* margin-right: 3px; */margin-left: 6px;" version="1.1" viewBox="0 0 24 24" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20" fill="#d88627"><style type="text/css">
+                                                    .st0{opacity:0.2;fill:none;stroke:#000000;stroke-width:5.000000e-02;stroke-miterlimit:10;}</style><g id="grid_system"></g><g id="_icons"><path d="M4,17h8.1c0.4,1.7,2,3,3.9,3s3.4-1.3,3.9-3H20c0.6,0,1-0.4,1-1s-0.4-1-1-1h-0.1c-0.4-1.7-2-3-3.9-3s-3.4,1.3-3.9,3H4 c-0.6,0-1,0.4-1,1S3.4,17,4,17z M16,14c1.1,0,2,0.9,2,2s-0.9,2-2,2s-2-0.9-2-2S14.9,14,16,14z"></path><path d="M4,9h0.1c0.4,1.7,2,3,3.9,3s3.4-1.3,3.9-3H20c0.6,0,1-0.4,1-1s-0.4-1-1-1h-8.1c-0.4-1.7-2-3-3.9-3S4.6,5.3,4.1,7H4 C3.4,7,3,7.4,3,8S3.4,9,4,9z M8,6c1.1,0,2,0.9,2,2s-0.9,2-2,2S6,9.1,6,8S6.9,6,8,6z"></path></g></svg>  -->
+                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                    *ngIf="showFilteredDropdown.lastTeamWorked">
+                                                    <div class="clearClose">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox"
+                                                                [checked]="isFilterAllSelected.lastTeamWorked"
+                                                                value="selectAll"
+                                                                (change)="selectAll($event,'lastTeam')">
+                                                            {{isFilterAllSelected.lastTeamWorked ? 'Clear All':'Select All'}}</label>
+                                                        <button
+                                                            (click)="showFilteredDropdown.lastTeamWorked=false;"
+                                                            type="button" class="close" data-dismiss="modal"
+                                                            aria-label="Close"><span>&times;</span></button>
+                                                    </div>
+                                                    <ng-container
+                                                        *ngFor="let data of filteredColumnData.lastTeamWorked">
+                                                        <label class="mx-1">
+                                                            <input type="checkbox" checked="true"
+                                                                [(ngModel)]="data.checked"
+                                                                value="{{data.claimType}}"
+                                                                (change)="filterLastTeamWorked('lastTeam')">
+                                                            {{data.lastTeam}}
+                                                        </label>
+                                                    </ng-container>
+                                                </div>
+                                            </div><span class="sorting">
+                                                <a href="javascript:void(0);" class="arrow-up"
+                                                    [ngClass]="{'selected': !isSorted}"
+                                                    (click)="sortData(filteredItems,'lastTeam','asc','string'); isSorted = false"></a>
+                                                <a href="javascript:void(0);" class="arrow-down"
+                                                    [ngClass]="{'selected': isSorted}"
+                                                    (click)="sortData(filteredItems,'lastTeam','desc','string');isSorted = true"></a>
+                                            </span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngIf="filteredItems.length==0 && !loader.listClaimLoader">
+                                    <td colspan="16" style="min-height:200px;">
+                                        <div class="text-center mt-2">
+                                            <h5 class="text-light bg-secondary p-1"> No Data Available!</h5>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <ng-container *ngIf="!loader.listClaimLoader">
+                                    <!-- <ng-container *ngFor="let data of filteredOfficeName">
+                                            <label>
+                                                <input type="checkbox"  value="{{data.officeName}}" (change)="filterItems($event)" >
+                                                {{data.officeName}}
+                                            </label>
+                                        </ng-container> -->
+                                    <ng-container *ngFor="let det of filteredItems">
+                                        <tr *ngIf="loader.listClaimLoader">
+                                            <td colspan="7" class="text-center"><span
+                                                    class="loader-data "></span> </td>
+                                        </tr>
+                                        <tr>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" >{{det.clientName}}</td>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}">{{det.officeName}}</td>
+                                            <td class="noWrape"><a [ngClass]="{'changeColor' : det.colorChange}"
+                                                [routerLink]="['/billing-claims/', det.uuid]"
+                                                target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
+                                            <td><a [ngClass]="{'changeColor' : det.colorChange}"
+                                                    [routerLink]="['/billing-claims/', det.uuid]"
+                                                    target="_blank">{{det.patientId}}</a></td>                                                   
+                                            <td><a [ngClass]="{'changeColor' : det.colorChange}" [routerLink]="['/billing-claims/', det.uuid]"
+                                                    target="_blank">{{det.patientName | titlecase}}</a></td>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
+                                            <!-- Claim Type START-->
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">Primary</td>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
+                                            <!-- Claim Type END-->
+                                            <!-- Insurance Name START-->
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">
+                                                {{det.primaryInsurance}}
+                                            </td>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">
+                                                {{det.secondaryInsurance}}</td>
+                                            <!-- Insurance Name END -->
+                                            <!-- Insurance Type START-->
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">{{det.prName}}</td>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">{{det.secName}}
+                                            </td>
+                                            <!-- Insurance Type START-->
+                                            <!-- Insurance Type START-->
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight" *ngIf="det.claimId | claimTypeFilter">
+                                                {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
+                                            </td>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight"
+                                                *ngIf="! (det.claimId | claimTypeFilter)">
+                                                {{det.secTotal | currency:'USD':true:'.0-0'}}
+                                            </td>
+                                            <!-- Insurance Type START-->
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="tabSwitch.sendBack">{{det.billedAmount |
+                                                currency:'USD':true:'.0-0'}}</td>
+                                            <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="isLastTeam" class="NA">
+                                                {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
+                                        </tr>
+                                    </ng-container>
+                                </ng-container>
+                            </tbody>
+                        </table>
+                        <ng-container *ngIf="loader.listClaimLoader">
+                            <div class="text-center"><span class="loader-data"></span> </div>
+                        </ng-container>
                     </div>
-    
                 </div>
+
             </div>
-            </div>
-            </div>
+        </div>
+
+    </div>
         </ng-container>

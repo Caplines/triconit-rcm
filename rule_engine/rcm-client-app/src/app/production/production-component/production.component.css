@@ -241,3 +241,4 @@ a.arrow-down.selected {
 .sorting .selected {
     border-bottom-color: #2d4047;
 }
+.rangeBtn { margin-left: 5px;}

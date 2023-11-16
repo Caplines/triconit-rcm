@@ -1434,10 +1434,10 @@ export class BillingClaimsComponent {
       else {
         this.alert.showAlertPopup = true;
         this.alert.alertMsg = res.data.message;
-        this.alert.isError = false;
+        this.alert.isError = true;
         setTimeout(() => {
           this.alert = {};
-        }, 3000);
+        }, 6000);
       }
     })
   }
