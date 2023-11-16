@@ -574,12 +574,12 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
         this.shareCheckedlist('client');
       }
     } 
-    else if(from === "team"){
+    else if(from === "teams"){
       if (isChecked) {
         this.teams.forEach((e: any) => {
           let isTeamExist = this.teamCheckedList.some((ele: any) => e.teamId == ele.teamId);
           if (!isTeamExist) {
-            this.teamCheckedList.push(e)
+            this.teamCheckedList.push({ ...e, 'checked': true })
           }
         })
         this.list = this.teamCheckedList.map((e: any) => ({ ...e, 'checked': true }));
