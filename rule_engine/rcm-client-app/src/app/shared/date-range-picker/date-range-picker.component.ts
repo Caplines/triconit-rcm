@@ -16,7 +16,6 @@ export class DateRangePickerComponent {
   }
 
   ngAfterViewInit() {
-    //debugger;
     this.dateField = document.querySelector(".daterangepicker");
     this.dateField.style.display = "none";
   }
@@ -52,6 +51,11 @@ export class DateRangePickerComponent {
 
     }).click();;
 
+  }
+
+  clearField(){
+    let inputDateEl:any = document.querySelector("#config-demo");
+        inputDateEl.value = ''; 
   }
 
 }

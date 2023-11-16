@@ -6,6 +6,7 @@ import { AppConstants } from '../constants/app.constants';
 import { SearchParamModel } from '../models/search_param_model';
 import { DatePipe } from '@angular/common';
 import { SearchClaimsPaginationComponent } from './search-claims-pagination/search-claims-pagination.component';
+import { DateRangePickerComponent } from '../shared/date-range-picker/date-range-picker.component';
 @Component({
   selector: 'app-search-claims',
   templateUrl: './search-claims.component.html',
@@ -45,6 +46,7 @@ export class SearchClaimsComponent {
   selectedOffices:any=[];
   selectedClients:any=[];
   @ViewChild(SearchClaimsPaginationComponent)child!:SearchClaimsPaginationComponent;
+  @ViewChild(DateRangePickerComponent)dateRangeChild!:DateRangePickerComponent;
 
   constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants,
     private datePipe: DatePipe) {
@@ -228,9 +230,11 @@ export class SearchClaimsComponent {
     this.appService.emitOnValueChange({action:'resetAllField'});
     this.listOfClaimsData = [];
     this.loader=true;
-    console.log(this.listOfClaimsData);
-    
+    this.dateRangeChild.clearField();
     this.resetSearchClaimConfig();
+
+    console.log(this.searchClaimConfig);
+    
   }
 
   resetSearchClaimConfig(){

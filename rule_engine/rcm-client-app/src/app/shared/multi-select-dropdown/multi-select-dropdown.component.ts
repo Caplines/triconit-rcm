@@ -146,7 +146,6 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
       }
     }
     else return;
-    console.log(this.inputConfig);
   })
  }
 
