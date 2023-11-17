@@ -296,12 +296,11 @@
                                                     <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}</td>
                                                 </tr>
                                             </ng-container>
-                                            <ng-container
-                                                *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
-                                                No Remarks Found.
-                                            </ng-container>
                                         </tbody>
                                     </table>
+                                    <div class="not-found" *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
+                                        No Remarks Found
+                                    </div>
                                 </div>
                             </div>
                             <ng-container *ngIf="attachmentConfig['showAttachment']">
@@ -338,7 +337,7 @@
                                                 <th>Requirement</th>
                                                 <th>Requirment Details</th>
                                                 <th>Done</th>
-                                                <th>Remarks</th>
+                                                <th class="remark-col">Remarks</th>
                                             </tr>
                                         </thead>
                                     </table>
@@ -386,7 +385,7 @@
                                                     <th>Description</th> -->
                                                     <th>Passed/Failed</th>
                                                     <th>Details</th>
-                                                    <th>Remarks</th>
+                                                    <th class="remark-col">Remarks</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -450,7 +449,7 @@
                                                     <th>S.No.</th>
                                                     <th>Validation Name</th>
                                                     <th>Status</th>
-                                                    <th>Remarks</th>
+                                                    <th class="remark-col">Remarks</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -506,7 +505,7 @@
                                                                         value="2"
                                                                         (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                         [(ngModel)]='rule.messageType'
-                                                                        [disabled]="makeReadOnly()"> Complete
+                                                                        [disabled]="makeReadOnly()"> Attached
                                                                 </label>
                                                                 <label class="btn btn-light"
                                                                     [ngClass]="{active:rule.messageType==1}">
@@ -514,7 +513,7 @@
                                                                         value="1"
                                                                         (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                         [(ngModel)]='rule.messageType'
-                                                                        [disabled]="makeReadOnly()"> Incorrect
+                                                                        [disabled]="makeReadOnly()"> Others
                                                                 </label>
                                                             </div>
 
@@ -600,7 +599,7 @@
                                                                         value="2"
                                                                         (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                         [(ngModel)]='rule.messageType'
-                                                                        [disabled]="makeReadOnly()"> Complete
+                                                                        [disabled]="makeReadOnly()"> Attached
                                                                 </label>
                                                                 <label class="btn btn-light"
                                                                     [ngClass]="{active:rule.messageType==1}">
@@ -608,7 +607,7 @@
                                                                         value="1"
                                                                         (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                         [(ngModel)]='rule.messageType'
-                                                                        [disabled]="makeReadOnly()"> Incorrect
+                                                                        [disabled]="makeReadOnly()"> Others
                                                                 </label>
                                                             </div>
 
@@ -783,15 +782,15 @@
                                                     <th>Service Code</th>
                                                     <!-- <th style="width:40%">Description</th> -->
                                                     <th>Status</th>
-                                                    <th>Remarks</th>
+                                                    <th class="remark-col">Remarks</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <ng-container *ngIf="claimServiceLevelModel?.claimFound==false">
+                                                <!-- <ng-container >
                                                     <tr>
                                                         <td colspan="5">Data Not Found</td>
                                                     </tr>
-                                                </ng-container>
+                                                </ng-container> -->
                                                 <ng-container *ngIf="claimServiceLevelModel?.claimFound">
 
                                                     <tr
@@ -820,7 +819,7 @@
                                                                         (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                         removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
-                                                                        [disabled]="makeReadOnly()"> Complete
+                                                                        [disabled]="makeReadOnly()"> Attached
                                                                 </label>
                                                                 <label class="btn btn-light"
                                                                     [ngClass]="{active:d.answer=='Incorrect'}">
@@ -828,7 +827,7 @@
                                                                         (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                         removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
-                                                                        [disabled]="makeReadOnly()"> Incorrect
+                                                                        [disabled]="makeReadOnly()">Others
                                                                 </label>
                                                             </div>
                                                         </td>
@@ -840,6 +839,9 @@
                                                 </ng-container>
                                             </tbody>
                                         </table>
+                                        <div class="not-found" *ngIf="claimServiceLevelModel?.claimFound==false">
+                                            claim Data Not Found
+                                        </div>
                                     </div>
                                 </div>
                             </ng-container>
@@ -867,15 +869,15 @@
                                                     <!-- <th style="width:40%">Description</th> -->
                                                     <th>Messages</th>
                                                     <th>Passed/Failed</th>
-                                                    <th>Remarks</th>
+                                                    <th class="remark-col">Remarks</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <ng-container *ngIf="claimServiceLevelModel?.claimFound==false">
+                                                <!-- <ng-container *ngIf="claimServiceLevelModel?.claimFound==false">
                                                     <tr>
                                                         <td colspan="5">claim Data Not Found</td>
                                                     </tr>
-                                                </ng-container>
+                                                </ng-container> -->
                                                 <ng-container *ngIf="claimServiceLevelModel?.claimFound">
 
                                                     <tr
@@ -904,6 +906,9 @@
                                                 </ng-container>
                                             </tbody>
                                         </table>
+                                        <div class="not-found" *ngIf="claimServiceLevelModel?.claimFound==false">
+                                            claim Data Not Found
+                                        </div>
                                     </div>
                                 </div>
                             </ng-container>
@@ -1142,14 +1147,18 @@
 
                                                 </td>
                                             </tr>
-
+                                            <tr>
+                                                <td></td>
+                                                <td class="remarkAria">
+                                                    <strong>Remarks</strong>
+                                                    <div><textarea class="form-control" id="" rows="3" [(ngModel)]='claimRcm.claimRemarks'></textarea>
+                                                    </div>
+                                                </td>
+                                                <td></td>
+                                            </tr>
                                         </tbody>
                                     </table>
 
-                                    <strong>Remarks</strong>
-                                    <div><textarea class="form-control date-control" id="" rows="3"
-                                            [(ngModel)]='claimRcm.claimRemarks'></textarea>
-                                    </div>
                                 </div>
                             </div>
                         </div>

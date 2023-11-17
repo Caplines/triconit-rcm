@@ -306,13 +306,13 @@
                                                         <td class="noWrape"><a [ngClass]="{'changeColor' : det.colorChange}"
                                                             [routerLink]="['/billing-claims/', det.uuid]"
                                                             target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
-                                                        <td class="alignRight"><a [ngClass]="{'changeColor' : det.colorChange}"
+                                                        <td><a [ngClass]="{'changeColor' : det.colorChange}"
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
                                                         <td><a [ngClass]="{'changeColor' : det.colorChange}" [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
-                                                        <td class="alignRight" [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.ageBracket}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">
