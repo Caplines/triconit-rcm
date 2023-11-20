@@ -9,7 +9,7 @@
     <div class="container-fluid cldet">
         <div class="row">
             <div class="col-lg-12 pt-5">
-                <h6 class="page-heading">claim Detail Page</h6>
+                <h6 class="page-heading">Claim Detail Page</h6>
                 <div class="main-container">
                     <div class="row">
                         <div class="col-md-12 mb-2">
@@ -33,7 +33,7 @@
                         <div class="detail-box-form">
                             <!-- This section is for all Clients -->
                             <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimDetails']}">
-                                <a data-toggle="collapse" aria-expanded="true">claim Details <span
+                                <a data-toggle="collapse" aria-expanded="true">Claim Details <span
                                         style="color:#ff00a8">{{infoMessage}}</span>
                                 </a>
                                 <div class="down-icon" (click)="showHide('claimDetails')">
@@ -320,7 +320,7 @@
                             </ng-container>
                             <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['additionalRebilled']}">
                                 <a data-toggle="collapse" aria-expanded="false">Additional Requirements for Rebilled
-                                    claim</a>
+                                    Claim</a>
                                 <div class="down-icon" (click)="showHide('additionalRebilled')">
                                     <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['additionalRebilled']}"></a>
                                 </div>
@@ -351,10 +351,10 @@
                                     <a (click)="reval()" *ngIf="claimRcm.allowEdit && claimRcm.pending"
                                         style="cursor: pointer;"> Re Validate
                                         Automated
-                                        claims</a>
+                                        Claims</a>
                                 </ng-container>
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelAutomated']}">
-                                    <a data-toggle="collapse" aria-expanded="false">claim Level Validations (Automated)
+                                    <a data-toggle="collapse" aria-expanded="false">Claim Level Validations (Automated)
                                         <span class="passedNum">Pass:{{countA.pass}}</span> <span
                                             class="passedNum fail">Fail:{{countA.fail}}</span></a>
                                     <div class="down-icon" (click)="showHide('claimLevelAutomated')">
@@ -433,7 +433,7 @@
                             </ng-container>
                             <ng-container>
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelManual']}">
-                                    <a data-toggle="collapse" aria-expanded="false">claim Level Validations (Manual)</a>
+                                    <a data-toggle="collapse" aria-expanded="false">Claim Level Validations (Manual)</a>
                                     <div class="down-icon" (click)="showHide('claimLevelManual')">
                                         <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['claimLevelManual']}"></a>
                                     </div>
@@ -924,7 +924,7 @@
                                             </tbody>
                                         </table>
                                         <div class="not-found" *ngIf="claimServiceLevelModel?.claimFound==false">
-                                            claim Data Not Found
+                                            Claim Data Not Found
                                         </div>
                                     </div>
                                 </div>
@@ -991,7 +991,7 @@
                                             </tbody>
                                         </table>
                                         <div class="not-found" *ngIf="claimServiceLevelModel?.claimFound==false">
-                                            claim Data Not Found
+                                            Claim Data Not Found
                                         </div>
                                     </div>
                                 </div>
@@ -1062,7 +1062,7 @@
                             </ng-container>
                             <div class="bold-b-text"  [ngClass]="{'collapsed':toggleTab['submissionDetail']}" *ngIf="!isInternalAuditLogin">
                                 <a data-toggle="collapse" aria-expanded="false">Enter
-                                    claim Submission Details</a>
+                                    Claim Submission Details</a>
                                 <div class="down-icon" (click)="showHide('submissionDetail')">
                                     <a href="javascript:void(0)"  [ngClass]="{'close':toggleTab['submissionDetail']}"></a>
                                 </div>
