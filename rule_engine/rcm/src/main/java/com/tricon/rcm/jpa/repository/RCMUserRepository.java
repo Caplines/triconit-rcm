@@ -28,7 +28,7 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			" select distinct u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName from rcm_user "+
 			" u inner join rcm_user_team rt on rt.rcm_user_id=u.uuid "+
 			" inner join rcm_user_company us on us.rcm_user_id=u.uuid "+
-			"  where u.active=1 AND rt.team_id=:teamId  and us.company_id=:companyUuid",nativeQuery=true)
+			"  where u.active=1 AND rt.team_id=:teamId  and us.company_id=:companyUuid and active is true",nativeQuery=true)
 	List<RcmUserToDto> findUsersByTeamIdAndCompanyId(@Param("teamId") int teamId,@Param("companyUuid")  String companyUuid);
 	
 	@Query(value="select u.uuid as Uuid,u.first_name as FirstName,u.last_name as LastName from rcm_user u "
