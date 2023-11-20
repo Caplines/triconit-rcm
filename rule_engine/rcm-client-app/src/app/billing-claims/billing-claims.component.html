@@ -449,8 +449,8 @@
                                                     <th>S.No.</th>
                                                     <th>Validation Name</th>
                                                     <th>Status</th>
-                                                    <!-- <th></th>
-                                                    <th></th> -->
+                                                    <th></th>
+                                                    <th></th>
                                                     <th class="remark-col">Remarks</th>
                                                 </tr>
                                             </thead>
@@ -501,24 +501,44 @@
                                                                             [disabled]="makeReadOnly()"> Not Needed
                                                                     </label>
                                                                 </ng-container>
-                                                                <label class="btn btn-light"
+                                                                <!-- <label class="btn btn-light"
                                                                     [ngClass]="{active:rule.messageType==2}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="2"
                                                                         (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Attached
-                                                                </label>
-                                                                <label class="btn btn-light"
+                                                                </label> -->
+                                                                <!-- <label class="btn btn-light"
                                                                     [ngClass]="{active:rule.messageType==1}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="1"
                                                                         (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Others
-                                                                </label>
+                                                                </label> -->
                                                             </div>
 
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-toggle">
+                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==2}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="2"
+                                                                        (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Attached
+                                                                </label>
+                                                            </div>
+                                                        
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-toggle">
+                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==1}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="1"
+                                                                        (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Others
+                                                                </label>
+                                                            </div>
+                                                        
                                                         </td>
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
@@ -595,24 +615,42 @@
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Not Available
                                                                 </label>
-                                                                <label class="btn btn-light"
+                                                                <!-- <label class="btn btn-light"
                                                                     [ngClass]="{active:rule.messageType==2}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="2"
                                                                         (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Attached
-                                                                </label>
-                                                                <label class="btn btn-light"
+                                                                </label> -->
+                                                                <!-- <label class="btn btn-light"
                                                                     [ngClass]="{active:rule.messageType==1}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="1"
                                                                         (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Others
-                                                                </label>
+                                                                </label> -->
                                                             </div>
 
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-toggle">
+                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==2}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="2"
+                                                                        (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
+                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Attached
+                                                                </label>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-toggle">
+                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==1}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="1"
+                                                                        (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
+                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Others
+                                                                </label>
+                                                            </div>
                                                         </td>
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
@@ -628,7 +666,7 @@
                                                             {{claimRcm.claimNotes[0]?.key}}
                                                         </td>
                                                     
-                                                        <td colspan="2"><textarea class="form-control mandatory"
+                                                        <td colspan="4"><textarea class="form-control mandatory"
                                                                 id="CL_N_{{claimRcm.claimNotes[0].id}}" rows="1"
                                                                 [(ngModel)]='claimRcm.claimNotes[0].value'
                                                                 (keydown)="removeErrorDisplayKey($event)"
@@ -674,15 +712,15 @@
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Available
                                                                 </label>
-                                                                <label class="btn btn-light"
+                                                                <!-- <label class="btn btn-light"
                                                                     [ngClass]="{active:rule.messageType==1}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
                                                                         value="1"
                                                                         (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Not Available
-                                                                </label>
-                                                                <ng-container
+                                                                </label> -->
+                                                                <!-- <ng-container
                                                                     *ngIf="rule.ruleId==317 || rule.ruleId==311 || rule.ruleId==312 || rule.ruleId==313 || rule.ruleId==314">
                                                                     <label class="btn btn-light"
                                                                         [ngClass]="{active:rule.messageType==3}">
@@ -692,12 +730,31 @@
                                                                             [(ngModel)]='rule.messageType'
                                                                             [disabled]="makeReadOnly()"> Not Needed
                                                                     </label>
-                                                                </ng-container>
+                                                                </ng-container> -->
                                                             </div>
 
                                                         </td>
-                                                        <!-- <td></td>
-                                                        <td></td> -->
+                                                        <td>
+                                                            <div class="btn-group btn-group-toggle">
+                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==1}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="1"
+                                                                        (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Not Available
+                                                                </label>
+                                                            </div>
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-toggle">
+                                                                <ng-container
+                                                                    *ngIf="rule.ruleId==317 || rule.ruleId==311 || rule.ruleId==312 || rule.ruleId==313 || rule.ruleId==314">
+                                                                    <label class="btn btn-light" [ngClass]="{active:rule.messageType==3}">
+                                                                        <input type="radio" name="mant{{rule.ruleId}}" value="3"
+                                                                            (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
+                                                                            [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Not Needed
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                        </td>
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                                 (keydown)="removeErrorDisplayKey($event)"
