@@ -843,6 +843,8 @@
                                                     <th>Service Code</th>
                                                     <!-- <th style="width:40%">Description</th> -->
                                                     <th>Status</th>
+                                                    <th></th>
+                                                    <th></th>
                                                     <th class="remark-col">Remarks</th>
                                                 </tr>
                                             </thead>
@@ -874,24 +876,45 @@
                                                                         [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()"> Not Available
                                                                 </label>
-                                                                <label class="btn btn-light"
+                                                                <!-- <label class="btn btn-light"
                                                                     [ngClass]="{active:d.answer=='Complete'}">
                                                                     <input type="radio" name="mt{{i}}" value="Complete"
                                                                         (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                         removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()"> Attached
-                                                                </label>
-                                                                <label class="btn btn-light"
+                                                                </label> -->
+                                                                <!-- <label class="btn btn-light"
                                                                     [ngClass]="{active:d.answer=='Incorrect'}">
                                                                     <input type="radio" name="mt{{i}}" value="Incorrect"
                                                                         (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                         removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                         [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()">Others
-                                                                </label>
+                                                                </label> -->
                                                             </div>
                                                         </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-toggle">
+                                                                <label class="btn btn-light" [ngClass]="{active:d.answer=='Complete'}">
+                                                                    <input type="radio" name="mt{{i}}" value="Complete"
+                                                                        (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
+                                                                                                                            removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);" [(ngModel)]='d.answer'
+                                                                        [disabled]="makeReadOnly()"> Attached
+                                                                </label>
+                                                            </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="btn-group btn-group-toggle">
+                                                                    <label class="btn btn-light" [ngClass]="{active:d.answer=='Incorrect'}">
+                                                                        <input type="radio" name="mt{{i}}" value="Incorrect"
+                                                                            (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
+                                                                                                                                    removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);" [(ngModel)]='d.answer'
+                                                                            [disabled]="makeReadOnly()">Others
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                       
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='d.remark' id="SERV_C_V_M{{d.remarkUuid}}"
                                                                 (click)="removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);"
