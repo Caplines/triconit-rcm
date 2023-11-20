@@ -102,7 +102,7 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined
         && (this.inputConfig.subType == 'claimStatus' || this.inputConfig.subType == 'insuranceTypes')) {
 
-          if(this.inputConfig?.claimStatus?.length>0){
+          if(this.inputConfig.claimStatus?.length>0){
             this.inputConfig.claimStatus.forEach((e:any)=>e.checked=false);     
           }
           this.searchClaimsConfig.insuranceTypes.forEach((e:any)=>e.checked=false);
@@ -131,18 +131,16 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
       if (this.inputConfig != undefined && this.inputConfig.subType != undefined){
         this.searchClaimsConfig[this.inputConfig.subType].forEach((e:any)=>e.checked=false);
         this.searchClaimsConfig[this.inputConfig.subType] = [];
-        setTimeout(() => {
-          this._service.emitOnValueChange({ action: this.inputConfig['emitAction'], value: [] });
-        }, 0);
-        if(this.inputConfig?.subType === 'clients'){
-          this._service.emitOnValueChange({ action: 'selectedClientsOffices', value: [] });
-        }
         if(this.inputConfig.subType == 'claimStatus'){
           console.log(4);
           this.searchClaimsConfig[this.inputConfig.subType].forEach((e:any)=>e.checked=false);
-          
-          
         }
+        if(this.inputConfig?.subType === 'clients'){
+          this._service.emitOnValueChange({ action: 'selectedClientsOffices', value: [] });
+        }
+        setTimeout(() => {
+          this._service.emitOnValueChange({ action: this.inputConfig['emitAction'], value: [] });
+        }, 0);
       }
     }
     else return;

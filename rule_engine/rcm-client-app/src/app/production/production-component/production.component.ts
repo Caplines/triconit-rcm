@@ -15,7 +15,7 @@ import { DownLoadService } from 'src/app/service/download.service';
 export class ProductionComponent implements OnInit {
 
   productionData:any=[];
-  alert:any={'showAlertPopup':false,'alertMsg':''}
+  alert:any={'showAlertPopup':false,'alertMsg':''};
   total:any=0;
   days:any=0;
   date:any;
@@ -26,12 +26,14 @@ export class ProductionComponent implements OnInit {
   fetchbtnDisable=true;
   isSorted:any={};
   constructor(private appService: ApplicationServiceService,private title:Title,private downloadService:DownLoadService) { 
-     title.setTitle(Utils.defaultTitle + "Production")
+     title.setTitle(Utils.defaultTitle + "Production");
+     
     }
 
   ngOnInit(): void {
    
     this.clientName = localStorage.getItem("selected_clientName");
+    window.addEventListener("resize", this.setTopOnTotalRow);
   }
 
   save(){
@@ -149,6 +151,15 @@ sortAvgDays(){
 sortData(data: any, sortProp: string, order: any, sortType: string) {
   this.appService.sortData(data, sortProp, order, sortType);
 }
+
+
+setTopOnTotalRow(){
+  let thead:any =  document.querySelector("thead tr th")
+  let totalRow:any = document.querySelector(".totalRow");
+  if(totalRow){
+    totalRow.style.top = thead.clientHeight+"px";
+   }
+ } 
 
 }
 

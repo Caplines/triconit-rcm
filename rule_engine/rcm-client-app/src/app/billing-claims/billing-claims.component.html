@@ -32,16 +32,16 @@
                     <div class="detail-box">
                         <div class="detail-box-form">
                             <!-- This section is for all Clients -->
-                            <div class="bold-b-text">
+                            <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimDetails']}">
                                 <a data-toggle="collapse" aria-expanded="true">claim Details <span
                                         style="color:#ff00a8">{{infoMessage}}</span>
                                 </a>
-                                <div class="down-icon" (click)="showHide(0)">
-                                    <a href="javascript:void(0)"></a>
+                                <div class="down-icon" (click)="showHide('claimDetails')">
+                                    <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['claimDetails']}"></a>
                                 </div>
                             </div>
                             <div *ngIf="loader.claimDetail" class="loader-data"></div>
-                            <div *ngIf="!loader.claimDetail" class="form-row collapse show" id="claimDetails">
+                            <div *ngIf="!loader.claimDetail" class="form-row collapse" [ngClass]="{'show':!toggleTab['claimDetails']}" id="claimDetails">
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
                                         <label for="" class="">Office </label>
@@ -193,7 +193,7 @@
                             </div>
                             <!-- This section is for SmilePoints Only -->
                             <ng-container *ngIf="smilePoint">
-                                <div class="bold-b-text" *ngIf="isBilling || isInternalAudit">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['linksRelatedDoc']}" *ngIf="isBilling || isInternalAudit">
                                     <a data-toggle="collapse" aria-expanded="false">Links to Related Documents<span
                                             class="passedNum"
                                             *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
@@ -211,13 +211,13 @@
                                             style="cursor: pointer;" (click)="openDeleteIvTPopup($event,'TP')">TX Plan
                                             ID ?</span></a>
                                             -->
-                                    <div class="down-icon" (click)="showHide(1)">
-                                        <a href="javascript:void(0)"></a>
+                                    <div class="down-icon" (click)="showHide('linksRelatedDoc')">
+                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['linksRelatedDoc']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse show"
+                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse" [ngClass]="{'show':!toggleTab['linksRelatedDoc']}"
                                     id="linksToDocuments">
                                     <div class="col-md-3 mb-2">
                                         <div class="custom-row text-number">
@@ -267,14 +267,14 @@
                                 </div>
                             </ng-container>
                         
-                            <div class="bold-b-text">
+                            <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['remarksByOther']}">
                                 <a data-toggle="collapse" aria-expanded="false">Remarks by Other RCM Teams</a>
-                                <div class="down-icon" (click)="showHide(2)">
-                                    <a href="javascript:void(0)"></a>
+                                <div class="down-icon" (click)="showHide('remarksByOther')">
+                                    <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['remarksByOther']}"></a>
                                 </div>
                             </div>
                             <div *ngIf="loader.remarksByOther" class="loader-data"></div>
-                            <div *ngIf="!loader.remarksByOther" class="form-row  collapse show" id="teamRemarks">
+                            <div *ngIf="!loader.remarksByOther" class="form-row  collapse" [ngClass]="{'show':!toggleTab['remarksByOther']}" id="teamRemarks">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -304,29 +304,29 @@
                                 </div>
                             </div>
                             <ng-container *ngIf="attachmentConfig['showAttachment']">
-                                <div class="bold-b-text">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['attachment']}">
                                     <a data-toggle="collapse" aria-expanded="false">Attachments</a>
-                                    <div class="down-icon" (click)="showHide(3)">
-                                        <a href="javascript:void(0)"></a>
+                                    <div class="down-icon" (click)="showHide('attachment')">
+                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['attachment']}"></a>
                                     </div>
                                 </div>
                                 <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                                <div *ngIf="!loader.linkToRelatedDoc" class="collapse show"
-                                    id="attachment-files">
+                                <div *ngIf="!loader.linkToRelatedDoc" class="collapse"
+                                    id="attachment-files" [ngClass]="{'show':!toggleTab['attachment']}">
                                     <app-attach-file
                                         [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit && (isBilling || isInternalAudit)}"
                                         (emitToParent)="receiveChildEvent($event)"></app-attach-file>
                                 </div>
                             </ng-container>
-                            <div class="bold-b-text">
+                            <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['additionalRebilled']}">
                                 <a data-toggle="collapse" aria-expanded="false">Additional Requirements for Rebilled
                                     claim</a>
-                                <div class="down-icon" (click)="showHide(4)">
-                                    <a href="javascript:void(0)"></a>
+                                <div class="down-icon" (click)="showHide('additionalRebilled')">
+                                    <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['additionalRebilled']}"></a>
                                 </div>
                             </div>
                             <div *ngIf="loader.rebilledClaims" class="loader-data"></div>
-                            <div *ngIf="!loader.rebilledClaims" class="form-row  collapse show" id="rebilledClaims">
+                            <div *ngIf="!loader.rebilledClaims" class="form-row  collapse " [ngClass]="{'show':!toggleTab['additionalRebilled']}" id="rebilledClaims">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -353,12 +353,12 @@
                                         Automated
                                         claims</a>
                                 </ng-container>
-                                <div class="bold-b-text">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelAutomated']}">
                                     <a data-toggle="collapse" aria-expanded="false">claim Level Validations (Automated)
                                         <span class="passedNum">Pass:{{countA.pass}}</span> <span
                                             class="passedNum fail">Fail:{{countA.fail}}</span></a>
-                                    <div class="down-icon" (click)="showHide(5)">
-                                        <a href="javascript:void(0)"></a>
+                                    <div class="down-icon" (click)="showHide('claimLevelAutomated')">
+                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['claimLevelAutomated']}"></a>
                                     </div>
                                 </div>
 
@@ -373,7 +373,7 @@
                                 cursor: not-allowed;" (click)="switchType('alert')">Not Run:
                                     {{count.alert-1}}</button> -->
                                 <div *ngIf="loader.automatedValidation" class="loader-data"></div>
-                                <div *ngIf="!loader.automatedValidation" class="form-row  collapse show"
+                                <div *ngIf="!loader.automatedValidation" class="form-row  collapse " [ngClass]="{'show':!toggleTab['claimLevelAutomated']}"
                                     id="claimValidations">
                                     <div class="table-responsive">
                                         <table class="table">
@@ -432,15 +432,15 @@
                                 </div>
                             </ng-container>
                             <ng-container>
-                                <div class="bold-b-text">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelManual']}">
                                     <a data-toggle="collapse" aria-expanded="false">claim Level Validations (Manual)</a>
-                                    <div class="down-icon" (click)="showHide(6)">
-                                        <a href="javascript:void(0)"></a>
+                                    <div class="down-icon" (click)="showHide('claimLevelManual')">
+                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['claimLevelManual']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.manualValidation" class="loader-data"></div>
-                                <div *ngIf="!loader.manualValidation" class="form-row  collapse show"
+                                <div *ngIf="!loader.manualValidation" class="form-row  collapse" [ngClass]="{'show':!toggleTab['claimLevelManual']}"
                                     id="claimValidationsManual">
                                     <div class="table-responsive">
                                         <table class="table" style="margin-bottom: 0px;">
@@ -449,6 +449,8 @@
                                                     <th>S.No.</th>
                                                     <th>Validation Name</th>
                                                     <th>Status</th>
+                                                    <!-- <th></th>
+                                                    <th></th> -->
                                                     <th class="remark-col">Remarks</th>
                                                 </tr>
                                             </thead>
@@ -580,7 +582,7 @@
                                                         <td>{{rule.ruleName}}</td>
 
                                                         <td class="no-wrap-text">
-
+                                                            
                                                             <div data-toggle="buttons"
                                                                 class="btn-group btn-group-toggle"
                                                                 style="display: flex;width: 100%"
@@ -694,6 +696,8 @@
                                                             </div>
 
                                                         </td>
+                                                        <!-- <td></td>
+                                                        <td></td> -->
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                                 (keydown)="removeErrorDisplayKey($event)"
@@ -762,17 +766,17 @@
                                 </div>
                             </ng-container>
                             <ng-container>
-                                <div class="bold-b-text">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['serviceCodeLevel']}">
                                     <a data-toggle="collapse" aria-expanded="false" id="serviceCodeValidationsM">Service
                                         Code Level
                                         Validations (Manual)</a>
-                                    <div class="down-icon" (click)="showHide(7)">
-                                        <a href="javascript:void(0)"></a>
+                                    <div class="down-icon" (click)="showHide('serviceCodeLevel')">
+                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['serviceCodeLevel']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
-                                <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
+                                <div *ngIf="!loader.serviceCode" class="form-row  collapse" [ngClass]="{'show':!toggleTab['serviceCodeLevel']}">
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
@@ -846,19 +850,19 @@
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="smilePoint">
-                                <div class="bold-b-text">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['serviceCodeAutomated']}">
                                     <a data-toggle="collapse" aria-expanded="false" id="serviceCodeValidationsA">Service
                                         Code Level
                                         Validations (Automated)
                                         <span class="passedNum">Pass:{{countAS.pass}}</span> <span
                                             class="passedNum fail">Fail:{{countAS.fail}}</span></a>
-                                    <div class="down-icon" (click)="showHide(8)">
-                                        <a href="javascript:void(0)"></a>
+                                    <div class="down-icon" (click)="showHide('serviceCodeAutomated')">
+                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['serviceCodeAutomated']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
-                                <div *ngIf="!loader.serviceCode" class="form-row  collapse show">
+                                <div *ngIf="!loader.serviceCode" class="form-row  collapse" [ngClass]="{'show':!toggleTab['serviceCodeAutomated']}">
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
@@ -913,15 +917,15 @@
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="smilePoint && !isInternalAudit">
-                                <div class="bold-b-text">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['ruleEngineValid']}">
                                     <a data-toggle="collapse" aria-expanded="false">Rule Engine Validations</a>
-                                    <div class="down-icon" (click)="showHide(9)">
-                                        <a href="javascript:void(0)"></a>
+                                    <div class="down-icon" (click)="showHide('ruleEngineValid')">
+                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['ruleEngineValid']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
-                                <div *ngIf="!loader.ruleEngValid" class="form-row  collapse show"
+                                <div *ngIf="!loader.ruleEngValid" class="form-row  collapse" [ngClass]="{'show':!toggleTab['ruleEngineValid']}"
                                     id="claimValidationsRE">
                                     <ng-container *ngIf="ruleEngineReport.length>0">
                                         <div class="rule-detail" [innerHTML]="reheading">
@@ -976,15 +980,15 @@
                                     </ng-container>
                                 </div>
                             </ng-container>
-                            <div class="bold-b-text" *ngIf="!isInternalAuditLogin">
+                            <div class="bold-b-text"  [ngClass]="{'collapsed':toggleTab['submissionDetail']}" *ngIf="!isInternalAuditLogin">
                                 <a data-toggle="collapse" aria-expanded="false">Enter
                                     claim Submission Details</a>
-                                <div class="down-icon" (click)="showHide(10)">
-                                    <a href="javascript:void(0)"></a>
+                                <div class="down-icon" (click)="showHide('submissionDetail')">
+                                    <a href="javascript:void(0)"  [ngClass]="{'close':toggleTab['submissionDetail']}"></a>
                                 </div>
                             </div>
 
-                            <div *ngIf="!isInternalAuditLogin" class="form-row  collapse show"
+                            <div *ngIf="!isInternalAuditLogin" class="form-row  collapse "  [ngClass]="{'show':!toggleTab['submissionDetail']}"
                                 id="claimSubmissionDetails">
                                 <div class="table-responsive">
                                     <table class="table">

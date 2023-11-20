@@ -84,6 +84,9 @@ export class BillingClaimsComponent {
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
     "D2331", "D2332", "D2335", "D2391", "D2392", "D2393", "D2394", "D0431",
     "D2140", "D2150", "D2160", "D2161"];*/
+
+    toggleTab:any={};
+
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
     private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService,
@@ -538,15 +541,19 @@ export class BillingClaimsComponent {
 
 
 
-  showHide(index: any) {
-    let el: any = document.querySelectorAll(".bold-b-text");
-    for (let i = 0; i < el.length; i++) {
-      if (i == index) {
-        el[i].children[1].children[0].classList.toggle("close");
-        el[i].classList.toggle("collapsed");
-        el[i].nextElementSibling.classList.toggle("show");
-      }
-    }
+  showHide(toggleTabName:any) {
+
+    this.toggleTab[toggleTabName] = !this.toggleTab[toggleTabName];
+    console.log(this.toggleTab);
+    
+    // let el: any = document.querySelectorAll(".bold-b-text");
+    // for (let i = 0; i < el.length; i++) {
+    //   if (i == index) {
+    //     el[i].children[1].children[0].classList.toggle("close");
+    //     el[i].classList.toggle("collapsed");
+    //     el[i].nextElementSibling.classList.toggle("show");
+    //   }
+    // }
   }
 
   getServiceLevelCodes() {
