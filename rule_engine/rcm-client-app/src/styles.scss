@@ -899,7 +899,6 @@ button:disabled,button[disabled]{
     max-height: 270px;
     padding-top: 0px!important;
     margin-top: 5px;
-    height: 70vh !important;
 }
 
 .clearClose {
@@ -958,4 +957,46 @@ width: 24px;
 }
 .modal-content {
     border-radius: 15px;
+}
+.multiSelect-List {width:100%;}
+.list-of-claims-office.filter-box input {
+    width: 100%;
+    border-radius: 6px;
+    border: 1px solid #a4a4a4;
+    padding: 4px 7px;
+    font-size: 14px;
+
+    &:focus {
+        border: 1px solid #a4a4a4;
+    }
+}
+.list-of-claims-office.filter-box .drop-show {
+    position: relative;
+    width: 100%;
+    max-height: 190px;
+    box-shadow: none;
+    overflow-x: auto;
+    border:0px;
+    margin-top:5px;
+}
+.list-of-claims-office.filter-box .drop-show input {
+    width: auto;
+    padding: inherit;
+}
+
+.drop-show::-webkit-scrollbar {
+    width: 8px;
+}
+
+.drop-show::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.drop-show::-webkit-scrollbar-thumb {
+    background: #069d72;
+    border-radius: 25px;
+}
+
+.drop-show::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
