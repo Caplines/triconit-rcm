@@ -73,7 +73,12 @@
                                                                         type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                <ng-container *ngFor="let data of filteredOfficeName">
+                                                                
+
+                                    <multi-select-dropdown  class="mx-1" [inputConfig]="{'locOffice':filteredOfficeName,'isListOfClaims':true,'subType':'offices','emitAction':'selectedClientsOffices'}" (emitToParent)="filterOfficeName($event,'officeName')"></multi-select-dropdown>
+
+
+                                                                <!-- <ng-container *ngFor="let data of filteredOfficeName">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -81,7 +86,7 @@
                                                                             (change)="filterOfficeName($event,'officeName')">
                                                                         {{data.name}}
                                                                     </label>
-                                                                </ng-container>
+                                                                </ng-container> -->
                                                             </div>
                                                         </div> <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
@@ -307,7 +312,10 @@
                                                                         type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                <ng-container
+
+                                                                <multi-select-dropdown  class="mx-1" [inputConfig]="{'locInsuranceName':filteredColumnData.insuranceName,'isListOfClaims':true,'subType':'locInsuranceName'}" (emitToParent)="filterInsuranceName('insuranceName')"></multi-select-dropdown>
+
+                                                                <!-- <ng-container
                                                                     *ngFor="let data of filteredColumnData.insuranceName">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
@@ -316,7 +324,7 @@
                                                                             (change)="filterInsuranceName('insuranceName')">
                                                                         {{data.insuranceName}}
                                                                     </label>
-                                                                </ng-container>
+                                                                </ng-container> -->
                                                             </div>
                                                         </div>
                                                         <span class="sorting">
@@ -348,7 +356,10 @@
                                                                         type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                <ng-container
+
+                                                                <multi-select-dropdown  class="mx-1" [inputConfig]="{'locInsuranceType':filteredColumnData.insuranceType,'isListOfClaims':true,'subType':'locInsuranceName'}" (emitToParent)="filterInsuranceName('insuranceName')"></multi-select-dropdown>
+
+                                                                <!-- <ng-container
                                                                     *ngFor="let data of filteredColumnData.insuranceType">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
@@ -357,7 +368,7 @@
                                                                             (change)="filterInsuranceType('insuranceType')">
                                                                         {{data.insuranceType}}
                                                                     </label>
-                                                                </ng-container>
+                                                                </ng-container> -->
                                                             </div>
                                                         </div>
                                                         <span class="sorting">

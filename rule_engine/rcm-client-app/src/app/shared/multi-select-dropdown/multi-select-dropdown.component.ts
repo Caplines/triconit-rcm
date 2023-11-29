@@ -25,7 +25,7 @@ export class MultiSelectDropdownComponent {
   clients:any=[]
   selectAllChecked:boolean=false;
   teams:any=this.constants.teamData;
-  searchClaimsConfig:any={'clients':[],'offices':[],"teams":[],'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[],'ageCategory':[],'claimStatus':[]};
+  searchClaimsConfig:any={'clients':[],'offices':[],"teams":[],'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[],'ageCategory':[],'claimStatus':[],'locOffice':[],'locInsuranceName':[],'locInsuranceType':[]};
   searchText:any='';
   filteredOptions:any={'insuranceNames':[],'insuranceTypes':[],'providerNames':[],'providerTypes':[]};
   showSelectedData:any={};
@@ -539,6 +539,18 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     }
   }
 
+  else if(type === 'locOffice'){
+    this.emitToParent.emit({action:'filterByOffice'});
+  }
+
+  else if(type === 'locInsuranceName'){
+    this.emitToParent.emit({action:'filterByInsuranceName'});
+  }
+
+  else if(type === 'locInsuranceType'){
+    this.emitToParent.emit({action:'filterByInsuranceType'});
+  }
+
     this.showSelectedData[filterProperty] =true;
 
 }
@@ -606,15 +618,15 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     }
 
    
-    filterOptions(filterProperty:any) {
+    filterOptions(filterProperty:any,sortBy?:any) {
       console.log(12);
       
-      this.inputConfig[filterProperty] = this._service.sortByAlphabet(this.inputConfig[filterProperty], 'name');
+      this.inputConfig[filterProperty] = this._service.sortByAlphabet(this.inputConfig[filterProperty], sortBy ? sortBy :'name');
       this.filteredOptions[filterProperty] = this.inputConfig[filterProperty].filter((option: any, idx: any) => {
         if (this.searchClaimsConfig[filterProperty].length > 0) {
-          return option.name.toLowerCase().includes(this.searchText.toLowerCase()) && !this.searchClaimsConfig[filterProperty].some((item: any) => item.name.toLowerCase() == option.name.toLowerCase())
+          return option[sortBy ? sortBy : 'name'].toLowerCase().includes(this.searchText.toLowerCase()) && !this.searchClaimsConfig[filterProperty].some((item: any) => item[sortBy ? sortBy : 'name'].toLowerCase() == option[sortBy ? sortBy : 'name'].toLowerCase())
         } else {
-          return option.name.toLowerCase().includes(this.searchText.toLowerCase());
+          return option[sortBy ? sortBy : 'name'].toLowerCase().includes(this.searchText.toLowerCase());
         }
       }
       )

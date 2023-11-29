@@ -9,6 +9,7 @@ import { FormsModule } from '@angular/forms';
 import { ApplicationServiceService } from '../service/application-service.service';
 import { DownLoadService } from '../service/download.service';
 import { OtherTeamsWorkModule } from '../other-teams-work/other-teams-work.module';
+import { MultiSelectDropdownModule } from '../shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module';
 @NgModule({
   declarations: [
     ListOfClaimsComponent,
@@ -21,7 +22,8 @@ import { OtherTeamsWorkModule } from '../other-teams-work/other-teams-work.modul
     PipesModule,
     HeaderComponent,
     FormsModule,
-    OtherTeamsWorkModule
+    OtherTeamsWorkModule,
+    MultiSelectDropdownModule
   ],
   exports:[ListOfClaimsComponent]
 })
