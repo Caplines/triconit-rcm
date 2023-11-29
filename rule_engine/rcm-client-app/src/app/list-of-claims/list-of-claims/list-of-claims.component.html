@@ -357,7 +357,7 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
 
-                                                                <multi-select-dropdown  class="mx-1" [inputConfig]="{'locInsuranceType':filteredColumnData.insuranceType,'isListOfClaims':true,'subType':'locInsuranceName'}" (emitToParent)="filterInsuranceName('insuranceName')"></multi-select-dropdown>
+                                                                <multi-select-dropdown  class="mx-1 multiSelect-List" [inputConfig]="{'locInsuranceType':filteredColumnData.insuranceType,'isListOfClaims':true,'subType':'locInsuranceName'}" (emitToParent)="filterInsuranceName('insuranceName')"></multi-select-dropdown>
 
                                                                 <!-- <ng-container
                                                                     *ngFor="let data of filteredColumnData.insuranceType">

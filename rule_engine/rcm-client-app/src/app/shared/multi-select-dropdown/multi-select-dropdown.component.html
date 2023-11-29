@@ -349,7 +349,7 @@ last ?
 
 <ng-container *ngIf="inputConfig?.isListOfClaims">
 
-    <div class="list-of-claims-insuranceName filter-box" (mouseleave)="showDropDown = false"
+    <div class="list-of-claims-office filter-box" (mouseleave)="showDropDown = false"
      *ngIf="inputConfig?.isListOfClaims && inputConfig?.locInsuranceName">
      <span (click)="clearAll('locInsuranceName','getinsuranceNames')" *ngIf="searchClaimsConfig?.locInsuranceName?.length>0" class="clearAll">(Clear All)</span>
     <button class="drop-toggle insurance-name-dropbox btn flat" (click)="toggleSelectedItem('locInsuranceName')" *ngIf="searchClaimsConfig?.locInsuranceName?.length>0">
@@ -385,7 +385,7 @@ last ?
 
 <ng-container *ngIf="inputConfig?.isListOfClaims">
 
-    <div class="list-of-claims-insuranceType filter-box" (mouseleave)="showDropDown = false"
+    <div class="list-of-claims-office filter-box" (mouseleave)="showDropDown = false"
      *ngIf="inputConfig?.isListOfClaims && inputConfig?.locInsuranceType">
      <span (click)="clearAll('locInsuranceType','getinsuranceNames')" *ngIf="searchClaimsConfig?.locInsuranceType?.length>0" class="clearAll">(Clear All)</span>
     <button class="drop-toggle insurance-name-dropbox btn flat" (click)="toggleSelectedItem('locInsuranceType')" *ngIf="searchClaimsConfig?.locInsuranceName?.length>0">
