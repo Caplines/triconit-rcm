@@ -97,11 +97,13 @@ public class SearchClaimUtil {
 	}
 
 	public static StringBuilder setArchiveStatus(Boolean showArchive, StringBuilder searchQuery) {
+		int archiveStatus = 0;
 		if (showArchive) {
-			int archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED;
+			archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED;
 			searchQuery.append(" and claims.current_state=" + archiveStatus + "");
 		} else {
-			// archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED;
+			archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED;
+			searchQuery.append(" and claims.current_state=" + archiveStatus + "");
 		}
 		return searchQuery;
 	}
