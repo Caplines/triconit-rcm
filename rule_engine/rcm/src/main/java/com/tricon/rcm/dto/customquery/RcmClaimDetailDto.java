@@ -77,5 +77,6 @@ public interface RcmClaimDetailDto {
 	String getSsn();
 	String getAssignmentOfBenefits();
 	int getCurrentState();
+	String getPreferredModeOfSubmission();
 	
 }

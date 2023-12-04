@@ -85,7 +85,7 @@ export class BillingClaimsComponent {
     "D2331", "D2332", "D2335", "D2391", "D2392", "D2393", "D2394", "D0431",
     "D2140", "D2150", "D2160", "D2161"];*/
 
-    toggleTab:any={};
+  toggleTab: any = {};
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
@@ -116,6 +116,13 @@ export class BillingClaimsComponent {
       if (res.status === 200) {
         this.loader.claimDetail = this.loader.linkToRelatedDoc = false;
         ths.claimRcm = res.data;
+        if (ths.claimRcm.preferredModeOfSubmission != null) {
+          if (ths.claimRcm.preferredModeOfSubmission != "") {
+            let prfMode = ths.claimRcm.preferredModeOfSubmission;
+            ths.submissionDto.channel = prfMode;
+
+          }
+        }
         //-O- Means its delete Intentionally
         if (ths.claimRcm.ivfId != null) {
           ths.claimRcm.ivfId = ths.claimRcm.ivfId.replace("-O-", "");
@@ -541,11 +548,11 @@ export class BillingClaimsComponent {
 
 
 
-  showHide(toggleTabName:any) {
+  showHide(toggleTabName: any) {
 
     this.toggleTab[toggleTabName] = !this.toggleTab[toggleTabName];
     console.log(this.toggleTab);
-    
+
     // let el: any = document.querySelectorAll(".bold-b-text");
     // for (let i = 0; i < el.length; i++) {
     //   if (i == index) {
