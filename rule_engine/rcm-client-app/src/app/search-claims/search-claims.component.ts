@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
 import Utils from '../util/utils';
@@ -47,6 +47,7 @@ export class SearchClaimsComponent {
   selectedClients:any=[];
   @ViewChild(SearchClaimsPaginationComponent)child!:SearchClaimsPaginationComponent;
   @ViewChild(DateRangePickerComponent)dateRangeChild!:DateRangePickerComponent;
+  @ViewChild('archiveSelect')archiveSelect!:ElementRef;
 
   constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants,
     private datePipe: DatePipe) {
@@ -252,9 +253,11 @@ export class SearchClaimsComponent {
       "providerName": [],
       "providerType": [],
       "responsibleTeam": [],
-      "showArchive": false,
+      "showArchive": "false",
       "pageNumber": 1
     };
+    this.archiveSelect.nativeElement.selectedIndex = 1;   //default value of Archive box
+    
   }
 
   selectArchiveState(event:any){

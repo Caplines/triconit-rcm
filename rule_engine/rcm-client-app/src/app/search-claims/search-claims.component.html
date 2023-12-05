@@ -117,7 +117,7 @@
                                                     id="customSwitch1">
                                                 <label class="custom-control-label" for="customSwitch1"></label>
                                             </div> -->
-                                            <select class="form-control" (change)="selectArchiveState($event)">
+                                            <select class="form-control" #archiveSelect (change)="selectArchiveState($event)">
                                                 <option value="true">Archived</option>
                                                 <option selected='true' value="false">Unarchived</option>
                                                 <option value="all">All</option>
