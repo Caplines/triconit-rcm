@@ -112,11 +112,16 @@
                                             Show Archived?
                                         </div>
                                         <div class="colAction">
-                                            <div class="custom-control custom-switch custom-switch-lg">
+                                            <!-- <div class="custom-control custom-switch custom-switch-lg">
                                                 <input type="checkbox" [(ngModel)]="searchClaimConfig.showArchive" class="custom-control-input"
                                                     id="customSwitch1">
                                                 <label class="custom-control-label" for="customSwitch1"></label>
-                                            </div>
+                                            </div> -->
+                                            <select class="form-control" (change)="selectArchiveState($event)">
+                                                <option value="true">Archived</option>
+                                                <option selected='true' value="false">Unarchived</option>
+                                                <option value="all">All</option>
+                                            </select>
                                         </div>
                                     
                                     </div>

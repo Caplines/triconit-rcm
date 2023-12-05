@@ -34,7 +34,7 @@ export class SearchClaimsComponent {
     "providerName": [],
     "providerType": [],
     "responsibleTeam": [],
-    "showArchive": false,
+    "showArchive": 'false',
     "pageNumber": 1
   };
 
@@ -255,6 +255,13 @@ export class SearchClaimsComponent {
       "showArchive": false,
       "pageNumber": 1
     };
+  }
+
+  selectArchiveState(event:any){
+    this.searchClaimConfig.showArchive = event.target.value;
+    console.log(this.searchClaimConfig);
+    
+
   }
 
 }
