@@ -20,7 +20,7 @@ public class SearchClaimDto {
 	private List<String> providerName;
 	private List<String> providerType;
 	private List<Integer> responsibleTeam;
-	private Boolean showArchive;
+	private String showArchive;
 	
 	//for pagination
 	private int pageNumber;

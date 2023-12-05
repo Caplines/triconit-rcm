@@ -57,7 +57,7 @@
                                         <div>{{claimRcm.clientName}}</div>
                                     </div>
                                     <div class="custom-row flexAlign">
-                                        <label for="" class="">claim ID </label>
+                                        <label for="" class="">Claim ID </label>
                                         <div>{{claimRcm.claimId | claimIdPipe}}</div>
                                     </div>
                                     <div class="custom-row">
@@ -149,13 +149,13 @@
                                 </div>
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
-                                        <label for="" class="">Regenerated claim </label>
+                                        <label for="" class="">Regenerated Claim </label>
                                         <!--<div [ngClass]="{'yes':claimRcm.regenerated,'no':!claimRcm.regenerated}">
                                             {{claimRcm.regenerated===true?"Yes":"No"}}</div>-->
                                         <div>N/A</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">Linked claim IDs </label>
+                                        <label for="" class="">Linked Claim IDs </label>
                                         <div>{{claimRcm.linkedClaims.toString()}}</div>
                                     </div>
                                     <div class="custom-row">
@@ -163,7 +163,7 @@
                                         <div>{{claimRcm.claimType}}</div>
                                     </div>
                                     <div class="custom-row">
-                                        <label for="" class="">claim Assigned To </label>
+                                        <label for="" class="">Claim Assigned To </label>
                                         <div>{{claimRcm.assignedToName}}</div>
                                     </div>
 
@@ -174,7 +174,7 @@
                                     </div>
 
                                     <div class="custom-row">
-                                        <label for="" class="">claim Staus </label>
+                                        <label for="" class="">Claim Staus </label>
                                         <div [innerHTML]="claimRcm.pending?'Pending':'Submited'"></div>
                                     </div>
                                     <div class="custom-row">
@@ -579,8 +579,6 @@
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> No &nbsp; &nbsp;
                                                                 </label>
-                                                                <label></label>
-
                                                             </div>
 
 
@@ -1100,7 +1098,7 @@
                                             </tr>
                                             <tr>
                                                 <td>2</td>
-                                                <td>Channel used to submit the claim Insurance (Submission type)
+                                                <td>Channel used to submit the claim
                                                 </td>
 
                                                 <td>
@@ -1465,7 +1463,7 @@
         <div id="archive-modal" class="modal archive">
             <div class="modal-content">
                 <div _ngcontent-qaa-c48="" class="modal-header">
-                    <h5 class="modal-title">Archive claim</h5>
+                    <h5 class="modal-title">Archive Claim</h5>
                     <button type="button" (click)="closeArchPopup('archive-modal')"
                         class="close"><span>×</span></button>
                 </div>
@@ -1497,7 +1495,7 @@
         <div id="unarchive-modal" class="modal unarchive">
             <div class="modal-content">
                 <div _ngcontent-qaa-c48="" class="modal-header">
-                    <h5 class="modal-title">Un Archive claim</h5>
+                    <h5 class="modal-title">Un Archive Claim</h5>
                     <button type="button" (click)="closeArchPopup('unarchive-modal')"
                         class="close"><span>×</span></button>
                 </div>

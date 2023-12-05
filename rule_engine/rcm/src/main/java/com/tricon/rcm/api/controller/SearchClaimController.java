@@ -64,6 +64,7 @@ public class SearchClaimController extends BaseHeaderController {
 				|| dto.getClaimStatus() == null || dto.getInsuranceName() == null || dto.getInsuranceType() == null
 				|| dto.getProviderName() == null || dto.getProviderType() == null || dto.getResponsibleTeam() == null
 				|| dto.getShowArchive() == null
+				|| dto.getShowArchive().isEmpty()
 				|| !dto.getClientUuid().stream().anyMatch(x -> StringUtils.isNoneBlank(x))
 				|| dto.getOfficeUuid().stream().anyMatch(x -> x.isEmpty())
 				|| (dto.getPageNumber() == 0 || dto.getPageNumber() == -1)

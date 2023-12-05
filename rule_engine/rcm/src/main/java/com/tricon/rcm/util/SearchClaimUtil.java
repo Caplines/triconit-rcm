@@ -96,14 +96,27 @@ public class SearchClaimUtil {
 				+ "', '%Y-%m-%d') and  STR_TO_DATE('" + endDate + "', '%Y-%m-%d')");
 	}
 
-	public static StringBuilder setArchiveStatus(Boolean showArchive, StringBuilder searchQuery) {
+	public static StringBuilder setArchiveStatus(String showArchive, StringBuilder searchQuery) {
 		int archiveStatus = 0;
-		if (showArchive) {
+		switch (showArchive) {
+		case Constants.TRUE_PREFIX:
 			archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED;
 			searchQuery.append(" and claims.current_state=" + archiveStatus + "");
-		} else {
+			break;
+
+		case Constants.FALSE_PREFIX:
 			archiveStatus = Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED;
 			searchQuery.append(" and claims.current_state=" + archiveStatus + "");
+			break;
+
+		case Constants.SHOW_ALL_PREFIX:
+			searchQuery.append(" and claims.current_state in(" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + ","
+					+ Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED + ") ");
+			break;
+
+		default:
+			logger.error("No Prefix Found related from Archive status");
+			break;
 		}
 		return searchQuery;
 	}

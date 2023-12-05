@@ -113,7 +113,7 @@
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a>
             </li>
-            <li>
+            <li  *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal')">
                 <a href="javascript:void(0);" [routerLink]="['/search-claims']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Search Claims</a>
@@ -151,7 +151,7 @@
                                             <input class="form-check-input" type="radio"
                                                 (change)="selectLoginType($event)" value="Normal" name="loginAs"
                                                 id="normal">
-                                            <label class="form-check-label" for="normal">Tool</label>
+                                            <label class="form-check-label" for="normal">User</label>
                                         </span>
                                     </div>
                                 </div>

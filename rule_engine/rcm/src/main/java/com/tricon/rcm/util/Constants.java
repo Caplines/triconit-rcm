@@ -126,5 +126,9 @@ public class Constants {
 	
 	//Flag for submit button when upload attachment with remarks inside others_team_work page
 	public static final String ATTACH_WITH_REMARKS="AttachWithRemarks";
+	
+	public static final String SHOW_ALL_PREFIX = "all";
+	public static final String TRUE_PREFIX = "true";
+	public static final String FALSE_PREFIX = "false";
 
 }
