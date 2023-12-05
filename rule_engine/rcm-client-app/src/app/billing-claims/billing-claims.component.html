@@ -41,7 +41,8 @@
                                 </div>
                             </div>
                             <div *ngIf="loader.claimDetail" class="loader-data"></div>
-                            <div *ngIf="!loader.claimDetail" class="form-row collapse" [ngClass]="{'show':!toggleTab['claimDetails']}" id="claimDetails">
+                            <div *ngIf="!loader.claimDetail" class="form-row collapse"
+                                [ngClass]="{'show':!toggleTab['claimDetails']}" id="claimDetails">
                                 <div class="col-md-3 mb-2">
                                     <div class="custom-row">
                                         <label for="" class="">Office </label>
@@ -193,13 +194,14 @@
                             </div>
                             <!-- This section is for SmilePoints Only -->
                             <ng-container *ngIf="smilePoint">
-                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['linksRelatedDoc']}" *ngIf="isBilling || isInternalAudit">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['linksRelatedDoc']}"
+                                    *ngIf="isBilling || isInternalAudit">
                                     <a data-toggle="collapse" aria-expanded="false">Links to Related Documents<span
                                             class="passedNum"
                                             *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
                                             style="cursor: pointer;" (click)="openUpdateIvPopup($event)">Update IV ID /
                                             TX Plan ID
-                                            </span></a>
+                                        </span></a>
                                     <!--
                                     <a data-toggle="collapse" aria-expanded="false"><span class="passedNum"
                                             *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons && (claimRcm.ivfId!=null && claimRcm.ivfId!='')"
@@ -212,13 +214,14 @@
                                             ID ?</span></a>
                                             -->
                                     <div class="down-icon" (click)="showHide('linksRelatedDoc')">
-                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['linksRelatedDoc']}"></a>
+                                        <a href="javascript:void(0)"
+                                            [ngClass]="{'close':toggleTab['linksRelatedDoc']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse" [ngClass]="{'show':!toggleTab['linksRelatedDoc']}"
-                                    id="linksToDocuments">
+                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
+                                    [ngClass]="{'show':!toggleTab['linksRelatedDoc']}" id="linksToDocuments">
                                     <div class="col-md-3 mb-2">
                                         <div class="custom-row text-number">
                                             <label for="" class="">IV ID </label>
@@ -266,7 +269,7 @@
                                     </div>
                                 </div>
                             </ng-container>
-                        
+
                             <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['remarksByOther']}">
                                 <a data-toggle="collapse" aria-expanded="false">Remarks by Other RCM Teams</a>
                                 <div class="down-icon" (click)="showHide('remarksByOther')">
@@ -274,7 +277,8 @@
                                 </div>
                             </div>
                             <div *ngIf="loader.remarksByOther" class="loader-data"></div>
-                            <div *ngIf="!loader.remarksByOther" class="form-row  collapse" [ngClass]="{'show':!toggleTab['remarksByOther']}" id="teamRemarks">
+                            <div *ngIf="!loader.remarksByOther" class="form-row  collapse"
+                                [ngClass]="{'show':!toggleTab['remarksByOther']}" id="teamRemarks">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -298,7 +302,8 @@
                                             </ng-container>
                                         </tbody>
                                     </table>
-                                    <div class="not-found" *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
+                                    <div class="not-found"
+                                        *ngIf="(otherTeamRemarks?.length==0 || !otherTeamRemarks) && !loader.remarksByOther">
                                         No Remarks Found
                                     </div>
                                 </div>
@@ -311,8 +316,8 @@
                                     </div>
                                 </div>
                                 <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                                <div *ngIf="!loader.linkToRelatedDoc" class="collapse"
-                                    id="attachment-files" [ngClass]="{'show':!toggleTab['attachment']}">
+                                <div *ngIf="!loader.linkToRelatedDoc" class="collapse" id="attachment-files"
+                                    [ngClass]="{'show':!toggleTab['attachment']}">
                                     <app-attach-file
                                         [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit && (isBilling || isInternalAudit)}"
                                         (emitToParent)="receiveChildEvent($event)"></app-attach-file>
@@ -322,11 +327,13 @@
                                 <a data-toggle="collapse" aria-expanded="false">Additional Requirements for Rebilled
                                     Claim</a>
                                 <div class="down-icon" (click)="showHide('additionalRebilled')">
-                                    <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['additionalRebilled']}"></a>
+                                    <a href="javascript:void(0)"
+                                        [ngClass]="{'close':toggleTab['additionalRebilled']}"></a>
                                 </div>
                             </div>
                             <div *ngIf="loader.rebilledClaims" class="loader-data"></div>
-                            <div *ngIf="!loader.rebilledClaims" class="form-row  collapse " [ngClass]="{'show':!toggleTab['additionalRebilled']}" id="rebilledClaims">
+                            <div *ngIf="!loader.rebilledClaims" class="form-row  collapse "
+                                [ngClass]="{'show':!toggleTab['additionalRebilled']}" id="rebilledClaims">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -358,7 +365,8 @@
                                         <span class="passedNum">Pass:{{countA.pass}}</span> <span
                                             class="passedNum fail">Fail:{{countA.fail}}</span></a>
                                     <div class="down-icon" (click)="showHide('claimLevelAutomated')">
-                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['claimLevelAutomated']}"></a>
+                                        <a href="javascript:void(0)"
+                                            [ngClass]="{'close':toggleTab['claimLevelAutomated']}"></a>
                                     </div>
                                 </div>
 
@@ -373,8 +381,8 @@
                                 cursor: not-allowed;" (click)="switchType('alert')">Not Run:
                                     {{count.alert-1}}</button> -->
                                 <div *ngIf="loader.automatedValidation" class="loader-data"></div>
-                                <div *ngIf="!loader.automatedValidation" class="form-row  collapse " [ngClass]="{'show':!toggleTab['claimLevelAutomated']}"
-                                    id="claimValidations">
+                                <div *ngIf="!loader.automatedValidation" class="form-row  collapse "
+                                    [ngClass]="{'show':!toggleTab['claimLevelAutomated']}" id="claimValidations">
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
@@ -435,13 +443,14 @@
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelManual']}">
                                     <a data-toggle="collapse" aria-expanded="false">Claim Level Validations (Manual)</a>
                                     <div class="down-icon" (click)="showHide('claimLevelManual')">
-                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['claimLevelManual']}"></a>
+                                        <a href="javascript:void(0)"
+                                            [ngClass]="{'close':toggleTab['claimLevelManual']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.manualValidation" class="loader-data"></div>
-                                <div *ngIf="!loader.manualValidation" class="form-row  collapse" [ngClass]="{'show':!toggleTab['claimLevelManual']}"
-                                    id="claimValidationsManual">
+                                <div *ngIf="!loader.manualValidation" class="form-row  collapse"
+                                    [ngClass]="{'show':!toggleTab['claimLevelManual']}" id="claimValidationsManual">
                                     <div class="table-responsive">
                                         <table class="table" style="margin-bottom: 0px;">
                                             <thead>
@@ -522,23 +531,29 @@
                                                         </td>
                                                         <td>
                                                             <div class="btn-group btn-group-toggle">
-                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==2}">
-                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="2"
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:rule.messageType==2}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}"
+                                                                        value="2"
                                                                         (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
-                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Attached
+                                                                        [(ngModel)]='rule.messageType'
+                                                                        [disabled]="makeReadOnly()"> Attached
                                                                 </label>
                                                             </div>
-                                                        
+
                                                         </td>
                                                         <td>
                                                             <div class="btn-group btn-group-toggle">
-                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==1}">
-                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="1"
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:rule.messageType==1}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}"
+                                                                        value="1"
                                                                         (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
-                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Others
+                                                                        [(ngModel)]='rule.messageType'
+                                                                        [disabled]="makeReadOnly()"> Others
                                                                 </label>
                                                             </div>
-                                                        
+
                                                         </td>
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
@@ -547,12 +562,12 @@
 
                                                     </ng-container>
                                                 </tr>
-                                                <tr
+                                                <tr id="CL_P_F_{{rule.ruleId}}"
                                                     *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                     <ng-container *ngIf="(rule.ruleId==320) &&
-                                                    ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC'  || claimRcm.primaryInsCode=='CHIP')) 
-                                                   ||  (!claimRcm.primary && (claimRcm.secondaryInsCode=='CMC' || claimRcm.secondaryInsCode=='CHIP')) )
-                                                    ">
+                                                                                                    ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC'  || claimRcm.primaryInsCode=='CHIP')) 
+                                                                                                   ||  (!claimRcm.primary && (claimRcm.secondaryInsCode=='CMC' || claimRcm.secondaryInsCode=='CHIP')) )
+                                                                                                    ">
                                                         <td>{{rule.srNo}}
                                                         </td>
                                                         <td>{{rule.ruleName}}</td>
@@ -561,8 +576,7 @@
 
                                                             <div data-toggle="buttons"
                                                                 class="btn-group btn-group-toggle"
-                                                                style="display: flex;width: 100%"
-                                                                id="CL_P_F_{{rule.ruleId}}">
+                                                                style="display: flex;width: 100%">
                                                                 <label class="btn btn-light"
                                                                     [ngClass]="{active:rule.messageType==3}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
@@ -571,6 +585,17 @@
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> Yes
                                                                 </label>
+
+                                                            </div>
+
+
+                                                        </td>
+                                                        <td class="no-wrap-text">
+
+                                                            <div data-toggle="buttons"
+                                                                class="btn-group btn-group-toggle"
+                                                                style="display: flex;width: 100%">
+
                                                                 <label class="btn btn-light"
                                                                     [ngClass]="{active:rule.messageType==2}">
                                                                     <input type="radio" name="mant{{rule.ruleId}}"
@@ -579,15 +604,15 @@
                                                                         [(ngModel)]='rule.messageType'
                                                                         [disabled]="makeReadOnly()"> No &nbsp; &nbsp;
                                                                 </label>
-                                                            </div>
 
+                                                            </div>
 
                                                         </td>
                                                         <!-- <td><textarea class="form-control" id="" rows="1"
-                                                            [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
-                                                            (keydown)="removeErrorDisplayKey($event)"
-                                                            [disabled]="makeReadOnly()"></textarea></td>
-                                                            -->
+                                                                                                            [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
+                                                                                                            (keydown)="removeErrorDisplayKey($event)"
+                                                                                                            [disabled]="makeReadOnly()"></textarea></td>
+                                                                                                            -->
 
                                                     </ng-container>
                                                 </tr>
@@ -600,7 +625,7 @@
                                                         <td>{{rule.ruleName}}</td>
 
                                                         <td class="no-wrap-text">
-                                                            
+
                                                             <div data-toggle="buttons"
                                                                 class="btn-group btn-group-toggle"
                                                                 style="display: flex;width: 100%"
@@ -634,19 +659,25 @@
                                                         </td>
                                                         <td>
                                                             <div class="btn-group btn-group-toggle">
-                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==2}">
-                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="2"
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:rule.messageType==2}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}"
+                                                                        value="2"
                                                                         (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
-                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Attached
+                                                                        [(ngModel)]='rule.messageType'
+                                                                        [disabled]="makeReadOnly()"> Attached
                                                                 </label>
                                                             </div>
                                                         </td>
                                                         <td>
                                                             <div class="btn-group btn-group-toggle">
-                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==1}">
-                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="1"
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:rule.messageType==1}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}"
+                                                                        value="1"
                                                                         (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
-                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Others
+                                                                        [(ngModel)]='rule.messageType'
+                                                                        [disabled]="makeReadOnly()"> Others
                                                                 </label>
                                                             </div>
                                                         </td>
@@ -663,7 +694,7 @@
                                                         <td>
                                                             {{claimRcm.claimNotes[0]?.key}}
                                                         </td>
-                                                    
+
                                                         <td colspan="4"><textarea class="form-control mandatory"
                                                                 id="CL_N_{{claimRcm.claimNotes[0].id}}" rows="1"
                                                                 [(ngModel)]='claimRcm.claimNotes[0].value'
@@ -734,10 +765,13 @@
                                                         </td>
                                                         <td>
                                                             <div class="btn-group btn-group-toggle">
-                                                                <label class="btn btn-light" [ngClass]="{active:rule.messageType==1}">
-                                                                    <input type="radio" name="mant{{rule.ruleId}}" value="1"
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:rule.messageType==1}">
+                                                                    <input type="radio" name="mant{{rule.ruleId}}"
+                                                                        value="1"
                                                                         (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
-                                                                        [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Not Available
+                                                                        [(ngModel)]='rule.messageType'
+                                                                        [disabled]="makeReadOnly()"> Not Available
                                                                 </label>
                                                             </div>
                                                         </td>
@@ -745,10 +779,13 @@
                                                             <div class="btn-group btn-group-toggle">
                                                                 <ng-container
                                                                     *ngIf="rule.ruleId==317 || rule.ruleId==311 || rule.ruleId==312 || rule.ruleId==313 || rule.ruleId==314">
-                                                                    <label class="btn btn-light" [ngClass]="{active:rule.messageType==3}">
-                                                                        <input type="radio" name="mant{{rule.ruleId}}" value="3"
+                                                                    <label class="btn btn-light"
+                                                                        [ngClass]="{active:rule.messageType==3}">
+                                                                        <input type="radio" name="mant{{rule.ruleId}}"
+                                                                            value="3"
                                                                             (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
-                                                                            [(ngModel)]='rule.messageType' [disabled]="makeReadOnly()"> Not Needed
+                                                                            [(ngModel)]='rule.messageType'
+                                                                            [disabled]="makeReadOnly()"> Not Needed
                                                                     </label>
                                                                 </ng-container>
                                                             </div>
@@ -826,12 +863,14 @@
                                         Code Level
                                         Validations (Manual)</a>
                                     <div class="down-icon" (click)="showHide('serviceCodeLevel')">
-                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['serviceCodeLevel']}"></a>
+                                        <a href="javascript:void(0)"
+                                            [ngClass]="{'close':toggleTab['serviceCodeLevel']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
-                                <div *ngIf="!loader.serviceCode" class="form-row  collapse" [ngClass]="{'show':!toggleTab['serviceCodeLevel']}">
+                                <div *ngIf="!loader.serviceCode" class="form-row  collapse"
+                                    [ngClass]="{'show':!toggleTab['serviceCodeLevel']}">
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
@@ -894,25 +933,29 @@
                                                         </td>
                                                         <td>
                                                             <div class="btn-group btn-group-toggle">
-                                                                <label class="btn btn-light" [ngClass]="{active:d.answer=='Complete'}">
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:d.answer=='Complete'}">
                                                                     <input type="radio" name="mt{{i}}" value="Complete"
                                                                         (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
-                                                                                                                            removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);" [(ngModel)]='d.answer'
+                                                                                                                            removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
+                                                                        [(ngModel)]='d.answer'
                                                                         [disabled]="makeReadOnly()"> Attached
                                                                 </label>
                                                             </div>
-                                                            </td>
-                                                            <td>
-                                                                <div class="btn-group btn-group-toggle">
-                                                                    <label class="btn btn-light" [ngClass]="{active:d.answer=='Incorrect'}">
-                                                                        <input type="radio" name="mt{{i}}" value="Incorrect"
-                                                                            (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
-                                                                                                                                    removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);" [(ngModel)]='d.answer'
-                                                                            [disabled]="makeReadOnly()">Others
-                                                                    </label>
-                                                                </div>
-                                                            </td>
-                                                       
+                                                        </td>
+                                                        <td>
+                                                            <div class="btn-group btn-group-toggle">
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:d.answer=='Incorrect'}">
+                                                                    <input type="radio" name="mt{{i}}" value="Incorrect"
+                                                                        (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
+                                                                                                                                    removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
+                                                                        [(ngModel)]='d.answer'
+                                                                        [disabled]="makeReadOnly()">Others
+                                                                </label>
+                                                            </div>
+                                                        </td>
+
                                                         <td><textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='d.remark' id="SERV_C_V_M{{d.remarkUuid}}"
                                                                 (click)="removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);"
@@ -935,12 +978,14 @@
                                         <span class="passedNum">Pass:{{countAS.pass}}</span> <span
                                             class="passedNum fail">Fail:{{countAS.fail}}</span></a>
                                     <div class="down-icon" (click)="showHide('serviceCodeAutomated')">
-                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['serviceCodeAutomated']}"></a>
+                                        <a href="javascript:void(0)"
+                                            [ngClass]="{'close':toggleTab['serviceCodeAutomated']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.serviceCode" class="loader-data"></div>
-                                <div *ngIf="!loader.serviceCode" class="form-row  collapse" [ngClass]="{'show':!toggleTab['serviceCodeAutomated']}">
+                                <div *ngIf="!loader.serviceCode" class="form-row  collapse"
+                                    [ngClass]="{'show':!toggleTab['serviceCodeAutomated']}">
                                     <div class="table-responsive">
                                         <table class="table">
                                             <thead>
@@ -998,13 +1043,14 @@
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['ruleEngineValid']}">
                                     <a data-toggle="collapse" aria-expanded="false">Rule Engine Validations</a>
                                     <div class="down-icon" (click)="showHide('ruleEngineValid')">
-                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['ruleEngineValid']}"></a>
+                                        <a href="javascript:void(0)"
+                                            [ngClass]="{'close':toggleTab['ruleEngineValid']}"></a>
                                     </div>
                                 </div>
 
                                 <div *ngIf="loader.ruleEngValid" class="loader-data"></div>
-                                <div *ngIf="!loader.ruleEngValid" class="form-row  collapse" [ngClass]="{'show':!toggleTab['ruleEngineValid']}"
-                                    id="claimValidationsRE">
+                                <div *ngIf="!loader.ruleEngValid" class="form-row  collapse"
+                                    [ngClass]="{'show':!toggleTab['ruleEngineValid']}" id="claimValidationsRE">
                                     <ng-container *ngIf="ruleEngineReport.length>0">
                                         <div class="rule-detail" [innerHTML]="reheading">
                                         </div>
@@ -1058,16 +1104,18 @@
                                     </ng-container>
                                 </div>
                             </ng-container>
-                            <div class="bold-b-text"  [ngClass]="{'collapsed':toggleTab['submissionDetail']}" *ngIf="!isInternalAuditLogin">
+                            <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['submissionDetail']}"
+                                *ngIf="!isInternalAuditLogin">
                                 <a data-toggle="collapse" aria-expanded="false">Enter
                                     Claim Submission Details</a>
                                 <div class="down-icon" (click)="showHide('submissionDetail')">
-                                    <a href="javascript:void(0)"  [ngClass]="{'close':toggleTab['submissionDetail']}"></a>
+                                    <a href="javascript:void(0)"
+                                        [ngClass]="{'close':toggleTab['submissionDetail']}"></a>
                                 </div>
                             </div>
 
-                            <div *ngIf="!isInternalAuditLogin" class="form-row  collapse "  [ngClass]="{'show':!toggleTab['submissionDetail']}"
-                                id="claimSubmissionDetails">
+                            <div *ngIf="!isInternalAuditLogin" class="form-row  collapse "
+                                [ngClass]="{'show':!toggleTab['submissionDetail']}" id="claimSubmissionDetails">
                                 <div class="table-responsive">
                                     <table class="table">
                                         <thead>
@@ -1083,8 +1131,8 @@
                                                 <td>Date of claim Processing in PMS</td>
                                                 <td>
                                                     <div class="multi-input-row">
-                                                        <input class="form-control date-control" id="" rows="1" id="SUB_DET_DT"
-                                                            placeholder="yyyy-mm-dd"
+                                                        <input class="form-control date-control" id="" rows="1"
+                                                            id="SUB_DET_DT" placeholder="yyyy-mm-dd"
                                                             (click)="removeErrorDisplayKeyById('SUB_DET_DT')"
                                                             [disabled]="isSectionReadOnly()"
                                                             [(ngModel)]='submissionDto.esDate' type="date" />
@@ -1103,7 +1151,7 @@
 
                                                 <td>
                                                     <div data-toggle="buttons" class="btn-group btn-group-toggle"
-                                                         id="SUB_DET_CHA">
+                                                        id="SUB_DET_CHA">
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.channel=='RemoteLite'}">
                                                             <input type="radio" name="channel" value="RemoteLite"
@@ -1207,7 +1255,7 @@
                                                         id="SUB_DET_REF">
                                                         <label class="btn btn-light"
                                                             [ngClass]="{active:submissionDto.refferalLetter}">
-                                                            <input type="radio" name="atchpro" value="" 
+                                                            <input type="radio" name="atchpro" value=""
                                                                 (click)="submissionDto.refferalLetter=true;removeErrorDisplayKeyById('SUB_DET_REF');providerRefNoEnable();"
                                                                 [disabled]="isSectionReadOnly()"> Yes
                                                         </label>
@@ -1222,8 +1270,8 @@
                                                                 id="SUB_DET_PORVIDER_RENO"
                                                                 (click)="removeErrorDisplayKeyById('SUB_DET_PORVIDER_RENO')"
                                                                 [disabled]="providerRefNoEnable()"
-                                                                [(ngModel)]='submissionDto.providerRefNo'
-                                                                maxlength="30" placeholder="Enter Reference Number"/>
+                                                                [(ngModel)]='submissionDto.providerRefNo' maxlength="30"
+                                                                placeholder="Enter Reference Number" />
                                                         </div>
                                                     </div>
 
@@ -1233,7 +1281,8 @@
                                                 <td></td>
                                                 <td class="remarkAria">
                                                     <strong>Remarks</strong>
-                                                    <div><textarea class="form-control" id="" rows="3" [(ngModel)]='claimRcm.claimRemarks'></textarea>
+                                                    <div><textarea class="form-control" id="" rows="3"
+                                                            [(ngModel)]='claimRcm.claimRemarks'></textarea>
                                                     </div>
                                                 </td>
                                                 <td></td>
@@ -1307,12 +1356,12 @@
                                             [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
                                             role="alert">
                                             <button type="button" (click)="alert.showAlertPopup=false;" class="close"
-                                            data-dismiss="alert" aria-label="Close"> 
-                                            <span aria-hidden="true">&times;</span> </button>
+                                                data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span> </button>
                                             <strong>{{alert.alertMsg}}</strong>
                                         </div>
-                                       
-                                  
+
+
 
                                     </ng-container>
                                 </div>
