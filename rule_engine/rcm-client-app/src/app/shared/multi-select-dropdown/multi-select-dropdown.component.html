@@ -295,7 +295,7 @@ last ?
                         </ng-container>
                     </span>
                 </button>
-                <div class="drop-show no-css-search-claim" *ngIf="showDropDown">
+                <div class="drop-show no-css-search-claim search-claim-dropdown" *ngIf="showDropDown">
                     <label>
                         <input type="checkbox" (change)="getSelectedValue(!isAllSelected['teams'],'','selectAllTeams','teams')" [checked]="isAllSelected['teams']">
                         <span>{{inputConfig.teams.length == searchClaimsConfig.teams.length ? 'Clear All' : 'Select All'}}</span>
