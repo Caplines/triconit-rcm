@@ -27,7 +27,7 @@
     -moz-box-shadow: 0 6px 10px rgba(0,0,0,.15);
     box-shadow: 0 6px 10px rgba(0,0,0,.15);
     margin-left: 1px;
-    overflow: scroll;
+    overflow-y: scroll;
     height: 105px;
 }
 .drop-show-team{
@@ -61,6 +61,7 @@
 
 .drop-show.no-css-search-claim{
     height: 200px !important;
+    z-index: 9999;
 }
 
 .search-claims-offices.disabled{
