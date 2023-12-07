@@ -562,7 +562,7 @@
 
                                                     </ng-container>
                                                 </tr>
-                                                <tr id="CL_P_F_{{rule.ruleId}}"
+                                                <tr
                                                     *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                     <ng-container *ngIf="(rule.ruleId==320) &&
                                                                                                     ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC'  || claimRcm.primaryInsCode=='CHIP')) 
@@ -570,7 +570,7 @@
                                                                                                     ">
                                                         <td>{{rule.srNo}}
                                                         </td>
-                                                        <td>{{rule.ruleName}}</td>
+                                                        <td id="CL_P_F_{{rule.ruleId}}">{{rule.ruleName}}</td>
 
                                                         <td class="no-wrap-text">
 
