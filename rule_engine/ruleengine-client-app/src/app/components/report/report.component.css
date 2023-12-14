@@ -106,3 +106,140 @@ table#data-scroll-t1 tr,table#data-scroll-t1re tr {
 table#data-scroll-t1 tr:nth-child(odd) {
   background-color: #BBDEFB;
 }
+
+/* NEW ORTHO CSS */
+
+
+
+.oral-surgery-container .tableHeading {
+  font-size: 14px;
+  background-color: #3d85c6;
+  color: #fff;
+  text-align: center;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+
+.oral-surgery-container .sub-heading {
+  font-size: 12px;
+  color: #000;
+  text-align: center;
+  font-weight: bold;
+}
+
+.oral-surgery-container .rowHeading {
+  background-color: #666666;
+  color: #fff;
+  font-size: 14px;
+}
+
+.oral-surgery-container .table {
+  border-collapse: collapse;
+  width: 100%
+}
+
+  .oral-surgery-container .table td {
+      border: 1px solid #000;
+      border-collapse: collapse;
+      padding: 2px 4px;
+      vertical-align: top;
+  }
+
+.oral-surgery-container .lightGray {
+  background-color: #f3f3f3;
+}
+
+.oral-surgery-container .yellow {
+  background-color: #ff0;
+}
+
+.oral-surgery-container .red {
+  background-color: #f00;
+  color: #fff;
+}
+
+.oral-surgery-container .white {
+  background-color: #fff;
+}
+
+.oral-surgery-container .dullBlue {
+  background-color: #a2c4c9;
+  color: #000;
+}
+
+.oral-surgery-container .dullGreen {
+  background-color: #b6d7a8;
+}
+
+.oral-surgery-container .text-white {
+  color: #fff;
+}
+
+
+.oral-surgery-container .width-7 {
+  width: 7%;
+}
+
+.oral-surgery-container .width-8 {
+  width: 8%;
+}
+
+.oral-surgery-container .width-10 {
+  width: 10%;
+}
+
+.oral-surgery-container .width-13 {
+  width: 13%;
+}
+
+.oral-surgery-container .width-15 {
+  width: 15%;
+}
+.oral-surgery-container .width-17 {
+  width: 17%;
+}
+.oral-surgery-container .width-32 {
+  width: 32%;
+}
+.oral-surgery-container .width-20 {
+  width: 20%;
+}
+.oral-surgery-container .width-21 {
+  width: 21%;
+}
+.oral-surgery-container .white-22 {
+  width: 22%;
+}
+.oral-surgery-container .text-left {
+  text-align: left;
+}
+
+.oral-surgery-container .text-center {
+  text-align: center;
+}
+
+.oral-surgery-container .table td.borderNone {
+  border: 0px;
+  background:#fff;
+}
+.oral-surgery-container .blackClr {
+  color:#000;
+}
+.oral-surgery-container .align-right {
+  text-align:right;
+}
+.oral-surgery-container .notCover {
+  display: inline-block;
+  background: #ffcdc7;
+  border-radius: 5px;
+  padding: 3px 5px;
+  color: #d80000;
+}
+.oral-surgery-container .quaterly {
+  display: inline-block;
+  background: #e7eaed;
+  border-radius: 5px;
+  padding: 3px 5px;
+  color: #000;
+}

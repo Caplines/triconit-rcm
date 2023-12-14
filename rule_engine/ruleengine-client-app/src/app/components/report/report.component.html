@@ -1157,7 +1157,7 @@
 					</tr>
 				</table>
 			</div>
-			<div class="table-container" *ngIf="reportDataInd.ivFormTypeId==2">
+			<!-- <div class="table-container" *ngIf="reportDataInd.ivFormTypeId==2">
 				<h3>IVF DATA- Details</h3>
 				<span>
 					<p style="text-align: center">Smilepoint -OS Insurance Verification Form</p>
@@ -1420,7 +1420,452 @@
 						<td>Date : <span class="newff">{{reportDataInd.date}}</span></td>
 					</tr>
 				</table>
-			</div>
+			</div> -->
+			<div class="table-container oral-surgery-container" *ngIf="reportDataInd.ivFormTypeId==2">
+				<!-- NEW ORAL SURGERFEY FORM (Data Integration left)-->
+
+			<table class="table" vertical-align="top">
+				<tr>
+					<td colspan="6" class="tableHeading">
+						Oral Surgery IV Form
+					</td>
+				</tr>
+				<tr>
+					<td colspan="6" class="borderNone">&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="6" class="tableHeading">Subscriber and Insurance Details</td>
+				</tr>
+				<tr>
+					<td class="width-20">Office Name <span class="newff"> {{reportDataInd.basicInfo1}}</span></td>
+					<td class="width-20">Patient ID <span class="newff"> {{reportDataInd.basicInfo21}}</span></td>
+					<td class="width-20">Subscriber's Name <span class="newff"> {{reportDataInd.basicInfo5}}</span></td>
+					<td class="width-15">Subscriber's DOB  <span class="newff"> {{reportDataInd.basicInfo9|date}}</span></td>
+					<td class="width-15">Patient's Name <span class="newff"> {{reportDataInd.basicInfo2}}</span></td>
+					<td class="width-10">Patient's DOB <span class="newff"> {{reportDataInd.basicInfo6|date}}</span></td>
+				</tr>
+				<tr>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>CSR Name <span class="newff">{{reportDataInd.basicInfo8}}</span> </td>
+					<td>Ref# <span class="newff">{{reportDataInd.basicInfo12}}</span> </td>
+					<td>Provider's Name <span class="newff">{{reportDataInd.basicInfo19}}</span></td>
+					<td>Tax ID <span class="newff">{{reportDataInd.basicInfo4}}</span> </td>
+					<td>NPI <span class="newff">{{reportDataInd.npi}}</span></td>
+					<td>
+						Licence# <span class="newff">{{reportDataInd.licence}}</span>
+					</td>
+				</tr>
+				<tr>
+					<td colspan="6" class="borderNone">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Plan Type <span class="newff">{{reportDataInd.osPlanType}}</span></td>
+					<td>Network <span class="newff">{{reportDataInd.policy3}}</span></td>
+					<td>SSN# <span class="newff">{{reportDataInd.basicInfo13}}</span></td>
+					<td>Member ID <span class="newff">{{reportDataInd.basicInfo16}}</span></td>
+					<td>Effective Date <span class="newff">{{reportDataInd.policy5|date}}</span></td>
+					<td>CY/FY <span class="newff">{{reportDataInd.policy6}}</span></td>
+				</tr>
+				<tr>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+					<td></td>
+					<td class="borderNone"></td>
+				</tr>
+				<tr>
+					<td>Employer's Name <span class="newff">{{reportDataInd.basicInfo10}}</span></td>
+					<td>Group Number <span class="newff">{{reportDataInd.basicInfo14}}</span></td>
+					<td>Insurance Name <span class="newff">{{reportDataInd.basicInfo3}}</span></td>
+					<td>Insurance Telephone <span class="newff">{{reportDataInd.basicInfo7}}</span></td>
+					<td>Insurance address <span class="newff">{{reportDataInd.basicInfo20}}</span></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="borderNone">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Fee Schedule <span class="newff">{{reportDataInd.policy4}}</span></td>
+					<td></td>
+					<td>Dependents covered upto age? <span class="newff">{{reportDataInd.policy11}}</span></td>
+					<td></td>
+					<td>Coordination of benefits <span class="newff">{{reportDataInd.corrdOfBenefits}}</span></td>
+					<td>Payor Id <span class="newff">{{reportDataInd.basicInfo18}}</span></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="borderNone">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>What is allowed amount for D7210 <span class="newff">{{reportDataInd.whatAmountD7210}}</span></td>
+					<td>Maximum $ <span class="newff">{{reportDataInd.policy7}}</span></td>
+					<td>Deductible <span class="newff">{{reportDataInd.policy9}}</span></td>
+					<td> Appointment Date <span class="newff">{{reportDataInd.basicInfo17|date}}</span></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+					<td></td>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+				</tr>
+				<tr>
+					<td>What is allowed amount for D7240 <span class="newff">{{reportDataInd.allowAmountD7240}}</span></td>
+					<td>Remaining benefits $ <span class="newff">{{reportDataInd.policy8}}</span></td>
+					<td>Remaining Deductible <span class="newff">{{reportDataInd.policy10}}</span></td>
+					<td>Is there a MTC? <span class="newff">{{reportDataInd.radio3}}</span></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="borderNone">&nbsp;</td>
+				</tr>
+				<tr>
+					<td>Eligible for D3330? <span class="newff">{{reportDataInd.radio4}}</span></td>
+					<td>Is there any waiting period? <span class="newff">{{reportDataInd.radio5}}</span></td>
+					<td>Waiting period Duration <span class="newff">{{reportDataInd.waitingPeriodDuration}}</span></td>
+					<td>Out of network benefits <span class="newff">{{reportDataInd.radio1}}</span></td>
+					<td>Do you file OS under medical first? <span class="newff">{{reportDataInd.radio2}}</span></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="6" class="borderNone">&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="6" class="borderNone">&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="6" class="tableHeading">Coverage & Frequency Information</td>
+				</tr>
+				<tr>
+					<td colspan="6" class=""><strong>Exams:</strong></td>
+				</tr>
+				<tr>
+					<td>D0140(%) <span class="newff">{{reportDataInd.d0140}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.exams2}}</span></td>
+					<td> D9310(%) <span class="newff">{{reportDataInd.posterior8}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.posterior9}}</span></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+	
+				<tr>
+					<td colspan="6" class=""><strong>Extractions</strong></td>
+				</tr>
+	
+				<tr>
+					<td>D7210/D7220/D7230(%) <span class="newff">{{reportDataInd.d7210}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7210fr}}</span></td>
+					<td>D7240(%) <span class="newff">{{reportDataInd.d7240}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7240fr}}</span></td>
+					<td>D7250(%) <span class="newff">{{reportDataInd.d7250}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7250fr}}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>D7251(%) <span class="newff">{{reportDataInd.d7251}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7251fr}}</span></td>
+					<td>D7285/D7286(%) <span class="newff">{{reportDataInd.d7285}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7285fr}}</span></td>
+					<td>D7951/D7952(%) <span class="newff">{{reportDataInd.d7951}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7951fr}}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+	
+				<tr>
+					<td colspan="6" class=""><strong>Sedation</strong></td>
+				</tr>
+				<tr>
+					<td>D9230(%)  <span class="newff">{{reportDataInd.sedations1}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.sedations1fr}}</span></td>
+					<td>D9248(%)  <span class="newff">{{reportDataInd.sedations3}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.sedations3fr}}</span></td>
+					<td>D9239(%) <span class="newff">{{reportDataInd.d9239}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d9239fr}}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>D9243(%)  <span class="newff">{{reportDataInd.sedations2}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.sedations2fr}}</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td colspan="4"></td>
+				</tr>
+				<tr>
+					<td colspan="6" class=""><strong>Endo</strong></td>
+				</tr>
+				<tr>
+					<td>D3310/D3320/D3330(%) <span class="newff">{{reportDataInd.d3310}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d3310fr}}</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="6" class=""><strong>Implants:</strong></td>
+				</tr>
+				<tr>
+					<td>D6010(%) <span class="newff">{{reportDataInd.implants1}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.implants5}}</span></td>
+					<td>D6057(%) <span class="newff">{{reportDataInd.implants2}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.implants6}}</span></td>
+					<td>D6065/D6068(%) <span class="newff">{{reportDataInd.implants4}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.implants7}}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>D6190(%) <span class="newff">{{reportDataInd.implants3}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.implants8}}</span></td>
+					<td>D6011(%) <span class="newff">{{reportDataInd.d6011}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d6011fr}}</span></td>
+					<td>D5862(%) <span class="newff">{{reportDataInd.d5862}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d5862fr}}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="6" class=""><strong>Perio:</strong></td>
+				</tr>
+				<tr>
+					<td>D4341(%) <span class="newff">{{reportDataInd.perio1}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.perio1fr}}</span></td>
+					<td>D4249(%) <span class="newff">{{reportDataInd.oral1}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.oral1fr}}</span></td>
+					<td>D4266/D4267(%) <span class="newff">{{reportDataInd.d4266}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d4266fr}}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="6" class=""><strong>Dentures:</strong></td>
+				</tr>
+				<tr>
+					<td>D5110/D5120(%) <span class="newff">{{reportDataInd.d5110}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d5110fr}}</span></td>
+					<td>D5130/D5140(%) <span class="newff">{{reportDataInd.d5130}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d5130fr}}</span></td>
+					<td>D5860/D5865(%) <span class="newff">{{reportDataInd.d5860}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d5860fr}}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>D6114/D6115(%) <span class="newff">{{reportDataInd.d6114}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d6114fr}}</span></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="6" class=""><strong>Oral Surgery:</strong></td>
+				</tr>
+				<tr>
+					<td>D7310(%) <span class="newff">{{reportDataInd.d7310}}</span> </td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7310fr}}</span></td>
+					<td>D7311(%) <span class="newff">{{reportDataInd.d7311}}</span> </td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7311fr}}</span></td>
+					<td>D7320(%) <span class="newff">{{reportDataInd.d7320}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7320fr}}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>D7321(%) <span class="newff">{{reportDataInd.d7321}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7321fr}}</span></td>
+					<td>D7472/D7473(%) <span class="newff">{{reportDataInd.d7472}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7472fr}}</span></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>D7280(%) <span class="newff">{{reportDataInd.d7280}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7280fr}}</span></td>
+					<td>D7282(%) <span class="newff">{{reportDataInd.d7282}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7282fr}}</span></td>
+					<td>D7283(%) <span class="newff">{{reportDataInd.d7283}}</span></td>
+					<td>Frequency <span class="newff">{{reportDataInd.d7283fr}}</span></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>
+						D7311-7320 Can be combined with D7210-
+						D7240?
+						<span class="newff">{{reportDataInd.d7311Select}}</span>
+					</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td colspan="6" class=""><strong>Guielines for IV Sedations? <span class="newff">{{reportDataInd.ivSedation}}</span></strong></td>
+				</tr>
+				<tr>
+					<td colspan="6">&nbsp;</td>
+				</tr>
+				<tr>
+					<td class=""><strong>Assignment of Benefits: <span class="newff">{{reportDataInd.policy15}}</span></strong></td>
+					<td colspan="4" rowspan="3"> </td>
+					<td>Date:</td>
+				</tr>
+			
+				<tr>
+					<td>&nbsp;</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+					<td class="borderNone"></td>
+				</tr>
+					<tr>
+						<td colspan="2">ADA Code</td>
+						<td colspan="2">Tooth No.- Surface</td>
+						<td colspan="2">DOS</td>
+					</tr><!---->
+					<!-- <tr *ngFor="let data of history">
+						<td colspan="2"><span class="newff">{{reportDataInd.historyCode}}</span></td>
+						<td colspan="2"><span class="newff">{{reportDataInd.historyTooth}}</span></td>
+						<td colspan="2"><span class="newff">{{reportDataInd.historyDos}}</span></td>
+					</tr> -->
+					<tr>
+						<td class="borderNone"></td>
+						<td class="borderNone"></td>
+						<td class="borderNone"></td>
+					</tr>
+				<tr>
+					<td colspan="6" class=""><strong>Comments: <span class="newff">{{reportDataInd.comments}}</span></strong></td>
+				</tr>
+				<tr>
+					<td colspan="6">&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="6">&nbsp;</td>
+				</tr>
+				<tr>
+					<td colspan="3" class=""><strong>Benefits Verified by: <span class="newff">{{reportDataInd.benefits}}</span></strong></td>
+					<td colspan="3" class=""><strong>Date: <span class="newff">{{reportDataInd.date|date}}</span></strong></td>
+				</tr>
+			</table>
+		</div>
 			<div class="table-container" *ngIf="reportDataInd.ivFormTypeId==3">
 				<h3>IVF DATA- Details</h3>
 				<span>
