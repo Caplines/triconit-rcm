@@ -1841,11 +1841,11 @@
 						<td colspan="2">Tooth No.- Surface</td>
 						<td colspan="2">DOS</td>
 					</tr><!---->
-					<!-- <tr *ngFor="let data of history">
-						<td colspan="2"><span class="newff">{{reportDataInd.historyCode}}</span></td>
-						<td colspan="2"><span class="newff">{{reportDataInd.historyTooth}}</span></td>
-						<td colspan="2"><span class="newff">{{reportDataInd.historyDos}}</span></td>
-					</tr> -->
+					<tr *ngFor="let c of reportDataInd.hdto">
+						<td><span class="newff">{{c.historyCode}}</span></td>
+						<td><span class="newff">{{c.historyTooth}}</span></td>
+						<td><span class="newff">{{c.historyDos}}</span></td>
+					</tr>
 					<tr>
 						<td class="borderNone"></td>
 						<td class="borderNone"></td>
