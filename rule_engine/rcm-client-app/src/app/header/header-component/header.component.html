@@ -158,11 +158,11 @@
                             </ng-container>
 
                             <div class="form-group  switchBoxContainer">
-                                <label class="font-weight-bolder">Client Names</label>
+                                <label class="font-weight-bolder">Client</label>
                                 <select class="form-control" id="selectClientAC" name="selectClientAC"
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedClient"
                                     [disabled]="cwModel?.companies?.length == 1 ? true : false">
-                                    <option selected="true" hidden="true" value="">Select Client Name</option>
+                                    <option selected="true" hidden="true" value="">Select Client</option>
                                     <ng-container *ngFor="let tl of cwModel?.companies">
                                         <option value="{{tl.name}}">{{tl.name}}</option>
                                     </ng-container>
@@ -184,7 +184,7 @@
 
 
                             <div class="form-group switchBoxContainer">
-                                <label class="font-weight-bolder">Team Name</label>
+                                <label class="font-weight-bolder">Team</label>
                                 <select class="form-control" id="selectTeamAC" name="selectTeamAC"
                                     (change)="checkBtnDisabled()" [(ngModel)]="selectedTeam"
                                     [disabled]="(cwModel?.teams?.length==0 || cwModel?.teams?.length == 1) || loginUserType=='Admin'">

@@ -1,6 +1,6 @@
-<button type="button" class="btn btn-primary attached" (click)="openModal()" *ngIf="!inputConfig['isDetailPage']"
-    id="attach{{inputConfig.claimUuid}}">{{totalFile>0 ? totalFile+" Files Attached" : inputConfig.attachmentCount>0 ?
-    inputConfig.attachmentCount+" Files Attached" : 'Attach'}}</button>
+<button type="button" class="btn btn-primary attached" style="width: auto;" (click)="openModal()" *ngIf="!inputConfig['isDetailPage']"
+    id="attach{{inputConfig.claimUuid}}">{{totalFile>0 ? (totalFile==1?'1 File Attached' :totalFile+" Files Attached") : inputConfig.attachmentCount>0 ?
+    (inputConfig.attachmentCount==1 ?'1 File Attached' :inputConfig.attachmentCount+" Files Attached" ): 'Attach'}}</button>
 <!-- 
 <button type="button" class="btn btn-primary btn-sm px-2 mb-2" (click)="openModal()" *ngIf="inputConfig['isDetailPage']"
     id="attach{{inputConfig.claimUuid}}">View Attachments</button> -->

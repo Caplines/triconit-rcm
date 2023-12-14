@@ -265,22 +265,22 @@
                                                         Current Team
                                                     </div>
                                                 </th>
-                                                <th style="background-color:#124f18;color: white;">
+                                                <th class="remarks-bg">
                                                     <div class="dFlex">
                                                         Enter Your Remarks
                                                     </div>
                                                 </th>
-                                                <th style="background-color:#124f18;color: white;">
+                                                <th class="remarks-bg">
                                                     <div class="dFlex">
                                                         Attach File
                                                     </div>
                                                 </th>
-                                                <th style="background-color:#124f18;color: white;">
+                                                <th class="remarks-bg">
                                                     <div class="dFlex">
-                                                        Submit to the Team that assigned the Claim
+                                                        Submit back to the Team that assigned the Claim
                                                     </div>
                                                 </th>
-                                                <th style="background-color:#124f18;color: white;">
+                                                <th class="remarks-bg">
                                                     <div class="dFlex">
                                                         Assign to other team
                                                     </div>
@@ -340,7 +340,7 @@
                                                                 style="width: 200px;"></textarea>
                                                         </td>
                                                         <td> <app-attach-file [inputConfig]="{'claimUuid':det.uuid,'attachmentCount':det.attachmentCount,'isOtherTeam':true}" (emitToParent)="receiveChildEvent($event)" ></app-attach-file></td>
-                                                        <td><button type="button" class="btn btn-primary" (click)="openModalAndValidateFields(det)"> 
+                                                        <td><button type="button" class="btn btn-primary btn-sm" (click)="openModalAndValidateFields(det)"> 
                                                                 Submit</button></td>
                                                         <td>
                                                             <div class="otherTeam">
@@ -350,7 +350,7 @@
                                                                         <option *ngFor="let data of otherTeams" [value]="data.teamId">{{data.teamName}}</option>
                                                                     </select>
 
-                                                                </div><button type="button" class="btn btn-primary" [disabled]="!this.submitBtnConfig['otherTeamId'][det.uuid]" (click)="openModalAndValidateFields(det)">Submit</button>
+                                                                </div><button type="button" class="btn btn-primary btn-sm" [disabled]="!this.submitBtnConfig['otherTeamId'][det.uuid]" (click)="openModalAndValidateFields(det)">Assign</button>
                                                             </div>
                                                         </td>
                                                     </tr>

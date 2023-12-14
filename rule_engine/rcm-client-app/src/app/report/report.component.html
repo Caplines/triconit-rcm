@@ -1079,7 +1079,7 @@
 				
 					<tr>
 						<td>&nbsp;</td>
-						<td></td>
+						<td><span class="newff">{{reportDataInd.date|date}}</span></td>
 					</tr>
 					<tr>
 						<td class="borderNone"></td>
@@ -1088,13 +1088,13 @@
 					</tr>
 						<tr>
 							<td colspan="2">ADA Code</td>
-							<td colspan="2">Tooth No.- Surface</td>
+							<td colspan="2">Tooth No</td>
 							<td colspan="2">DOS</td>
 						</tr>
 						<tr *ngFor="let c of reportDataInd.hdto">
-							<td><span class="newff">{{c.historyCode}}</span></td>
-							<td><span class="newff">{{c.historyTooth}}</span></td>
-							<td><span class="newff">{{c.historyDos}}</span></td>
+							<td  colspan="2"><span class="newff">{{c.historyCode}}</span></td>
+							<td  colspan="2"><span class="newff">{{c.historyTooth}}</span></td>
+							<td  colspan="2"><span class="newff">{{c.historyDos}}</span></td>
 						</tr>
 						<tr>
 							<td class="borderNone"></td>
@@ -1104,15 +1104,15 @@
 					<tr>
 						<td colspan="6" class=""><strong>Comments: <span class="newff">{{reportDataInd.comments}}</span></strong></td>
 					</tr>
-					<tr>
+					<!-- <tr>
 						<td colspan="6">&nbsp;</td>
 					</tr>
 					<tr>
 						<td colspan="6">&nbsp;</td>
-					</tr>
+					</tr> -->
 					<tr>
-						<td colspan="3" class=""><strong>Benefits Verified by: <span class="newff">{{reportDataInd.benefits}}</span></strong></td>
-						<td colspan="3" class=""><strong>Date: <span class="newff">{{reportDataInd.date|date}}</span></strong></td>
+						<td colspan="6" class=""><strong>Benefits Verified by: <span class="newff">{{reportDataInd.benefits}}</span></strong></td>
+						<!-- <td colspan="3" class=""><strong>Date: <span class="newff">{{reportDataInd.date|date}}</span></strong></td> -->
 					</tr>
 				</table>
 			</div>

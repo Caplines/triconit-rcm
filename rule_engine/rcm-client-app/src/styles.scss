@@ -439,7 +439,7 @@ a.flex-center:hover {
 
 
 .yes-box {
-    color: #17bd83;
+    color:  #4bcd3e;
     background-color: #f3fdfc;
     border-radius: 4px;
     padding: 2px 6px;
@@ -576,14 +576,14 @@ a.flex-center:hover {
 
 .btn-success, .btn-success:not(:disabled):not(.disabled):active, .btn-success:focus {
     color: #ffffff;
-    background-color: #069d72;
+    background-color: #4bcd3e;
     border: none !important;
     padding: 6px 15px;
     box-shadow: none;
 }
 
 .btn-success:hover {
-    background-color: #17bd83;
+    background-color: #1acd3e;
 }
 
 
@@ -770,13 +770,13 @@ select, select:focus {
         margin-right: 4px;
     }
 }
-.btn-success, .btn-success:not(:disabled):not(.disabled):active, .btn-success:focus {
-    color: #ffffff;
-    background-color: #069d72;
-    border: none !important;
-    padding: 6px 15px;
-    box-shadow: none;
-}
+// .btn-success, .btn-success:not(:disabled):not(.disabled):active, .btn-success:focus {
+//     color: #ffffff;
+//     background-color: #069d72;
+//     border: none !important;
+//     padding: 6px 15px;
+//     box-shadow: none;
+// }
 
 .btn-primary, .btn-success, .btn-danger {
     font-weight: 600;
