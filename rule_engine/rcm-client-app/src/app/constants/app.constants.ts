@@ -67,6 +67,9 @@ export class AppConstants {
         [19, {
             "name": "Credentialing", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
+        [20, {
+            "name": "Aging", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+        }],
 
         // [9,{
         //     "name":"Reporting","paths":["/update-pass"],"defaultpath":"/update-pass"
@@ -108,6 +111,7 @@ export class AppConstants {
         { "unFormatedName": 'AR', "count": 0, "teamName": "AR", "teamId": 17 },
         { "unFormatedName": 'PATIENT_STATEMENT', "count": 0, "teamName": "Patient Statement", "teamId": 18 },
         { "unFormatedName": 'CREDENTIALING', "count": 0, "teamName": "Credentialing", "teamId": 19 },
+        { "unFormatedName": 'AGING', "count": 0, "teamName": "Aging", "teamId": 20 },
     ];
 
     public attachmentType =

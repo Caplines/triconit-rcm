@@ -31,7 +31,8 @@ public enum RcmTeamEnum {
 	QUALITY(16,"QUALITY","Quality",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
 	AR(17,"AR","AR",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
 	PATIENT_STATEMENT(18,"PATIENT_STATEMENT","Patient Statement",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
-	CREDENTIALING(19,"CREDENTIALING","Credentialing",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true);
+	CREDENTIALING(19,"CREDENTIALING","Credentialing",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true),
+	AGING(20,"AGING","Aging",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true);
 	
 	final private int id;
 	final private String name;
