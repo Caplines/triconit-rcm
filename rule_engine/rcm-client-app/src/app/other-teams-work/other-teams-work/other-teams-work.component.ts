@@ -20,11 +20,11 @@ export class OtherTeamsWorkComponent implements OnInit {
   expandCollapse: boolean = true;
   isSorted: any = {};
   loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
-  showFilteredDropdown: any = { 'officeName': false };
+  showFilteredDropdown: any = { 'officeName': false,'insuranceName':false,insuranceType:false ,claimType:false,lastTeam:false};
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
-  isFilterAllSelected: any = { 'officeName': false, 'ageBracket': false };
+  isFilterAllSelected: any = { 'officeName': false, 'ageBracket': false,'insuranceName':false,'insuranceType':false,claimType:false,lastTeam:false };
   clientName: string = '';
   isFilterValueExist: boolean = false;
   fliterName: string = '';
@@ -46,7 +46,13 @@ export class OtherTeamsWorkComponent implements OnInit {
   date: any;
   filteredAgeBracket:any = []; 
   hasAttachedFilesWithRemark:boolean=false;
-  alert:any= {'alertMsg':'','showAlert':false}
+  alert:any= {'alertMsg':'','showAlert':false};
+
+  filteredInsuranceName:any=[];
+  filteredInsuranceType:any=[];
+  filteredClaimType:any=[];
+  filteredLastTeam:any=[];
+  
   
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
@@ -108,10 +114,16 @@ export class OtherTeamsWorkComponent implements OnInit {
           return e;
         })
         ths.claimDetail = data;
+        console.log(ths.claimDetail);
+        
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
         this.filterOptionAgeBracket();
+        this.filterOptionInsuranceName();
+        this.filterOptionInsuranceType();
+        this.filterOptionClaimType();
+        this.filterOptionLastTeam();
         this.showClaimIdWithDigits();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
       }
@@ -120,16 +132,13 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   removePrefix(data: any) {
     const arr: any = data;
-
     const claimIdCounts = new Map();
     const result = [];
-
     for (const obj of arr) {
       const claimId = obj.claimId.slice(0, -2); // remove the "_P" or "_S" suffix
       const count = claimIdCounts.get(claimId) || 0;
       claimIdCounts.set(claimId, count + 1);
     }
-
     for (const obj of arr) {
       const claimId = obj.claimId.slice(0, -2); // remove the "_P" or "_S" suffix
       const count = claimIdCounts.get(claimId);
@@ -157,6 +166,8 @@ export class OtherTeamsWorkComponent implements OnInit {
         } else if (ele['claimId'].includes("_S")) {
           ele['claimType'] = "Secondary"
         }
+        ele['insuranceName'] = ele.primaryInsurance;
+        ele['insuranceType'] = ele.prName;
       })
     });
     this.sortFiltereData(this.filteredOfficeName);
@@ -201,6 +212,37 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.addOrRemoveFilterAgeBracket();
   }
 
+ async filterOptionInsuranceName(){
+    this.filteredInsuranceName =  await this.claimDetail.map((e:any)=> {return {insuranceName:e.primaryInsurance,checked:true}});
+    console.log(this.filteredInsuranceName);
+    
+    this.filterInsuranceName();
+
+  }
+
+  filterInsuranceName(e?:any,filterProperty?: any) {
+    if (!e) {
+      this.filteredItems = this.claimDetail;
+      this.isFilterAllSelected.insuranceName = true;
+    } else{
+
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredInsuranceName.length; i++) {
+      if (this.filteredInsuranceName[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.insuranceName = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+      });
+    });
+    this.addOrRemoveInsuranceName();
+  }
+  }
+
   filterOptionAgeBracket() {
     if (this.isFilterValueExist) {
       this.filteredAgeBracket = [];
@@ -217,12 +259,50 @@ export class OtherTeamsWorkComponent implements OnInit {
         return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceName']) === item['insuranceName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
+      });
+    });
   }
 
   addOrRemoveFilterAgeBracket() {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredOfficeName.some((checkbox: any) => {
         return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceName']) === item['insuranceName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
+      });
+    });
+  }
+
+  addOrRemoveInsuranceName() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
       });
     });
   }
@@ -238,7 +318,7 @@ export class OtherTeamsWorkComponent implements OnInit {
       });
       this.filterOfficeName("selectAll");
     }
-    if (filterProperty == "ageBracket") {
+   else if (filterProperty == "ageBracket") {
       this.filteredAgeBracket.forEach((e: any) => {
         if (event.target.checked) {
           e.checked = true;
@@ -247,6 +327,46 @@ export class OtherTeamsWorkComponent implements OnInit {
         }
       });
       this.filterAgeBracket("ageBracket");
+    }
+    else  if (filterProperty == "insuranceName") {
+      this.filteredInsuranceName.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterInsuranceName("insuranceName");
+    }
+    else if (filterProperty == "insuranceType") {
+      this.filteredInsuranceType.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterInsuranceName("insuranceType");
+    }
+    else if (filterProperty == "claimType") {
+      this.filteredClaimType.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterClaimType("claimType");
+    }
+    else if (filterProperty == "lastTeam") {
+      this.filteredLastTeam.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterLastTeam("lastTeam");
     }
   }
 
@@ -274,8 +394,9 @@ export class OtherTeamsWorkComponent implements OnInit {
   }
 
   showHideFilteredDropdown(filterName: any) {
-    filterName == 'officeName' ? this.showFilteredDropdown.officeName = true : this.showFilteredDropdown.officeName = false;
-    filterName == 'ageBracket' ? this.showFilteredDropdown.ageBracket = true : this.showFilteredDropdown.ageBracket = false;
+    this.showFilteredDropdown[filterName] = ! this.showFilteredDropdown[filterName];
+    // filterName == 'officeName' ? this.showFilteredDropdown.officeName = true : this.showFilteredDropdown.officeName = false;
+    // filterName == 'ageBracket' ? this.showFilteredDropdown.ageBracket = true : this.showFilteredDropdown.ageBracket = false;
     this.fliterName = filterName;
   }
 
@@ -599,5 +720,186 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
   closeError(){
     this.errorMessage= '';
   }
+
+  async filterOptionInsuranceType(){
+    this.filteredInsuranceType =  await this.claimDetail.map((e:any)=> {return {insuranceType:e.prName,checked:true}});
+    if(this.filteredInsuranceType.length>2){
+      this.filteredInsuranceType =  this.removeDuplicateValues(this.filteredInsuranceType,'insuranceType');
+    }
+    this.filterInsuranceType();
+  }
+
+  removeDuplicateValues(filterValue:any,property:any){
+    let newArray:any = [];
+    let uniqueObject:any = {};
+    let objTitle:any;
+    for (let i in filterValue) {
+        objTitle = filterValue[i][property];
+        uniqueObject[objTitle] = filterValue[i];
+    }
+    for (let i in uniqueObject) {
+        newArray.push(uniqueObject[i]);
+    }
+    newArray.pop();
+    return newArray;
+  }
+
+  filterInsuranceType(e?:any,filterProperty?: any) {
+    if (!e) {
+      this.filteredItems = this.claimDetail;
+      this.isFilterAllSelected.insuranceType = true;
+    } else{
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredInsuranceType.length; i++) {
+      if (this.filteredInsuranceType[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.insuranceType = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+      });
+    });
+    this.addOrRemoveInsuranceType();
+  }
+  }
+
+  addOrRemoveInsuranceType() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceName']) === item['insuranceName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+  }
+
+  async filterOptionClaimType(){
+    this.filteredClaimType =  await this.claimDetail.map((e:any)=> {return {claimType:e.claimId.endsWith("P")?"Primary":"Secondary",checked:true}});
+    
+    if(this.filteredClaimType.length>2){
+      this.filteredClaimType =  this.removeDuplicateValues(this.filteredClaimType,'claimType');
+    }
+    this.filterClaimType();
+  }
+
+  filterClaimType(e?:any,filterProperty?: any) {
+    if (!e) {
+      this.filteredItems = this.claimDetail;
+      this.isFilterAllSelected.claimType = true;
+    } else{
+      console.log(432);
+      
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredClaimType.length; i++) {
+      if (this.filteredClaimType[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.claimType = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredClaimType.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+      });
+    });
+    this.addOrRemoveFilterClaimType();
+  }
+  }
+
+  addOrRemoveFilterClaimType() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceName']) === item['insuranceName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
+      });
+    });
+  }
+
+  async filterOptionLastTeam(){
+    this.filteredLastTeam =  await this.claimDetail.map((e:any)=> {return {lastTeam:e.lastTeam,checked:true}});
+    
+    if(this.filteredLastTeam.length>2){
+      this.filteredLastTeam =  this.removeDuplicateValues(this.filteredLastTeam,'lastTeam');
+    }
+    this.filterLastTeam();
+  }
+
+  filterLastTeam(e?:any,filterProperty?: any) {
+    if (!e) {
+      this.filteredItems = this.claimDetail;
+      this.isFilterAllSelected.lastTeam = true;
+    } else{
+      console.log(432);
+      
+    let isAllSelected: boolean = true;
+    for (let i = 0; i < this.filteredLastTeam.length; i++) {
+      if (this.filteredLastTeam[i].checked == false) {
+        isAllSelected = false;
+        break;
+      }
+    }
+    this.isFilterAllSelected.lastTeam = isAllSelected;
+    this.filteredItems = this.claimDetail.filter((item: any) => {
+      return this.filteredLastTeam.some((checkbox: any) => {
+        return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+      });
+    });
+    this.addOrRemoveFilterLastTeam();
+  }
+  }
+
+  addOrRemoveFilterLastTeam() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceName']) === item['insuranceName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredClaimType.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['claimType']) === item['claimType'];
+      });
+    });
+  }
+
 
 }

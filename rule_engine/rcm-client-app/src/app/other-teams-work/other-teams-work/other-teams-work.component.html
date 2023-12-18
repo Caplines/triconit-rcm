@@ -187,7 +187,36 @@
                                                 </th>
                                                 <th class="insuranceName">
                                                     <div class="dFlex">
-                                                        Insurance Name
+                                                        Insurance Name <div class="dropdown">
+                                                            <img (click)="showHideFilteredDropdown('insuranceName')"
+                                                                src="../../assets/img/filterIcon.png"
+                                                                style="cursor: pointer; margin-left: 6px;" />
+                                                            <div class="dropdown-menu filter-dropdown-menu"
+                                                                (mouseleave)="onMouseLeave($event)"
+                                                                *ngIf="showFilteredDropdown.insuranceName">
+                                                                <div class="clearClose">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox"
+                                                                            [checked]="isFilterAllSelected.insuranceName"
+                                                                            value="selectAll"
+                                                                            (change)="selectAll($event,'insuranceName')">
+                                                                        {{isFilterAllSelected.insuranceName ? 'Clear All':'Select All'}}</label>
+                                                                    <button
+                                                                        (click)="showFilteredDropdown.insuranceName=false;"
+                                                                        type="button" class="close" data-dismiss="modal"
+                                                                        aria-label="Close"><span>&times;</span></button>
+                                                                </div>
+                                                                <ng-container *ngFor="let data of filteredInsuranceName">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" checked="true"
+                                                                            [(ngModel)]="data.checked"
+                                                                            value="{{data.insuranceName}}"
+                                                                            (change)="filterInsuranceName($event,'insuranceName')">
+                                                                        {{data.insuranceName}}
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div> 
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['primaryInsurance']}"
@@ -200,7 +229,36 @@
                                                 </th>
                                                 <th class="insuranceType">
                                                     <div class="dFlex">
-                                                        Insurance Type
+                                                        Insurance Type <div class="dropdown">
+                                                            <img (click)="showHideFilteredDropdown('insuranceType')"
+                                                                src="../../assets/img/filterIcon.png"
+                                                                style="cursor: pointer; margin-left: 6px;" />
+                                                            <div class="dropdown-menu filter-dropdown-menu"
+                                                                (mouseleave)="onMouseLeave($event)"
+                                                                *ngIf="showFilteredDropdown.insuranceType">
+                                                                <div class="clearClose">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox"
+                                                                            [checked]="isFilterAllSelected.insuranceType"
+                                                                            value="selectAll"
+                                                                            (change)="selectAll($event,'insuranceType')">
+                                                                        {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
+                                                                    <button
+                                                                        (click)="showFilteredDropdown.insuranceType=false;"
+                                                                        type="button" class="close" data-dismiss="modal"
+                                                                        aria-label="Close"><span>&times;</span></button>
+                                                                </div>
+                                                                <ng-container *ngFor="let data of filteredInsuranceType">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" checked="true"
+                                                                            [(ngModel)]="data.checked"
+                                                                            value="{{data.insuranceType}}"
+                                                                            (change)="filterInsuranceType($event,'insuranceType')">
+                                                                        {{data.insuranceType}}
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div> 
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['prName']}"
@@ -213,7 +271,34 @@
                                                 </th>
                                                 <th>
                                                     <div class="dFlex">
-                                                        Claim Type
+                                                        Claim Type<div class="dropdown">
+                                                            <img  (click)="showHideFilteredDropdown('claimType')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                            <div class="dropdown-menu filter-dropdown-menu"
+                                                                (mouseleave)="onMouseLeave($event)"
+                                                                *ngIf="showFilteredDropdown.claimType">
+                                                                <div class="clearClose">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox"
+                                                                            [checked]="isFilterAllSelected.claimType"
+                                                                            value="selectAll"
+                                                                            (change)="selectAll($event,'claimType')">
+                                                                        {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
+                                                                    <button
+                                                                        (click)="showFilteredDropdown.claimType=false;"
+                                                                        type="button" class="close" data-dismiss="modal"
+                                                                        aria-label="Close"><span>&times;</span></button>
+                                                                </div>
+                                                                <ng-container *ngFor="let data of filteredClaimType">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" checked="true"
+                                                                            [(ngModel)]="data.checked"
+                                                                            value="{{data.claimType}}"
+                                                                            (change)="filterClaimType($event,'claimType')">
+                                                                        {{data.claimType}}
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                    </div>
                                                     </div>
                                                 </th>
                                                 <th>
@@ -230,7 +315,34 @@
                                                 </th>
                                                 <th>
                                                     <div class="dFlex">
-                                                        Last Team that Worked on this claim
+                                                        Last Team that Worked on this claim <div class="dropdown">
+                                                            <img  (click)="showHideFilteredDropdown('lastTeam')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                            <div class="dropdown-menu filter-dropdown-menu"
+                                                                (mouseleave)="onMouseLeave($event)"
+                                                                *ngIf="showFilteredDropdown.lastTeam">
+                                                                <div class="clearClose">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox"
+                                                                            [checked]="isFilterAllSelected.lastTeam"
+                                                                            value="selectAll"
+                                                                            (change)="selectAll($event,'lastTeam')">
+                                                                        {{isFilterAllSelected.lastTeam ? 'Clear All':'Select All'}}</label>
+                                                                    <button
+                                                                        (click)="showFilteredDropdown.lastTeam=false;"
+                                                                        type="button" class="close" data-dismiss="modal"
+                                                                        aria-label="Close"><span>&times;</span></button>
+                                                                </div>
+                                                                <ng-container *ngFor="let data of filteredLastTeam">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" checked="true"
+                                                                            [(ngModel)]="data.checked"
+                                                                            value="{{data.lastTeam}}"
+                                                                            (change)="filterLastTeam($event,'lastTeam')">
+                                                                        {{data.lastTeam}}
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                    </div>
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted}"
