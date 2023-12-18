@@ -347,7 +347,7 @@ export class OtherTeamsWorkComponent implements OnInit {
           e.checked = false;
         }
       });
-      this.filterInsuranceName("insuranceType");
+      this.filterInsuranceType("insuranceType");
     }
     else if (filterProperty == "claimType") {
       this.filteredClaimType.forEach((e: any) => {
