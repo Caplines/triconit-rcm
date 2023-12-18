@@ -524,6 +524,6 @@ export class ApplicationServiceService extends BaseService {
   }
 
   sortByAlphabet(data:any,sortBy:string){
-    return data.sort((a:any,b:any)=>a[sortBy].localeCompare(b[sortBy]))
+    return data.sort((a:any,b:any)=>a?.[sortBy]?.localeCompare(b?.[sortBy]))
   }
 }

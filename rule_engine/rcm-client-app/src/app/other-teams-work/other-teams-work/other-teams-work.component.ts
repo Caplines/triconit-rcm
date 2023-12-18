@@ -214,8 +214,9 @@ export class OtherTeamsWorkComponent implements OnInit {
 
  async filterOptionInsuranceName(){
     this.filteredInsuranceName =  await this.claimDetail.map((e:any)=> {return {insuranceName:e.primaryInsurance,checked:true}});
-    console.log(this.filteredInsuranceName);
-    
+    if(this.filteredInsuranceName.length>2){
+      this.filteredInsuranceName =  this.removeDuplicateValues(this.filteredInsuranceName,'insuranceName');
+    }
     this.filterInsuranceName();
 
   }
@@ -740,7 +741,7 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
     for (let i in uniqueObject) {
         newArray.push(uniqueObject[i]);
     }
-    newArray.pop();
+    // newArray.pop();
     return newArray;
   }
 
