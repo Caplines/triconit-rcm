@@ -1,7 +1,12 @@
-<button type="button" class="btn btn-primary attached" style="width: auto;" (click)="openModal()" *ngIf="!inputConfig['isDetailPage']"
+<!-- <button type="button" class="btn btn-primary attached" style="width: auto;" (click)="openModal()" *ngIf="!inputConfig['isDetailPage']"
     id="attach{{inputConfig.claimUuid}}">{{totalFile>0 ? (totalFile==1?'1 File Attached' :totalFile+" Files Attached") : inputConfig.attachmentCount>0 ?
-    (inputConfig.attachmentCount==1 ?'1 File Attached' :inputConfig.attachmentCount+" Files Attached" ): 'Attach'}}</button>
-<!-- 
+    (inputConfig.attachmentCount==1 ?'1 File Attached' :inputConfig.attachmentCount+" Files Attached" ): 'Attach'}}</button> -->
+<div style="display: flex; white-space: nowrap;">
+    <img src="../../assets/img/attach_file.png" title="Attach files"  style="width: auto; cursor: pointer;" (click)="openModal()" *ngIf="!inputConfig['isDetailPage']" id="attach{{inputConfig.claimUuid}}"/>
+    {{ totalFile > 0 ? (totalFile == 1 ? '1 File' : totalFile + ' Files') : inputConfig.attachmentCount > 0 ? (inputConfig.attachmentCount == 1 ? '1 File' : inputConfig.attachmentCount + ' Files') : ''}}
+</div>
+       
+    <!-- 
 <button type="button" class="btn btn-primary btn-sm px-2 mb-2" (click)="openModal()" *ngIf="inputConfig['isDetailPage']"
     id="attach{{inputConfig.claimUuid}}">View Attachments</button> -->
 <div class="modal attachModal" id="{{inputConfig.claimUuid}}" *ngIf="showModal">

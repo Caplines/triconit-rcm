@@ -108,7 +108,7 @@ export class AppConstants {
         { "unFormatedName": 'MEDICAID_IV', "count": 0, "teamName": "Medicaid IV", "teamId": 14 },
         { "unFormatedName": 'NEED_TO_HOLD', "count": 0, "teamName": "Need to hold", "teamId": 15 },
         { "unFormatedName": 'QUALITY', "count": 0, "teamName": "Quality", "teamId": 16 },
-        { "unFormatedName": 'AR', "count": 0, "teamName": "AR", "teamId": 17 },
+        //{ "unFormatedName": 'AR', "count": 0, "teamName": "AR", "teamId": 17 },
         { "unFormatedName": 'PATIENT_STATEMENT', "count": 0, "teamName": "Patient Statement", "teamId": 18 },
         { "unFormatedName": 'CREDENTIALING', "count": 0, "teamName": "Credentialing", "teamId": 19 },
         { "unFormatedName": 'AGING', "count": 0, "teamName": "Aging", "teamId": 20 },
