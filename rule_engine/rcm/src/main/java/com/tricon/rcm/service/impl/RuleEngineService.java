@@ -359,6 +359,14 @@ public class RuleEngineService {
 										boolean isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 										boolean isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
 										boolean missing=true;
+										try {
+										if (insuranceNameTypeDto!=null && insuranceNameTypeDto.getPreferredModeOfSubmission()==null) {
+											InsuranceNameTypeDto temp = getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getInsuranceCompanyName().trim(),Constants.COMPANY_NAME);
+											insuranceNameTypeDto.setPreferredModeOfSubmission(temp.getPreferredModeOfSubmission());
+										}
+										}catch(Exception s) {
+											logger.error(s.getMessage());
+										}
 										if (isBilling) {
 										claim = ClaimUtil.createClaimFromESData(claim, off, re,
 												ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()),
@@ -1101,7 +1109,7 @@ public class RuleEngineService {
 		try{
 			SimpleDateFormat sdf =new SimpleDateFormat("yyyy-MM-dd");
 			//sdf.format(claim.getDos());
-			String[] dt=sdf.format(claim.getDos()).split("-");//2023-09-20
+			String[] dt=sdf.format(claim.getDos()).split("-");//2023-09-20 2023-07-13
 			startDate=(dt[1].startsWith("0")?dt[1].replaceFirst("0", ""):dt[1])+"/"+(dt[2].startsWith("0")?dt[2].replaceFirst("0", ""):dt[2])+"/"+dt[0];
 		}catch(Exception n){
 			

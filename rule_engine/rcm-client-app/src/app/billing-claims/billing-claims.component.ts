@@ -591,7 +591,13 @@ export class BillingClaimsComponent {
     ths.claimService.getSubmissionDetails(ths.claimRcm.uuid, (res: any) => {
       if (res.status === 200) {
         ths.submissionDto = res.data;
-        if (ths.submissionDto == null) ths.submissionDto = {};
+        if (ths.submissionDto == null) {
+			ths.submissionDto = {};
+			if (ths.claimRcm.preferredModeOfSubmission != "") {
+            let prfMode = ths.claimRcm.preferredModeOfSubmission;
+            ths.submissionDto.channel = prfMode;
+		 }
+		}
       }
     })
   }

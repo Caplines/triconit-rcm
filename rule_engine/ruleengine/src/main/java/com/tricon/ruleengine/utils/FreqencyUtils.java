@@ -199,10 +199,11 @@ public class FreqencyUtils {
 		int ti = 0;
 		int actualmax = -1;
 		Object[] mess = null;
-		String code = "";
+		Set<String> code = new HashSet<>();
+		Set<String> codeH = new HashSet<>();
 		Object c1[] = FreqencyUtils.getCountTimeServiceCode(l1, s1,0);
 		if (!((String) c1[5]).equals("")) {
-			code = code + (String) c1[5];
+			code.add((String)c1[5]);
 		}
 		ct = ct + (Integer) c1[0];
 		ti = (Integer) c1[4];
@@ -210,7 +211,7 @@ public class FreqencyUtils {
 			actualmax = ti;
 		Object[] c2 = FreqencyUtils.getCountTimeServiceCode(l2, s2,0);
 		if (!((String) c2[5]).equals("")) {
-			code = code + (String) c2[5];
+			code.add((String)c2[5]);
 		}
 		ct = ct + (Integer) c2[0];
 		ti = (Integer) c2[4];
@@ -219,44 +220,48 @@ public class FreqencyUtils {
 
 		Object[] c3 = FreqencyUtils.getCountTimeServiceCode(l3, s3,0);
 		if (!((String) c3[5]).equals("")) {
-			code = code + (String) c3[5];
+			code.add((String)c3[5]);
 		}
 		ti = (Integer) c3[4];
 		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
 			actualmax = ti;/// Set to minimum value
 
 		if ((actualmax > 0) && (ct > 0 && ct > actualmax)) {
-			String dos = "";
+			Set<String> dos = new HashSet<>();
+			Set<String> fr = new HashSet<>();
 			String fl = "";
-			String fr = "";
 			String sur = "";
 
 			if (l1 != null) {
-				dos = dos + " " + (String) c1[2];
+				dos.add( (String) c1[2]);
+				//dos = dos + " " + (String) c1[2];
 				fl = fl + " " + (String) c1[3];
-				fr = fr + " " + (String) c1[6];
+				fr.add( (String) c1[6]);
+				//fr = fr + " " + (String) c1[6];
 				sur = sur + " " + (String) c1[7];
 
 			}
 			if (l2 != null) {
-				dos = dos + " " + (String) c2[2];
+				dos.add( (String) c2[2]);
 				fl = fl + " " + (String) c2[3];
-				fr = fr + " " + (String) c2[6];
+				fr.add( (String) c2[6]);
 				sur = sur + " " + (String) c2[7];
 
 			}
 			if (l3 != null) {
-				dos = dos + " " + (String) c3[2];
+				dos.add( (String) c3[2]);
 				fl = fl + " " + (String) c3[3];
-				fr = fr + " " + (String) c3[6];
+				fr.add( (String) c3[6]);
 				sur = sur + " " + (String) c3[7];
 
 			}
 
 			// 3124 code ,TOOTH,DOS, TIMES
+			sur=sur.trim();
 			if (!sur.equals(""))
 				sur = "(" + sur + ")";
-			mess = new Object[] { code, tooth, dos, actualmax, fr, sur };
+			mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, String.join(",", fr), sur,"" };
+			//mess = new Object[] { code, tooth, dos, actualmax, fr, sur };
 
 		}
 		return mess;

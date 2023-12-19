@@ -75,12 +75,23 @@ public class BaseScrappingServiceImpl {
 
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		driver.get("https://connectsso.dentaquest.com/authsso/providersso/SSOProviderLogin.aspx?TYPE=33554433&REALMOID=06-6a4c193d-7520-4f3d-b194-83367a3ef454&GUID=&SMAUTHREASON=0&METHOD=POST&SMAGENTNAME=-SM-imZolSjcs1FQR%2fH0k3NSK1Uvx4zWgziEWSOuwqcKGG1C%2bW%2fQdG3dRa7BVqGyOpNh&TARGET=-SM-https%3a%2f%2fconnectsso%2edentaquest%2ecom%2fprovideraccessv2%2findex%2ehtml");
-		WebElement element3 = driver.findElement(By.name("btnSubmit"));
+		
 		WebElement element = driver.findElement(By.name("USER"));
 		element.sendKeys(scrappingSiteDetails.getUserName());
 		WebElement element2 = driver.findElement(By.id("PASSWORD"));
 		element2.sendKeys(scrappingSiteDetails.getPassword());
-		element3.click();
+		Thread.sleep(5000);
+		
+		try {
+			JavascriptExecutor js = (JavascriptExecutor) driver;
+			js.executeScript("return document.getElementById('PASSWORD').click();");
+			js.executeScript("return document.getElementById('USER').click();");
+			js.executeScript("return document.getElementById('btnSubmit').click();");
+		} catch (Exception p) {
+
+		}
+		//WebElement element3 = driver.findElement(By.name("btnSubmit"));
+		///element3.click();
 		Thread.sleep(5000);
 
 	}

@@ -268,6 +268,8 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			String fname, String lname, String insuranceName, String location, boolean checkSub) throws Exception {
 		if (dob.equals(""))
 			return null;
+		//dob="01/25/2021";subscriberId="745780165";
+		
 		navigatetoEligiblityNew(driver);
 		EligibilityDto dto = new EligibilityDto();
 		String[] dobA = dob.split("/");
@@ -412,9 +414,10 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 			List<WebElement> trs = null;
 			try {
 				dataDiv = driver.findElement(By.id("Eligible"));
-				trs = dataDiv.findElements(By.tagName("tr"));
-				if (trs.size() > 0) {
+				trs = dataDiv.findElements(By.tagName("td"));
+				if (trs.size() > 0 && !trs.get(0).getText().equalsIgnoreCase("No eligible results were found for this search.")) {
 					dataFound = true;
+					trs = dataDiv.findElements(By.tagName("tr"));
 					dto.setMessage(ConstantsScrapping.SUBSCRIBER_FOUND);
 					dto.setEligible(ConstantsScrapping.SUBSCRIBER_Eligible);
 				}
@@ -427,17 +430,22 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 				try {
 					dto.setEligible(ConstantsScrapping.SUBSCRIBER_NOT_Eligible);
 					dataDiv = driver.findElement(By.id("outOfNetwork"));
-					trs = dataDiv.findElements(By.tagName("tr"));
-					if (trs.size() > 0) {
-						dto.setEligible(ConstantsScrapping.SUBSCRIBER_NOT_Eligible);
+					trs = dataDiv.findElements(By.tagName("td"));
+					if (trs.size() > 0  && !trs.get(0).getText().equalsIgnoreCase("No eligible results were found for this search.")) {
+						dto.setEligible(ConstantsScrapping.SUBSCRIBER_NOT_Eligible);//If out of network considered then Comment this and uncomment Below
+						/*dataFound = true;
+						trs = dataDiv.findElements(By.tagName("tr"));
+						dto.setMessage(ConstantsScrapping.SUBSCRIBER_FOUND);
+						dto.setEligible(ConstantsScrapping.SUBSCRIBER_Eligible);*/
 					}
 				} catch (Exception p) {
 
 				}
+				if (!dataFound) {
 				try {
 					dataDiv = driver.findElement(By.id("notFound"));
-					trs = dataDiv.findElements(By.tagName("tr"));
-					if (trs.size() > 0) {
+					trs = dataDiv.findElements(By.tagName("td"));
+					if (trs.size() > 0  && !trs.get(0).getText().equalsIgnoreCase("No eligible results were found for this search.")) {
 						dto.setEligible(ConstantsScrapping.SUBSCRIBER_NOT_FOUND);
 					}
 				} catch (Exception p) {
@@ -445,13 +453,14 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 				}
 				try {
 					dataDiv = driver.findElement(By.id("notEligible"));
-					trs = dataDiv.findElements(By.tagName("tr"));
-					if (trs.size() > 0) {
+					trs = dataDiv.findElements(By.tagName("td"));
+					if (trs.size() > 0  && !trs.get(0).getText().equalsIgnoreCase("No eligible results were found for this search.")) {
 						dto.setEligible(ConstantsScrapping.SUBSCRIBER_NOT_Eligible);
 					}
 				} catch (Exception p) {
 
 				}
+			}
 			}
 			// outOfNetwork
 			// notFound
