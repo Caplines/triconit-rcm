@@ -46,4 +46,17 @@ public class SearchClaimRepo {
 		}
 		return counts;
 	}
+	
+	public List<Object[]> buildSearchQueryWithoutPagination(StringBuilder searchQuery) {
+		String finalQuery = SearchClaimUtil.generateFinalQuery(searchQuery);
+		List<Object[]> searchDto = null;
+		try {
+			Query query = entityManager.createNativeQuery(finalQuery);
+			searchDto = query.getResultList();
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		}
+		return searchDto;
+	}
 }

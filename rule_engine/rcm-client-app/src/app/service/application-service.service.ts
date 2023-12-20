@@ -526,4 +526,8 @@ export class ApplicationServiceService extends BaseService {
   sortByAlphabet(data:any,sortBy:string){
     return data.sort((a:any,b:any)=>a?.[sortBy]?.localeCompare(b?.[sortBy]))
   }
+
+  searchClaimsPdf(params: any, callback: any) {
+    this.postDataPdf(params, this.httpUrl['search-claim-pdf'], callback)
+  }
 }

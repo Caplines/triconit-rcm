@@ -7,6 +7,7 @@ import { SearchParamModel } from '../models/search_param_model';
 import { DatePipe } from '@angular/common';
 import { SearchClaimsPaginationComponent } from './search-claims-pagination/search-claims-pagination.component';
 import { DateRangePickerComponent } from '../shared/date-range-picker/date-range-picker.component';
+import { DownLoadService } from '../service/download.service';
 @Component({
   selector: 'app-search-claims',
   templateUrl: './search-claims.component.html',
@@ -42,15 +43,17 @@ export class SearchClaimsComponent {
   totalPages: any;
   pageNumber: any;
   activeFilter:number=0;
+  date: any;
 
   selectedOffices:any=[];
   selectedClients:any=[];
   @ViewChild(SearchClaimsPaginationComponent)child!:SearchClaimsPaginationComponent;
   @ViewChild(DateRangePickerComponent)dateRangeChild!:DateRangePickerComponent;
   @ViewChild('archiveSelect')archiveSelect!:ElementRef;
+  exportPDFLoader: boolean=false;
 
   constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants,
-    private datePipe: DatePipe) {
+    private datePipe: DatePipe,private downloadService:DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Search Claims");
     this.appService.subscribeOnValueChange('FromMultiSelect', (event: any) => {
       if (event['action'] == 'getSelectClientName') {
@@ -231,6 +234,7 @@ export class SearchClaimsComponent {
     this.appService.emitOnValueChange({action:'resetAllField'});
     this.listOfClaimsData = [];
     this.loader=true;
+    this.exportPDFLoader = false;
     this.dateRangeChild.clearField();
     this.resetSearchClaimConfig();
 
@@ -267,4 +271,20 @@ export class SearchClaimsComponent {
 
   }
 
+  searchClaimsPdf() {
+    this.exportPDFLoader = true;
+    this.listOfClaimsData = [];
+    this.appService.searchClaimsPdf(this.searchClaimConfig, (res: any) => {
+      if (res.status ==200) {
+        this.date = new Date();
+        this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+        this.downloadService.saveBolbData(res.body,  `${localStorage.getItem("selected_clientName")}_Search_Claims_${this.date}.pdf`);
+        this.exportPDFLoader = false;
+      }
+      else {
+        console.log("Something went wrong");
+        this.exportPDFLoader = false;
+      }
+    })
+  }
 }

@@ -26,6 +26,8 @@
                                         <img src="../../assets/img/xls.png" /></button><span
                                         *ngIf="loader.exportCSVLoader"
                                         class="spinner-border text-success mx-1"></span>
+                                        <button type="button" style="height: 30px;
+                                        margin-top: 9px;" [disabled]="exportPDFLoader" [ngClass]="{'disabled':searchClaimConfig.clientUuid.length==0}" (click)="searchClaimsPdf()" class="btn text-light btn-success btn-sm" hidden="true">PDF</button>
                                 </div>
                             </div>
 
