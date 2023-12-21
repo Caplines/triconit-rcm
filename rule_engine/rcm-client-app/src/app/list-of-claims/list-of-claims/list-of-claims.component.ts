@@ -5,7 +5,7 @@ import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-m
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
 import { Title } from '@angular/platform-browser';
-import { DecimalPipe, formatNumber } from '@angular/common';
+import { formatNumber } from '@angular/common';
 import { DownLoadService } from 'src/app/service/download.service';
 
 @Component({
@@ -757,6 +757,10 @@ export class ListOfClaimsComponent implements OnInit {
         }
       });
       this.filterInsuranceName("insuranceName");
+      
+      // event.target.checked ? '' : this.multiselectInsuranceChild.clearAll('locInsuranceName','filterByInsuranceName');
+      // this.multiselectInsuranceChild.clearAll('locInsuranceName','filterByInsuranceName');
+
     }
     if (filterProperty == "insuranceType") {
       this.filteredColumnData.insuranceType.forEach((e: any) => {
@@ -815,12 +819,7 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   showHideFilteredDropdown(filterName: any) {
-    filterName == 'officeName' ? this.showFilteredDropdown.officeName = true : this.showFilteredDropdown.officeName = false;
-    filterName == 'claimType' ? this.showFilteredDropdown.claimType = true : this.showFilteredDropdown.claimType = false;
-    filterName == 'actionRequired' ? this.showFilteredDropdown.actionRequired = true : this.showFilteredDropdown.actionRequired = false;
-    filterName == 'insuranceName' ? this.showFilteredDropdown.insuranceName = true : this.showFilteredDropdown.insuranceName = false;
-    filterName == 'insuranceType' ? this.showFilteredDropdown.insuranceType = true : this.showFilteredDropdown.insuranceType = false;
-    filterName == 'ageBracket' ? this.showFilteredDropdown.ageBracket = true : this.showFilteredDropdown.ageBracket = false;
+    this.showFilteredDropdown[filterName] = !this.showFilteredDropdown[filterName];
     this.fliterName = filterName;
   }
   getMonthName(month: any) {

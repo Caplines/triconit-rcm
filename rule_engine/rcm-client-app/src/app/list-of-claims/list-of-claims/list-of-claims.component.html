@@ -75,10 +75,10 @@
                                                                 </div>
                                                                 
 
-                                    <multi-select-dropdown  class="mx-1 multiSelect-List" [inputConfig]="{'locOffice':filteredOfficeName,'isListOfClaims':true,'subType':'offices','emitAction':'selectedClientsOffices'}" (emitToParent)="filterOfficeName($event,'officeName')"></multi-select-dropdown>
+                                    <!-- <multi-select-dropdown  class="mx-1 multiSelect-List" [inputConfig]="{'locOffice':filteredOfficeName,'isListOfClaims':true,'subType':'offices','emitAction':'selectedClientsOffices'}" (emitToParent)="filterOfficeName($event,'officeName')"></multi-select-dropdown> -->
 
 
-                                                                <!-- <ng-container *ngFor="let data of filteredOfficeName">
+                                                                <ng-container *ngFor="let data of filteredOfficeName">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -86,7 +86,7 @@
                                                                             (change)="filterOfficeName($event,'officeName')">
                                                                         {{data.name}}
                                                                     </label>
-                                                                </ng-container> -->
+                                                                </ng-container>
                                                             </div>
                                                         </div> <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
@@ -313,9 +313,9 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
 
-                                                                <multi-select-dropdown  class="mx-1 multiSelect-List" [inputConfig]="{'locInsuranceName':filteredColumnData.insuranceName,'isListOfClaims':true,'subType':'locInsuranceName'}" (emitToParent)="filterInsuranceName('insuranceName')"></multi-select-dropdown>
+                                                                <!-- <multi-select-dropdown  #multiselectInsuranceChild class="mx-1 multiSelect-List" [inputConfig]="{'locInsuranceName':filteredColumnData.insuranceName,'isListOfClaims':true,'subType':'locInsuranceName'}" (emitToParent)="receieveChildrenEvent($event)"></multi-select-dropdown> -->
 
-                                                                <!-- <ng-container
+                                                                <ng-container
                                                                     *ngFor="let data of filteredColumnData.insuranceName">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
@@ -324,7 +324,7 @@
                                                                             (change)="filterInsuranceName('insuranceName')">
                                                                         {{data.insuranceName}}
                                                                     </label>
-                                                                </ng-container> -->
+                                                                </ng-container>
                                                             </div>
                                                         </div>
                                                         <span class="sorting">
@@ -357,9 +357,9 @@
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
 
-                                                                <multi-select-dropdown  class="mx-1 multiSelect-List" [inputConfig]="{'locInsuranceType':filteredColumnData.insuranceType,'isListOfClaims':true,'subType':'locInsuranceName'}" (emitToParent)="filterInsuranceName('insuranceName')"></multi-select-dropdown>
+                                                                <!-- <multi-select-dropdown  class="mx-1 multiSelect-List" [inputConfig]="{'locInsuranceType':filteredColumnData.insuranceType,'isListOfClaims':true,'subType':'locInsuranceName'}" (emitToParent)="filterInsuranceType('insuranceType')"></multi-select-dropdown> -->
 
-                                                                <!-- <ng-container
+                                                                <ng-container
                                                                     *ngFor="let data of filteredColumnData.insuranceType">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
@@ -368,7 +368,7 @@
                                                                             (change)="filterInsuranceType('insuranceType')">
                                                                         {{data.insuranceType}}
                                                                     </label>
-                                                                </ng-container> -->
+                                                                </ng-container>
                                                             </div>
                                                         </div>
                                                         <span class="sorting">
