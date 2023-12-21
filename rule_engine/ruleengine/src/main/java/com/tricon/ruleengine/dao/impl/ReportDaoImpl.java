@@ -74,7 +74,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 		+ " rep.patient_name as patient_name,rep.patient_id as patient_id,rep.ivf_form_id as ivf_form_id," + 
 			 		"rd.rule_id as rule_id,rd.error_message as error_message,rl.name as rule_name FROM " + 
 		            t+"  left join  rules as rl  on rl.id=rd.rule_id  and rd.rule_id is not null " + 
-			 		" ,user as us ,office as offi where rep.office_id='"+dto.getOfficeId()+"' and " + 
+			 		" ,user as us ,office as offi where rule_id is not null and rep.office_id='"+dto.getOfficeId()+"' and " + 
 			 		" rep.id=rd.report_id   " + 
 			 		" and us.uuid=rd.created_by and offi.uuid=rep.office_id ";
 			 if (dto.getIvformTypeId()!=null && !dto.getIvformTypeId().equals("")) {
@@ -208,7 +208,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 					 //}
 					
 					 queryString= queryString + " and " +batchrest;
-					 queryString= queryString + " group by rd.report_id ";
+					 queryString= queryString + " group by rd.report_id,us.uuid ";
 						 
 			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.TeamwiseDOS.toString())) {
 				 queryString="SELECT DATE_FORMAT(rd.updated_date,'%m/%d/%Y %T') as rep_create_date,rd.created_by as rep_created_by, "+
@@ -632,7 +632,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 					+ "	rd.rule_id as rule_id,rd.error_message as error_message,rl.name as rule_name" + " from ("
 					+ "SELECT max(r.group_run) as rep_group_run,r.id,patient_id,ivf_form_id,office_id,patient_dob,patient_name "
 					+ ",r.created_date,r.created_by,r.updated_date "
-					+ " FROM reports r "+reportDateLogic+" where  treatement_plan_id='"+Constants.sealanthmode+"'" +reportDateLogicQ;
+					+ " FROM reports r "+reportDateLogic+" where rule_id is not null and treatement_plan_id='"+Constants.sealanthmode+"'" +reportDateLogicQ;
 			
 					
 			queryString= queryString+	" and patient_id in ("+dto.getPatientId()+")  group by patient_id ) a, report_detail rd "
