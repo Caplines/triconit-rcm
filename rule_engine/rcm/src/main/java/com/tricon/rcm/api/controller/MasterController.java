@@ -16,6 +16,7 @@ import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
+import com.tricon.rcm.dto.SectionDto;
 import com.tricon.rcm.service.impl.MasterServiceImpl;
 
 @RestController
@@ -89,6 +90,18 @@ public class MasterController {
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", clients));
+	}
+	
+	@RequestMapping(value = "/get-sections", method = RequestMethod.GET)
+	public ResponseEntity<?> getSections() {
+		List<SectionDto> sectionList = null;
+		try {
+			sectionList = masterDataService.getSections();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", sectionList));
 	}
 
 }

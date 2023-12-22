@@ -6,12 +6,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tricon.rcm.db.entity.RcmClaimSection;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmRoleDto;
 import com.tricon.rcm.dto.RcmTeamDto;
+import com.tricon.rcm.dto.SectionDto;
+import com.tricon.rcm.enums.ManageSectionEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
+import com.tricon.rcm.jpa.repository.RcmClaimSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
@@ -32,6 +36,9 @@ public class MasterServiceImpl {
 
 	@Autowired
 	RcmUserRoleRepo roleRepo;
+	
+	@Autowired
+	RcmClaimSectionRepo claimSectionRepo;
 
 	/**
 	 * Fetch office data by given company name
@@ -202,5 +209,23 @@ public class MasterServiceImpl {
 
 	public List<RcmCompany> getClients() throws Exception {
 		return rcmCompanyRepo.findAll();
+	}
+
+	public List<SectionDto> getSections() {
+		List<SectionDto> sections = new ArrayList<>();
+		SectionDto sectionDto = null;
+		List<RcmClaimSection> claimSection = claimSectionRepo.findAll();
+		if (!claimSection.isEmpty()) {
+			for (RcmClaimSection section : claimSection) {
+				sectionDto = new SectionDto();
+				sectionDto.setSectionId(section.getId());
+				sectionDto.setSectionName(section.getSectionName());
+				sectionDto.setSectionDisplayName(section.getDisplayName());
+				sectionDto.setSectionCategory(section.getSectionCategory());
+				sectionDto.setActive(section.isActive());
+				sections.add(sectionDto);
+			}
+		}
+		return sections;
 	}
 }
