@@ -36,7 +36,8 @@ export class SearchClaimsComponent {
     "providerType": [],
     "responsibleTeam": [],
     "showArchive": 'false',
-    "pageNumber": 1
+    "pageNumber": 1,
+    "defaultButtonType":0,
   };
 
   listOfClaimsData: any = [];
@@ -164,6 +165,7 @@ export class SearchClaimsComponent {
   quickFilter(activeTab:number){
       this.activeFilter = activeTab;
       if(activeTab == 1 ){
+        this.searchClaimConfig.defaultButtonType=1;
         const filteredAgeData:any = [];
           this.constants.ageCategory.forEach((e:any)=>{
               if(e.value>=3){
@@ -181,6 +183,7 @@ export class SearchClaimsComponent {
             })
             this.appService.emitOnValueChange({action:'selectDefaultClaimStatus',value:filteredClaimData});
       } else if(activeTab == 2){
+        this.searchClaimConfig.defaultButtonType=2;
         let filteredData:any = [];
         this.searchParamModel.insuranceTypes.forEach((e:any)=>{
             if(e.name.toLowerCase().includes("medicaid")){
@@ -190,6 +193,7 @@ export class SearchClaimsComponent {
             })
         this.appService.emitOnValueChange({action:'filterUnbilledMedicaid',value:filteredData});
       } else if(activeTab == 3){
+        this.searchClaimConfig.defaultButtonType=3;
         let filteredData:any = [];
         this.searchParamModel.insuranceTypes.forEach((e:any)=>{
             if(!e.name.toLowerCase().includes("medicaid")){
@@ -235,6 +239,7 @@ export class SearchClaimsComponent {
     this.listOfClaimsData = [];
     this.loader=true;
     this.exportPDFLoader = false;
+    this.activeFilter=0;
     this.dateRangeChild.clearField();
     this.resetSearchClaimConfig();
 
@@ -258,7 +263,8 @@ export class SearchClaimsComponent {
       "providerType": [],
       "responsibleTeam": [],
       "showArchive": "false",
-      "pageNumber": 1
+      "pageNumber": 1,
+      "defaultButtonType":0
     };
     this.archiveSelect.nativeElement.selectedIndex = 1;   //default value of Archive box
     

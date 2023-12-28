@@ -70,6 +70,8 @@ public class SearchClaimServiceImpl {
 		List<Object[]> searchClaimData = null;
 		SearchClaimResponseDto searchResponseDto=null;
 		List<SearchClaimResponseDto> searchResponseList=null;
+		
+		boolean isOverdueDefaultButtonActive=dto.getDefaultButtonType()==Constants.OVERDUE_UNBILLED_MEDICAID || dto.getDefaultButtonType()==Constants.OVERDUE_UNBILLED_NON_MEDICAID;
 
 		// set clients.This is Mandatory to set clients
 		searchQuery = SearchClaimUtil.setClientUuid(dto.getClientUuid(), searchQuery);
@@ -145,7 +147,15 @@ public class SearchClaimServiceImpl {
 				searchQuery = SearchClaimUtil.setAgeCategory(
 						dto.getAgeCategory().stream().distinct().collect(Collectors.toList()), searchQuery);
 		}
-		long counts = searchClaimRepo.generateCountQuery(searchQuery);
+		
+		// set pending since for default button-type
+
+		if (dto.getDefaultButtonType() == Constants.OVERDUE_UNBILLED_MEDICAID
+				|| dto.getDefaultButtonType() == Constants.OVERDUE_UNBILLED_NON_MEDICAID) {
+			searchQuery = SearchClaimUtil.setPendingSinceForOverdueClaims(dto.getResponsibleTeam(), searchQuery);
+		}
+		
+		long counts = searchClaimRepo.generateCountQuery(searchQuery,isOverdueDefaultButtonActive);
 		if (counts == 0) {
 			paginationData = new ArrayList<>();
 			paginationDto = new SearchClaimPaginationDto();
@@ -153,7 +163,7 @@ public class SearchClaimServiceImpl {
 			paginationData.add(paginationDto);
 			return paginationData;
 		}
-		searchClaimData = searchClaimRepo.buildSearchQuery(searchQuery, dto.getPageNumber(), totalRecordsperPage);
+		searchClaimData = searchClaimRepo.buildSearchQuery(searchQuery, dto.getPageNumber(), totalRecordsperPage,isOverdueDefaultButtonActive);
 		if (searchClaimData != null && !searchClaimData.isEmpty()) {
 			paginationData = new ArrayList<>();
 			paginationDto = new SearchClaimPaginationDto();
@@ -205,6 +215,8 @@ public class SearchClaimServiceImpl {
 		List<SearchClaimPdfDto> listOfData = null;
 		SearchClaimPdfDto searchClaimPdfDto = null;
 		List<Object[]> searchClaimData = null;
+		
+		boolean isOverdueDefaultButtonActive=dto.getDefaultButtonType()==Constants.OVERDUE_UNBILLED_MEDICAID || dto.getDefaultButtonType()==Constants.OVERDUE_UNBILLED_NON_MEDICAID;
 
 		// set clients.This is Mandatory to set clients
 		searchQuery = SearchClaimUtil.setClientUuid(dto.getClientUuid(), searchQuery);
@@ -280,8 +292,15 @@ public class SearchClaimServiceImpl {
 				searchQuery = SearchClaimUtil.setAgeCategory(
 						dto.getAgeCategory().stream().distinct().collect(Collectors.toList()), searchQuery);
 		}
+		
+		// set pending since for default button-type
 
-		searchClaimData = searchClaimRepo.buildSearchQueryWithoutPagination(searchQuery);
+		if (dto.getDefaultButtonType() == Constants.OVERDUE_UNBILLED_MEDICAID
+				|| dto.getDefaultButtonType() == Constants.OVERDUE_UNBILLED_NON_MEDICAID) {
+			searchQuery = SearchClaimUtil.setPendingSinceForOverdueClaims(dto.getResponsibleTeam(), searchQuery);
+		}
+
+		searchClaimData = searchClaimRepo.buildSearchQueryWithoutPagination(searchQuery,isOverdueDefaultButtonActive);
 		if (searchClaimData != null && !searchClaimData.isEmpty()) {
 			listOfData = new ArrayList<>();
 			for (Object[] data : searchClaimData) {

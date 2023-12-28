@@ -130,5 +130,9 @@ public class Constants {
 	public static final String SHOW_ALL_PREFIX = "all";
 	public static final String TRUE_PREFIX = "true";
 	public static final String FALSE_PREFIX = "false";
+	public static final int SIXTY_PLUS_AR  = 1;
+	public static final int OVERDUE_UNBILLED_MEDICAID  = 2;
+	public static final int OVERDUE_UNBILLED_NON_MEDICAID=3;
+	public static final int OVERDUE_CLAIM_DATE_DIFF=7;
 
 }

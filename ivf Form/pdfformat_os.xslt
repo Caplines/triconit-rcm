@@ -190,9 +190,6 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="12" class="borderNone"></td>
-            </tr>
-            <tr>
                 <td colspan="12" class="tableHeading">Subscriber and Insurance Details</td>
             </tr>
             <tr>
@@ -210,9 +207,6 @@
                 <td class="width-8"><xsl:value-of select="basicInfo6"/></td>
             </tr>
             <tr>
-                <td colspan="12" class="borderNone"></td>
-            </tr>
-            <tr>
                 <td>CSR Name </td>
                 <td><xsl:value-of select="basicInfo8"/></td>
                 <td>Ref# </td>
@@ -225,9 +219,6 @@
                 <td><xsl:value-of select="npi"/></td>
                 <td>Licence#</td>
                 <td><xsl:value-of select="licence"/></td>
-            </tr>
-            <tr>
-                <td colspan="12" class="borderNone"></td>
             </tr>
             <tr>
                 <td>Plan Type</td>
@@ -244,9 +235,6 @@
                 <td><xsl:value-of select="policy6"/></td>
             </tr>
             <tr>
-                <td colspan="12" class="borderNone"></td>
-            </tr>
-            <tr>
                 <td>Employer's Name</td>
                 <td><xsl:value-of select="basicInfo10"/></td>
                 <td>Group Number</td>
@@ -260,9 +248,6 @@
                 <td colspan="2"></td>
             </tr>
             <tr>
-                <td colspan="12" class="borderNone"></td>
-            </tr>
-            <tr>
                 <td>Fee Schedule</td>
                 <td ><xsl:value-of select="policy4"/></td>
                 <td>Dependents covered upto age?</td>
@@ -272,9 +257,6 @@
                 <td>Payor Id</td>
                 <td><xsl:value-of select="basicInfo18"/></td>
                 <td colspan="4"></td>
-            </tr>
-            <tr>
-                <td colspan="12" class="borderNone"></td>
             </tr>
             <tr>
                 <td>What is allowed amount for D7210</td>
@@ -288,9 +270,6 @@
                 <td colspan="4"></td>
             </tr>
             <tr>
-                <td colspan="12" class="borderNone"></td>
-            </tr>
-            <tr>
                 <td>What is allowed amount for D7240</td>
                 <td><xsl:value-of select="allowAmountD7240"/></td>
                 <td>Remaining benefits $</td>
@@ -300,9 +279,6 @@
                 <td>Is there a MTC?</td>
                 <td><xsl:value-of select="radio3"/></td>
                <td colspan="4"></td>
-            </tr>
-            <tr>
-                <td colspan="12" class="borderNone"></td>
             </tr>
             <tr>
                 <td>Eligible for D3330?</td>
@@ -341,10 +317,6 @@
                 <td colspan="4"></td>
             </tr>
             <tr>
-                <td colspan="12" class=""></td>
-            </tr>
-
-            <tr>
                 <td colspan="12" class=""><strong>Extractions</strong></td>
             </tr>
 
@@ -363,9 +335,6 @@
                 <td><xsl:value-of select="d7250fr"/></td>
             </tr>
             <tr>
-                <td colspan="12" class=""></td>
-            </tr>
-            <tr>
                 <td>D7251(%)</td>
                 <td><xsl:value-of select="d7251"/></td>
                 <td>Frequency</td>
@@ -379,10 +348,6 @@
                 <td>Frequency</td>
                 <td><xsl:value-of select="d7951fr"/></td>
             </tr>
-            <tr>
-                <td colspan="12" class=""></td>
-            </tr>
-
             <tr>
                 <td colspan="12" class=""><strong>Sedation</strong></td>
             </tr>
@@ -401,18 +366,12 @@
                 <td><xsl:value-of select="d9239fr"/></td>
             </tr>
             <tr>
-                <td colspan="12" class=""></td>
-            </tr>
-            <tr>
                 <td>D9243(%) </td>
                 <td ><xsl:value-of select="sedations2"/></td>
                 <td>Frequency</td>
                 <td><xsl:value-of select="sedations2fr"/></td>
                 <td colspan="8"></td>
 
-            </tr>
-            <tr>
-                <td colspan="12" class=""></td>
             </tr>
             <tr>
                 <td colspan="12" class=""><strong>Endo</strong></td>
@@ -423,9 +382,6 @@
                 <td>Frequency</td>
                 <td><xsl:value-of select="d3310fr"/></td>
                 <td colspan="8"></td>
-            </tr>
-            <tr>
-                <td colspan="12" class=""></td>
             </tr>
             <tr>
                 <td colspan="12" class=""><strong>Implants:</strong></td>
@@ -445,9 +401,6 @@
                 <td><xsl:value-of select="implants7"/></td>
             </tr>
             <tr>
-                <td colspan="12" class=""></td>
-            </tr>
-            <tr>
                 <td>D6190(%)</td>
                 <td ><xsl:value-of select="implants3"/></td>
                 <td>Frequency</td>
@@ -460,9 +413,6 @@
                 <td><xsl:value-of select="d5862"/></td>
                 <td>Frequency</td>
                 <td ><xsl:value-of select="d5862fr"/></td>
-            </tr>
-            <tr>
-                <td colspan="12" class=""></td>
             </tr>
             <tr>
                 <td colspan="12" class=""><strong>Perio:</strong></td>
@@ -482,9 +432,6 @@
                 <td ><xsl:value-of select="d4266fr"/></td>
             </tr>
             <tr>
-                <td colspan="12" class=""></td>
-            </tr>
-            <tr>
                 <td colspan="12" class=""><strong>Dentures:</strong></td>
             </tr>
             <tr>
@@ -502,18 +449,12 @@
                 <td><xsl:value-of select="d5860fr"/></td>
             </tr>
             <tr>
-                <td colspan="12" class=""></td>
-            </tr>
-            <tr>
                 <td>D6114/D6115(%)</td>
                 <td ><xsl:value-of select="d6114"/></td>
                 <td>Frequency</td>
                 <td><xsl:value-of select="d6114fr"/></td>
                 <td colspan="8"></td>
 
-            </tr>
-            <tr>
-                <td colspan="12" class=""></td>
             </tr>
             <tr>
                 <td colspan="12" class=""><strong>Oral Surgery:</strong></td>
@@ -533,9 +474,6 @@
                 <td><xsl:value-of select="d7320fr"/></td>
             </tr>
             <tr>
-                <td colspan="12" class=""></td>
-            </tr>
-            <tr>
                 <td>D7321(%)</td>
                 <td ><xsl:value-of select="d7321"/></td>
                 <td>Frequency</td>
@@ -545,9 +483,6 @@
                 <td>Frequency</td>
                 <td class="width-8"><xsl:value-of select="d7472fr"/></td>
                 <td colspan="4"></td>
-            </tr>
-            <tr>
-                <td colspan="12" class=""></td>
             </tr>
             <tr>
                 <td>D7280(%)</td>
@@ -564,9 +499,6 @@
                 <td ><xsl:value-of select="d7283fr"/></td>
             </tr>
             <tr>
-                <td colspan="12" class=""></td>
-            </tr>
-            <tr>
                 <td>
                     D7311-7320 Can be combined with D7210-
                     D7240?
@@ -574,8 +506,11 @@
                 <td><xsl:value-of select="d7311Select"/></td>
                 <td colspan="10"></td>
             </tr>
+             <tr>
+                <td colspan="12" class="borderNone"></td>
+            </tr>
             <tr>
-                <td colspan="12" class=""></td>
+                <td colspan="12" class="borderNone"></td>
             </tr>
             <tr>
                 <td colspan="12" class=""><strong>Guielines for IV Sedations?</strong></td>
@@ -675,12 +610,6 @@
             </tr>
             <tr>
                 <td colspan="12"><xsl:value-of select="comments"/></td>
-            </tr>
-            <tr>
-                <td colspan="12"></td>
-            </tr>
-            <tr>
-                <td colspan="12" class="borderNone"></td>
             </tr>
             <tr>
                 <td><strong>Benefits Verified by:</strong></td>

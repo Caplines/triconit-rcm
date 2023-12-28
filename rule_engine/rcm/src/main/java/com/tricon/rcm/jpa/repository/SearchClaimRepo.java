@@ -18,8 +18,8 @@ public class SearchClaimRepo {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	public List<Object[]> buildSearchQuery(StringBuilder searchQuery, int pageNumber, int totalRecordsperPage) {
-		String finalQuery = SearchClaimUtil.generateFinalQuery(searchQuery);
+	public List<Object[]> buildSearchQuery(StringBuilder searchQuery, int pageNumber, int totalRecordsperPage,boolean isOverdueDefaultButtonActive) {
+		String finalQuery = SearchClaimUtil.generateFinalQuery(searchQuery,isOverdueDefaultButtonActive);
 		List<Object[]> searchDto = null;
 		try {
 			Query query = entityManager.createNativeQuery(finalQuery);
@@ -33,8 +33,8 @@ public class SearchClaimRepo {
 		return searchDto;
 	}
 
-	public long generateCountQuery(StringBuilder searchQuery) {
-		String countQuery = SearchClaimUtil.generateCountQuery(searchQuery);
+	public long generateCountQuery(StringBuilder searchQuery,boolean isOverdueDefaultButtonActive) {
+		String countQuery = SearchClaimUtil.generateCountQuery(searchQuery,isOverdueDefaultButtonActive);
 		long counts = 0;
 		try {
 			Query query = entityManager.createNativeQuery(countQuery);
@@ -47,8 +47,8 @@ public class SearchClaimRepo {
 		return counts;
 	}
 	
-	public List<Object[]> buildSearchQueryWithoutPagination(StringBuilder searchQuery) {
-		String finalQuery = SearchClaimUtil.generateFinalQuery(searchQuery);
+	public List<Object[]> buildSearchQueryWithoutPagination(StringBuilder searchQuery,boolean isOverdueDefaultButtonActive) {
+		String finalQuery = SearchClaimUtil.generateFinalQuery(searchQuery,isOverdueDefaultButtonActive);
 		List<Object[]> searchDto = null;
 		try {
 			Query query = entityManager.createNativeQuery(finalQuery);
