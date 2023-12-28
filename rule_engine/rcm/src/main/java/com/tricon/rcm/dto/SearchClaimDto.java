@@ -21,6 +21,7 @@ public class SearchClaimDto {
 	private List<String> providerType;
 	private List<Integer> responsibleTeam;
 	private String showArchive;
+	private int defaultButtonType;
 	
 	//for pagination
 	private int pageNumber;

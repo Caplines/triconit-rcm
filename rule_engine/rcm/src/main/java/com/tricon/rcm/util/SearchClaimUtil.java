@@ -25,7 +25,7 @@ public class SearchClaimUtil {
 	
 	private static final String orderBy = " order by comp.name,off.name asc ";
 
-	private static final String fromClause = "from rcm_claims claims "
+	private static final String fromClauseWithoutAssignment = "from rcm_claims claims "
 			+ "left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
 			+ "left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id "
 			+ "left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
@@ -33,6 +33,16 @@ public class SearchClaimUtil {
 			+ "left join rcm_team team on team.id=claims.current_team_id "
 			+ "inner join office off on off.uuid=claims.office_id "
 			+ "inner join company comp on comp.uuid=off.company_id ";
+	
+	private static final String fromClauseWithAssignment = "from rcm_claims claims "
+			+ "left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ "left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id "
+			+ "left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ "left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "left join rcm_team team on team.id=claims.current_team_id "
+			+ "inner join office off on off.uuid=claims.office_id "
+			+ "inner join company comp on comp.uuid=off.company_id "
+			+ "inner join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id ";
 
 	public static StringBuilder setClientUuid(List<String> clientUuid, StringBuilder searchQuery) {
 		searchQuery.append(" where comp.uuid in(");
@@ -87,7 +97,7 @@ public class SearchClaimUtil {
 
 		return searchQuery.append(" and (claims.claim_id ='" + claimId + "_P' OR claims.claim_id = '" + claimId + "_S' "
 				+ " OR claims.claim_id like '%" + Constants.HYPHEN + Constants.ARCHIVE_PREFIX + claimId
-				+ "_P%' OR claims.claim_id like '%" + Constants.HYPHEN + Constants.ARCHIVE_PREFIX + claimId + "_S%')");
+				+ "_P' OR claims.claim_id like '%" + Constants.HYPHEN + Constants.ARCHIVE_PREFIX + claimId + "_S')");
 	}
 
 	public static StringBuilder setDateRange(String startDate, String endDate, StringBuilder searchQuery) {
@@ -278,17 +288,34 @@ public class SearchClaimUtil {
 		}
 		return searchQuery;
 	}
-
-	public static String generateFinalQuery(StringBuilder searchQuery) {
-		
-		logger.info("FinalQuery:"+selectColumns + fromClause + searchQuery.toString());
-		return selectColumns + fromClause + searchQuery.toString()  + orderBy ;
+	
+	public static StringBuilder setPendingSinceForOverdueClaims(List<Integer> responsibleTeam,
+			StringBuilder searchQuery) {
+		return searchQuery.append(" and DATEDIFF(sysdate(), assign.created_date) >" + Constants.OVERDUE_CLAIM_DATE_DIFF
+				+ " and assign.active=1 ");
 	}
 
-	public static String generateCountQuery(StringBuilder searchQuery) {
-		
-		logger.info("CountQuery:"+countColumn + fromClause + searchQuery.toString());
-		return countColumn + fromClause + searchQuery.toString();
+	public static String generateFinalQuery(StringBuilder searchQuery, boolean isOverdueDefaultButtonActive) {
+
+		if (isOverdueDefaultButtonActive) {
+			logger.info("FinalQuery:" + selectColumns + fromClauseWithAssignment + searchQuery.toString());
+			return selectColumns + fromClauseWithAssignment + searchQuery.toString() + orderBy;
+		} else {
+			logger.info("FinalQuery:" + selectColumns + fromClauseWithoutAssignment + searchQuery.toString());
+			return selectColumns + fromClauseWithoutAssignment + searchQuery.toString() + orderBy;
+		}
 	}
+
+	public static String generateCountQuery(StringBuilder searchQuery, boolean isOverdueDefaultButtonActive) {
+
+		if (isOverdueDefaultButtonActive) {
+			logger.info("CountQuery:" + countColumn + fromClauseWithAssignment + searchQuery.toString());
+			return countColumn + fromClauseWithAssignment + searchQuery.toString();
+		} else {
+			logger.info("CountQuery:" + countColumn + fromClauseWithoutAssignment + searchQuery.toString());
+			return countColumn + fromClauseWithoutAssignment + searchQuery.toString();
+		}
+	}
+	
 
 }
