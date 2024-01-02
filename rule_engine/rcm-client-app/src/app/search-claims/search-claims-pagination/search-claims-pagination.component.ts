@@ -74,6 +74,15 @@ export class SearchClaimsPaginationComponent {
 
   fetchClaims(subType: string) {
       this.claimDetail = this.searchInputConfig.listOfClaimsData;
+      let data: any = this.claimDetail.map((e: any) => {
+        if (e.claimId.endsWith("_P")) {
+          e['EstAmount'] = e.primeSecSubmittedTotal;
+        } else {
+          e['EstAmount'] = e.secTotal;
+        }
+        return e;
+      })
+      this.claimDetail = data;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
         this.filterOptionClaimType(subType);
