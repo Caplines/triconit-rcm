@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.tricon.rcm.dto.RcmRolesResponseDto;
+import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.util.Constants;
 
 public enum RcmTeamEnum {
@@ -198,5 +199,19 @@ public enum RcmTeamEnum {
 			}
 		}
 		return 0;
+	}
+	
+	public static List<RcmTeamDto> getAllTeamsIsRoleVisible() {
+		List<RcmTeamDto> teams = new ArrayList<>();
+		RcmTeamDto team = null;
+		for (RcmTeamEnum t : RcmTeamEnum.values()) {
+			team = new RcmTeamDto();
+			if (t.isRoleVisible) {
+				team.setTeamName(t.getDescription());
+				team.setTeamId(t.getId());
+				teams.add(team);
+			}
+		}
+		return teams;
 	}
 }

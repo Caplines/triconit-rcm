@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.tricon.rcm.db.entity.RcmClaimDefaultSection;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
@@ -26,14 +28,18 @@ import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRoleHistory;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.RcmUserTeam;
+import com.tricon.rcm.dto.ClaimSectionMappingDto;
 import com.tricon.rcm.dto.GenericResponse;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
+import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserToDto;
+import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
+import com.tricon.rcm.jpa.repository.RcmClaimDefaultSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
@@ -81,6 +87,12 @@ public class RcmCommonServiceImpl {
 	
 	@Autowired
 	RcmUserRoleRepo userRole;
+	
+	@Autowired
+	ClaimSectionImpl claimSectionimpl;
+	
+	@Autowired
+	RcmClaimDefaultSectionRepo claimDefaultSectionRepo;
 
 	public List<RcmOfficeDto> getAllOffices() {
 
@@ -358,6 +370,47 @@ public class RcmCommonServiceImpl {
 					userCompanyRepo.save(userCompany);
 				}
 			}
+			
+			// sync client with default section and dump data into
+			// rcm_claim_client_section_mapping table when added new client from manage
+			// client section
+
+			List<RcmClaimDefaultSection> defaultSections = claimDefaultSectionRepo.findAll();
+			if (!defaultSections.isEmpty()) {
+				ClaimSectionMappingDto sectionMappingDto = new ClaimSectionMappingDto();
+				List<RcmTeamSectionAccessDto> teamsWithSectionsList = new ArrayList<>();
+				RcmTeamSectionAccessDto teamsWithSections = null;
+				sectionMappingDto.setClientUuid(client.getUuid());
+				for (RcmClaimDefaultSection defaultSection : defaultSections) {
+					SectionData sectionData = new SectionData();
+					if (!teamsWithSectionsList.isEmpty() && teamsWithSectionsList.stream()
+							.anyMatch(x -> x.getTeamId() == defaultSection.getTeamId().getId())) {
+						sectionData.setSectionId(defaultSection.getSection().getId());
+						sectionData.setEditAccess(defaultSection.isEditAccess());
+						sectionData.setViewAccess(defaultSection.isViewAccess());
+						teamsWithSectionsList.forEach(x -> {
+							if (x.getTeamId() == defaultSection.getTeamId().getId()) {
+								List<SectionData> existingSectionDataWitjSameTeam = x.getSectionData();
+								existingSectionDataWitjSameTeam.add(sectionData);
+							}
+						});
+					} else {
+						teamsWithSections = new RcmTeamSectionAccessDto();
+						List<SectionData> listOfSections = new ArrayList<>();
+						teamsWithSections.setTeamId(defaultSection.getTeamId().getId());
+						sectionData.setSectionId(defaultSection.getSection().getId());
+						sectionData.setEditAccess(defaultSection.isEditAccess());
+						sectionData.setViewAccess(defaultSection.isViewAccess());
+						listOfSections.add(sectionData);
+						teamsWithSections.setSectionData(listOfSections);
+						teamsWithSectionsList.add(teamsWithSections);
+					}
+				}
+				sectionMappingDto.setTeamsWithSections(teamsWithSectionsList);
+				String response=claimSectionimpl.manageClientSectionDetails(Arrays.asList(sectionMappingDto));
+				logger.info(response);
+			}
+
 		}
 	}
 	

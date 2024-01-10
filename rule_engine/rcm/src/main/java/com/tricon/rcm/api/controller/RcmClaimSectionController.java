@@ -78,7 +78,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		List<ClaimSectionMappingDto> response = null;
 		try {
-			response = claimSection.getClientSectionDetails();
+			response = claimSection.getClientsWithAllSectionsAndTeam();
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
