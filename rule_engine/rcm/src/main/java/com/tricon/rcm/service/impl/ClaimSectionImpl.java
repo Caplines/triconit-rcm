@@ -3,6 +3,7 @@ package com.tricon.rcm.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -180,44 +181,33 @@ public class ClaimSectionImpl {
 	
 	public List<ClaimSectionMappingDto> getClientsWithAllSectionsAndTeam() throws Exception {
 		List<ClaimSectionMappingDto> response = new ArrayList<>();
-		List<RcmClaimSection> claimSection = claimSectionRepo.findAll();
+		List<RcmClaimSection> claimSections = claimSectionRepo.findAllWithSectionCategory().stream().filter(x->x.isActive()==true).collect(Collectors.toList());
 		List<ClientCustomDto> clients = rcmCompanyRepo.findAllClients();
+		List<RcmTeamDto> teamData = RcmTeamEnum.getAllTeamsIsRoleVisible();
 		clients.forEach(client -> {
 			ClaimSectionMappingDto responseDto = new ClaimSectionMappingDto();
 			List<RcmTeamSectionAccessDto> teamsWithSectionsList = new ArrayList<>();
 			responseDto.setClientName(client.getClientName());
 			responseDto.setClientUuid(client.getUuid());
-			for (RcmTeamDto t : RcmTeamEnum.getAllTeamsIsRoleVisible()) {
+			for (RcmTeamDto t : teamData) {
 				RcmTeamSectionAccessDto teamsWithSections = new RcmTeamSectionAccessDto();
 				teamsWithSections.setTeamId(t.getTeamId());
 				teamsWithSections.setTeamName(t.getTeamName());
 				List<SectionData> listOfSections = new ArrayList<>();
-				for (RcmClaimSection section : claimSection) {
-					RcmClientSectionMapping existingSectionMappingWithClient = clientSectionMappingRepo
-							.findByCompanyUuidAndTeamIdIdAndSectionId(client.getUuid(), t.getTeamId(), section.getId());
-					// RcmClaimDefaultSection
-					// defaultSectionViewEdit=claimDefaultSectionRepo.findByTeamIdIdAndSectionId(
-					// t.getTeamId(), section.getId());
-					SectionData sectionData = new SectionData();
-					sectionData.setSectionId(section.getId());
-					sectionData.setSectionName(section.getDisplayName());
-					sectionData.setSectionCategory(section.getSectionCategory());
-					sectionData.setEditAccess(
-							existingSectionMappingWithClient != null ? existingSectionMappingWithClient.isEditAccess()
-									: false);
-					sectionData.setViewAccess(
-							existingSectionMappingWithClient != null ? existingSectionMappingWithClient.isViewAccess()
-									: false);
-					/*
-					 * when we use set default section edit and view access then it will use
-					 * sectionData.setEditAccess( existingSectionMappingWithClient != null ?
-					 * existingSectionMappingWithClient.isEditAccess() : (defaultSectionViewEdit !=
-					 * null ? defaultSectionViewEdit.isEditAccess() : false));
-					 * sectionData.setViewAccess( existingSectionMappingWithClient != null ?
-					 * existingSectionMappingWithClient.isViewAccess() : (defaultSectionViewEdit !=
-					 * null ? defaultSectionViewEdit.isViewAccess() : false));
-					 */
-					listOfSections.add(sectionData);
+				for (RcmClaimSection section : claimSections) {
+						RcmClientSectionMapping existingSectionMappingWithClient = clientSectionMappingRepo
+								.findByCompanyUuidAndTeamIdIdAndSectionId(client.getUuid(), t.getTeamId(),
+										section.getId());
+						SectionData sectionData = new SectionData();
+						sectionData.setSectionId(section.getId());
+						sectionData.setSectionName(section.getDisplayName());
+						sectionData.setEditAccess(existingSectionMappingWithClient != null
+								? existingSectionMappingWithClient.isEditAccess()
+								: false);
+						sectionData.setViewAccess(existingSectionMappingWithClient != null
+								? existingSectionMappingWithClient.isViewAccess()
+								: false);
+						listOfSections.add(sectionData);
 				}
 				teamsWithSections.setSectionData(listOfSections);
 				teamsWithSectionsList.add(teamsWithSections);

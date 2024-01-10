@@ -19,7 +19,7 @@ public class RcmSectionCategory implements java.io.Serializable{
     @Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
-    private Integer id;
+    private int id;
 	
 	@Column(name = "section_category")
 	private String category;

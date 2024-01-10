@@ -23,7 +23,7 @@ public class RcmClaimDefaultSection  implements java.io.Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
-    private Integer id;
+    private int id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "section_id",referencedColumnName="id")

@@ -780,7 +780,7 @@ public class AdminServiceImpl {
 			company = new RcmCompany();
 			company.setName(dto.getClientName());
 			company = rcmCompanyRepo.save(company);
-			commonService.syncClientsWithSuperAdmin(company, isSuperAdmin);
+			commonService.syncClientsWithSuperAdminAndAddDefaultSections(company, isSuperAdmin);
 			for (RcmClientGSheetDto data : dto.getHeader()) {
 				mappingTable = new RcmMappingTable();
 				mappingTable.setGoogleSheetId(data.getGoogle_sheet_id());

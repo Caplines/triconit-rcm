@@ -22,9 +22,9 @@ public class RcmClaimSection implements java.io.Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
-    private Integer id;
+    private int id;
 	
-	@Column(name = "section_name")
+	@Column(name = "section_name",unique =true)
 	private String sectionName;
 	
 	@Column(name = "section_display_name")
@@ -36,7 +36,7 @@ public class RcmClaimSection implements java.io.Serializable {
 	@Column(name = "active",columnDefinition = "BIT default 1")
 	private boolean active;
 	
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "section_category",referencedColumnName="id")
     private RcmSectionCategory sectionCategory;
 }

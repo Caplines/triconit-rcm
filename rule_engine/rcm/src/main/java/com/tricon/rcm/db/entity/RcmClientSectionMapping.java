@@ -17,7 +17,7 @@ import lombok.ToString;
 @Data
 @Entity
 @ToString
-@Table(name = "rcm_claim_client_section_mapping",uniqueConstraints = {@UniqueConstraint(columnNames = { "section_id", "company_uuid" ,"team_id"})})
+@Table(name = "rcm_claim_client_section_mapping",uniqueConstraints = {@UniqueConstraint(columnNames = { "section_id", "company_id" ,"team_id"})})
 public class RcmClientSectionMapping implements java.io.Serializable{
 	
 	private static final long serialVersionUID = 5225121480804692038L;
@@ -25,15 +25,14 @@ public class RcmClientSectionMapping implements java.io.Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
-    private Integer id;
-	
+    private int id;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "section_id",referencedColumnName="id")
     private RcmClaimSection section;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "company_uuid",referencedColumnName="uuid")
+	@JoinColumn(name = "company_id",referencedColumnName="uuid")
 	private RcmCompany company;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

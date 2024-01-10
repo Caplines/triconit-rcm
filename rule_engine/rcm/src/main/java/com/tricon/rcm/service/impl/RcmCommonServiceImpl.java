@@ -356,7 +356,7 @@ public class RcmCommonServiceImpl {
 		return null;
 	}
 	
-	public void syncClientsWithSuperAdmin(RcmCompany client, String isSuperAdmin) throws Exception {
+	public void syncClientsWithSuperAdminAndAddDefaultSections(RcmCompany client, String isSuperAdmin) throws Exception {
 		RcmUserCompany userCompany = null;
 		if (client != null && isSuperAdmin.equals(Constants.SUPER_ADMIN)) {
 			List<RcmUserToDto> data = userRepo.findSuperAdminUser(Constants.ROLE_PREFIX + Constants.SUPER_ADMIN);

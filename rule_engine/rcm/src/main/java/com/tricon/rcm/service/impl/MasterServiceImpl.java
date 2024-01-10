@@ -17,6 +17,7 @@ import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RcmClaimSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmSectionCategoryRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
 import com.tricon.rcm.util.Constants;
@@ -213,7 +214,7 @@ public class MasterServiceImpl {
 	public List<SectionDto> getSections() {
 		List<SectionDto> sections = new ArrayList<>();
 		SectionDto sectionDto = null;
-		List<RcmClaimSection> claimSection = claimSectionRepo.findAll();
+		List<RcmClaimSection> claimSection = claimSectionRepo.findAllWithSectionCategory();
 		if (!claimSection.isEmpty()) {
 			for (RcmClaimSection section : claimSection) {
 				sectionDto = new SectionDto();
