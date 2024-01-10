@@ -21,6 +21,7 @@ export class ManageSectionComponent {
   mainData:any=[];
   loader:boolean=false;
   selectedData:any=[];
+  alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
 
   constructor(private _service:ApplicationServiceService,public constants:AppConstants){
 
@@ -93,8 +94,6 @@ export class ManageSectionComponent {
   
   saveManageSecData(idx:any){
         let params:any = this.mainData[idx];
-        console.log(params);
-  
         this._service.saveManageSectionData([params],(res:any)=>{
           if(res){
             console.log(res);
@@ -240,7 +239,13 @@ export class ManageSectionComponent {
 //           ]
 //       },]
 //     }
-
+  showAlertPopup(res: any) {
+    this.alert.showAlertPopup = true;
+    setTimeout(() => { this.alert.showAlertPopup = false; }, 2000);
+    res.status == 400 ? this.alert.isError = true : this.alert.isError = false;
+    this.alert.alertMsg = res.message ? res.message : res.result.message;
+    scrollTo(0, 0);
+  }
 
 
 }
