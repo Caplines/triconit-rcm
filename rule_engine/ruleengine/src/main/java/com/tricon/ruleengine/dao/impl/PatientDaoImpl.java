@@ -573,8 +573,8 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 				inclause= " and p.patient_id ='"+dto.getPatientIdDB()+"' ";
 			}
 			
-			String query = "select '"+dto.getOfficeNameDB()+"'," +dto.getColumns()+" from patient_detail pd , patient p where "
-					+ " pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id " 
+			String query = "select '"+dto.getOfficeNameDB()+"'," +dto.getColumns()+" from patient_detail pd,patient_detail_2 pd2 , patient p where "
+					+ " pd.office_id='"+off.getUuid()+"'  and pd.patient_id=p.id and pd2.patient_id=p.id and pd2.patient_detail_id=pd.id  " 
 					+ inclause +
 					(dto!=null && dto.getUniqueID()!=null && !dto.getUniqueID().equals("")? " and pd.id ="+dto.getUniqueID()+" ":" ")+
 					(dto!=null && dto.getEmployerNameDB()!=null && !dto.getEmployerNameDB().equals("")? " and pd.employer_name like '%"+dto.getEmployerNameDB()+"%' ":" ")+
