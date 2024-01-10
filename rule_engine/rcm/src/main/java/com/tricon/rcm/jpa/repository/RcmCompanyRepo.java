@@ -14,7 +14,7 @@ public interface RcmCompanyRepo  extends JpaRepository<RcmCompany, String> {
 	RcmCompany findByUuid(String uuid);
 	
 	@Query(nativeQuery = true, value = 
-			" select uuid,name as clientName from company ")
+			" select uuid,name as clientName from company order by name asc ")
 	List<ClientCustomDto> findAllClients();
 
 }
