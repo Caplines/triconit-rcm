@@ -1,0 +1,57 @@
+.form-group label {
+    font-weight: 600;
+}
+.date-range-box .spinner-border {
+    margin-left:10px;
+}
+
+.date-range-box .form-control {
+    width:200px;
+}
+.btn-edit {
+    background: #ebf5f4;
+    color:  #4bcd3e !important;
+
+    &:hover {
+        background: #d3edea;
+    }
+}
+
+.form-control:disabled {
+    background-color: #f7f7f7;
+    opacity: 0.8;
+}
+
+.table .alert-dismissible {
+    margin: 0px;
+}
+.addNewClientBox {
+    input {
+        background-color: #fff!important;
+    }
+
+    .addEditClientBox {
+        border-radius: 5px;
+        margin-top: 10px;
+        padding: 10px;
+        background: #ededed;
+    }
+
+    .innerInput {
+        display: flex;
+
+        input {
+            margin-right: 10px;
+            width: 290px;
+        }
+    }
+
+    .addEditClientBox h3 {
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    td {
+        background: #fbfbfb;
+    }
+}
