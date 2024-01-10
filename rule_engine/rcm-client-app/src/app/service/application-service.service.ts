@@ -530,4 +530,16 @@ export class ApplicationServiceService extends BaseService {
   searchClaimsPdf(params: any, callback: any) {
     this.postDataPdf(params, this.httpUrl['search-claim-pdf'], callback)
   }
+  
+  fetchSectionList(callback: any) {
+    this.getData({}, this.httpUrl['section-list'], callback)
+  }
+  
+  fetchManageSectionData(callback: any) {
+    this.getData({}, this.httpUrl['fetch-manage-client-list'], callback)
+  }
+
+  saveManageSectionData(params: any, callback: any) {
+    this.postData(params, this.httpUrl['save-manage-client-list'], callback)
+  }
 }

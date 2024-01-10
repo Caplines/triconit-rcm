@@ -107,6 +107,10 @@ export class BaseService {
     'unarchive-claims': '/api/unarchive-claims',
     'others-teams-tl-exit': '/api/others-teams-tl-exit',
     'search-claim-pdf': '/api/search-claims/pdf',
+    'section-list':'/master/get-sections',
+
+    'fetch-manage-client-list':'/api/claim-client-with-section',
+    'save-manage-client-list':'/api/manage-claim-client-section',
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

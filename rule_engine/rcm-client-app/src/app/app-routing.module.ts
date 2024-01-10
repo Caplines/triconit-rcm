@@ -105,6 +105,11 @@ const routes: Routes = [
     path: 'search-claims',
     loadChildren: () => import("./search-claims/search-claims.module").then(m => m.SearchClaimsModule)
   },
+  {
+    path: 'manage-section',
+    loadComponent: () => import("./manage-section/manage-section.component").then(m => m.ManageSectionComponent),
+    canActivate: [ReigsterPermission]
+  },
 
 
   { path: '**', redirectTo: '/login' }
