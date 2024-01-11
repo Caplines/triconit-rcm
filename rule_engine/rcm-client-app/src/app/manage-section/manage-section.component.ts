@@ -23,12 +23,16 @@ export class ManageSectionComponent {
   selectedData:any=[];
   alert:any={'showAlertPopup':false,'alertMsg':'','isError':false};
 
+  // itemsPerPage: number = 1;
+  // currentPage: number = 1;
+  // filteredValue: any = [];
+  // filterItems: any = [];
+
   constructor(private _service:ApplicationServiceService,public constants:AppConstants){
 
   }
 
   ngOnInit(){
-    // this.fetchClients();
     this.fetchSectionData();
   }
 
@@ -38,6 +42,7 @@ export class ManageSectionComponent {
       if(res){
         console.log(res);
         this.mainData = res.data;
+        // this.displayPage(1);
         this.loader = false;
 
       }
@@ -88,7 +93,6 @@ export class ManageSectionComponent {
       }
     }
     }
-    console.log(viewAccess,editAccess); 
   }
   
   
@@ -96,154 +100,33 @@ export class ManageSectionComponent {
         let params:any = this.mainData[idx];
         this._service.saveManageSectionData([params],(res:any)=>{
           if(res){
-            console.log(res);
-            
+            this.showAlertPopup(res);
+            this.fetchSectionData();
           }
         })
         
   }
   
   trackByFn(index:any, item:any) {
-    return item.id; // Use a unique identifier for the item
+    return item.id; 
 }
-  // fetchClients(){
-  //   this._service.getClientsName((res:any)=>{
-  //     if(res.data && res.status == 200){
-  //       this.clients = res.data;
-  //       this.fetchSectionList();
 
-  //     }
-  //   })
-  // }
+// displayPage(page: number) {
+//   this.loader = true;
+//   this.currentPage = page;
+//   let startIndex = (page - 1) * this.itemsPerPage;
+//   let endIndex = startIndex + this.itemsPerPage;
+//   this.filteredValue = this.mainData.slice(startIndex, endIndex);
+//   this.filterItems = this.filteredValue;
+//   this.loader = false;
+//   window.scrollTo(0, 0);
+// }
 
-  //  fetchSectionList(){
-  
-  //     this._service.fetchSectionList((res:any)=>{
-  //     if(res.data && res.status == 200){
-  //        this.sectionList =  res.data;
-  //         this.addClientSectionTeamInArray();
-  //     }
-  //   })
-  // }
-
-  // selectClient(event:any){
-  //     this.selectedClient = event.target.value;
-  //     // let obj = [
-  //     //   {
-  //     //     client:'uuid',
-  //     //     team:[
-  //     //       {
-  //     //         'name':'billing ',
-  //     //         'section':[
-  //     //           {
-  //     //             id:34,
-  //     //             access:['view','edit']
-  //     //           }
-  //     //         ]
-  //     //       },
-  //     //       {
-  //     //         'name':'inetnal audit ',
-  //     //         'section':[
-  //     //           {
-  //     //             id:34,
-  //     //             access:['view','edit']
-  //     //           },
-  //     //           {
-  //     //             id:87,
-  //     //             access:['view']
-  //     //           },
-  //     //         ]
-  //     //       }
-  //     //     ],
-  //     //     clientuuid:'sadsad',
-  //     //     team:[
-  //     //       {
-  //     //         'name':'Internla audit ',
-  //     //         'section':[
-  //     //           {
-  //     //             id:34,
-  //     //             access:['view','edit']
-  //     //           }
-  //     //         ]
-  //     //       }
-  //     //     ],
-  //     //   }
-  //     // ]
-
-  // }
-
-  // addClientSectionTeamInArray(){
-  //   this.loader=true;
-  //       let m:any=[];
-  //       console.log(323);
-  //         this.clients.forEach((ele:any,idx:any)=>{
-  //                   m.push({
-  //                         'clientName':ele.clientName,
-  //                         'team': this.teamsData,
-  //                         'section':this.sectionList,
-  //                         'clientUuid':ele.uuid
-  //                   })
-                 
-  //       })
-  //       this.mainData  = m;
-  //       this.loader=false;
-
-  // }
-
-  // selectView(event:any,client:any,teamId:any,section:any,type:any){
-  //   let teamsWith:any = [
-  //     {
-  //       teamId:teamId,
-  //       sectionData:[
-  //               {
-  //                 "editAccess": type == "edit" ? event.target.checked : false,
-  //                 "viewAccess": type == "edit" ? event.target.checked : true ,
-  //                 "sectionId": section.sectionId 
-  //               }
-  //             ]
-  //     }
-  //   ];
-  //   let params:any = 
-  //     {
-  //       clientUuid:client.clientUuid,
-  //       teamsWithSections:teamsWith
-  //     };
-  //   this.params.push(params)
-  // }
-
-
-
-
-
-// {
-//   "clientUuid": "614c4beb-7df2-11e8-8432-8c16451459cd",
-//   "teamsWithSections": [
-//       {
-//           "teamId": 7,
-//           "sectionData": [
-//               {
-//                   "editAccess": false,
-//                   "viewAccess": false,
-//                   "sectionId": 5
-//               },
-//               {
-//                   "editAccess": false,
-//                   "viewAccess": true,
-//                   "sectionId": 4
-//               },
-//               {
-//                   "editAccess": true,
-//                   "viewAccess": false,
-//                   "sectionId": 3
-//               }
-//           ]
-//       },]
-//     }
   showAlertPopup(res: any) {
     this.alert.showAlertPopup = true;
     setTimeout(() => { this.alert.showAlertPopup = false; }, 2000);
     res.status == 400 ? this.alert.isError = true : this.alert.isError = false;
-    this.alert.alertMsg = res.message ? res.message : res.result.message;
+    this.alert.alertMsg = res.message ? res.message :  "Success";
     scrollTo(0, 0);
   }
 
