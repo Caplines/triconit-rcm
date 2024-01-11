@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.tricon.rcm.db.entity.RcmClaimDefaultSection;
 import com.tricon.rcm.db.entity.RcmClaimSection;
 import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
@@ -181,7 +180,8 @@ public class ClaimSectionImpl {
 	
 	public List<ClaimSectionMappingDto> getClientsWithAllSectionsAndTeam() throws Exception {
 		List<ClaimSectionMappingDto> response = new ArrayList<>();
-		List<RcmClaimSection> claimSections = claimSectionRepo.findAllWithSectionCategory().stream().filter(x->x.isActive()==true).collect(Collectors.toList());
+		List<RcmClaimSection> claimSections = claimSectionRepo.findAllWithSectionCategory().stream()
+				.filter(x -> x.isActive() == true).collect(Collectors.toList());
 		List<ClientCustomDto> clients = rcmCompanyRepo.findAllClients();
 		List<RcmTeamDto> teamData = RcmTeamEnum.getAllTeamsIsRoleVisible();
 		clients.forEach(client -> {
@@ -189,25 +189,29 @@ public class ClaimSectionImpl {
 			List<RcmTeamSectionAccessDto> teamsWithSectionsList = new ArrayList<>();
 			responseDto.setClientName(client.getClientName());
 			responseDto.setClientUuid(client.getUuid());
+			List<RcmClientSectionMapping> existingClientMapping = clientSectionMappingRepo
+					.findByCompanyUuid(client.getUuid());
 			for (RcmTeamDto t : teamData) {
 				RcmTeamSectionAccessDto teamsWithSections = new RcmTeamSectionAccessDto();
 				teamsWithSections.setTeamId(t.getTeamId());
 				teamsWithSections.setTeamName(t.getTeamName());
 				List<SectionData> listOfSections = new ArrayList<>();
 				for (RcmClaimSection section : claimSections) {
-						RcmClientSectionMapping existingSectionMappingWithClient = clientSectionMappingRepo
-								.findByCompanyUuidAndTeamIdIdAndSectionId(client.getUuid(), t.getTeamId(),
-										section.getId());
-						SectionData sectionData = new SectionData();
-						sectionData.setSectionId(section.getId());
-						sectionData.setSectionName(section.getDisplayName());
-						sectionData.setEditAccess(existingSectionMappingWithClient != null
-								? existingSectionMappingWithClient.isEditAccess()
-								: false);
-						sectionData.setViewAccess(existingSectionMappingWithClient != null
-								? existingSectionMappingWithClient.isViewAccess()
-								: false);
-						listOfSections.add(sectionData);
+					RcmClientSectionMapping existingSectionMappingWithClient = existingClientMapping.stream()
+							.filter(x -> x.getTeamId().getId() == t.getTeamId()
+									&& x.getSection().getId() == section.getId()
+									&& x.getCompany().getUuid().equals(client.getUuid()))
+							.findAny().orElse(null);
+					SectionData sectionData = new SectionData();
+					sectionData.setSectionId(section.getId());
+					sectionData.setSectionName(section.getDisplayName());
+					sectionData.setEditAccess(
+							existingSectionMappingWithClient != null ? existingSectionMappingWithClient.isEditAccess()
+									: false);
+					sectionData.setViewAccess(
+							existingSectionMappingWithClient != null ? existingSectionMappingWithClient.isViewAccess()
+									: false);
+					listOfSections.add(sectionData);
 				}
 				teamsWithSections.setSectionData(listOfSections);
 				teamsWithSectionsList.add(teamsWithSections);
