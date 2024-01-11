@@ -631,7 +631,12 @@
                 <td><xsl:value-of select="benefits"/></td>
                 <td colspan="7" class="borderNone"></td>
                 <td>Date: </td>
-                <td colspan="2"><xsl:value-of select="date"/></td>
+                <td colspan="2">
+                    <xsl:variable name="month" select="substring(date, 6, 2)" />
+                    <xsl:variable name="day" select="substring(date, 9, 2)" />
+                    <xsl:variable name="year" select="substring(date, 1, 4)" />
+                    <xsl:value-of select="concat($month, '/', $day, '/', $year)" />
+                </td>
             </tr>
 
 
