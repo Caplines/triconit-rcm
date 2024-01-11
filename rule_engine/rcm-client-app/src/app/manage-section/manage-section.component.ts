@@ -101,7 +101,6 @@ export class ManageSectionComponent {
         this._service.saveManageSectionData([params],(res:any)=>{
           if(res){
             this.showAlertPopup(res);
-            this.fetchSectionData();
           }
         })
         
@@ -127,8 +126,11 @@ export class ManageSectionComponent {
     setTimeout(() => { this.alert.showAlertPopup = false; }, 2000);
     res.status == 400 ? this.alert.isError = true : this.alert.isError = false;
     this.alert.alertMsg = res.message ? res.message :  "Success";
-    scrollTo(0, 0);
+    setTimeout(() => {
+      scrollTo(0, 0);
+    }, 0);
   }
+
 
 
 }
