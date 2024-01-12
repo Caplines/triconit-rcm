@@ -208,7 +208,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 					 //}
 					
 					 queryString= queryString + " and " +batchrest;
-					 queryString= queryString + " group by rd.report_id,us.uuid ";
+					 queryString= queryString + " group by rd.report_id,us.uuid,rd.group_run ";
 						 
 			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.TeamwiseDOS.toString())) {
 				 queryString="SELECT DATE_FORMAT(rd.updated_date,'%m/%d/%Y %T') as rep_create_date,rd.created_by as rep_created_by, "+
