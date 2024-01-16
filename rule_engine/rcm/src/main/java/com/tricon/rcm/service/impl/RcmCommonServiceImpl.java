@@ -28,7 +28,7 @@ import com.tricon.rcm.db.entity.RcmUserRole;
 import com.tricon.rcm.db.entity.RcmUserRoleHistory;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.RcmUserTeam;
-import com.tricon.rcm.dto.ClaimSectionMappingDto;
+import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.GenericResponse;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
@@ -377,7 +377,7 @@ public class RcmCommonServiceImpl {
 
 			List<RcmClaimDefaultSection> defaultSections = claimDefaultSectionRepo.findAll();
 			if (!defaultSections.isEmpty()) {
-				ClaimSectionMappingDto sectionMappingDto = new ClaimSectionMappingDto();
+				ClientSectionMappingDto sectionMappingDto = new ClientSectionMappingDto();
 				List<RcmTeamSectionAccessDto> teamsWithSectionsList = new ArrayList<>();
 				RcmTeamSectionAccessDto teamsWithSections = null;
 				sectionMappingDto.setClientUuid(client.getUuid());

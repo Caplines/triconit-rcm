@@ -9,9 +9,10 @@ import lombok.ToString;
 @Data
 @ToString
 @NoArgsConstructor
-public class ClaimSectionMappingDto {
+public class ClientSectionMappingDto {
 
 	private String clientUuid;
 	private String clientName;
+	private String userUuid;
 	private List<RcmTeamSectionAccessDto>teamsWithSections;
 }
