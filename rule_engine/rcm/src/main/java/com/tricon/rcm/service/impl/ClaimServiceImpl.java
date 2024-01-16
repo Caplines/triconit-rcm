@@ -3422,7 +3422,7 @@ public class ClaimServiceImpl {
 		   				rcmClaimRepository.save(claim);
 		   			///}
 						}catch(Exception c) {
-							
+							c.printStackTrace();
 						}
 						
 						
