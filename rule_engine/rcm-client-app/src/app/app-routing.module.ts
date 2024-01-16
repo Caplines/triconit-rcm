@@ -110,6 +110,10 @@ const routes: Routes = [
     loadComponent: () => import("./manage-section/manage-section.component").then(m => m.ManageSectionComponent),
     canActivate: [ReigsterPermission]
   },
+  {
+    path: 'reconciliation',
+    loadComponent: () => import("./reconciliation/reconciliation.component").then(m => m.ReconciliationComponent),
+  },
 
 
   { path: '**', redirectTo: '/login' }

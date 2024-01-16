@@ -538,8 +538,17 @@ export class ApplicationServiceService extends BaseService {
   fetchManageSectionData(callback: any) {
     this.getData({}, this.httpUrl['fetch-manage-client-list'], callback)
   }
-
+  
   saveManageSectionData(params: any, callback: any) {
     this.postData(params, this.httpUrl['save-manage-client-list'], callback)
   }
+
+  fetchUserManageSectionData(uuid:any,callback: any) {
+    this.getData({}, this.httpUrl['fetch-manage-user-section']+"/"+uuid, callback)
+  }
+  
+  saveUserManageSectionData(params:any,callback: any) {
+    this.postData(params, this.httpUrl['save-manage-user-section'], callback)
+  }
+
 }

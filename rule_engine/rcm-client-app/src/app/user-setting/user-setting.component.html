@@ -57,6 +57,7 @@
                                                 <option value="status" *ngIf="this.user.email !== userName">Enable / Disable Status</option>
                                                 <!-- <option value="role" *ngIf="this.user.teamNameId != -1 && this.user.email != userName " >Enable / Disable Role</option> -->
                                                 <option value="editUser" *ngIf="this.user.teamNameId != -1 && this.user.email != userName " >Edit User</option>
+                                                <option value="editSec" >Edit Section</option>
                                             </select>
                                     </div>
                                 </div>
@@ -188,6 +189,11 @@
                                                     </div>
                                          
                                         </div>
+                                </div>
+                            </div>
+                            <div class="row" *ngIf="user.showEditSection">
+                                <div class="col-sm-12">
+                                   <app-manage-section [inputConfig]="manageSectionConfig"></app-manage-section>
                                 </div>
                             </div>
                         </ng-container>

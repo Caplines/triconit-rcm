@@ -36,13 +36,13 @@
                                           <div class="col-sm-3" style="margin: 8px;">
                                               <strong> {{sec.sectionName}}</strong> 
                                                   <div class="form-check d-flex">
-                                                      <input class="form-check-input" [(ngModel)]="sec.viewAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'view')" type="checkbox" value="" id="view{{index}}{{idx}}{{i}}">
+                                                      <input class="form-check-input" [disabled]="inputConfig?.isEditSection"  [(ngModel)]="sec.viewAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'view')" type="checkbox" value="" id="view{{index}}{{idx}}{{i}}">
                                                       <label class="form-check-label" for="view{{index}}{{idx}}{{i}}">
                                                          View
                                                       </label>
                                                   </div>
                                                   <div class="form-check">
-                                                      <input class="form-check-input" [(ngModel)]="sec.editAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'edit')" type="checkbox" value="" id="edit{{index}}{{idx}}{{i}}" >
+                                                      <input class="form-check-input" #editSection [(ngModel)]="sec.editAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'edit')" type="checkbox" value="" id="edit{{index}}{{idx}}{{i}}" >
                                                       <label class="form-check-label" for="edit{{index}}{{idx}}{{i}}">
                                                          Edit
                                                       </label>
@@ -53,7 +53,8 @@
                                   </details>
                                     </li>
                                 </ul>
-                                <button class="btn btn-primary" (click)="saveManageSecData(index)">Save Button</button>
+                                <button class="btn btn-primary" *ngIf="!this.inputConfig?.isEditSection" (click)="saveManageSecData(index)">Save Button</button>
+                                <button class="btn btn-primary" *ngIf="this.inputConfig?.isEditSection" (click)="saveManageUserSecData(index)">Save Button</button>
                         </li>
 
                     </ul>

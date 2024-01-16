@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ApplicationServiceService } from '../service/application-service.service';
@@ -27,13 +27,20 @@ export class ManageSectionComponent {
   // currentPage: number = 1;
   // filteredValue: any = [];
   // filterItems: any = [];
+  @Input() inputConfig:any;
+  @Output() emitToParent = new EventEmitter();
+  @ViewChild("editSection")editSection!:ElementRef;
 
   constructor(private _service:ApplicationServiceService,public constants:AppConstants){
 
   }
 
   ngOnInit(){
-    this.fetchSectionData();
+    if(this.inputConfig && this.inputConfig?.isEditSection){
+      this.fetchUserIdSectionData();
+    } else{
+      this.fetchSectionData();
+    }
   }
 
   fetchSectionData(){
@@ -52,15 +59,28 @@ export class ManageSectionComponent {
 
   updateSelectedData(event:any,clientUuid: string, teamId: number, sectionId: number,viewAccess:any,editAccess:any,type:any) {
     const clientIndex = this.mainData.findIndex((client:any) => client.clientUuid === clientUuid);
-  
+
     if (clientIndex === -1) {
-      this.mainData.push({
-        clientUuid,
-        teamsWithSections: [{
-          teamId,
-          sectionData: [ { sectionId, viewAccess, editAccess }]
-        }]
-      });
+
+      if (this.inputConfig && this.inputConfig?.isEditSection) {
+        this.mainData.push({
+          clientUuid,
+          userUuid: this.inputConfig?.uuid,
+          teamsWithSections: [{
+            teamId,
+            sectionData: [{ sectionId, viewAccess, editAccess }]
+          }]
+        });
+      } else {
+        this.mainData.push({
+          clientUuid,
+          teamsWithSections: [{
+            teamId,
+            sectionData: [{ sectionId, viewAccess, editAccess }]
+          }]
+        });
+      }
+
     } else {
       const teamIndex = this.mainData[clientIndex].teamsWithSections.findIndex((team:any) => team.teamId === teamId);
   
@@ -87,8 +107,17 @@ export class ManageSectionComponent {
           this.mainData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = editAccess;
         }
          else if(!editAccess && type === 'edit'){
-          this.mainData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = false;
+              if(this.inputConfig && this.inputConfig?.isEditSection){
+                  //  this.mainData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = false;
+                } else{
+                 this.mainData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = false;
+              }
           this.mainData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = false;
+
+          // if(this.inputConfig && this.inputConfig?.isEditSection){
+          //       this.editSection.nativeElement.disabled = true;
+          // } 
+
          }
       }
     }
@@ -97,8 +126,20 @@ export class ManageSectionComponent {
   
   
   saveManageSecData(idx:any){
+      
         let params:any = this.mainData[idx];
         this._service.saveManageSectionData([params],(res:any)=>{
+          if(res){
+            this.showAlertPopup(res);
+          }
+        })
+        
+  }
+
+  saveManageUserSecData(idx:any){
+
+        let params:any = this.mainData[idx];
+        this._service.saveUserManageSectionData([params],(res:any)=>{
           if(res){
             this.showAlertPopup(res);
           }
@@ -129,6 +170,16 @@ export class ManageSectionComponent {
     setTimeout(() => {
       scrollTo(0, 0);
     }, 0);
+  }
+
+  fetchUserIdSectionData(){
+    this.loader = true;
+    this._service.fetchUserManageSectionData(this.inputConfig.uuid,(res:any)=>{
+      if(res){
+        this.mainData = res.data;
+        this.loader = false;
+      }
+    })
   }
 
 

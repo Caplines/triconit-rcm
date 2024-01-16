@@ -111,6 +111,8 @@ export class BaseService {
 
     'fetch-manage-client-list':'/api/claim-client-with-section',
     'save-manage-client-list':'/api/manage-claim-client-section',
+    'fetch-manage-user-section':'/api/claim-user-with-section',
+    'save-manage-user-section':'/api/manage-claim-user-section',
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

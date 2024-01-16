@@ -6,6 +6,7 @@ import { UserSettingComponent } from '../user-setting.component';
 import {FormsModule, ReactiveFormsModule} from "@angular/forms"
 import { HeaderComponent } from 'src/app/header/header-component/header.component';
 import { MultiSelectDropdownModule } from 'src/app/shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module';
+import { ManageSectionComponent } from 'src/app/manage-section/manage-section.component';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { MultiSelectDropdownModule } from 'src/app/shared/multi-select-dropdown/
     FormsModule,
     HeaderComponent,
     ReactiveFormsModule,
-    MultiSelectDropdownModule
+    MultiSelectDropdownModule,
+    ManageSectionComponent
   ]
 })
 export class UserSettingModule { }

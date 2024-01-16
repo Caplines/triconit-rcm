@@ -30,6 +30,7 @@ export class UserSettingComponent implements OnInit {
   filteredUsers: any = [];
   selectedFromDropDown: boolean = false;
   editRoless:string='';
+  manageSectionConfig:any={};
 
   constructor(public appService: ApplicationServiceService, private title: Title, private fb: FormBuilder) {
     title.setTitle(Utils.defaultTitle + "User Setting");
@@ -108,15 +109,24 @@ export class UserSettingComponent implements OnInit {
       this.user['showChangePassword'] = true;
       this.user['showStatus'] = false;
       this.user['showEditUser'] = false;
+      this.user['showEditSection'] = false;
     } else if (event.target.value === 'status') {
       this.user['showStatus'] = true;
       this.user['showChangePassword'] = false;
       this.user['showEditUser'] = false;
+      this.user['showEditSection'] = false;
     } else if (event.target.value === 'editUser') {
       this.user['showStatus'] = false;
       this.user['showChangePassword'] = false;
       this.user['showEditUser'] = true;
+      this.user['showEditSection'] = false;
       // this.getUserRolesByEmail();
+    } else if(event.target.value === 'editSec'){
+      this.user['showEditSection'] = true;
+      this.user['showChangePassword'] = false;
+      this.user['showStatus'] = false;
+      this.user['showEditUser'] = false;
+      this.getManageSectionDetails();
     }
   }
 
@@ -391,4 +401,10 @@ export class UserSettingComponent implements OnInit {
     scrollTo(0, 0);
   }
 }
+
+getManageSectionDetails(){
+  this.manageSectionConfig['uuid'] = this.user.uuid;
+  this.manageSectionConfig['isEditSection'] = true;
+}
+
 }
