@@ -377,6 +377,10 @@
     animation: animateleft 0.4s
 }
 
+.toggleSidebar{
+    margin-right: -260px;
+}
+
 @keyframes animateleft {
     from {
         right: 0;

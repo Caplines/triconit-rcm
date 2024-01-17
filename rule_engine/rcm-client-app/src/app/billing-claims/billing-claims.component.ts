@@ -86,6 +86,8 @@ export class BillingClaimsComponent {
     "D2140", "D2150", "D2160", "D2161"];*/
 
   toggleTab: any = {};
+  toggleSideBar:boolean=false;
+
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,

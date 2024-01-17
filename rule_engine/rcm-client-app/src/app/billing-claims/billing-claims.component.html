@@ -10,7 +10,7 @@
         <div class="row">
             <div class="col-lg-12 pt-5">
                 <h6 class="page-heading">Claim Detail Page</h6>
-                <button type="button" class="btn btn-primary"  style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
+                <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary"  style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-text-right" viewBox="0 0 16 16">
                         <path fill-rule="evenodd" d="M6 12.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-4-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5m4-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-4-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5"></path>
                     </svg>
@@ -1588,7 +1588,7 @@ claimRcm.tpDos |
 
                         </div>
                     </div>
-                    <div class="steps-taken vertical">
+                    <div class="steps-taken vertical" [ngClass]="{'toggleSidebar':toggleSideBar}">
                         <ul>
                             <li class="done"><span class="claimDate">Nov 15, 2023</span> Claim Uploaded <span class="teamname">Claim team</span></li>
                             <li class="done"><span class="claimDate">Nov 18, 2023</span>Claim Submitted<span class="teamname">Billing team</span></li>
