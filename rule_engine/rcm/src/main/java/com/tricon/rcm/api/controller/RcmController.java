@@ -44,6 +44,7 @@ import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimStatusUpdate;
 import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
+import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
@@ -60,6 +61,7 @@ import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
+import com.tricon.rcm.service.impl.ClaimSectionImpl;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
@@ -82,6 +84,9 @@ public class RcmController extends BaseHeaderController{
 
 	@Autowired
 	RcmCommonServiceImpl rcmCommonServiceImpl;
+	
+	@Autowired
+	ClaimSectionImpl claimSection;
 
 	/**
 	 * Fetch Claims From Eagle Soft or Google Sheet
@@ -803,6 +808,24 @@ public class RcmController extends BaseHeaderController{
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", response));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@GetMapping(value = "api/user-section-permission")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> getSectionDetailsOfUserAndClient(Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		List<ClientSectionMappingDto> response = null;
+		try {
+			response = claimSection.sectionsPermissionOfUser(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
