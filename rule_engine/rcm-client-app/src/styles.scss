@@ -1000,3 +1000,9 @@ width: 24px;
 .drop-show::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+@media screen and (max-width: 1405px) {
+    .detail-box-form .col-md-3 {
+        margin-right: 5px;
+    }
+}
