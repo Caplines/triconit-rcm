@@ -115,14 +115,14 @@
                     <td >Total</td>
                     <td></td>
                     <td><xsl:value-of select="sum(data/data/total)"/></td>
-                    <td><xsl:value-of select="sum(data/data/days)"/></td>
+                    <td><xsl:value-of select="format-number(sum(data/data/days),'0.0')"/></td>
                      </tr>
                       <xsl:for-each select="data/data">
                      <tr class="whiteBg">
                          <td><xsl:value-of select="companyName"/></td>
                          <td><xsl:value-of select="concat(fname,' ',lname)"/></td>
                          <td><xsl:value-of select="total"/></td>
-                         <td><xsl:value-of select="days"/></td>
+                         <td><xsl:value-of select="format-number(days,'0.0')"/></td>
                      </tr>
                     </xsl:for-each>
 
