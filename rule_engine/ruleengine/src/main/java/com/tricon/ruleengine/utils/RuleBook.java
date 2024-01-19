@@ -789,13 +789,13 @@ public class RuleBook {
 		try {
 			List<Rule6Dto> druleList = new ArrayList<>();
 			druleList.add(new Rule6Dto("Preventive_%", ivf.getPreventivePercentage(), "Preventive"));
-			druleList.add(new Rule6Dto("Diagnostic_%", ivf.getDiagnosticPercentage(), "Diagnostic"));
+			//druleList.add(new Rule6Dto("Diagnostic_%", ivf.getDiagnosticPercentage(), "Diagnostic"));
 			druleList.add(new Rule6Dto("PA_XRays_%", ivf.getpAXRaysPercentage(), "PAs"));// Email 25 feb..2022
 			druleList.add(new Rule6Dto("FMX_%", ivf.getFmxPer(), "FMX"));
 			druleList.add(new Rule6Dto("Sealants_D1351_%", ivf.getSealantsD1351Percentage(), "Sealants"));
 			druleList.add(new Rule6Dto("Basic_%", ivf.getBasicPercentage(), "Basic"));
-			druleList.add(new Rule6Dto("Endodontics_%", ivf.getEndodonticsPercentage(), "Endodontics"));
-			druleList.add(new Rule6Dto("PerioSurgery_%", ivf.getPerioSurgeryPercentage(), "Periodontal Surgery"));
+			//druleList.add(new Rule6Dto("Endodontics_%", ivf.getEndodonticsPercentage(), "Endodontics"));
+			//druleList.add(new Rule6Dto("PerioSurgery_%", ivf.getPerioSurgeryPercentage(), "Periodontal Surgery"));
 			druleList.add(new Rule6Dto("Gingivitis_D4346_%", ivf.getGingivitisD4346Percentage(), "Gingivitis TX"));
 			// RuleEngineLogger.generateLogs(clazz,"Sub-GingivalIrrigation_D4921_% -- is
 			// missing", Constants.rule_log_debug,bw);
@@ -805,15 +805,15 @@ public class RuleBook {
 			// "Subgingival Irrigation"));
 			druleList.add(new Rule6Dto("PerioMaintenance_D4910_%", ivf.getPerioMaintenanceD4910Percentage(),
 					"Perio Maintenance"));
-			druleList.add(new Rule6Dto("FMD_D4355_%", ivf.getFMDD4355Percentage(), "Full Mouth Debridement"));
+			//druleList.add(new Rule6Dto("FMD_D4355_%", ivf.getFMDD4355Percentage(), "Full Mouth Debridement"));
 			druleList
 					.add(new Rule6Dto("CrownLength_D4249_%", ivf.getCrownLengthD4249Percentage(), "Crown Lengthening"));
 			druleList.add(new Rule6Dto("PostComposites_D2391_%", ivf.getPostCompositesD2391Percentage(),
 					"Posterior Composites"));
-			druleList.add(new Rule6Dto("IVSedation_D9248_%", ivf.getiVSedationD9248Percentage(), "Sedation 9248"));// Sedation
+			//druleList.add(new Rule6Dto("IVSedation_D9248_%", ivf.getiVSedationD9248Percentage(), "Sedation 9248"));// Sedation
 																													// 9248
-			druleList.add(new Rule6Dto("IVSedation_D9243_%", ivf.getiVSedationD9243Percentage(), "Sedation 9243"));
-			druleList.add(new Rule6Dto("Nitrous_D9230_%", ivf.getNitrousD9230Percentage(), "Nitrous"));
+			//druleList.add(new Rule6Dto("IVSedation_D9243_%", ivf.getiVSedationD9243Percentage(), "Sedation 9243"));
+			//druleList.add(new Rule6Dto("Nitrous_D9230_%", ivf.getNitrousD9230Percentage(), "Nitrous"));
 			druleList.add(new Rule6Dto("Ortho_%", ivf.getOrthoPercentage(), "Orthodontics"));
 			druleList.add(new Rule6Dto("Major_%", ivf.getMajorPercentage(), "Major"));
 			druleList
@@ -821,12 +821,12 @@ public class RuleBook {
 			druleList
 					.add(new Rule6Dto("Extractions_Major_%", ivf.getExtractionsMajorPercentage(), "Major Extractions"));
 			druleList.add(new Rule6Dto("ImplantCoverage_D6010_%", ivf.getImplantCoverageD6010Percentage(), "Implants"));
-			druleList.add(new Rule6Dto("ImplantCoverage_D6057_%", ivf.getImplantCoverageD6057Percentage(),
-					"Implant Abutment"));
-			druleList.add(
-					new Rule6Dto("ImplantCoverage_D6190_%", ivf.getImplantCoverageD6190Percentage(), "Implant Index"));
-			druleList.add(new Rule6Dto("ImplantSupportedPorcCeramic_D6065_%",
-					ivf.getImplantSupportedPorcCeramicD6065Percentage(), "Implant Supported Prosthetics"));
+			//druleList.add(new Rule6Dto("ImplantCoverage_D6057_%", ivf.getImplantCoverageD6057Percentage(),
+			//		"Implant Abutment"));
+			//druleList.add(
+			//		new Rule6Dto("ImplantCoverage_D6190_%", ivf.getImplantCoverageD6190Percentage(), "Implant Index"));
+			//druleList.add(new Rule6Dto("ImplantSupportedPorcCeramic_D6065_%",
+			//		ivf.getImplantSupportedPorcCeramicD6065Percentage(), "Implant Supported Prosthetics"));
 			druleList.add(new Rule6Dto("Crowns_D2750_D2740_%", ivf.getCrownsD2750D2740Percentage(), "Crowns"));
 			druleList.add(new Rule6Dto("D9310_%", ivf.getD9310Percentage(), "D9310"));
 
@@ -2579,7 +2579,7 @@ public class RuleBook {
 	// Filling Codes based on Tooth No
 	public List<TPValidationResponseDto> Rule9(List<Object> tpList, MessageSource messageSource, Rules rule,
 			List<Mappings> mappings, BufferedWriter bw, int userType) {
-		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_18,
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_9,
 				Constants.rule_log_debug, bw);
 
 		List<TPValidationResponseDto> d = new ArrayList<>();
