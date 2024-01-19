@@ -5,6 +5,7 @@ import { ReigsterPermission } from './urlPermission/register-permission';
 import { ToolUserPermission } from './urlPermission/tool-user-permission';
 import { ClaimAssingnmentActivate } from './urlPermission/claim-assign-permission';
 import { OfficeClientPermission } from './urlPermission/office-client-permission';
+import { ProductionPermissionActivate } from './urlPermission/production-permission';
 
 const routes: Routes = [
 
@@ -79,7 +80,7 @@ const routes: Routes = [
   {
     path: 'production',
     loadChildren: () => import("./production/production.module").then(m => m.ProductionModule),
-    canActivate: [ClaimAssingnmentActivate]
+    canActivate: [ProductionPermissionActivate]
   },
   {
     path: 'list-of-claims',
