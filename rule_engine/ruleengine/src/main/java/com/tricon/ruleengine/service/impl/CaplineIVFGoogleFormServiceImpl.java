@@ -714,6 +714,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				if (iVFormType.getName().equals(Constants.IV_ORTHO_FORM_NAME)) {
 					xslt=XSLT_FILE_ORTHO ;
 				}
+				if (iVFormType.getName().equals(Constants.IV_GENERAL_FORM_NAME)) {
+					xslt=XSLT_FILE_NEW ;
+				}
 				if (dto.getNewFormat().equals(""))o = xml.createPdfStream(
 
 						xml.createHtml(filePath, xslt), "");

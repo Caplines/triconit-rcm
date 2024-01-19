@@ -1030,6 +1030,8 @@
                 <td class="lightGray width-15"><xsl:value-of select="benefits"/></td>
                 <td class="historyBackground width-15">Verfied on Date</td>
                 <td class="lightGray width-15"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,6,2),'/',substring(date,9,2),'/',substring(date,1,4))" /></xsl:if></td>
+                <td class="historyBackground width-15">IVF ID</td>
+                <td class="lightGray width-15"><xsl:value-of select="id"/></td>
                 <td class="borderNone" colspan="7"></td>
             </tr>  
         </table>
