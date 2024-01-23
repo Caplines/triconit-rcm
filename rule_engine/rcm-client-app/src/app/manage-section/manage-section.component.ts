@@ -47,7 +47,6 @@ export class ManageSectionComponent {
       if(res){
         console.log(res);
         this.manageSectionData = res.data;
-        this.userManageSectionData = JSON.parse(JSON.stringify(this.manageSectionData));
         // this.displayPage(1);
         this.loader = false;
 
@@ -201,6 +200,7 @@ export class ManageSectionComponent {
     this._service.fetchUserManageSectionData(this.inputConfig.uuid,(res:any)=>{
       if(res){
         this.manageSectionData = res.data;
+        this.userManageSectionData = JSON.parse(JSON.stringify(this.manageSectionData));
         this.loader = false;
       }
     })
