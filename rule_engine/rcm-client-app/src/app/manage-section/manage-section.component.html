@@ -8,64 +8,67 @@
                 <div *ngIf="alert.showAlertPopup">
                     <div>
                         <div class="alert fade show text-center" [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}" role="alert">
-                                <strong>{{alert.alertMsg}}</strong>
-                                <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
+                            <strong>{{alert.alertMsg}}</strong>
+                            <button type="button" (click)="alert.showAlertPopup=false;" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="main-container" *ngIf="!loader && mainData.length>0">
+                <div class="main-container manage-section-2" *ngIf="!loader && mainData.length>0">
                     <ul>
                         <li *ngFor="let data of mainData;let index=index;trackBy: trackByFn">
-                          <strong>
-                              {{data.clientName}}
-                          </strong>
-                         
+                            <fieldset>
+                                <legend>
+                                    {{data.clientName}}
+                                </legend>
                                 <ul>
                                     <li *ngFor="let teams of data.teamsWithSections;let idx=index;trackBy: trackByFn">
-                                 
-                                  <details>
-                                    <summary>
-                                        <strong>
-                                         {{teams.teamName}}
-                                        </strong>
-                                    </summary>
-                                    <div class="row">
-                                        <ng-container *ngFor="let sec of teams.sectionData;let i=index;trackBy: trackByFn">
-                                          <div class="col-sm-3" style="margin: 8px;">
-                                              <strong> {{sec.sectionName}}</strong> 
-                                                  <div class="form-check d-flex">
-                                                      <input class="form-check-input" [disabled]="inputConfig?.isEditSection"  [(ngModel)]="sec.viewAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'view')" type="checkbox" value="" id="view{{index}}{{idx}}{{i}}">
-                                                      <label class="form-check-label" for="view{{index}}{{idx}}{{i}}">
-                                                         View
-                                                      </label>
-                                                  </div>
-                                                  <div class="form-check">
-                                                      <input class="form-check-input" #editSection [(ngModel)]="sec.editAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'edit')" type="checkbox" value="" id="edit{{index}}{{idx}}{{i}}" >
-                                                      <label class="form-check-label" for="edit{{index}}{{idx}}{{i}}">
-                                                         Edit
-                                                      </label>
-                                                  </div>
-                                          </div>
-                                      </ng-container>
-                                  </div>
-                                  </details>
+
+                                        <details>
+                                            <summary>
+                                                <span>
+                                                    {{teams.teamName}}
+                                                </span>
+                                            </summary>
+                                            <div class="manage-section-row">
+                                                <ng-container *ngFor="let sec of teams.sectionData;let i=index;trackBy: trackByFn">
+                                                    <div class="manage-section-col-sm-3">
+                                                        <strong> {{sec.sectionName}}</strong>
+                                                        <div class="manageCheckcontainer">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" [(ngModel)]="sec.viewAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'view')" type="checkbox" value="" id="view{{index}}{{idx}}{{i}}">
+                                                                <label class="form-check-label" for="view{{index}}{{idx}}{{i}}">
+                                                                    View
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" [(ngModel)]="sec.editAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'edit')" type="checkbox" value="" id="edit{{index}}{{idx}}{{i}}">
+                                                                <label class="form-check-label" for="edit{{index}}{{idx}}{{i}}">
+                                                                    Edit
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </details>
                                     </li>
                                 </ul>
-                                <button class="btn btn-primary" *ngIf="!this.inputConfig?.isEditSection" (click)="saveManageSecData(index)">Save Button</button>
-                                <button class="btn btn-primary" *ngIf="this.inputConfig?.isEditSection" (click)="saveManageUserSecData(index)">Save Button</button>
+                                <div class="manage-action">
+                                    <button class="btn btn-primary" *ngIf="!this.inputConfig?.isEditSection" (click)="saveManageSecData(index)">Save Button</button>
+                                    <button class="btn btn-primary" *ngIf="this.inputConfig?.isEditSection" (click)="saveManageUserSecData(index)">Save Button</button>
+                                </div>
+                            </fieldset>
                         </li>
 
                     </ul>
-                <div class="section-list-container">
+                    <div class="section-list-container">
 
-                </div>   
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    </div>
-
-
+</div>
     
