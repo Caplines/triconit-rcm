@@ -1,6 +1,8 @@
 package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -257,10 +259,10 @@ public class ClaimSectionImpl {
 				.filter(x -> x.isActive() == true).collect(Collectors.toList());
 		if (user != null) {
 			List<RcmCompany> userClients = clientUuid == null
-					? user.getRcmCompanies().stream().map(x -> x.getCompany()).collect(Collectors.toList())
-					: user.getRcmCompanies().stream().map(x -> x.getCompany())
+					? user.getRcmCompanies().stream().map(x -> x.getCompany()).sorted(Comparator.comparing(x->x.getName())).collect(Collectors.toList())
+					: user.getRcmCompanies().stream().map(x -> x.getCompany()).sorted(Comparator.comparing(x->x.getName()))
 							.filter(x -> x.getUuid().equals(clientUuid)).collect(Collectors.toList());
-			List<RcmTeam> userTeams = user.getRcmTeams().stream().map(x -> x.getTeam()).collect(Collectors.toList());
+			List<RcmTeam> userTeams = user.getRcmTeams().stream().map(x -> x.getTeam()).sorted(Comparator.comparing(x->x.getName())).collect(Collectors.toList());
 			userClients.forEach(client -> {
 				ClientSectionMappingDto responseDto = new ClientSectionMappingDto();
 				List<RcmTeamSectionAccessDto> teamsWithSectionsList = new ArrayList<>();
