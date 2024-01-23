@@ -47,7 +47,7 @@ export class ManageSectionComponent {
       if(res){
         console.log(res);
         this.manageSectionData = res.data;
-
+        this.userManageSectionData = JSON.parse(JSON.stringify(this.manageSectionData));
         // this.displayPage(1);
         this.loader = false;
 
@@ -104,7 +104,7 @@ export class ManageSectionComponent {
 
 
   editSelectedData(event: any, clientUuid: string, teamId: number, sectionId: number, viewAccess: any, editAccess: any, type: any) {
-    this.userManageSectionData = JSON.parse(JSON.stringify(this.manageSectionData));
+  
     const clientIndex = this.userManageSectionData.findIndex((client: any) => client.clientUuid === clientUuid);
     if (clientIndex === -1) {
       this.userManageSectionData.push({
