@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-sm"></div>
             <div class="col-lg-12 pt-3">
-                <div class="loader-data" role="status" *ngIf="loader &&  mainData.length==0">
+                <div class="loader-data" role="status" *ngIf="loader &&  manageSectionData.length==0">
                 </div>
                 <div *ngIf="alert.showAlertPopup">
                     <div>
@@ -15,9 +15,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="main-container manage-section-2" *ngIf="!loader && mainData.length>0">
+                <div class="main-container manage-section-2" *ngIf="!loader && manageSectionData.length>0">
                     <ul>
-                        <li *ngFor="let data of mainData;let index=index;trackBy: trackByFn">
+                        <li *ngFor="let data of manageSectionData;let index=index;trackBy: trackByFn">
                             <fieldset>
                                 <legend>
                                     {{data.clientName}}
@@ -57,7 +57,7 @@
                                                                 </label>
                                                             </div>
                                                             <div class="form-check">
-                                                                <input class="form-check-input" [disabled]="!sec.editAccess"  [checked]="sec.editAccess" (change)="editSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'edit')" type="checkbox" value="" id="edit{{index}}{{idx}}{{i}}">
+                                                                <input class="form-check-input"  [checked]="sec.editAccess" (change)="editSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'edit')" type="checkbox" value="" id="edit{{index}}{{idx}}{{i}}">
                                                                 <label class="form-check-label" for="edit{{index}}{{idx}}{{i}}">
                                                                     Edit
                                                                 </label>
