@@ -35,15 +35,29 @@
                                                 <ng-container *ngFor="let sec of teams.sectionData;let i=index;trackBy: trackByFn">
                                                     <div class="manage-section-col-sm-3">
                                                         <strong> {{sec.sectionName}}</strong>
-                                                        <div class="manageCheckcontainer">
+                                                        <div class="manageCheckcontainer" *ngIf="!inputConfig?.isEditSection">
                                                             <div class="form-check">
-                                                                <input class="form-check-input" [(ngModel)]="sec.viewAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'view')" type="checkbox" value="" id="view{{index}}{{idx}}{{i}}">
+                                                                <input class="form-check-input"  [(ngModel)]="sec.viewAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'view')" type="checkbox" value="" id="view{{index}}{{idx}}{{i}}">
                                                                 <label class="form-check-label" for="view{{index}}{{idx}}{{i}}">
                                                                     View
                                                                 </label>
                                                             </div>
                                                             <div class="form-check">
                                                                 <input class="form-check-input" [(ngModel)]="sec.editAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'edit')" type="checkbox" value="" id="edit{{index}}{{idx}}{{i}}">
+                                                                <label class="form-check-label" for="edit{{index}}{{idx}}{{i}}">
+                                                                    Edit
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="manageCheckcontainer" *ngIf="inputConfig?.isEditSection">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" [disabled]="true" [(ngModel)]="sec.viewAccess" (change)="editSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'view')" type="checkbox" value="" id="view{{index}}{{idx}}{{i}}">
+                                                                <label class="form-check-label" for="view{{index}}{{idx}}{{i}}">
+                                                                    View
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" [disabled]="!sec.editAccess"  [checked]="sec.editAccess" (change)="editSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'edit')" type="checkbox" value="" id="edit{{index}}{{idx}}{{i}}">
                                                                 <label class="form-check-label" for="edit{{index}}{{idx}}{{i}}">
                                                                     Edit
                                                                 </label>
