@@ -191,11 +191,7 @@
                                         </div>
                                 </div>
                             </div>
-                            <div class="row" *ngIf="user.showEditSection">
-                                <div class="col-sm-12">
-                                   <app-manage-section [inputConfig]="manageSectionConfig"></app-manage-section>
-                                </div>
-                            </div>
+                                   <app-manage-section [inputConfig]="manageSectionConfig" class="user-edit-section" *ngIf="user.showEditSection"></app-manage-section>
                         </ng-container>
                     </div>
                 </div>

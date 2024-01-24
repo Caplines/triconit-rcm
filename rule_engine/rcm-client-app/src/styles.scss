@@ -1001,6 +1001,21 @@ width: 24px;
     background: #555;
 }
 
+
+.user-edit-section {
+    .manage-section {
+        padding-top: 0px !important;
+
+        .container-fluid {
+            padding: 0px !important;
+
+            .pt-3 {
+                padding: 0px !important;
+            }
+        }
+    }
+}
+
 @media screen and (max-width: 1405px) {
     .detail-box-form .col-md-3 {
         margin-right: 5px;
