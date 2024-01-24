@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.context.MessageSource;
 
 import com.google.common.collect.Collections2;
+import com.tricon.ruleengine.dto.CodeWithCoverage;
 import com.tricon.ruleengine.dto.ExceptionDataDto;
 import com.tricon.ruleengine.dto.FeeToothDto;
 import com.tricon.ruleengine.dto.QuestionAnswerDto;
@@ -34,7 +35,6 @@ import com.tricon.ruleengine.dto.ServiceCodeIvfTimesFreqFieldDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
-import com.tricon.ruleengine.model.db.IVFDefaultValue;
 import com.tricon.ruleengine.model.db.MVPandVAP;
 import com.tricon.ruleengine.model.db.Mappings;
 import com.tricon.ruleengine.model.db.OSIVFormCodes;
@@ -47,8 +47,8 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
-import com.tricon.ruleengine.model.sheet.InsuranceDetail;
 import com.tricon.ruleengine.model.sheet.InsuranceMappingDto;
+import com.tricon.ruleengine.model.sheet.OrthoOfficeMappingDto;
 import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
@@ -4527,7 +4527,8 @@ public class RuleBook {
 									|| hdto.getHistoryCode().equals("D5213") || hdto.getHistoryCode().equals("D5226")
 									|| hdto.getHistoryCode().equals("D5212") || hdto.getHistoryCode().equals("D5214")
 									|| hdto.getHistoryCode().equals("D5110") || hdto.getHistoryCode().equals("D5130")
-									|| hdto.getHistoryCode().equals("D5120") || hdto.getHistoryCode().equals("D5140")){
+									|| hdto.getHistoryCode().equals("D5120") || hdto.getHistoryCode().equals("D5140")
+									|| hdto.getHistoryCode().equals("D4910") || hdto.getHistoryCode().equals("D1110")){
 									th="NA";
 								}
 								if (mapHistoryTooth.containsKey(th)) {
@@ -4602,7 +4603,9 @@ public class RuleBook {
 								|| tp.getServiceCode().equals("D5213") || tp.getServiceCode().equals("D5226")
 								|| tp.getServiceCode().equals("D5212") || tp.getServiceCode().equals("D5214")
 								||tp.getServiceCode().equals("D5110") || tp.getServiceCode().equals("D5130")
-								|| tp.getServiceCode().equals("D5120") || tp.getServiceCode().equals("D5140")){
+								|| tp.getServiceCode().equals("D5120") || tp.getServiceCode().equals("D5140")
+								|| tp.getServiceCode().equals("D4910") || tp.getServiceCode().equals("D1110")
+								){
 								th="NA";
 							}
 							
@@ -4757,7 +4760,8 @@ public class RuleBook {
 					List<ServiceCodeIvfTimesFreqFieldDto> D5226 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D5212 = null;
 					List<ServiceCodeIvfTimesFreqFieldDto> D5214 = null;
-
+					List<ServiceCodeIvfTimesFreqFieldDto> D4910 = null;
+					
 					List<ServiceCodeIvfTimesFreqFieldDto> RestC12 = null;
 
 					for (ServiceCodeIvfTimesFreqFieldDto d : li) {
@@ -4989,6 +4993,10 @@ public class RuleBook {
 							if (D5214 == null)
 								D5214 = new ArrayList<>();
 							D5214.add(d);
+						} else if (d.getServiceCode().equals("D4910")) {
+							if (D4910 == null)
+								D4910 = new ArrayList<>();
+							D4910.add(d);
 						}
 
 					} // For Loop d:li
@@ -5162,6 +5170,17 @@ public class RuleBook {
 									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL,
 									String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
 
+						}
+					}
+					
+					if (D4910 != null && D1110 != null) {
+						Object[] m = FreqencyUtils.getError(D4910, D1110, "D4910", "D1110", tooth, 0, false);
+						if (m != null) {
+							pass = false;
+							FreqencyUtils.addToFailedSet(failedCodeSet, m);
+							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+									messageSource.getMessage("rule21.error.message", m, locale), Constants.FAIL,
+									String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
 						}
 					}
 					// if (pass) {
@@ -15158,6 +15177,249 @@ public class RuleBook {
 		}
 		return dList;
 	}
+	
+	// Codes not covered in IV
+	public List<TPValidationResponseDto> Rule104(Object ivfSheet, List<Object> tpList, MessageSource messageSource,
+				Rules rule, BufferedWriter bw) {
+
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_104,
+					Constants.rule_log_debug, bw);
+			boolean pass = true;
+			List<TPValidationResponseDto> dList = new ArrayList<>();
+			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+			Set<String> fcodes = new TreeSet<>();
+			Set<String> surfaces = new TreeSet<>();
+			Set<String> teethC = new TreeSet<>();
+			List<CodeWithCoverage> coverageList = null;
+			try {
+				 for (Object obj : tpList) {
+						CommonDataCheck tp = (CommonDataCheck) obj;
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
+						coverageList = CoverageUtil.findZeroCoverageCodeList(tp,ivf);
+				}
+				if (coverageList != null) pass=false;
+				
+				if (!pass) {
+					List<String> issueCodes= new ArrayList<>();
+					coverageList.stream().map(CodeWithCoverage::getCode).forEach(issueCodes::add);
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+							"rule104.error.message",
+							new Object[] { String.join(",", issueCodes)},
+							locale), Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+							String.join(",", fcodes)));
+
+				} else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule104.pass.message", new Object[] {}, locale), Constants.PASS,
+							String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+
+				}
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+						Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+				return dList;
+			}
+			return dList;
+		}
+	
+	// IV Comments
+	public List<TPValidationResponseDto> Rule105(Object ivfSheet, MessageSource messageSource,
+					Rules rule, BufferedWriter bw) {
+
+				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_105,
+						Constants.rule_log_debug, bw);
+				boolean pass = true;
+				List<TPValidationResponseDto> dList = new ArrayList<>();
+				IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+				Set<String> fcodes = new TreeSet<>();
+				Set<String> surfaces = new TreeSet<>();
+				Set<String> teethC = new TreeSet<>();
+				try {
+					 
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+							Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+					return dList;
+				}
+				return dList;
+	}
+	
+	// Codes Compatible with Arch
+	public List<TPValidationResponseDto> Rule106(List<Object> tpList, MessageSource messageSource,
+			Rules rule, BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_106,
+				Constants.rule_log_debug, bw);
+		boolean pass = true;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes = new TreeSet<>();
+		Set<String> surfaces = new TreeSet<>();
+		Set<String> teethC = new TreeSet<>();
+		List<String> codes = Arrays.asList("D5110", "D5120", "D5130", "D5140", "D5225", "D5211", "D5213", "D5226", "D5212", "D5214", "D9944", "D9945");
+		List<String> issueCodes= new ArrayList<>();
+		List<String> issueTeeth= new ArrayList<>();
+		try {
+			 for (Object obj : tpList) {
+					CommonDataCheck tp = (CommonDataCheck) obj;
+					String code = tp.getServiceCode();
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					fcodes.add(tp.getServiceCode());
+					if (codes.contains(code)){
+						String[] noQuad = ToothUtil.getNoArchToothsFromTooth(tp.getTooth());
+						if (noQuad != null && noQuad.length > 0) {
+							pass = false;
+							issueCodes.add(code);
+							issueTeeth.addAll(Arrays.asList(noQuad));
+						}
+						
+					}
+			}
+			
+			if (!pass) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+						"rule106.error.message",
+						new Object[] { String.join(",", issueCodes),String.join(",", issueTeeth)},
+						locale), Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+						String.join(",", fcodes)));
+
+			} else {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule106.pass.message", new Object[] {}, locale), Constants.PASS,
+						String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+
+			}
+
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+			return dList;
+		}
+		return dList;
+	}
+	
+	// Codes compatible with quads
+	public List<TPValidationResponseDto> Rule107(List<Object> tpList, MessageSource messageSource,
+				Rules rule, BufferedWriter bw) {
+
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_107,
+					Constants.rule_log_debug, bw);
+			boolean pass = true;
+			List<TPValidationResponseDto> dList = new ArrayList<>();
+			Set<String> fcodes = new TreeSet<>();
+			Set<String> surfaces = new TreeSet<>();
+			Set<String> teethC = new TreeSet<>();
+			List<String> codes = Arrays.asList("D4341", "D4342", "D4921", "D7311", "D7310", "D4381");
+			List<String> issueCodes= new ArrayList<>();
+			List<String> issueTeeth= new ArrayList<>();
+			try {
+				 for (Object obj : tpList) {
+						CommonDataCheck tp = (CommonDataCheck) obj;
+						String code = tp.getServiceCode();
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
+						if (codes.contains(code)){
+							String[] noQuad = ToothUtil.getNoQuadToothsFromTooth(tp.getTooth());
+							if (noQuad != null && noQuad.length > 0) {
+								pass = false;
+								issueCodes.add(code);
+								issueTeeth.addAll(Arrays.asList(noQuad));
+							}
+							
+						}
+				}
+				
+				if (!pass) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+							"rule107.error.message",
+							new Object[] { String.join(",", issueCodes),String.join(",", issueTeeth)},
+							locale), Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+							String.join(",", fcodes)));
+
+				} else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule107.pass.message", new Object[] {}, locale), Constants.PASS,
+							String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+
+				}
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+						Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+				return dList;
+			}
+			return dList;
+	}
+	
+	// Ortho treatment not given
+	public List<TPValidationResponseDto> Rule108(Object ivfSheet, List<Object> tpList,List<OrthoOfficeMappingDto> orthoData, MessageSource messageSource,
+				Rules rule, BufferedWriter bw) {
+
+			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_108,
+					Constants.rule_log_debug, bw);
+			boolean pass = true;
+			List<TPValidationResponseDto> dList = new ArrayList<>();
+			Set<String> fcodes = new TreeSet<>();
+			Set<String> surfaces = new TreeSet<>();
+			Set<String> teethC = new TreeSet<>();
+			List<String> codes = Arrays.asList("D8080", "D8090", "D8070", "D8670", "D8220", "D8680");
+			List<String> issueCodes= new ArrayList<>();
+			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+			String officeName = ivf.getOfficeName();
+			try {
+				 for (Object obj : tpList) {
+						CommonDataCheck tp = (CommonDataCheck) obj;
+						String code = tp.getServiceCode();
+						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+						fcodes.add(tp.getServiceCode());
+						if (codes.contains(code)){
+							OrthoOfficeMappingDto mapping = getMappingFromOrtho(orthoData, officeName);
+							if (mapping!=null) {
+								if (!mapping.getOrthoTxProvided().equalsIgnoreCase("yes")) {
+								 pass=false;	
+								}
+							}else {
+								pass=false;
+							}
+						}
+				}
+				if (!pass) {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+							"rule108.error.message",
+							new Object[] { String.join(",", issueCodes), officeName},
+							locale), Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+							String.join(",", fcodes)));
+
+				} else {
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule108.pass.message", new Object[] {}, locale), Constants.PASS,
+							String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+
+				}
+
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+						Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+				return dList;
+			}
+			return dList;
+	}
 
 	// Insurance and Address
 	/**
@@ -15230,6 +15492,18 @@ public class RuleBook {
 				rule -> (rule.getProviders().equalsIgnoreCase(provider)
 						|| rule.getProviders().equalsIgnoreCase("Dr. " + provider)));
 		for (InsuranceMappingDto rule : ruleGen) {
+			r = rule;
+			break;
+		}
+
+		return r;
+	}
+	
+	private OrthoOfficeMappingDto getMappingFromOrtho(List<OrthoOfficeMappingDto> list, String officeName) {
+		OrthoOfficeMappingDto r = null;
+		Collection<OrthoOfficeMappingDto> ruleGen = Collections2.filter(list,
+				rule -> (rule.getOfficeName().equalsIgnoreCase(officeName)));
+		for (OrthoOfficeMappingDto rule : ruleGen) {
 			r = rule;
 			break;
 		}

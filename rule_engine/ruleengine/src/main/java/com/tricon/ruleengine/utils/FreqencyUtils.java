@@ -1362,7 +1362,9 @@ public class FreqencyUtils {
 		if (tpCodes.equals("D5140") && historyCode.equals("D5120")) {
 			alikecodepresent = true;
 		}
-		
+		if (tpCodes.equals("D4910") && historyCode.equals("D1110")) {
+			alikecodepresent = true;
+		}
 		// 3C D5225, D5211, D5213
 		if (compairThreeVlaues(tpCodes, historyCode, "D5225", "D5211", "D5213") != null) {
 			alikecodepresent = true;

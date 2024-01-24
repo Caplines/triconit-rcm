@@ -65,6 +65,7 @@ import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceMappingDto;
 import com.tricon.ruleengine.model.sheet.MCNADentaSheet;
+import com.tricon.ruleengine.model.sheet.OrthoOfficeMappingDto;
 
 @Configuration
 public class ConnectAndReadSheets {
@@ -1910,6 +1911,36 @@ public class ConnectAndReadSheets {
 		}
 		return list;
 	  }
+	
+	public static List<OrthoOfficeMappingDto> readSheetOrthoMapping(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		List<List<Object>> values = response.getValues();
+		ListIterator li = values.listIterator();
+		OrthoOfficeMappingDto dto = null;
+		List<OrthoOfficeMappingDto> list = new ArrayList<>();
+		int heading_rows = 2;
+        int ct=-1;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			try {
+				ct++;
+				if (ct<=heading_rows)
+				continue;
+				int x = -1;
+				dto = new OrthoOfficeMappingDto(obj.get(++x),obj.get(++x));
+					
+				list.add(dto);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				continue;
+			}
+			
+		}
+		return list;
+	 }
 	
 	public static List<CRAReqMappingDto> readSheetCRAReqMapping(String spreadsheetId, String sheetName,
 			String clientDir, String clientFolder) throws IOException {

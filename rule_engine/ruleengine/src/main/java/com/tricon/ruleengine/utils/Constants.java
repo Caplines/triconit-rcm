@@ -145,6 +145,12 @@ public class Constants {
 	public static final String RULE_ID_101="Unspecified periodontal procedure - D4999";
 	public static final String RULE_ID_102="FCL Dental Plan";//? DXXX
 	public static final String RULE_ID_103="Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation";
+	public static final String RULE_ID_104="Codes not covered in IV";
+	public static final String RULE_ID_105="IV Comments";
+	public static final String RULE_ID_106="Codes Compatible with Arch";
+	public static final String RULE_ID_107="Codes compatible with quads";
+	public static final String RULE_ID_108="Ortho treatment not given";
+	
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
 
