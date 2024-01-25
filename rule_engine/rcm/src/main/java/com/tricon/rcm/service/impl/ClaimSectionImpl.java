@@ -25,6 +25,7 @@ import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
+import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimDefaultSectionRepo;
@@ -33,6 +34,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimUserSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmClientSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
+import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 
 
@@ -252,7 +254,7 @@ public class ClaimSectionImpl {
 		return response;
 	}
 
-	public List<ClientSectionMappingDto> sectionsPermissionOfUser(String userUuid, String clientUuid) throws Exception {
+	public List<ClientSectionMappingDto> sectionsPermissionOfUser(String userUuid, String clientUuid,String role) throws Exception {
 		RcmUser user = userRepo.findByUuid(userUuid);
 		List<ClientSectionMappingDto> response = new ArrayList<>();
 		List<RcmClaimSection> claimSections = claimSectionRepo.findAllWithSectionCategory().stream()
@@ -262,7 +264,17 @@ public class ClaimSectionImpl {
 					? user.getRcmCompanies().stream().map(x -> x.getCompany()).sorted(Comparator.comparing(x->x.getName())).collect(Collectors.toList())
 					: user.getRcmCompanies().stream().map(x -> x.getCompany()).sorted(Comparator.comparing(x->x.getName()))
 							.filter(x -> x.getUuid().equals(clientUuid)).collect(Collectors.toList());
-			List<RcmTeam> userTeams = user.getRcmTeams().stream().map(x -> x.getTeam()).sorted(Comparator.comparing(x->x.getName())).collect(Collectors.toList());
+
+			List<RcmTeamDto> teamData = role.equals(RcmRoleEnum.SUPER_ADMIN.getName())
+					? RcmTeamEnum.getAllTeamsIsRoleVisible()
+					: user.getRcmTeams().stream().map(x -> x.getTeam()).sorted(Comparator.comparing(x -> x.getName()))
+							.map(team -> {
+								RcmTeamDto rcmTeamData = new RcmTeamDto();
+								rcmTeamData.setTeamId(team.getId());
+								rcmTeamData.setTeamName(team.getName());
+								return rcmTeamData;
+							}).collect(Collectors.toList());
+
 			userClients.forEach(client -> {
 				ClientSectionMappingDto responseDto = new ClientSectionMappingDto();
 				List<RcmTeamSectionAccessDto> teamsWithSectionsList = new ArrayList<>();
@@ -273,19 +285,19 @@ public class ClaimSectionImpl {
 						.findByCompanyUuid(client.getUuid());
 				List<ClaimUserSectionMapping> userSectionMapping = userSectionRepo
 						.findByCompanyUuidAndUserUuid(client.getUuid(), user.getUuid());
-				for (RcmTeam t : userTeams) {
+				for (RcmTeamDto t : teamData) {
 					RcmTeamSectionAccessDto teamsWithSections = new RcmTeamSectionAccessDto();
-					teamsWithSections.setTeamId(t.getId());
-					teamsWithSections.setTeamName(t.getName());
+					teamsWithSections.setTeamId(t.getTeamId());
+					teamsWithSections.setTeamName(t.getTeamName());
 					List<SectionData> listOfSections = new ArrayList<>();
 					for (RcmClaimSection section : claimSections) {
 						RcmClientSectionMapping existingSectionMappingWithClient = existingClientMapping.stream()
-								.filter(x -> x.getTeamId().getId() == t.getId()
+								.filter(x -> x.getTeamId().getId() == t.getTeamId()
 										&& x.getSection().getId() == section.getId()
 										&& x.getCompany().getUuid().equals(client.getUuid()))
 								.findAny().orElse(null);
 						ClaimUserSectionMapping existingUserMappingWithClient = userSectionMapping.stream()
-								.filter(x -> x.getTeamId().getId() == t.getId()
+								.filter(x -> x.getTeamId().getId() == t.getTeamId()
 										&& x.getSection().getId() == section.getId()
 										&& x.getCompany().getUuid().equals(client.getUuid()))
 								.findAny().orElse(null);

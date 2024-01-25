@@ -48,6 +48,7 @@ import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
+import com.tricon.rcm.dto.FreshClaimDataViewDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
@@ -821,7 +822,26 @@ public class RcmController extends BaseHeaderController{
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		List<ClientSectionMappingDto> response = null;
 		try {
-			response = claimSection.sectionsPermissionOfUser(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
+			response = claimSection.sectionsPermissionOfUser(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid(),partialHeader.getRole());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@ApiOperation(value = "Api For Fetching Submitted Claims", response = FreshClaimDataDto.class, responseContainer = "List")
+	@GetMapping("/api/fetch-submitted-claims")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	public ResponseEntity<Object> fetchSubmitClaimsDetails(Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		List<FreshClaimDataViewDto> response = null;
+		try {
+			response = claimServiceImpl.fetchSubmittedClaimDetails(partialHeader);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

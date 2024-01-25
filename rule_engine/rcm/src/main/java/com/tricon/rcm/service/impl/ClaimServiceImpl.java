@@ -4122,4 +4122,50 @@ public class ClaimServiceImpl {
 		}
 		return responseDto;
 	}
+
+	public List<FreshClaimDataViewDto> fetchSubmittedClaimDetails(PartialHeader partialHeader) throws Exception {
+		String selectedtRole = partialHeader.getRole();
+		int selectedTeamId = partialHeader.getTeamId();
+		List<FreshClaimDataDto> list = null;
+		List<FreshClaimDataViewDto> listView = new ArrayList<>();
+		if (selectedtRole.equals(Constants.ASSOCIATE)) {
+			if (selectedTeamId != RcmTeamEnum.BILLING.getId() && selectedTeamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+				list = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamInd(partialHeader.getCompany().getUuid(),
+						selectedTeamId, partialHeader.getJwtUser().getUuid());
+			} else {
+				list = rcmClaimRepository.fetchFreshClaimDetailsInd(partialHeader.getCompany().getUuid(),
+						selectedTeamId, partialHeader.getJwtUser().getUuid());
+
+			}
+		} else {
+			if (selectedTeamId != RcmTeamEnum.BILLING.getId() && selectedTeamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+				list = rcmClaimRepository.fetchFreshClaimDetailsOtherTeam(partialHeader.getCompany().getUuid(),
+						selectedTeamId);
+			} else {
+				list = rcmClaimRepository.fetchFreshClaimDetails(partialHeader.getCompany().getUuid(), selectedTeamId);
+
+			}
+		}
+		if (selectedTeamId == RcmTeamEnum.BILLING.getId()) {
+			if (list == null)
+				list = new ArrayList<>();
+			// add Claims Send From Internal Audit Team
+		}
+
+		list.forEach(data -> {
+			final FreshClaimDataViewDto dataView = new FreshClaimDataViewDto();
+			BeanUtils.copyProperties(data, dataView);
+			listView.add(dataView);
+		});
+		if (selectedTeamId != RcmTeamEnum.BILLING.getId() && selectedTeamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+			// Need to get Claim remark in of non billing and internal audit
+
+			listView.forEach(data -> {
+				data.setLastTeamRemark(
+						rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), selectedTeamId));
+			});
+		}
+
+		return listView;
+	}
 }
