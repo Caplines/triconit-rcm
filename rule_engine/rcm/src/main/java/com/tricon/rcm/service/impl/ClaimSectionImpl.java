@@ -254,7 +254,7 @@ public class ClaimSectionImpl {
 		return response;
 	}
 
-	public List<ClientSectionMappingDto> sectionsPermissionOfUser(String userUuid, String clientUuid,String role) throws Exception {
+	public List<ClientSectionMappingDto> sectionsPermissionOfUser(String userUuid, String clientUuid,int selectedTeamId) throws Exception {
 		RcmUser user = userRepo.findByUuid(userUuid);
 		List<ClientSectionMappingDto> response = new ArrayList<>();
 		List<RcmClaimSection> claimSections = claimSectionRepo.findAllWithSectionCategory().stream()
@@ -265,8 +265,9 @@ public class ClaimSectionImpl {
 					: user.getRcmCompanies().stream().map(x -> x.getCompany()).sorted(Comparator.comparing(x->x.getName()))
 							.filter(x -> x.getUuid().equals(clientUuid)).collect(Collectors.toList());
 
-			List<RcmTeamDto> teamData = role.equals(RcmRoleEnum.SUPER_ADMIN.getName())
-					? RcmTeamEnum.getAllTeamsIsRoleVisible()
+			List<RcmTeamDto> teamData = RcmTeamEnum.validateTeamId(selectedTeamId) != 0
+					? RcmTeamEnum.getAllTeamsIsRoleVisible().stream().filter(x -> x.getTeamId() == selectedTeamId)
+							.collect(Collectors.toList())
 					: user.getRcmTeams().stream().map(x -> x.getTeam()).sorted(Comparator.comparing(x -> x.getName()))
 							.map(team -> {
 								RcmTeamDto rcmTeamData = new RcmTeamDto();

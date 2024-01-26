@@ -822,7 +822,7 @@ public class RcmController extends BaseHeaderController{
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		List<ClientSectionMappingDto> response = null;
 		try {
-			response = claimSection.sectionsPermissionOfUser(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid(),partialHeader.getRole());
+			response = claimSection.sectionsPermissionOfUser(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid(),partialHeader.getTeamId());
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
