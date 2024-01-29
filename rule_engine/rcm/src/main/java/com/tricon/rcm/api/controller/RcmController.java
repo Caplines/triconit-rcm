@@ -813,7 +813,7 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@GetMapping(value = "api/user-section-permission")
+	@GetMapping(value = "api/claim/user-section-permission")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
 	public ResponseEntity<?> getSectionDetailsOfUserAndClient(Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
