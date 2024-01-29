@@ -408,7 +408,7 @@ export class ApplicationServiceService extends BaseService {
   }
 
   fetchAttachmentCount(claimUuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-attachments-count'] + "/" + claimUuid, callback)
+    this.getData({}, this.httpUrl['get-attachments-count'] + "/" + claimUuid, callback, false)
   }
 
   fetchAllUserClients(callback: any) {
@@ -515,39 +515,39 @@ export class ApplicationServiceService extends BaseService {
     this.postDataPdf(params, this.httpUrl['search-claims-pdf'] + "/" + pdfcsv, callback);
   }
 
-  unarchiveCurrentpageClaims(params: any,callback: any) {
-    this.postData(params, this.httpUrl['unarchive-claims'],callback);
+  unarchiveCurrentpageClaims(params: any, callback: any) {
+    this.postData(params, this.httpUrl['unarchive-claims'], callback);
   }
 
-  isOtherTeamTLExist(params: any,callback: any) {
-    this.postData(params, this.httpUrl['others-teams-tl-exit'],callback);
+  isOtherTeamTLExist(params: any, callback: any) {
+    this.postData(params, this.httpUrl['others-teams-tl-exit'], callback);
   }
 
-  sortByAlphabet(data:any,sortBy:string){
-    return data.sort((a:any,b:any)=>a?.[sortBy]?.localeCompare(b?.[sortBy]))
+  sortByAlphabet(data: any, sortBy: string) {
+    return data.sort((a: any, b: any) => a?.[sortBy]?.localeCompare(b?.[sortBy]))
   }
 
   searchClaimsPdf(params: any, callback: any) {
     this.postDataPdf(params, this.httpUrl['search-claim-pdf'], callback)
   }
-  
+
   fetchSectionList(callback: any) {
     this.getData({}, this.httpUrl['section-list'], callback)
   }
-  
+
   fetchManageSectionData(callback: any) {
     this.getData({}, this.httpUrl['fetch-manage-client-list'], callback)
   }
-  
+
   saveManageSectionData(params: any, callback: any) {
     this.postData(params, this.httpUrl['save-manage-client-list'], callback)
   }
 
-  fetchUserManageSectionData(uuid:any,callback: any) {
-    this.getData({}, this.httpUrl['fetch-manage-user-section']+"/"+uuid, callback)
+  fetchUserManageSectionData(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['fetch-manage-user-section'] + "/" + uuid, callback)
   }
-  
-  saveUserManageSectionData(params:any,callback: any) {
+
+  saveUserManageSectionData(params: any, callback: any) {
     this.postData(params, this.httpUrl['save-manage-user-section'], callback)
   }
 

@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import {
   ClaimRcmDataModel, ClaimEditModel, ServiceLevelCodeModel, SubmissionDetailModel,
   ClaimRuleModel, ClaimRuleRemarkModel, RuleEngineValModel, ServiceLevelCodeDataModel,
-  ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem, ClaimDetailModel
+  ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem, ClaimDetailModel, ClaimSettingDataModel
 } from '../models/claim-rcm-data-model';
 
 import { Title } from '@angular/platform-browser';
@@ -79,14 +79,20 @@ export class BillingClaimsComponent {
   deleteType = "";
   deleteLoaderIVTP = false;
   noProviderNoteCodes: Array<string> = [];
+  invalidClaim = "";
+  claimSettingDataModel: ClaimSettingDataModel = null;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
     "D2331", "D2332", "D2335", "D2391", "D2392", "D2393", "D2394", "D0431",
     "D2140", "D2150", "D2160", "D2161"];*/
+  sectionIds: any = {
+    'SECTION_CLAIM_DETAIL': 1, 'Rule_Engine_Validations': 9, 'Claim_submission_details': 10,
+    'Service_Code_Level_Validations_Automated': 7
+  };
 
   toggleTab: any = {};
-  toggleSideBar:boolean=false;
+  toggleSideBar: boolean = false;
 
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -103,13 +109,41 @@ export class BillingClaimsComponent {
     this.clientName = localStorage.getItem("selected_clientName");
     this.route.paramMap.subscribe(params => {
       this.claimUUid = params.get('uuid') || '';
-      this.fetchClaimsByUuid(this.claimUUid);
+      this.fetchClaimRights(this.claimUUid);
     });
 
   }
 
-  fetchClaimsByUuid(uuid: string) {
+  fetchClaimRights(uuid: string) {
+    let ths = this;
+    ths.claimService.getClaimSectionRights(
+      (res: any) => {
+        if (res.status === 200) {
+          console.log(res.data);
+          ths.setClaimSectionRights(res);
+          ths.fetchClaimsByUuid(uuid);
+        }
+      });
 
+  }
+
+  setClaimSectionRights(res: any) {
+    this.claimSettingDataModel = res.data[0];
+
+  }
+
+  checkForSectionAccess(sectionid: number, accessType: string): boolean {
+    const result = this.claimSettingDataModel?.teamsWithSections[0].sectionData.filter((obj) => {
+      return obj.sectionId === sectionid;
+    });
+    if (result != null && result.length == 1) {
+      if (accessType === 'view') return result[0].viewAccess;
+      else return result[0].editAccess;
+    }
+    return false;
+  }
+
+  fetchClaimsByUuid(uuid: string) {
     let ths = this;
     ths.claimUUid = uuid;
     ths.updateUrl("/billing-claims/" + uuid);
@@ -117,41 +151,46 @@ export class BillingClaimsComponent {
     ths.claimService.fetchBillingClaimsByUuid(uuid, (res: any) => {
       if (res.status === 200) {
         this.loader.claimDetail = this.loader.linkToRelatedDoc = false;
-        ths.claimRcm = res.data;
-        if (ths.claimRcm.preferredModeOfSubmission != null) {
-          if (ths.claimRcm.preferredModeOfSubmission != "") {
-            let prfMode = ths.claimRcm.preferredModeOfSubmission;
-            ths.submissionDto.channel = prfMode;
+        if (res.data != null) {
+          ths.claimRcm = res.data;
+          if (ths.claimRcm.preferredModeOfSubmission != null) {
+            if (ths.claimRcm.preferredModeOfSubmission != "") {
+              let prfMode = ths.claimRcm.preferredModeOfSubmission;
+              ths.submissionDto.channel = prfMode;
 
+            }
           }
-        }
-        //-O- Means its delete Intentionally
-        if (ths.claimRcm.ivfId != null) {
-          ths.claimRcm.ivfId = ths.claimRcm.ivfId.replace("-O-", "");
-          if (ths.claimRcm.ivfId == '') {
+          //-O- Means its delete Intentionally
+          if (ths.claimRcm.ivfId != null) {
+            ths.claimRcm.ivfId = ths.claimRcm.ivfId.replace("-O-", "");
+            if (ths.claimRcm.ivfId == '') {
+              ths.claimRcm.assignmentOfBenefits = 'N/A';
+            }
+          } else {
             ths.claimRcm.assignmentOfBenefits = 'N/A';
           }
-        } else {
-          ths.claimRcm.assignmentOfBenefits = 'N/A';
-        }
-        if (ths.claimRcm.assignmentOfBenefits != null && ths.claimRcm.assignmentOfBenefits == '')
-          ths.claimRcm.assignmentOfBenefits = "No";
-        if (ths.claimRcm.tpId != null) {
-          ths.claimRcm.tpId = ths.claimRcm.tpId.replace("-O-", "");
-        }
+          if (ths.claimRcm.assignmentOfBenefits != null && ths.claimRcm.assignmentOfBenefits == '')
+            ths.claimRcm.assignmentOfBenefits = "No";
+          if (ths.claimRcm.tpId != null) {
+            ths.claimRcm.tpId = ths.claimRcm.tpId.replace("-O-", "");
+          }
 
-        this.updatedIvfId = ths.claimRcm.ivfId;
-        this.updatedTpId = ths.claimRcm.tpId;
-        ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
-        ths.fetchOtherTeamRemarks();
-        ths.fetchClaimNotes();
-        ths.getServiceLevelCodes();
-        ths.getSubmissionDetails();
-        //if (this.smilePoint) ths.getClaimRuleData();//Only In case of Smile point. other does not have it.
-        //ths.runAutoRules(false);
-        ths.fetchTLUsers();
-        ths.fetchOtherTeams();
-        ths.fetchAttachmentCount();
+          this.updatedIvfId = ths.claimRcm.ivfId;
+          this.updatedTpId = ths.claimRcm.tpId;
+          ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
+          ths.fetchOtherTeamRemarks();
+          ths.fetchClaimNotes();
+          ths.getServiceLevelCodes();
+          ths.getSubmissionDetails();
+          //if (this.smilePoint) ths.getClaimRuleData();//Only In case of Smile point. other does not have it.
+          //ths.runAutoRules(false);
+          ths.fetchTLUsers();
+          ths.fetchOtherTeams();
+          ths.fetchAttachmentCount();
+        } else {
+          this.invalidClaim = "- Not authorized to view this claim";
+
+        }
       }
 
     });
@@ -314,15 +353,15 @@ export class BillingClaimsComponent {
 
 
   addErrorDisplay(el: HTMLElement) {
-    el.classList.add('bg-error');
+    if (el != null) el.classList.add('bg-error');
   }
 
   removeErrorDisplay(el: HTMLElement) {
-    el.classList.remove('bg-error');
+    if (el != null) el.classList.remove('bg-error');
   }
 
   removeErrorDisplayKey(event: any) {
-    console.log(event.target.value);
+    // console.log(event.target.value);
     if (event.target.value.trim() !== '') {
       event.target.classList.remove('bg-error');
     }
@@ -369,7 +408,7 @@ export class BillingClaimsComponent {
       }
     });
 
-    if (!ths.isInternalAudit) {//Only Non Audit can Submit
+    if (!ths.isInternalAudit && ths.checkForSectionAccess(ths.sectionIds['Claim_submission_details'], 'edit')) {//Only Non Audit can Submit
       if (Object.keys(ths.submissionDto).length == 0) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
         ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
@@ -379,7 +418,7 @@ export class BillingClaimsComponent {
 
           ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
         }
-        if (!ths.preAuthEnable()) {
+        if (!ths.preAuthEnable(ths.sectionIds['Claim_submission_details'], 'edit')) {
           ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
         }
         ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
@@ -413,7 +452,7 @@ export class BillingClaimsComponent {
         } else {
           ths.removeErrorDisplayKeyById('SUB_DET_CLA');
         }
-        if (!ths.preAuthEnable()) {
+        if (!ths.preAuthEnable(ths.sectionIds['Claim_submission_details'], 'edit')) {
           let SUB_DET_PRENO: any = document.getElementById("SUB_DET_PRENO");
           if (SUB_DET_PRENO.value.trim() === '') {
             ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
@@ -509,7 +548,9 @@ export class BillingClaimsComponent {
 
 
   claimNoEnable(): boolean {
-    document.getElementById("SUB_DET_CLA").style.display = "";
+    let el = document.getElementById("SUB_DET_CLA");
+    if (el == null) return true;
+    el.style.display = "";
     document.getElementById("SUB_DET_CLA_SUB").style.display = "";
 
     if (this.submissionDto?.channel == 'Portal') {
@@ -521,7 +562,9 @@ export class BillingClaimsComponent {
     return true;
   }
 
-  preAuthEnable(): boolean {
+  preAuthEnable(sectionId: number, accessType: string): boolean {
+    var right = this.checkForSectionAccess(sectionId, accessType);
+    if (!right) return true;
     document.getElementById("SUB_DET_PRENO").style.display = "none";
     if (this.submissionDto?.preauth == true) {
       document.getElementById("SUB_DET_PRENO").style.display = "";
@@ -594,12 +637,12 @@ export class BillingClaimsComponent {
       if (res.status === 200) {
         ths.submissionDto = res.data;
         if (ths.submissionDto == null) {
-			ths.submissionDto = {};
-			if (ths.claimRcm.preferredModeOfSubmission != "") {
+          ths.submissionDto = {};
+          if (ths.claimRcm.preferredModeOfSubmission != "") {
             let prfMode = ths.claimRcm.preferredModeOfSubmission;
             ths.submissionDto.channel = prfMode;
-		 }
-		}
+          }
+        }
       }
     })
   }
@@ -816,8 +859,10 @@ export class BillingClaimsComponent {
     return false;
   }
 
-  isSectionReadOnly(): boolean {
+  isSectionReadOnly(sectionId: number, accessType: string): boolean {
     //debugger;
+    var right = this.checkForSectionAccess(sectionId, accessType);
+    if (!right) return true;
     if (this.claimRcm == undefined) return true;
     if (!this.claimRcm.allowEdit) return true;
     if (!this.claimRcm.pending) return true;
@@ -1413,10 +1458,12 @@ export class BillingClaimsComponent {
     let req = true;
     let insType = "";
     let ths = this;
+    let right = ths.checkForSectionAccess(ths.sectionIds['Rule_Engine_Validations'], 'edit');
+
     //if (ths.ruleEngineReport.length == 0){
     //  req=false;
     //} else
-    if (this.isInternalAudit) {
+    if (!right) {//this.isInternalAudit
       //For now Disable if length==0
       req = false;
     } else {
@@ -1435,6 +1482,7 @@ export class BillingClaimsComponent {
 
   isORMNotesNeeded(): boolean {
     let ths = this;
+    if (ths.claimRcm.claimId === "") return false;
     let name: string = "";
     if (ths.claimRcm.primary) {
       name = ths.claimRcm.primInsurance;

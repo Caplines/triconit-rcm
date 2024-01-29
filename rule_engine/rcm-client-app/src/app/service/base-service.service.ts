@@ -5,6 +5,8 @@ import { environment } from '../../environments/environment';
 import { TokenStorageService } from '../service/token-storage.service';
 import { Router } from '@angular/router';
 import Utils from '../util/utils';
+import { of } from "rxjs";
+
 
 @Injectable({
   providedIn: 'root'
@@ -107,19 +109,22 @@ export class BaseService {
     'unarchive-claims': '/api/unarchive-claims',
     'others-teams-tl-exit': '/api/others-teams-tl-exit',
     'search-claim-pdf': '/api/search-claims/pdf',
-    'section-list':'/master/get-sections',
+    'section-list': '/master/get-sections',
 
-    'fetch-manage-client-list':'/api/claim-client-with-section',
-    'save-manage-client-list':'/api/manage-claim-client-section',
-    'fetch-manage-user-section':'/api/claim-user-with-section',
-    'save-manage-user-section':'/api/manage-claim-user-section',
+    'fetch-manage-client-list': '/api/claim-client-with-section',
+    'save-manage-client-list': '/api/manage-claim-client-section',
+    'fetch-manage-user-section': '/api/claim-user-with-section',
+    'save-manage-user-section': '/api/manage-claim-user-section',
+    'fetch-user-claim-section-permission': '/api/claim/user-section-permission',
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {
   }
 
-  generateRefreshToken() {
-    return this.http.get(environment.API_URL + '/refresh');
+  generateRefreshToken(refreshToken?: boolean) {
+    if (refreshToken == undefined) refreshToken = true;
+    if (refreshToken) return this.http.get(environment.API_URL + '/refresh');
+    else return of({});
   }
 
   generateRefreshTokenCB(callback: any) {
@@ -196,13 +201,41 @@ export class BaseService {
   }
 
 
-  getData(d: any, url: string, callback: any) {
+  getData(d: any, url: string, callback: any, refreshToken?: boolean) {
+    this.generateRefreshToken(refreshToken).pipe(switchMap(data => {
+      if (refreshToken == undefined) refreshToken = true;
+      if (refreshToken) Utils.setRefreshToken(data);
+      return this.http.get(environment.API_URL + url, d);
+    },
+    )
+    ).subscribe({
+      next: (data) => {
+        callback((<any>data));
+      },
+      //complete: () => console.info('complete'),
+      error: (error) => {
+        console.log(error);
+        if (error.status == 401) {
+          Utils.logout();
+        }
+        if (error.status == 500) {
+          callback(error);
+        }
+      }
+
+    })
+
+
+  }
+  /*
+  getData1(d: any, url: string, callback: any, refreshToken?: boolean) {
+    debugger;
     this.generateRefreshToken().pipe(switchMap(data => {
       Utils.setRefreshToken(data);
       return this.http.get(environment.API_URL + url, d);
     },
     )
-    ).subscribe((data) => {
+    ).subscribe((data: any) => {
       callback((<any>data));
     },
       (error: any) => {
@@ -220,17 +253,18 @@ export class BaseService {
       ;
 
   }
+  */
 
   getDataWithoutRefreshToken(d: any, url: string, callback: any) {
-        return this.http.get(environment.API_URL + url, d)
-    .subscribe(
-      (data) => {
-        callback((<any>data));
-      },
-      (error) => {
-        // Handle API call error here.
-      }
-    );
+    return this.http.get(environment.API_URL + url, d)
+      .subscribe(
+        (data) => {
+          callback((<any>data));
+        },
+        (error) => {
+          // Handle API call error here.
+        }
+      );
 
   }
 

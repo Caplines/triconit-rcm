@@ -19,7 +19,7 @@ export class ClaimService extends BaseService {
   }
 
   fetchBillingClaimsByUuid(uuid: string, callback: any) {
-    this.getData({}, this.httpUrl['fetchBillingClaimsByUuid'] + "/" + uuid, callback)
+    this.getData({}, this.httpUrl['fetchBillingClaimsByUuid'] + "/" + uuid, callback, false)
   }
 
   getClaimRuleData(params: ClaimRulesPullDataModel, callback: any) {
@@ -28,7 +28,7 @@ export class ClaimService extends BaseService {
 
 
   fetchClaimNotes(uuid: string, callback: any) {
-    this.getData({}, this.httpUrl['claimNotes'] + "/" + uuid, callback)
+    this.getData({}, this.httpUrl['claimNotes'] + "/" + uuid, callback, false)
   }
 
   saveClaimData(claimEditModel: ClaimEditModel, callback: any) {
@@ -36,11 +36,11 @@ export class ClaimService extends BaseService {
   }
 
   getServiceLevelCodes(uuid: string, callback: any) {
-    this.getData({}, this.httpUrl['servicelevelval'] + "/" + uuid, callback);
+    this.getData({}, this.httpUrl['servicelevelval'] + "/" + uuid, callback, false);
   }
 
   getSubmissionDetails(uuid: string, callback: any) {
-    this.getData({}, this.httpUrl['submissionDetails'] + "/" + uuid, callback);
+    this.getData({}, this.httpUrl['submissionDetails'] + "/" + uuid, callback, false);
   }
 
 
@@ -66,7 +66,7 @@ export class ClaimService extends BaseService {
 
 
   fetchOtherTeamRemarks(clamiduuid: string, callback: any) {
-    this.getData({}, this.httpUrl['other_team_remark'] + "/" + clamiduuid, callback);
+    this.getData({}, this.httpUrl['other_team_remark'] + "/" + clamiduuid, callback, false);
   }
 
   assignClaimToTL(params: ClaimAssignToTeamModel, callback: any) {
@@ -79,5 +79,9 @@ export class ClaimService extends BaseService {
 
   unArchiveclaim(params: any, callback: any) {
     this.postData(params, this.httpUrl['unarchiveclaim'], callback);
+  }
+
+  getClaimSectionRights(callback: any) {
+    this.getData({}, this.httpUrl['fetch-user-claim-section-permission'], callback);
   }
 }

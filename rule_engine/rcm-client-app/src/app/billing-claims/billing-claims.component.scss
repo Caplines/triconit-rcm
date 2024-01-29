@@ -112,18 +112,25 @@
         background: url('../../assets/img/up-arrow.png') no-repeat right center !important;
     }
 }
-.form-control { width: 100%;}
-.date-control{
+
+.form-control {
+    width: 100%;
+}
+
+.date-control {
     max-width: 300px;
 
 }
-.not-found{
+
+.not-found {
     padding-left: 10px;
 }
-.remark-col{
-  width: 270px;
+
+.remark-col {
+    width: 270px;
 }
-.remarkAria strong{
+
+.remarkAria strong {
     font-family: "Open Sans", sans-serif;
     font-weight: 700;
     margin-bottom: 5px;
@@ -148,6 +155,7 @@
         margin-right: 5px;
     }
 }
+
 .steps-taken {
     padding: 10px;
     background: #fff;
@@ -217,7 +225,8 @@
     color: #e3e3e3;
 }
 
-.steps-taken ul li:last-child::after, .steps-taken ul li:last-child::before {
+.steps-taken ul li:last-child::after,
+.steps-taken ul li:last-child::before {
     display: none;
 }
 
@@ -328,7 +337,7 @@
 
 .steps-taken li.waiting {
     &:after {
-        background: linear-gradient(180deg, rgba(0,208,77,1) 0%, rgba(208,208,208,1) 100%);
+        background: linear-gradient(180deg, rgba(0, 208, 77, 1) 0%, rgba(208, 208, 208, 1) 100%);
     }
 
     &:before {
@@ -348,9 +357,11 @@
     margin-right: 0px;
 }
 
-.steps-taken.vertical ul li .teamname {
-
+.hide_class {
+    display: none;
 }
+
+.steps-taken.vertical ul li .teamname {}
 
 .steps-taken.vertical ul li:after {
     width: 3px;
@@ -372,12 +383,13 @@
     position: relative;
     animation: animateright 0.4s
 }
+
 .w3-animate-left {
     position: relative;
     animation: animateleft 0.4s
 }
 
-.toggleSidebar{
+.toggleSidebar {
     margin-right: -260px;
 }
 
@@ -392,6 +404,7 @@
         opacity: 0
     }
 }
+
 @keyframes animateright {
     from {
         right: -300px;

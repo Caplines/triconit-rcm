@@ -237,7 +237,7 @@ export interface OtherTeamRem {
 	fName?: string;
 	lName?: string;
 	teamName?: string;
-	attchmentsWithRemarks?:number
+	attchmentsWithRemarks?: number
 }
 
 export interface ClaimDetailModel {
@@ -245,4 +245,28 @@ export interface ClaimDetailModel {
 	serviceCode?: string;
 	surface?: string;
 	tooth?: string;
+}
+
+export interface SectonRightDataModel {
+	editAccess?: boolean;
+	sectionCategory?: string;
+	sectionId?: number;
+	sectionName?: string;
+	viewAccess?: boolean;
+
+}
+export interface ClaimSettingDataModel {
+	clientName?: string;
+	clientUuid?: string;
+	userUuid?: string;
+	teamsWithSections?: Array<TeamRight>;
+
+}
+
+export interface TeamRight {
+	teamId?: number;
+	teamName?: string;
+	userUuid?: string;
+	sectionData?: Array<SectonRightDataModel>;
+
 }
