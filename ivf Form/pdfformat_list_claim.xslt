@@ -13,7 +13,6 @@ version="1.0" >
                 font-size: 12px;
                 padding: 0px;
                 margin:0px;
-                margin-left:-30px;
             }
             .table {
                 border-collapse: collapse;
