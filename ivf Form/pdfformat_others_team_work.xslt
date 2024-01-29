@@ -121,7 +121,7 @@ version="1.0" >
                          <td>Insurance Type</td>
                          <td>Claim Type</td>
                          <td>Est.Amount</td>
-                         <td>Last Team that Worked on this claim</td>
+                         <td>Assigned By</td>
                          <td>Last Team's Remarks</td>
                          <td>Pending since</td>
                          <td>Current Team</td>

@@ -13,6 +13,7 @@ version="1.0" >
                 font-size: 12px;
                 padding: 0px;
                 margin:0px;
+                margin-left:-30px;
             }
             .table {
                 border-collapse: collapse;
@@ -126,7 +127,7 @@ version="1.0" >
                          <td>Estimated Amount</td>
                          <xsl:if test="tabSwitch= 'sendBack' ">
                          <td>Billing Amount</td>
-                         <td>Last Team that Worked on this claim</td>
+                         <td>Assigned By</td>
                          </xsl:if>
 
                      </tr>    
