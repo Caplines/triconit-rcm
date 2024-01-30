@@ -88,7 +88,8 @@ export class BillingClaimsComponent {
     "D2140", "D2150", "D2160", "D2161"];*/
   sectionIds: any = {
     'SECTION_CLAIM_DETAIL': 1, 'Rule_Engine_Validations': 9, 'Claim_submission_details': 10,
-    'Service_Code_Level_Validations_Automated': 7
+    'Service_Code_Level_Validations_Automated': 7, 'Claim_Level_Validations_Automated': 5,
+    'Claim_Level_Validations_Manual': 6
   };
 
   toggleTab: any = {};
@@ -596,7 +597,6 @@ export class BillingClaimsComponent {
   showHide(toggleTabName: any) {
 
     this.toggleTab[toggleTabName] = !this.toggleTab[toggleTabName];
-    console.log(this.toggleTab);
 
     // let el: any = document.querySelectorAll(".bold-b-text");
     // for (let i = 0; i < el.length; i++) {
@@ -847,6 +847,21 @@ export class BillingClaimsComponent {
   a) Rules Engine Validations
   b) Enter Claim Submission Details:
   */
+  makeReadOnlyWithPermission(sectionId: any): boolean {
+    var right = this.checkForSectionAccess(sectionId, 'edit');
+
+    if (this.claimRcm == undefined) return true;
+    //if (!this.isBilling) return true;
+    else if (!right) return true;
+    else if (!this.claimRcm.pending) return true;
+    else if (!this.claimRcm.allowEdit) return true;
+    if (this.claimRcm.firstTeamId == 3 && this.isBilling
+    ) { //use case claim->/e28dd916-4da7-45c7-9884-ee6fd3cac759
+      return true;
+    }
+    return false;
+  }
+
   makeReadOnly(): boolean {
     if (this.claimRcm == undefined) return true;
     //if (!this.isBilling) return true;
