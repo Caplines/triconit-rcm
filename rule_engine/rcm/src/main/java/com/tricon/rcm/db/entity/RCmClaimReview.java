@@ -21,7 +21,7 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "rcm_claim_review")
+@Table(name = "rcm_claim_review")//NOT USED FOR NOW
 public class RCmClaimReview extends BaseAuditEntity implements Serializable{
 
 	

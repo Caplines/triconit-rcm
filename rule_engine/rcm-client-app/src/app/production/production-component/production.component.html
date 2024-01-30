@@ -51,8 +51,8 @@
                                                 <tr class="totalRow">
                                                     <td>Total</td>
                                                     <td></td>
-                                                <td>{{total |number}}</td>
-                                                <td>{{days |number}}</td>
+                                                <td class="alignRight">{{total |number}}</td>
+                                                <td class="alignRight">{{days |number:'1.1-1'}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="4" style="height: 15px;"></td>
@@ -61,8 +61,8 @@
                                                 <tr >
                                                     <td>{{data.companyName}}</td>
                                                     <td>{{data.fname}} {{data.lname}}</td>
-                                                    <td>{{data.total | number}}</td>
-                                                    <td>{{data.days | number}}</td>
+                                                    <td class="alignRight">{{data.total | number}}</td>
+                                                    <td class="alignRight">{{data.days | number:'1.1-1'}}</td>
                                                 </tr>
                                             </ng-container>
                                         </ng-container>

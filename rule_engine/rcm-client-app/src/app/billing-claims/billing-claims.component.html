@@ -161,7 +161,7 @@
                                             <div [innerHTML]="manageProviderOnClaimFromSheet()"></div>
                                         </div>
                                         <div class="custom-row">
-                                            <label for="" class="">Provider on claim </label>
+                                        <label for="" class="">Provider on Claim </label>
                                             <div>{{claimRcm.providerOnClaim}}</div>
                                         </div>
                                         <div class="custom-row">
@@ -223,7 +223,7 @@
                                     <div class="col-md-3 mb-2" *ngIf="isORMNotesNeeded()">
                                         <div class="custom-row">
                                             <label for="" class="">Note:</label>
-                                            <div>We need to refer ORM before Billing</div>
+                                        <div>We need to refer to ORM before Billing</div>
                                         </div>
                                     </div>
                                 </div>
@@ -576,7 +576,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="3"
                                                                                 (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnly()"> Not Needed
+                                                                            [disabled]="makeReadOnly()"> Not needed
                                                                         </label>
                                                                     </ng-container>
 
@@ -620,7 +620,7 @@
                                                                             value="1"
                                                                             (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnly()"> Others
+                                                                        [disabled]="makeReadOnly()"> Other
                                                                     </label>
                                                                 </div>
 
@@ -753,7 +753,7 @@
                                                                             value="1"
                                                                             (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnly()"> Others
+                                                                        [disabled]="makeReadOnly()"> Other
                                                                     </label>
                                                                 </div>
                                                             </td>
@@ -875,7 +875,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="3"
                                                                                 (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnly()"> Not Needed
+                                                                            [disabled]="makeReadOnly()"> Not needed
                                                                         </label>
                                                                     </ng-container>
                                                                 </div>
@@ -1066,7 +1066,7 @@
                                                                             (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                                                                                     removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                             [(ngModel)]='d.answer'
-                                                                            [disabled]="makeReadOnly()">Others
+                                                                        [disabled]="makeReadOnly()">Other
                                                                     </label>
                                                                 </div>
                                                             </td>
@@ -1212,7 +1212,7 @@
                                                             <th> Tooth#</th>
                                                             <th> Surface#</th>
                                                             <th> Messages</th>
-                                                            <th> Remark</th>
+                                                        <th> Remarks</th>
                                                         </tr>
 
                                                     </thead>
@@ -1269,7 +1269,7 @@
                                             <tbody>
                                                 <tr>
                                                     <td>1</td>
-                                                    <td>Date of claim Processing in PMS</td>
+                                                <td>Date of claim processing in PMS</td>
                                                     <td>
                                                         <div class="multi-input-row">
                                                             <input class="form-control date-control" id="" rows="1"
@@ -1400,7 +1400,7 @@
                                                 </tr>
                                                 <tr>
                                                     <td>5</td>
-                                                    <td>Provider Change Reference Number Needed</td>
+                                                <td>Provider change reference number needed</td>
                                                     <!--Refferal Letter Changed to Provider Change Reference Number Needed-->
                                                     <td>
                                                         <div data-toggle="buttons" class="btn-group btn-group-toggle"
@@ -1475,7 +1475,7 @@
                                                         </option>
                                                     </ng-container>
                                                 </select>
-                                                <div class="remark-box">
+                                            <div class="remark-box"><label>Remarks </label><input name="tlRemark"
                                                     <label>Remark </label><input name="tlRemark" id="tlRemark"
                                                         class="form-control" />
                                                 </div>
@@ -1509,7 +1509,7 @@
                                                         </option>
                                                     </ng-container>
                                                 </select>
-                                                <div class="remark-box">
+                                            <div class="remark-box"><label>Remarks </label><input name="assignToComment"
                                                     <label>Remark </label><input name="assignToComment"
                                                         id="assignToComment" class="form-control"
                                                         [(ngModel)]='claimEditModel.assignToComment' />

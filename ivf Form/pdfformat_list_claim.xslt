@@ -123,10 +123,10 @@ version="1.0" >
                          <td>Action Required</td>
                          <td>Insurance Name</td>
                          <td>Insurance Type</td>
-                         <td>Est.Amount</td>
+                         <td>Estimated Amount</td>
                          <xsl:if test="tabSwitch= 'sendBack' ">
                          <td>Billing Amount</td>
-                         <td>Last Team that Worked on this claim</td>
+                         <td>Assigned By</td>
                          </xsl:if>
 
                      </tr>    

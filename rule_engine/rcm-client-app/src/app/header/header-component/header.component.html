@@ -115,8 +115,8 @@
                 #rla="routerLinkActive"><img
                     [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Other Team Work</a>
         </li> -->
-            <li
-                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || currentTeamId == 3 || true)) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso() )&& (currentTeamId == 7 || currentTeamId == 3 || true))">
+        <li class="local"
+        *ngIf="!(userInfo.currentClientName != 'Smilepoint' && currentTeamId == 5) || userInfo.currentClientName == 'Smilepoint' "> 
                 <a href="javascript:void(0);" [routerLink]="['/production']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a>

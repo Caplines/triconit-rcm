@@ -106,6 +106,27 @@ public class ToothUtil {
 		
 	}
 	
+   public static String[] getNoQuadToothsFromTooth(String toothNumbers) {
+		
+		List<String> finalTooths=new ArrayList<>();
+		if (toothNumbers==null ) return new String[] {""};
+		String commaLevel[]=toothNumbers.split(",");
+		for(String cl:commaLevel) {
+			String [] dashLevel=cl.split("-");
+			if (dashLevel.length==2) {
+					
+			}else {
+				if (!dashLevel[0].equals("UL") && !dashLevel[0].equals("LL") &&
+						!dashLevel[0].equals("LR") && !dashLevel[0].equals("UR")	) {
+				finalTooths.add(dashLevel[0]);
+				}
+			}
+		}
+		
+		return finalTooths.toArray(new String[finalTooths.size()]);
+		
+	}
+	
     public static String[] getArchToothsFromTooth(String toothNumbers) {
 		
 		List<String> finalTooths=new ArrayList<>();
@@ -121,6 +142,26 @@ public class ToothUtil {
 				}
 			}
 		}
+		
+		return finalTooths.toArray(new String[finalTooths.size()]);
+		
+	}
+    
+    public static String[] getNoArchToothsFromTooth(String toothNumbers) {
+		
+		List<String> finalTooths=new ArrayList<>();
+		if (toothNumbers==null ) return new String[] {""};
+		String commaLevel[]=toothNumbers.split(",");
+		for(String cl:commaLevel) {
+			String [] dashLevel=cl.split("-");
+			if (dashLevel.length==2) {
+					
+			}else {
+				if (!dashLevel[0].equals("LA") && !dashLevel[0].equals("UA")) {
+				finalTooths.add(dashLevel[0]);
+				}
+			}
+	}
 		
 		return finalTooths.toArray(new String[finalTooths.size()]);
 		

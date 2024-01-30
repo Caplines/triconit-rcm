@@ -315,7 +315,7 @@
                                                 </th>
                                                 <th>
                                                     <div class="dFlex">
-                                                        Last Team that Worked on this claim <div class="dropdown">
+                                                         Assigned By <div class="dropdown">
                                                             <img  (click)="showHideFilteredDropdown('lastTeam')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
                                                             <div class="dropdown-menu filter-dropdown-menu"
                                                                 (mouseleave)="onMouseLeave($event)"
@@ -389,7 +389,7 @@
                                                 </th>
                                                 <th class="remarks-bg">
                                                     <div class="dFlex">
-                                                        Submit back to the Team that assigned the Claim
+                                                        Submit Back
                                                     </div>
                                                 </th>
                                                 <th class="remarks-bg">
@@ -445,7 +445,7 @@
                                                             {{det.secTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}">{{det.lastTeam==null?'N/A':det.lastTeam}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight">{{det.lastTeamRemark}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="">{{det.lastTeamRemark}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight">{{currentTeamName?.teamName}}</td>
                                                         <td><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
