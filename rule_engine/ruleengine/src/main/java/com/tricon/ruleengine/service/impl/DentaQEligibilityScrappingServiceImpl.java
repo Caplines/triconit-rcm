@@ -142,7 +142,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		// "Dentaquest",0+""));//
 		//cc.add(new MCNADentaSheet("", "", "", "", "", "731539564", "2/17/2019", "Dentaquest", 0 + ""));//
 		//cc.add(new MCNADentaSheet("", "", "", "", "", "604429287", "12/18/2002", "Dentaquest", 0 + ""));//
-		  cc.add(new MCNADentaSheet("", "", "", "", "", "524613862", "8/16/2004", "Dentaquest", 0 + ""));//
+		  cc.add(new MCNADentaSheet("", "", "", "", "", "728587369", "8/30/2018", "Dentaquest", 0 + ""));//
 		// Ryleigh Britt 2013/06/20
 		mapData = new HashMap<>();
 		mapData.put("1", cc);
@@ -152,11 +152,11 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 
 		// https://connectsso.dentaquest.com/authsso/providersso/SSOProviderLogin.aspx?TYPE=33554433&REALMOID=06-6a4c193d-7520-4f3d-b194-83367a3ef454&GUID=&SMAUTHREASON=0&METHOD=POST&SMAGENTNAME=-SM-imZolSjcs1FQR%2fH0k3NSK1Uvx4zWgziEWSOuwqcKGG1C%2bW%2fQdG3dRa7BVqGyOpNh&TARGET=-SM-https%3a%2f%2fconnectsso%2edentaquest%2ecom%2fprovideraccessv2%2findex%2ehtml
 		// Dental@6743 offshorebfd for 739438815 04/11/2020 Beaumont
-		det.setPassword("Smile@1188");// // Devine%1245976
-		det.setUserName("Aransas456"); // Devin13458
-		det.setLocationProvider("Aransas Family Dental - 219 E Goodnight Ave - ARANSAS PASS - TX 78336 - Office");
+		det.setPassword("sMILE@12346");// // Devine%1245976
+		det.setUserName("Ben2058"); // Devin13458
+		det.setLocationProvider("Jasper Family Dental - 334 E Gibson St Ste B - Jasper - TX 75951 - Office");
 		Office f = new Office();
-		f.setName("Aransas");
+		f.setName("Benbrook");
 		det.setOffice(f);
 		// det.setOffice("Devine");
 		// det.set
@@ -686,6 +686,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 	
 	private String fetchToothFromHistoryDataNew(String tooths) {
 		String tooth="";
+		
 		if (tooths!=null) {
 		 String[] th=tooths.split("/");
 		 for(String t:th) {
@@ -698,18 +699,19 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 		return tooth;
 	}
 	private boolean fetchPagginationHistoryNew(WebDriver driver, EligibilityDto dto) {
-
+		
 		WebElement historyTab = driver.findElement(By.id("history-tab"));
 		List<WebElement> aas = historyTab.findElements(By.tagName("a"));
 		boolean callNext = false;
 		// System.out.println("CALL>...");
 		try {
+			Thread.sleep(12000);
 			for (WebElement a : aas) {
 				if (a.getText() != null && a.getText().equals("Next")) {
 					// System.out.println("CALL>... FOUND");
 					callNext = true;
 					a.click();
-					Thread.sleep(3000);
+					Thread.sleep(15000);//Because history api is very slow,..
 					WebElement htable = driver.findElement(By.id("historyTable"));
 					List<WebElement> ele = htable.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
 					for (WebElement e : ele) {
@@ -756,6 +758,7 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 				}
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 			callNext = false;
 			// TODO: handle exception
 		}
