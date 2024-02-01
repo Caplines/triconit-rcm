@@ -52,6 +52,8 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredInsuranceType:any=[];
   filteredClaimType:any=[];
   filteredLastTeam:any=[];
+  tabSwitch: any = {'submitted': false, 'unSubmitted': false };
+  tabValue:any;
   
   
 
@@ -72,7 +74,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   ngOnInit(): void {
     this.clientName = localStorage.getItem("selected_clientName");
      this.currentTeamName = this.appConstants.teamData.find((e:any)=>e.teamId==Utils.selectedTeam());
-    this.fetchClaims();
+    this.fetchClaims("Fresh");
     this.fetchOtherTeams();
   }
 
@@ -99,10 +101,10 @@ export class OtherTeamsWorkComponent implements OnInit {
     })
   }
 
-  fetchClaims() {
+  fetchClaims(subType: string) {
     this.loader.listClaimLoader = true;
     let ths = this;
-    ths.appService.fetchAssociateClaimDet(ths.selectedBtype, "Fresh", (res: any) => {
+    ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, (res: any) => {
       if (res.status === 200) {
         ths.claimDetail = this.removePrefix(res.data);
         let data: any = ths.claimDetail.map((e: any) => {
@@ -902,5 +904,20 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
     });
   }
 
+  switchTab(tab: any) {
+    if (!this.claimDetail) return;
+    if (tab == 'unSubmitted') {
+      this.tabValue = 'unSubmitted';
+      this.tabSwitch.unSubmitted = true;
+      this.tabSwitch.submitted = false;
+      this.fetchClaims("unSubmitted");
+    }
+    if (tab == 'submitted') {
+      this.tabValue = 'submitted';
+      this.tabSwitch.unSubmitted = false;
+      this.tabSwitch.submitted = true;
+      this.fetchClaims("submitted");
+    }
+  }
 
 }

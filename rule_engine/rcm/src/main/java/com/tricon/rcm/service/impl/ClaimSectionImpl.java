@@ -1,7 +1,6 @@
 package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -11,24 +10,31 @@ import javax.transaction.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.tricon.rcm.db.entity.ClaimUserSectionMapping;
+import com.tricon.rcm.db.entity.RcmClaimLevelSection;
 import com.tricon.rcm.db.entity.RcmClaimSection;
+import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
+import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
-import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimDefaultSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimLevelInfoRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimUserSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmClientSectionMappingRepo;
@@ -70,6 +76,14 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmClaimUserSectionMappingRepo userSectionRepo;
+	
+	@Autowired
+	RcmClaimLevelInfoRepo claimLevelInfoRepo;
+	
+	@Autowired
+	RcmClaimRepository claimRepo;
+	
+	
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -237,6 +251,7 @@ public class ClaimSectionImpl {
 					SectionData sectionData = new SectionData();
 					sectionData.setSectionId(section.getId());
 					sectionData.setSectionName(section.getDisplayName());
+					sectionData.setSectionCategory(section.getSectionCategory());
 					sectionData.setEditAccess(
 							existingSectionMappingWithClient != null ? existingSectionMappingWithClient.isEditAccess()
 									: false);
@@ -308,6 +323,7 @@ public class ClaimSectionImpl {
 						SectionData sectionData = new SectionData();
 						sectionData.setSectionId(section.getId());
 						sectionData.setSectionName(section.getDisplayName());
+						sectionData.setSectionCategory(section.getSectionCategory());
 						sectionData.setEditAccess(existingUserMappingWithClient == null
 								? (existingSectionMappingWithClient != null
 										? existingSectionMappingWithClient.isEditAccess()
@@ -431,4 +447,49 @@ public class ClaimSectionImpl {
 		}
 		return msg;
 	}
+
+	
+	
+	@Transactional(rollbackOn = Exception.class)
+	public Integer manageClientSectionDetails(ClaimLevelInformationDto claimLvelInfoDto, PartialHeader partialHeader)
+			throws Exception {
+		RcmClaims claim = claimRepo.findByClaimUuid(claimLvelInfoDto.getClaimUuid());
+		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+		RcmClaimLevelSection claimLevelSection = null;
+		if (claim != null) {
+			claimLevelSection = new RcmClaimLevelSection();
+			claimLevelSection.setClaim(claim);
+			claimLevelSection.setClaimId(claimLvelInfoDto.getClaimId());
+			claimLevelSection.setNetwork(claimLvelInfoDto.getNetwork());
+			claimLevelSection.setClaimPassFirstGo(claimLvelInfoDto.getClaimPassFirstGo());
+			claimLevelSection.setClaimStatusEs(claimLvelInfoDto.getClaimStatusEs());
+			claimLevelSection.setClaimStatusRcm(claimLvelInfoDto.getClaimStatusRcm());
+			claimLevelSection.setInitialDenial(claimLvelInfoDto.getInitialDenial());
+			claimLevelSection.setCreatedBy(createdBy);
+			claimLevelSection.setTeamId(teamRepo.findById(partialHeader.getTeamId()));
+			claimLevelSection
+					.setClaimProcessingDate(Constants.SDF_MYSL_DATE.parse(claimLvelInfoDto.getClaimProcessingDate()));
+			claimLevelSection = claimLevelInfoRepo.save(claimLevelSection);
+			return claimLevelSection != null ? claimLevelSection.getId() : null;
+		}
+		return null;
+	}
+
+	public ClaimLevelInformationDto fetchClaimLevelInfo(PartialHeader partialHeader, String claimUuid)
+			throws Exception {
+		RcmClaims claim = claimRepo.findByClaimUuid(claimUuid);
+		if (claim != null) {
+			RcmClaimLevelSection claimLevelSections = claimLevelInfoRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(claim.getClaimUuid(),
+							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+			ClaimLevelInformationDto responseDto = new ClaimLevelInformationDto();
+			responseDto.setClaimProcessingDate(
+					Constants.SDF_MYSL_DATE.format(claimLevelSections.getClaimProcessingDate()));
+			responseDto.setClaimUuid(claim.getClaimUuid());
+			BeanUtils.copyProperties(claimLevelSections, responseDto);
+			return responseDto;
+		}
+		return null;
+	}
+
 }

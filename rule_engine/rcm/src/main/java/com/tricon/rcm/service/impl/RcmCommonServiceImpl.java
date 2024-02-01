@@ -19,7 +19,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.tricon.rcm.db.entity.ClaimUserSectionMapping;
 import com.tricon.rcm.db.entity.RcmClaimDefaultSection;
+import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
@@ -30,6 +32,7 @@ import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.RcmUserTeam;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.PartialHeader;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
@@ -40,6 +43,8 @@ import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimDefaultSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimUserSectionMappingRepo;
+import com.tricon.rcm.jpa.repository.RcmClientSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
@@ -93,6 +98,12 @@ public class RcmCommonServiceImpl {
 	
 	@Autowired
 	RcmClaimDefaultSectionRepo claimDefaultSectionRepo;
+	
+	@Autowired
+	RcmClaimUserSectionMappingRepo userSectionRepo;
+	
+	@Autowired
+	RcmClientSectionMappingRepo clientSectionMappingRepo;
 
 	public List<RcmOfficeDto> getAllOffices() {
 
@@ -475,5 +486,27 @@ public class RcmCommonServiceImpl {
 		tempUser.setCreatedDate(Timestamp.from(Instant.now()));
 		tempUser.setRolesDetails(roles);
 		userTempRepo.save(tempUser);
+	}
+	
+	public boolean validateUserSectionAccess(PartialHeader partialHeader, int sectionId) throws Exception {
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+		if (user != null) {
+			if (partialHeader.getRole().equals(Constants.SUPER_ADMIN)) {
+				RcmClientSectionMapping clientSecrtionMapping = clientSectionMappingRepo
+						.findByCompanyUuidAndTeamIdIdAndSectionId(partialHeader.getCompany().getUuid(),
+								partialHeader.getTeamId(), sectionId);
+				if (clientSecrtionMapping != null && clientSecrtionMapping.isEditAccess()) {
+					return true;
+				}
+			} else {
+				ClaimUserSectionMapping checkSectionAccessOfLoginUser = userSectionRepo
+						.findByCompanyUuidAndTeamIdIdAndSectionIdAndUserUuid(partialHeader.getCompany().getUuid(),
+								partialHeader.getTeamId(), sectionId, user.getUuid());
+				if (checkSectionAccessOfLoginUser != null && checkSectionAccessOfLoginUser.isEditAccess()) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

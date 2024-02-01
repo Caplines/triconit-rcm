@@ -831,23 +831,23 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@ApiOperation(value = "Api For Fetching Submitted Claims", response = FreshClaimDataDto.class, responseContainer = "List")
-	@GetMapping("/api/fetch-submitted-claims")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
-	public ResponseEntity<Object> fetchSubmitClaimsDetails(Model model) {
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if (partialHeader == null) {
-			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
-		}
-		List<FreshClaimDataViewDto> response = null;
-		try {
-			response = claimServiceImpl.fetchSubmittedClaimDetails(partialHeader);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
+//	@ApiOperation(value = "Api For Fetching Submitted Claims", response = FreshClaimDataDto.class, responseContainer = "List")
+//	@GetMapping("/api/fetch-submitted-claims")
+//	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+//	public ResponseEntity<Object> fetchSubmitClaimsDetails(Model model) {
+//		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+//		if (partialHeader == null) {
+//			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+//		}
+//		List<FreshClaimDataViewDto> response = null;
+//		try {
+//			response = claimServiceImpl.fetchSubmittedClaimDetails(partialHeader);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+//	}
 
 }

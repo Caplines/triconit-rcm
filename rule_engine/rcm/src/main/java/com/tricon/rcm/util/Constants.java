@@ -134,5 +134,7 @@ public class Constants {
 	public static final int OVERDUE_UNBILLED_MEDICAID  = 2;
 	public static final int OVERDUE_UNBILLED_NON_MEDICAID=3;
 	public static final int OVERDUE_CLAIM_DATE_DIFF=7;
+	public static final String SUBMITTED_CLAIMS="submitted";
+	public static final String UNSUBMITTED_CLAIMS="unSubmitted";
 
 }

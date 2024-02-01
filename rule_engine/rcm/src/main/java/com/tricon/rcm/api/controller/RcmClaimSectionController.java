@@ -17,10 +17,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.rcm.db.entity.RcmClaimLevelSection;
+import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.service.impl.ClaimSectionImpl;
+import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
+import com.tricon.rcm.service.impl.RcmUtilServiceImpl;
 import com.tricon.rcm.util.MessageConstants;
 
 @RestController
@@ -31,6 +35,9 @@ public class RcmClaimSectionController extends BaseHeaderController {
 
 	@Autowired
 	ClaimSectionImpl claimSection;
+	
+	@Autowired
+	RcmCommonServiceImpl rcmCommonService;
 
 	/**
 	 * To manage various sections of claims client wise
@@ -130,6 +137,72 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		String response = null;
 		try {
 			response = claimSection.manageSectionsOfUsers(listOfSectionsDto, userUuid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@PostMapping(value = "api/save-claim-level-info")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
+	public ResponseEntity<?> claimLevelInformation(@RequestBody ClaimLevelInformationDto claimLvelInfoDto,
+			Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		Integer response = null;
+		if (claimLvelInfoDto == null || !StringUtils.isNoneBlank(claimLvelInfoDto.getClaimId())
+				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getClaimPassFirstGo())
+				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getClaimProcessingDate())
+				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getClaimStatusEs())
+				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getClaimStatusRcm())
+				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getInitialDenial())
+				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getNetwork())
+				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getClaimUuid())) {
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		try {
+			response = claimSection.manageClientSectionDetails(claimLvelInfoDto, partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@GetMapping(value = "api/validate-section-permission/{sectionId}")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> getSectionAccessOfUser(@PathVariable("sectionId")int sectionId,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		boolean response = false;
+		try {
+			response = rcmCommonService.validateUserSectionAccess(partialHeader,sectionId);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@GetMapping(value = "api/get-claim-level-info/{claimUuid}")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> getClaimLevelInfo(@PathVariable("claimUuid")String claimUuid,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		ClaimLevelInformationDto response = null;
+		try {
+			response = claimSection.fetchClaimLevelInfo(partialHeader,claimUuid);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

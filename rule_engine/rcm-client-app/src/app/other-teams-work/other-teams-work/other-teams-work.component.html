@@ -5,6 +5,30 @@
                 <div class="main-container">
                     <div class="detail-box">
                         <div class="detail-box-form">
+                            <div class="listClaimBox mt-2 mb-1">
+                                <div class="btn-group btn-group-toggle">
+                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.unSubmitted}">
+                                    <input class="form-check-input" type="radio" name="options" [disabled]="loader.listClaimLoader" id="option1"
+                                        (change)="switchTab('unSubmitted')">Unbilled Claims
+                                </label>
+                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.submitted}">
+                                    <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader" name="options" id="option2"
+                                        (change)="switchTab('submitted')">Build Claims
+                                </label>
+                            </div>
+                            <div class="otherTeamBox mt-2 mb-2">
+                                <button type="button" class="icon-btn" (click)="downloadPdf()"
+                                    [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
+                                    <img src="../../assets/img/pdf.png" /></button><span
+                                    *ngIf="loader.exportPDFLoader"
+                                    class="spinner-border text-danger mx-1"></span>
+                                <button type="button" class="icon-btn" (click)="exportToCsv()"
+                                    [disabled]="filteredItems.length==0">
+                                    <img src="../../assets/img/xls.png" /></button><span
+                                    *ngIf="loader.exportCSVLoader"
+                                    class="spinner-border text-success mx-1"></span>
+                            </div>
+                                </div>
                             <ng-container *ngIf="errorMessage">
                                 <div class="inner-container">
                                     <div class="alert text-center alert-danger alert-dismissible fade show" role="alert">
@@ -25,18 +49,7 @@
                                       </div>
                                 </div>
                             </ng-container>
-                            <div class="otherTeamBox mt-2 mb-2">
-                                <button type="button" class="icon-btn" (click)="downloadPdf()"
-                                    [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
-                                    <img src="../../assets/img/pdf.png" /></button><span
-                                    *ngIf="loader.exportPDFLoader"
-                                    class="spinner-border text-danger mx-1"></span>
-                                <button type="button" class="icon-btn" (click)="exportToCsv()"
-                                    [disabled]="filteredItems.length==0">
-                                    <img src="../../assets/img/xls.png" /></button><span
-                                    *ngIf="loader.exportCSVLoader"
-                                    class="spinner-border text-success mx-1"></span>
-                            </div>
+
                             <div class="form-row  collapse" [ngClass]="{'show':expandCollapse}" id="ruleEngine">
                                 <div class="table-responsive" style="min-height:300px;">
                                     <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar"
