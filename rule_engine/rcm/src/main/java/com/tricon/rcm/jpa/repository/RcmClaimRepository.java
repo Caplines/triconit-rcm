@@ -424,7 +424,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" cl.prime_policy_holder_dob primePolicyHolderDob, cl.ivf_id ivId,iv_dos ivDos,tp_id tpId,tp_dos tpDos,primary_eob primaryEob, "+
 			" cl.claim_type claimType,Fteam.name firstTeam,Fteam.id firstTeamId, "+
 			" pins.insurance_code primaryInsCodeSheet,sins.insurance_code secondaryInsCodeSheet,cl.ssn ssn,cl.assignment_of_benefits assignmentOfBenefits, "+
-			" cl.treating_provider_from_claim_on_sheet treatingProviderFromSheet,preferred_mode_of_submission preferredModeOfSubmission " +
+			" cl.treating_provider_from_claim_on_sheet treatingProviderFromSheet,preferred_mode_of_submission preferredModeOfSubmission,rule_engine_run_remark ruleEngineRunRemark " +
 			"  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+

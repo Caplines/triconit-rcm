@@ -2965,6 +2965,7 @@ public class ClaimServiceImpl {
 
 			}
 			claim.setLastWorkTeamId(rcmTeamRepo.findById(partialHeader.getTeamId()));
+			claim.setRuleEngineRunRemark(dto.getRuleEngineRunRemark());
 			//only billing can submit.
 			if (dto.isSubmission() && partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId()) {
 				//only billing can submit

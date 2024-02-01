@@ -80,6 +80,7 @@ export interface ClaimRcmDataModel {
 	currentState?: number;
 	preferredModeOfSubmission?: string;
 	claimCmpMatchesLoggedCmp?: boolean;
+	ruleEngineRunRemark?: string
 }
 
 
@@ -96,6 +97,7 @@ export interface ClaimEditModel {
 	claimUuid?: string;
 	claimNoteDtoList?: Array<ClaimNotesModel>;
 	claimRemark?: string;
+	ruleEngineRunRemark?: string
 	serCVDto?: Array<ServiceLevelCodeDataModel>;
 	submissionDto?: SubmissionDetailModel;
 	ruleRemarkDto?: Array<ClaimRuleRemarkModel>;

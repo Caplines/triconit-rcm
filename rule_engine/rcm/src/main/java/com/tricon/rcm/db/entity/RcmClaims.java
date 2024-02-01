@@ -242,7 +242,13 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "preferred_mode_of_submission")
 	private String preferredModeOfSubmission;
+	
+	@Column(name = "rule_engine_run_remark")
+	private String ruleEngineRunRemark;
 	//@Column(name = "insurance_code")
 	//private String insuranceCode;
+	
+	//@Column(name = "current_status",columnDefinition = "integer default 0")
+	//private int currentStatus;//Integer values 0 =Billed 1=unbilled 2= ... so on..
 
 }

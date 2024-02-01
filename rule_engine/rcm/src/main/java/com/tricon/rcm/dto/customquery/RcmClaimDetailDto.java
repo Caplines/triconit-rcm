@@ -78,5 +78,6 @@ public interface RcmClaimDetailDto {
 	String getAssignmentOfBenefits();
 	int getCurrentState();
 	String getPreferredModeOfSubmission();
+	String getRuleEngineRunRemark();
 	
 }

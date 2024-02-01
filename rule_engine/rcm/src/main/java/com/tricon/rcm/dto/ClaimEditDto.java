@@ -14,6 +14,7 @@ public class ClaimEditDto {
 	ClaimSubmissionDto submissionDto;
 	List<ClaimServiceDto> serCVDto;
 	String claimRemark;
+	String ruleEngineRunRemark;
 	boolean submission;
 	//boolean assignToTL;
 	boolean assignToOtherTeam;

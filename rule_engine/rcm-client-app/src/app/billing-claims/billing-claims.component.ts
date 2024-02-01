@@ -87,9 +87,29 @@ export class BillingClaimsComponent {
     "D2331", "D2332", "D2335", "D2391", "D2392", "D2393", "D2394", "D0431",
     "D2140", "D2150", "D2160", "D2161"];*/
   sectionIds: any = {
-    'SECTION_CLAIM_DETAIL': 1, 'Rule_Engine_Validations': 9, 'Claim_submission_details': 10,
-    'Service_Code_Level_Validations_Automated': 7, 'Claim_Level_Validations_Automated': 5,
-    'Claim_Level_Validations_Manual': 6
+    'SECTION_CLAIM_DETAIL': 1, 'RULE_ENGINE_VALIDATION': 9, 'CLAIM_SUBMISSION': 10,
+    'SERVICE_LEVEL_VALIDATION_AUTO': 7, 'CLAIM_LEVEL_VALIDATION_AUTO': 5,
+    'CLAIM_LEVEL_VALIDATION_MANUAL': 6,
+    'LINKS_RELATED_DOCUMENTS': 2,
+    'REMARKS_BY_OTHER': 3,
+    'REBILLED_CLAIM': 4,
+    'SERVICE_LEVEL_VALIDATION_MANUAL': 8,
+    'SERVICE_LEVEL_INFORMATION': 11,
+    'EOB': 12,
+    'CLAIM_LEVEL_INFORMATION': 13,
+    'INSURANCE_PAYMENT_INFORMATION': 14,
+    'PATIENT_STATEMENT': 15,
+    'ASSIGN_TO_OTHER': 16,
+    'INSURANCE_FOLLOW_UP': 17,
+    'RECREATE_CLAIM': 18,
+    'APPEAL': 19,
+    'PATIENT_PAYMENT': 20,
+    'PATIENT_COMMUNICATION': 21,
+    'COLLECTION_AGENCY': 22,
+    'REQUEST_REBILLING': 23,
+    'REBILLING': 24,
+    'NEED_TO_CALL_INSURANCE': 25,
+    'CURRENT_STATUS_AND_NEXT_ACTION': 26
   };
 
   toggleTab: any = {};
@@ -250,6 +270,7 @@ export class BillingClaimsComponent {
     ths.assignType = type;
     ths.claimEditModel = {};
     ths.claimEditModel.claimUuid = ths.claimRcm.uuid;
+    ths.claimEditModel.ruleEngineRunRemark = ths.claimRcm.ruleEngineRunRemark;
     ths.claimEditModel.claimNoteDtoList = ths.claimRcm.claimNotes;
     ths.claimEditModel.claimRemark = ths.claimRcm.claimRemarks;
     ths.claimEditModel.serCVDto = ths.claimServiceLevelModel?.dto;
@@ -409,7 +430,7 @@ export class BillingClaimsComponent {
       }
     });
 
-    if (!ths.isInternalAudit && ths.checkForSectionAccess(ths.sectionIds['Claim_submission_details'], 'edit')) {//Only Non Audit can Submit
+    if (!ths.isInternalAudit && ths.checkForSectionAccess(ths.sectionIds['CLAIM_SUBMISSION'], 'edit')) {//Only Non Audit can Submit
       if (Object.keys(ths.submissionDto).length == 0) {
         ths.addErrorDisplay(document.getElementById("SUB_DET_CHA"));
         ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
@@ -419,7 +440,7 @@ export class BillingClaimsComponent {
 
           ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
         }
-        if (!ths.preAuthEnable(ths.sectionIds['Claim_submission_details'], 'edit')) {
+        if (!ths.preAuthEnable(ths.sectionIds['CLAIM_SUBMISSION'], 'edit')) {
           ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
         }
         ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
@@ -453,7 +474,7 @@ export class BillingClaimsComponent {
         } else {
           ths.removeErrorDisplayKeyById('SUB_DET_CLA');
         }
-        if (!ths.preAuthEnable(ths.sectionIds['Claim_submission_details'], 'edit')) {
+        if (!ths.preAuthEnable(ths.sectionIds['CLAIM_SUBMISSION'], 'edit')) {
           let SUB_DET_PRENO: any = document.getElementById("SUB_DET_PRENO");
           if (SUB_DET_PRENO.value.trim() === '') {
             ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
@@ -522,7 +543,14 @@ export class BillingClaimsComponent {
         ths.addErrorDisplay(document.getElementById("serviceCodeValidationsM"));
       }
     }
-    if (document.getElementById("claimValidationsRE") != null) ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
+    if (document.getElementById("claimValidationsRE") != null) {
+      ths.removeErrorDisplay(document.getElementById("claimValidationsRE"));
+
+    }
+    if (document.getElementById("ruleEngineRunRemark") != null) {
+      ths.removeErrorDisplay(document.getElementById("ruleEngineRunRemark"));
+
+    }
     if (this.smilePoint && ths.isRuleEnginevalidationNeeded()) {
       //debugger;
       let inRE: boolean = false;
@@ -534,7 +562,13 @@ export class BillingClaimsComponent {
         }
       });
       if (!inRE) {
-        if (document.getElementById("claimValidationsRE") != null) ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
+        if (document.getElementById("claimValidationsRE") != null) {
+          if (document.getElementById("ruleEngineRunRemark") != null && (ths.claimRcm.ruleEngineRunRemark == null || ths.claimRcm.ruleEngineRunRemark.trim() === '')) {
+            ths.addErrorDisplay(document.getElementById("ruleEngineRunRemark"));
+
+          }
+          //ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
+        }
         valid = false;
       }
 
@@ -1473,7 +1507,7 @@ export class BillingClaimsComponent {
     let req = true;
     let insType = "";
     let ths = this;
-    let right = ths.checkForSectionAccess(ths.sectionIds['Rule_Engine_Validations'], 'edit');
+    let right = ths.checkForSectionAccess(ths.sectionIds['RULE_ENGINE_VALIDATION'], 'edit');
 
     //if (ths.ruleEngineReport.length == 0){
     //  req=false;

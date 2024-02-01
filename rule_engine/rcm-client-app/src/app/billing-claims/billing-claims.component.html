@@ -228,28 +228,25 @@
                                     </div>
                                 </div>
                                 <!-- This section is for SmilePoints Only -->
-                                <ng-container *ngIf="smilePoint">
+                                <ng-container
+                                    *ngIf="smilePoint && checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['linksRelatedDoc']}"
                                         *ngIf="isBilling || isInternalAudit">
+
                                         <a data-toggle="collapse" aria-expanded="false">
-                                            Links to Related Documents<span class="passedNum"
-                                                *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
-                                                style="cursor: pointer;" (click)="openUpdateIvPopup($event)">
-                                                Update IV ID /
-                                                TX Plan ID
-                                            </span>
+                                            Links to Related Documents
+                                            <ng-container
+                                                *ngIf="checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS'],'edit')">
+                                                <span class="passedNum"
+                                                    *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
+                                                    style="cursor: pointer;" (click)="openUpdateIvPopup($event)">
+                                                    Update IV ID /
+                                                    TX Plan ID
+                                                </span>
+                                            </ng-container>
                                         </a>
-                                        <!--
-                            <a data-toggle="collapse" aria-expanded="false"><span class="passedNum"
-                                    *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons && (claimRcm.ivfId!=null && claimRcm.ivfId!='')"
-                                    style="cursor: pointer;" (click)="openDeleteIvTPopup($event,'IV')">Remove IV
-                                    ID?
-                                </span></a>
-                            <a data-toggle="collapse" aria-expanded="false"><span class="passedNum"
-                                    *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons && (claimRcm.tpId!=null && claimRcm.tpId!='')"
-                                    style="cursor: pointer;" (click)="openDeleteIvTPopup($event,'TP')">TX Plan
-                                    ID ?</span></a>
-                                    -->
+
+
                                         <div class="down-icon" (click)="showHide('linksRelatedDoc')">
                                             <a href="javascript:void(0)"
                                                 [ngClass]="{'close':toggleTab['linksRelatedDoc']}"></a>
@@ -413,7 +410,7 @@
                                 <ng-container *ngIf="smilePoint">
                                     <ng-container *ngIf="actionButtons && (isBilling || isInternalAudit)">
                                         <a (click)="reval()"
-                                            *ngIf="claimRcm.allowEdit && claimRcm.pending && checkForSectionAccess(sectionIds['Claim_Level_Validations_Automated'],'edit')"
+                                            *ngIf="claimRcm.allowEdit && claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO'],'edit')"
                                             style="cursor: pointer;">
                                             Re Validate
                                             Automated
@@ -421,7 +418,7 @@
                                         </a>
                                     </ng-container>
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelAutomated']}"
-                                        *ngIf="checkForSectionAccess(sectionIds['Claim_Level_Validations_Automated'],'view')">
+                                        *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO'],'view')">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Level Validations (Automated)
                                             <span class="passedNum">Pass:{{countA.pass}}</span> <span
@@ -435,7 +432,7 @@
 
 
                                     <div *ngIf="loader.automatedValidation" class="loader-data"></div>
-                                    <div *ngIf="!loader.automatedValidation && checkForSectionAccess(sectionIds['Claim_Level_Validations_Automated'],'view')"
+                                    <div *ngIf="!loader.automatedValidation && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO'],'view')"
                                         class="form-row  collapse "
                                         [ngClass]="{'show':!toggleTab['claimLevelAutomated']}" id="claimValidations">
                                         <div class="table-responsive">
@@ -489,7 +486,7 @@
                                                             <textarea class="form-control" id="" rows="1"
                                                                 [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                                 (keydown)="removeErrorDisplayKey($event)"
-                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Automated'])"></textarea>
+                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO'])"></textarea>
                                                         </td>
 
                                                     </tr>
@@ -501,7 +498,7 @@
                                 </ng-container>
                                 <ng-container>
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelManual']}"
-                                        *ngIf="checkForSectionAccess(sectionIds['Claim_Level_Validations_Manual'],'view')">
+                                        *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'],'view')">
                                         <a data-toggle="collapse" aria-expanded="false">Claim Level Validations
                                             (Manual)</a>
                                         <div class="down-icon" (click)="showHide('claimLevelManual')">
@@ -511,7 +508,7 @@
                                     </div>
 
                                     <div *ngIf="loader.manualValidation" class="loader-data"></div>
-                                    <div *ngIf="!loader.manualValidation && checkForSectionAccess(sectionIds['Claim_Level_Validations_Manual'],'view')"
+                                    <div *ngIf="!loader.manualValidation && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'],'view')"
                                         class="form-row  collapse" [ngClass]="{'show':!toggleTab['claimLevelManual']}"
                                         id="claimValidationsManual">
                                         <div class="table-responsive">
@@ -561,7 +558,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="3"
                                                                                 (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                             Not
                                                                             Available
                                                                         </label>
@@ -574,7 +571,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="3"
                                                                                 (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                             Not needed
                                                                         </label>
                                                                     </ng-container>
@@ -606,7 +603,7 @@
                                                                             value="2"
                                                                             (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                         Attached
                                                                     </label>
                                                                 </div>
@@ -620,7 +617,7 @@
                                                                             value="1"
                                                                             (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                         Other
                                                                     </label>
                                                                 </div>
@@ -630,14 +627,14 @@
                                                                 <textarea class="form-control" id="" rows="1"
                                                                     [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                                     (keydown)="removeErrorDisplayKey($event)"
-                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])"></textarea>
+                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])"></textarea>
                                                             </td>
 
                                                         </ng-container>
                                                     </tr>
                                                     <tr
                                                         *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
-                                                        <ng-container *ngIf="checkForSectionAccess(sectionIds['Claim_Level_Validations_Manual'],'view') && (rule.ruleId==320) &&
+                                                        <ng-container *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'],'view') && (rule.ruleId==320) &&
                                                                                                     ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC'  || claimRcm.primaryInsCode=='CHIP'))
                                                                                                    ||  (!claimRcm.primary && (claimRcm.secondaryInsCode=='CMC' || claimRcm.secondaryInsCode=='CHIP')) )
                                                                                                     ">
@@ -657,7 +654,7 @@
                                                                             value="3"
                                                                             (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                         Yes
                                                                     </label>
 
@@ -677,7 +674,7 @@
                                                                             value="2"
                                                                             (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                         No &nbsp;
                                                                         &nbsp;
                                                                     </label>
@@ -696,7 +693,7 @@
                                                     <tr
                                                         *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                         <ng-container
-                                                            *ngIf="rule.ruleId==300 && isProviderNotesNeeded() && checkForSectionAccess(sectionIds['Claim_Level_Validations_Manual'],'view')">
+                                                            *ngIf="rule.ruleId==300 && isProviderNotesNeeded() && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'],'view')">
                                                             <!--only for provider Notes-->
                                                             <td>
                                                                 {{rule.srNo}}
@@ -715,7 +712,7 @@
                                                                             value="3"
                                                                             (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(false,rule.srNo);"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                         Not Available
                                                                     </label>
                                                                     <!-- <label class="btn btn-light"
@@ -745,7 +742,7 @@
                                                                             value="2"
                                                                             (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                         Attached
                                                                     </label>
                                                                 </div>
@@ -758,7 +755,7 @@
                                                                             value="1"
                                                                             (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                         Other
                                                                     </label>
                                                                 </div>
@@ -767,13 +764,13 @@
                                                                 <textarea class="form-control" id="" rows="1"
                                                                     [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                                     (keydown)="removeErrorDisplayKey($event)"
-                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])"></textarea>
+                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])"></textarea>
                                                             </td>
 
                                                         </ng-container>
                                                     </tr>
                                                     <ng-container
-                                                        *ngIf="claimRcm.claimNotes &&  isProviderNotesNeeded() && checkForSectionAccess(sectionIds['Claim_Level_Validations_Manual'],'view')">
+                                                        *ngIf="claimRcm.claimNotes &&  isProviderNotesNeeded() && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'],'view')">
                                                         <tr clas="relatedTo_300" *ngIf="relatedTo_300">
                                                             <td></td>
                                                             <td>
@@ -785,14 +782,14 @@
                                                                     id="CL_N_{{claimRcm.claimNotes[0].id}}" rows="1"
                                                                     [(ngModel)]='claimRcm.claimNotes[0].value'
                                                                     (keydown)="removeErrorDisplayKey($event)"
-                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])"></textarea>
+                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])"></textarea>
                                                             </td>
                                                         </tr>
                                                     </ng-container>
                                                     <tr class="no-wrap-text relatedTo_300"
                                                         *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                         <ng-container
-                                                            *ngIf="checkForSectionAccess(sectionIds['Claim_Level_Validations_Manual'],'view') && relatedTo_300 && ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP'))
+                                                            *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'],'view') && relatedTo_300 && ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP'))
                                                    ||  (!claimRcm.primary && (claimRcm.secondaryInsCode=='CMC' || claimRcm.secondaryInsCode=='AMC' || claimRcm.secondaryInsCode=='MCR' || claimRcm.secondaryInsCode=='CHIP')) )
                                                     && (rule.ruleId==311 || rule.ruleId==312 ||rule.ruleId==313 ||rule.ruleId==314 ||rule.ruleId==315 ||rule.ruleId==316 ||rule.ruleId==317)">
                                                             <td *ngIf="rule.ruleId==311">
@@ -834,7 +831,7 @@
                                                                             value="2"
                                                                             (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                         Available
                                                                     </label>
 
@@ -868,7 +865,7 @@
                                                                             value="1"
                                                                             (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                             [(ngModel)]='rule.messageType'
-                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                            [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                         Not Available
                                                                     </label>
                                                                 </div>
@@ -883,7 +880,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="3"
                                                                                 (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])">
+                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])">
                                                                             Not needed
                                                                         </label>
                                                                     </ng-container>
@@ -893,7 +890,7 @@
                                                                 <textarea class="form-control" id="" rows="1"
                                                                     [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                                     (keydown)="removeErrorDisplayKey($event)"
-                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['Claim_Level_Validations_Manual'])"></textarea>
+                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'])"></textarea>
                                                             </td>
 
                                                         </ng-container>
@@ -906,7 +903,7 @@
                                             <table style="width: 100%;">
                                                 <tr style="background: #f9f9f9;" class="relatedTo_300"
                                                     *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
-                                                    <ng-container *ngIf="checkForSectionAccess(sectionIds['Claim_Level_Validations_Manual'],'view') && relatedTo_300 && ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP'))
+                                                    <ng-container *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL'],'view') && relatedTo_300 && ((claimRcm.primary && (claimRcm.primaryInsCode=='CMC' || claimRcm.primaryInsCode=='AMC' || claimRcm.primaryInsCode=='MCR' || claimRcm.primaryInsCode=='CHIP'))
                                                                                                ||  (!claimRcm.primary && (claimRcm.secondaryInsCode=='CMC' || claimRcm.secondaryInsCode=='AMC' || claimRcm.secondaryInsCode=='MCR' || claimRcm.secondaryInsCode=='CHIP')) )
                                                                                                 && (rule.ruleId==317)">
                                                         <table class="table sub-content-td" style="margin-top: 0px;">
@@ -1097,7 +1094,8 @@
                                         </div>
                                     </div>
                                 </ng-container>
-                                <ng-container *ngIf="smilePoint">
+                                <ng-container
+                                    *ngIf="smilePoint && checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_AUTO'],'view')">
                                     <div class="bold-b-text"
                                         [ngClass]="{'collapsed':toggleTab['serviceCodeAutomated']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="serviceCodeValidationsA">
@@ -1165,7 +1163,7 @@
                                                                     [(ngModel)]='d.remark'
                                                                     id="SERV_C_V_A{{d.remarkUuid}}"
                                                                     (click)="removeErrorDisplayKeyById('SERV_C_V_A',d.remarkUuid);"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Service_Code_Level_Validations_Automated'],'edit')"></textarea>
+                                                                    [disabled]="isSectionReadOnly(sectionIds['SERVICE_LEVEL_VALIDATION_AUTO'],'edit')"></textarea>
                                                             </td>
                                                         </tr>
                                                     </ng-container>
@@ -1178,7 +1176,7 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="smilePoint && !isInternalAudit && checkForSectionAccess(sectionIds['Rule_Engine_Validations'],'view')">
+                                    *ngIf="smilePoint && !isInternalAudit && checkForSectionAccess(sectionIds['RULE_ENGINE_VALIDATION'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['ruleEngineValid']}">
                                         <a data-toggle="collapse" aria-expanded="false">Rule Engine Validations</a>
                                         <div class="down-icon" (click)="showHide('ruleEngineValid')">
@@ -1238,7 +1236,7 @@
                                                                         [(ngModel)]='rule.remark'
                                                                         id="ENG_REP_{{rule.ruleId}}"
                                                                         (click)="removeErrorDisplayKeyById('ENG_REP_',rule.ruleId)"
-                                                                        [disabled]="isSectionReadOnly(sectionIds['Rule_Engine_Validations'],'edit')">
+                                                                        [disabled]="isSectionReadOnly(sectionIds['RULE_ENGINE_VALIDATION'],'edit')">
                                                                 </td>
                                                             </ng-container>
                                                         </tr>
@@ -1247,12 +1245,16 @@
                                             </div>
                                         </ng-container>
                                         <ng-container *ngIf="ruleEngineReport.length==0 && !loader.ruleEngValid">
-                                            Rule Not Run in Rule Engine
+                                            <textarea type="text" class="form-control" rows="3"
+                                                (keydown)="removeErrorDisplayKey($event)"
+                                                [(ngModel)]="claimRcm.ruleEngineRunRemark" id="ruleEngineRunRemark"
+                                                placeholder="Run Engine not run"
+                                                [disabled]="!checkForSectionAccess(sectionIds['RULE_ENGINE_VALIDATION'],'edit')"></textarea>
                                         </ng-container>
                                     </div>
                                 </ng-container>
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['submissionDetail']}"
-                                    *ngIf="!isInternalAuditLogin && checkForSectionAccess(sectionIds['Claim_submission_details1'],'view')">
+                                    *ngIf="!isInternalAuditLogin && checkForSectionAccess(sectionIds['CLAIM_SUBMISSION'],'view')">
                                     <a data-toggle="collapse" aria-expanded="false">
                                         Enter
                                         Claim Submission Details
@@ -1263,7 +1265,7 @@
                                     </div>
                                 </div>
 
-                                <div *ngIf="!isInternalAuditLogin && checkForSectionAccess(sectionIds['Claim_submission_details1'],'view')"
+                                <div *ngIf="!isInternalAuditLogin && checkForSectionAccess(sectionIds['CLAIM_SUBMISSION'],'view')"
                                     class="form-row  collapse " [ngClass]="{'show':!toggleTab['submissionDetail']}"
                                     id="claimSubmissionDetails">
                                     <div class="table-responsive">
@@ -1284,7 +1286,7 @@
                                                             <input class="form-control date-control" id="" rows="1"
                                                                 id="SUB_DET_DT" placeholder="yyyy-mm-dd"
                                                                 (click)="removeErrorDisplayKeyById('SUB_DET_DT')"
-                                                                [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')"
+                                                                [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')"
                                                                 [(ngModel)]='submissionDto.esDate' type="date" />
                                                             <!--<span class="and-space">&</span> <input class="form-control"
                                                 id="" rows="1" id="SUB_DET_TI"
@@ -1307,7 +1309,7 @@
                                                                 [ngClass]="{active:submissionDto.channel=='RemoteLite'}">
                                                                 <input type="radio" name="channel" value="RemoteLite"
                                                                     (click)="submissionDto.channel='RemoteLite';overidePreferredSubmission=false;removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">Clearing
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">Clearing
                                                                 House
                                                                 (Remotelite)
                                                             </label>
@@ -1315,21 +1317,21 @@
                                                                 [ngClass]="{active:submissionDto?.channel=='Fax'}">
                                                                 <input type="radio" name="channel" value="Fax"
                                                                     (click)="submissionDto.channel='Fax';overidePreferredSubmission=false;removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">
                                                                 Fax
                                                             </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:submissionDto?.channel=='Mail'}">
                                                                 <input type="radio" name="channel" value="Mail"
                                                                     (click)="submissionDto.channel='Mail';overidePreferredSubmission=false;removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">
                                                                 Mail
                                                             </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:submissionDto?.channel=='Portal'}">
                                                                 <input type="radio" name="channel" value="Portal"
                                                                     (click)="submissionDto.channel='Portal';overidePreferredSubmission=false;removeErrorDisplayKeyById('SUB_DET_CHA');claimNoEnable()"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">
                                                                 Portal
                                                             </label>
                                                             <div style=" width: 200px;">
@@ -1360,14 +1362,14 @@
                                                                 [ngClass]="{active:submissionDto.attachmentSend}">
                                                                 <input type="radio" name="atch" value=""
                                                                     (click)="submissionDto.attachmentSend=true;removeErrorDisplayKeyById('SUB_DET_ATT')"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">
                                                                 Yes
                                                             </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:submissionDto.attachmentSend==false}">
                                                                 <input type="radio" name="atch" value=""
                                                                     (click)="submissionDto.attachmentSend=false;removeErrorDisplayKeyById('SUB_DET_ATT')"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">
                                                                 No
                                                             </label>
                                                         </div>
@@ -1383,15 +1385,15 @@
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:submissionDto.preauth}">
                                                                 <input type="radio" name="atch" value=""
-                                                                    (click)="submissionDto.preauth=true;removeErrorDisplayKeyById('SUB_DET_PRE');preAuthEnable(sectionIds['Claim_submission_details'],'edit');"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">
+                                                                    (click)="submissionDto.preauth=true;removeErrorDisplayKeyById('SUB_DET_PRE');preAuthEnable(sectionIds['CLAIM_SUBMISSION'],'edit');"
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">
                                                                 Yes
                                                             </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:submissionDto.preauth==false}">
                                                                 <input type="radio" name="atch" value=""
-                                                                    (click)="submissionDto.preauth=false;removeErrorDisplayKeyById('SUB_DET_PRE');removeErrorDisplayKeyById('SUB_DET_PRENO');preAuthEnable(sectionIds['Claim_submission_details'],'edit');"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">
+                                                                    (click)="submissionDto.preauth=false;removeErrorDisplayKeyById('SUB_DET_PRE');removeErrorDisplayKeyById('SUB_DET_PRENO');preAuthEnable(sectionIds['CLAIM_SUBMISSION'],'edit');"
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">
                                                                 No
                                                             </label>
                                                             <div class="preauthcla">
@@ -1399,7 +1401,7 @@
                                                                     id="SUB_DET_PRENO"
                                                                     placeholder="Enter Pre-Auth Number"
                                                                     (click)="removeErrorDisplayKeyById('SUB_DET_PRENO')"
-                                                                    [disabled]="preAuthEnable(sectionIds['Claim_submission_details'],'edit')"
+                                                                    [disabled]="preAuthEnable(sectionIds['CLAIM_SUBMISSION'],'edit')"
                                                                     [(ngModel)]='submissionDto.preauthNo'
                                                                     maxlength="30" />
                                                             </div>
@@ -1418,14 +1420,14 @@
                                                                 [ngClass]="{active:submissionDto.refferalLetter}">
                                                                 <input type="radio" name="atchpro" value=""
                                                                     (click)="submissionDto.refferalLetter=true;removeErrorDisplayKeyById('SUB_DET_REF');providerRefNoEnable();"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">
                                                                 Yes
                                                             </label>
                                                             <label class="btn btn-light"
                                                                 [ngClass]="{active:submissionDto.refferalLetter==false}">
                                                                 <input type="radio" name="atchpro" value=""
                                                                     (click)="submissionDto.refferalLetter=false;removeErrorDisplayKeyById('SUB_DET_REF');removeErrorDisplayKeyById('SUB_DET_PORVIDER_RENO');providerRefNoEnable();"
-                                                                    [disabled]="isSectionReadOnly(sectionIds['Claim_submission_details'],'edit')">
+                                                                    [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION'],'edit')">
                                                                 No
                                                             </label>
                                                             <div class="preauthcla">

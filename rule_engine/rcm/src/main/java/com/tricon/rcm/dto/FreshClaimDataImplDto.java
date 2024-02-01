@@ -125,5 +125,8 @@ public class FreshClaimDataImplDto {
     String preferredModeOfSubmission;
     
     boolean claimCmpMatchesLoggedCmp;
+    
+    String ruleEngineRunRemark;
+    
 }
 
