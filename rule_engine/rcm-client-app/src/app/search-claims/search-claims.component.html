@@ -36,7 +36,7 @@
                                     <div class="colName">
                                                                                 Client Name
                                     </div>
-                                    <div class="colAction"><multi-select-dropdown [inputConfig]="{'clients':clients,'isSearchClaims':true,'subType':'clients','emitAction':'getSelectClientName'}" (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown> </div>
+                                    <div class="colAction" *ngIf="clients.length>0"><multi-select-dropdown [inputConfig]="{'clients':clients,'isSearchClaims':true,'subType':'clients','emitAction':'getSelectClientName'}" (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown> </div>
                                     </div>
                                     <div class="colBox">
                                     <div class="colName">
