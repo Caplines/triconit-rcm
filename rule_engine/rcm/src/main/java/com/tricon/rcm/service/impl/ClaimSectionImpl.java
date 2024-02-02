@@ -483,10 +483,12 @@ public class ClaimSectionImpl {
 					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(claim.getClaimUuid(),
 							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
 			ClaimLevelInformationDto responseDto = new ClaimLevelInformationDto();
-			responseDto.setClaimProcessingDate(
-					Constants.SDF_MYSL_DATE.format(claimLevelSections.getClaimProcessingDate()));
-			responseDto.setClaimUuid(claim.getClaimUuid());
-			BeanUtils.copyProperties(claimLevelSections, responseDto);
+			if (claimLevelSections != null) {
+				responseDto.setClaimProcessingDate(
+						Constants.SDF_MYSL_DATE.format(claimLevelSections.getClaimProcessingDate()));
+				responseDto.setClaimUuid(claim.getClaimUuid());
+				BeanUtils.copyProperties(claimLevelSections, responseDto);
+			}
 			return responseDto;
 		}
 		return null;
