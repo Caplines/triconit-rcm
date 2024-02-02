@@ -390,6 +390,31 @@
                                                         Current Team
                                                     </div>
                                                 </th>
+                                                <th *ngIf="showColumns.currentStatus">
+                                                    <div class="dFlex">
+                                                        Current Status
+                                                    </div>
+                                                </th>
+                                                <th *ngIf="showColumns.nextActionRequired">
+                                                    <div class="dFlex">
+                                                        Next Action Required
+                                                    </div>
+                                                </th>
+                                                <th *ngIf="showColumns.nextFollowUpDate">
+                                                    <div class="dFlex">
+                                                        Next Follow up Date
+                                                    </div>
+                                                </th>
+                                                <th *ngIf="showColumns.providerSpeciality">
+                                                    <div class="dFlex">
+                                                        Provider Speciality
+                                                    </div>
+                                                </th>
+                                                <th *ngIf="showColumns.dueBalance">
+                                                    <div class="dFlex">
+                                                        Due Balance
+                                                    </div>
+                                                </th>
                                                 <th class="remarks-bg">
                                                     <div class="dFlex">
                                                         Enter Your Remarks
@@ -461,6 +486,11 @@
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="">{{det.lastTeamRemark}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight">{{currentTeamName?.teamName}}</td>
+                                                        <td *ngIf="showColumns.currentStatus">1</td>
+                                                        <td *ngIf="showColumns.nextActionRequird">2</td>
+                                                        <td *ngIf="showColumns.nextFollowUpDate">3</td>
+                                                        <td *ngIf="showColumns.providerSpeciality">4</td>
+                                                        <td *ngIf="showColumns.dueBalance">5</td>
                                                         <td><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
                                                                 style="width: 200px;"></textarea>
                                                         </td>

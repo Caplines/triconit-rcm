@@ -199,4 +199,6 @@ export class AppConstants {
 
     //attachwithremarks
     public static ATTACH_WITH_REMARKS:string="AttachWithRemarks";
+
+    public static inputRequiredForTeams: any = { "Aging": false, "CDP": false, "Payment Posting": false, "Patient Statement": false }
 }
