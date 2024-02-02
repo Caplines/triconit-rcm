@@ -171,6 +171,15 @@ constructor(private _service:ApplicationServiceService,private constants:AppCons
   
   }
 
+  
+  ngAfterViewInit(){
+    if(this.inputConfig?.isSearchClaims && this.inputConfig?.clients && this.inputConfig?.clients?.length == 1){
+      setTimeout(()=>{
+        this.defaultSelectSingleClient();
+      },0)
+  }
+  }
+
 getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:string) {
   if (type === 'client') {
     if (status) {
@@ -650,4 +659,11 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
     toggleSelectedItem(field:any){
         this.showSelectedData[field] = !this.showSelectedData[field];
     }
+
+    defaultSelectSingleClient(){
+      this.filteredOptions['clients'] = this.inputConfig.clients;
+      this.inputConfig.clients[0].checked = true; 
+      this.getSelectedValue(this.inputConfig.clients[0].checked,this.inputConfig.clients[0],'searchClaimClient','clients');
+    }
+
 }
