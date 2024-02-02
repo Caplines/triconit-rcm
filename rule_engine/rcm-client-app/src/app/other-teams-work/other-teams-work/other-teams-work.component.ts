@@ -54,7 +54,14 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredLastTeam:any=[];
   tabSwitch: any = {'submitted': false, 'unSubmitted': false };
   tabValue:any;
-  
+  showColumns:any={"currentStatus":false,"nextActionRequired":false,"nextFollowUpDate":false,"providerSpeciality":false,"dueBalance":false};
+  columnMappings: {[key: string]: string[]} = {
+    'Aging': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
+    'CDP': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
+    'Credentialing': ['currentStatus', 'nextActionRequired'],
+    'Patient Statement': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueBalance'],
+    'Payment Posting': ['currentStatus', 'nextActionRequired', 'providerSpeciality'],
+  };
   
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
@@ -76,6 +83,7 @@ export class OtherTeamsWorkComponent implements OnInit {
      this.currentTeamName = this.appConstants.teamData.find((e:any)=>e.teamId==Utils.selectedTeam());
     this.fetchClaims("Fresh");
     this.fetchOtherTeams();
+    this.showOrHideColumns(this.currentTeamName);
   }
 
   fetchOfficeByUuid() {
@@ -919,5 +927,11 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
       this.fetchClaims("submitted");
     }
   }
-
+  
+  showOrHideColumns(currentTeamName: any) {
+    const columnsToShow = this.columnMappings[currentTeamName.teamName] || [];
+    Object.keys(this.showColumns).forEach(column => {
+      this.showColumns[column] = columnsToShow.includes(column);
+    });
+  }
 }
