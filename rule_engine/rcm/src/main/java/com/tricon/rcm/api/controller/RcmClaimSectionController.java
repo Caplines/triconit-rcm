@@ -161,7 +161,8 @@ public class RcmClaimSectionController extends BaseHeaderController {
 				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getClaimStatusRcm())
 				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getInitialDenial())
 				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getNetwork())
-				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getClaimUuid())) {
+				|| !StringUtils.isNoneBlank(claimLvelInfoDto.getClaimUuid())
+				|| claimLvelInfoDto.getSectionId()==null) {
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}

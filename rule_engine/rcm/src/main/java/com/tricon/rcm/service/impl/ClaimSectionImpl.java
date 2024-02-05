@@ -83,6 +83,9 @@ public class ClaimSectionImpl {
 	@Autowired
 	RcmClaimRepository claimRepo;
 	
+	@Autowired
+	RcmCommonServiceImpl rcmCommonService;
+	
 	
 
 	@Transactional(rollbackOn = Exception.class)
@@ -453,6 +456,9 @@ public class ClaimSectionImpl {
 	@Transactional(rollbackOn = Exception.class)
 	public Integer manageClientSectionDetails(ClaimLevelInformationDto claimLvelInfoDto, PartialHeader partialHeader)
 			throws Exception {
+		//cross check verify section permission
+		boolean response = rcmCommonService.validateUserSectionAccess(partialHeader,claimLvelInfoDto.getSectionId());
+		if(!response) return  null;
 		RcmClaims claim = claimRepo.findByClaimUuid(claimLvelInfoDto.getClaimUuid());
 		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		RcmClaimLevelSection claimLevelSection = null;
