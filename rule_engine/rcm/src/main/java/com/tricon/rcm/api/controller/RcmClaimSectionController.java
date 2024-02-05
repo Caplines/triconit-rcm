@@ -167,6 +167,9 @@ public class RcmClaimSectionController extends BaseHeaderController {
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
 		try {
+			//cross check verify section permission
+			boolean sectionAccess = rcmCommonService.validateUserSectionAccess(partialHeader,claimLvelInfoDto.getSectionId());
+			if(!sectionAccess) return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.BAD_REQUEST, "Section Permission Denied!", null));
 			response = claimSection.manageClientSectionDetails(claimLvelInfoDto, partialHeader);
 		} catch (Exception e) {
 			e.printStackTrace();
