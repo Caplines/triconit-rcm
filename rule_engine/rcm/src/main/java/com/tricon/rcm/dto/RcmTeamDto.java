@@ -11,4 +11,5 @@ public class RcmTeamDto {
 
 	private String teamName;
 	private Integer teamId;
+	private boolean canWorkBeforeSubmssion;
 }

@@ -230,6 +230,7 @@ export interface TeamsM {
 
 	teamName?: string;
 	teamId?: number;
+	canWorkBeforeSubmssion?: boolean;
 }
 
 export interface OtherTeamRem {

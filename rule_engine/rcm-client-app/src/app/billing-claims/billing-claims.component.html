@@ -1503,7 +1503,8 @@
                                                     <ng-container *ngIf="assignType == 'assign'">
                                                         <option selected="true" value="-1">Select Team</option>
                                                     </ng-container>
-                                                    <ng-container *ngFor="let tl of teamsMs">
+                                                    <ng-container
+                                                        *ngFor="let tl of teamsMs | ClaimSubmissionTeamPipe: [{pending:claimRcm.pending}]">
                                                         <option *ngIf="assignType == 'reviewed' && tl.teamId==7"
                                                             [selected]="assignType== 'reviewed'" [value]="tl.teamId">
                                                             {{tl.teamName}}

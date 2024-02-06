@@ -170,6 +170,7 @@ public class MasterServiceImpl {
 			if (t.isRoleVisible()) {
 				team.setTeamName(t.getDescription());
 				team.setTeamId(t.getId());
+				team.setCanWorkBeforeSubmssion(t.canWorkBeforeSubmssion());
 				teams.add(team);
 			}
 		}
