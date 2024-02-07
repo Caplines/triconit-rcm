@@ -403,3 +403,80 @@ select:-webkit-autofill:focus {
     margin-left: -6px;
 
 }
+
+@media screen and (max-width: 828px) {
+    .info-box {
+        width: auto;
+        margin-top: 14%;
+    }
+    .info-text-capline {
+        float: inherit;
+    }
+    .inner-container {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+    .inner-page-bg {
+        display: block;
+    }
+}
+
+
+    @media screen and (max-width: 540px) {
+        .page-header {
+            height: 80px;
+        }
+
+        .page-header .logo img {
+            width: 75%;
+        }
+
+        .inner-page-bg {
+            display: block;
+        }
+
+        .inner-container {
+            width: 100%;
+            margin-right: 0px;
+            padding: 20px 0 10px 0px;
+            box-shadow: 0px 2px 9px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            margin-top: 8%;
+            border-radius: 10px;
+        }
+
+        .info-box {
+            width: auto;
+            font-size: 30px;
+            padding-top: 7%;
+            margin-top: 5%;
+        }
+
+        .info-text-capline {
+            float: inherit;
+            font-size: 20px;
+        }
+
+        .info-text-capline span {
+            font-size: 42px;
+            margin-top: 2px;
+        }
+
+        .incLogo {
+            width: 45px;
+            margin-right: 7px;
+            margin-bottom: 0px;
+        }
+
+        .googleRating {
+            width: 80px;
+        }
+
+        .BBBLogo {
+            width: 80px;
+        }
+
+        .page-header .container {
+            padding: 0 6%;
+        }
+    }
