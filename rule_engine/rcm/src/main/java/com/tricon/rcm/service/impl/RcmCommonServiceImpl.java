@@ -1,7 +1,6 @@
 package com.tricon.rcm.service.impl;
 
 import java.sql.Timestamp;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,10 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.ClaimUserSectionMapping;
@@ -31,14 +26,15 @@ import com.tricon.rcm.db.entity.RcmUserRoleHistory;
 import com.tricon.rcm.db.entity.RcmUserRolePk;
 import com.tricon.rcm.db.entity.RcmUserTeam;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
-import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.CommonSectionsRequestBodyDto;
 import com.tricon.rcm.dto.PartialHeader;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
+import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.RcmUserPaginationDto;
 import com.tricon.rcm.dto.RcmUserToDto;
-import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
+import com.tricon.rcm.dto.SectionDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
@@ -54,6 +50,7 @@ import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
 import com.tricon.rcm.jpa.repository.RcmUserTeamRepo;
 //import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
 import com.tricon.rcm.security.JwtUser;
+import com.tricon.rcm.util.ClaimSectionValidationUtil;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
 import com.tricon.rcm.util.MessageConstants;
@@ -104,6 +101,12 @@ public class RcmCommonServiceImpl {
 	
 	@Autowired
 	RcmClientSectionMappingRepo clientSectionMappingRepo;
+	
+	@Autowired
+	MasterServiceImpl masterService;
+	
+	@Autowired
+	ClaimSectionValidationUtil claimSectionValidationUtil;
 
 	public List<RcmOfficeDto> getAllOffices() {
 
@@ -508,5 +511,45 @@ public class RcmCommonServiceImpl {
 			}
 		}
 		return false;
+	}
+
+	public Boolean commonSectionInformationsForAll(CommonSectionsRequestBodyDto sectionRequestBody,
+			PartialHeader partialHeader) throws Exception {
+		List<SectionDto> sectionsData = masterService.getSections();
+		Boolean response = null;
+		boolean validationFail = false;
+		SectionDto section = sectionsData.stream()
+				.filter(x -> x.getSectionId() == sectionRequestBody.getSectionId() && x.isActive()).findAny()
+				.orElse(null);
+		if (section != null) {
+			switch (section.getSectionId()) {
+			// Case 1 to 13 has been covered already in phase 1 so it will start case 13(New
+			// section)
+			case 13:
+				logger.info("Inside section 13-> Claim Level Information");
+				validationFail = claimSectionValidationUtil
+						.validationForClaimInfoSectionFields(sectionRequestBody.getClaimInfoModel());
+				if (!validationFail)
+					break;
+				response = claimSectionimpl.saveClaimLevelInformation(sectionRequestBody.getClaimInfoModel(),
+						partialHeader, section.getSectionId(), sectionRequestBody.getClaimUuid());
+				logger.info("response->" + response);
+				break;
+			case 19:
+				logger.info("Inside section 19->Appeal");
+				validationFail = claimSectionValidationUtil
+						.validationForAppealInfoSectionFields(sectionRequestBody.getAppealInfoModel());
+				if (!validationFail)
+					break;
+				response = claimSectionimpl.saveAppealInformation(sectionRequestBody.getAppealInfoModel(),
+						partialHeader, section.getSectionId(), sectionRequestBody.getClaimUuid());
+				logger.info("response->" + response);
+				break;
+			default:
+				logger.error("section not found");
+				response = null;
+			}
+		}
+		return response;
 	}
 }

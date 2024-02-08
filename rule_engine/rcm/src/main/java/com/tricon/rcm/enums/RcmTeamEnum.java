@@ -29,10 +29,10 @@ public enum RcmTeamEnum {
 	MEDICAID_IV(14,"MEDICAID_IV","Medicaid IV",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	NEED_TO_HOLD(15,"NEED_TO_HOLD","Need to hold",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),
 	QUALITY(16,"QUALITY","Quality",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),
-	AR(17,"AR","AR",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},false,false),
+	//AR(17,"AR","AR",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},false,false),
 	PATIENT_STATEMENT(18,"PATIENT_STATEMENT","Patient Statement",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),
-	CREDENTIALING(19,"CREDENTIALING","Credentialing",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true);
-	//AGING(20,"AGING","Aging",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false);
+	CREDENTIALING(19,"CREDENTIALING","Credentialing",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
+	AGING(20,"AGING","Aging",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false);
 	
 	final private int id;
 	final private String name;

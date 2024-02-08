@@ -14,8 +14,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import com.tricon.rcm.db.entity.ClaimUserSectionMapping;
+import com.tricon.rcm.db.entity.RcmAppealLevelInformation;
 import com.tricon.rcm.db.entity.RcmClaimLevelSection;
 import com.tricon.rcm.db.entity.RcmClaimSection;
 import com.tricon.rcm.db.entity.RcmClaims;
@@ -23,6 +23,7 @@ import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.PartialHeader;
@@ -32,6 +33,7 @@ import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
+import com.tricon.rcm.jpa.repository.RcmAppealInfoRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimDefaultSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLevelInfoRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
@@ -82,6 +84,9 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmClaimRepository claimRepo;
+	
+	@Autowired
+	RcmAppealInfoRepo appealInfoRepo;
 	
 	
 
@@ -451,9 +456,9 @@ public class ClaimSectionImpl {
 	
 	
 	@Transactional(rollbackOn = Exception.class)
-	public Integer manageClientSectionDetails(ClaimLevelInformationDto claimLvelInfoDto, PartialHeader partialHeader)
-			throws Exception {
-		RcmClaims claim = claimRepo.findByClaimUuid(claimLvelInfoDto.getClaimUuid());
+	public Boolean saveClaimLevelInformation(ClaimLevelInformationDto claimLvelInfoDto, PartialHeader partialHeader,int sectionId,String claimuuid)
+			throws Exception {	
+		RcmClaims claim = claimRepo.findByClaimUuid(claimuuid);
 		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		RcmClaimLevelSection claimLevelSection = null;
 		if (claim != null) {
@@ -470,7 +475,7 @@ public class ClaimSectionImpl {
 			claimLevelSection
 					.setClaimProcessingDate(Constants.SDF_MYSL_DATE.parse(claimLvelInfoDto.getClaimProcessingDate()));
 			claimLevelSection = claimLevelInfoRepo.save(claimLevelSection);
-			return claimLevelSection != null ? claimLevelSection.getId() : null;
+			return claimLevelSection != null ? true : null;
 		}
 		return null;
 	}
@@ -486,12 +491,49 @@ public class ClaimSectionImpl {
 			if (claimLevelSections != null) {
 				responseDto.setClaimProcessingDate(
 						Constants.SDF_MYSL_DATE.format(claimLevelSections.getClaimProcessingDate()));
-				responseDto.setClaimUuid(claim.getClaimUuid());
 				BeanUtils.copyProperties(claimLevelSections, responseDto);
 			}
 			return responseDto;
 		}
 		return null;
 	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public Boolean saveAppealInformation(AppealInformationDto appealInfoDto, PartialHeader partialHeader,int sectionId,String claimuuid)
+			throws Exception {
+		RcmClaims claim = claimRepo.findByClaimUuid(claimuuid);
+		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+		RcmAppealLevelInformation appealInformation = null;
+		if (claim != null) {
+			appealInformation = new RcmAppealLevelInformation();
+			appealInformation.setAiToolUsed(appealInfoDto.getAiToolUsed());
+			appealInformation.setAppealDocument(appealInfoDto.getAppealDocument());
+			appealInformation.setClaim(claim);
+			appealInformation.setRemarks(appealInfoDto.getRemarks());
+			appealInformation.setModeOfAppeal(appealInfoDto.getModeOfAppeal());
+			appealInformation.setCreatedBy(createdBy);
+			appealInformation.setTeamId(teamRepo.findById(partialHeader.getTeamId()));
+			appealInformation = appealInfoRepo.save(appealInformation);
+			return appealInformation != null ? true : null;
+		}
+		return null;
+	}
+
+	public AppealInformationDto fetchAppealLevelInfo(PartialHeader partialHeader, String claimUuid) throws Exception {
+		RcmClaims claim = claimRepo.findByClaimUuid(claimUuid);
+		if (claim != null) {
+			RcmAppealLevelInformation appealLevelInformation = appealInfoRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(claim.getClaimUuid(),
+							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+			AppealInformationDto responseDto = new AppealInformationDto();
+			if (appealLevelInformation != null) {
+				BeanUtils.copyProperties(appealLevelInformation, responseDto);
+			}
+			return responseDto;
+		}
+		return null;
+	}
+
+	
 
 }

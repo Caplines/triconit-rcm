@@ -61,6 +61,8 @@ export class OtherTeamsWorkComponent implements OnInit {
     'Credentialing': ['currentStatus', 'nextActionRequired'],
     'Patient Statement': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueBalance'],
     'Payment Posting': ['currentStatus', 'nextActionRequired', 'providerSpeciality'],
+    'Quality': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
+    'Need to hold': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
   };
   
 
