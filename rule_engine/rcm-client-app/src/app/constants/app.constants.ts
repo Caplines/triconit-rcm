@@ -201,4 +201,70 @@ export class AppConstants {
     public static ATTACH_WITH_REMARKS:string="AttachWithRemarks";
 
     public static inputRequiredForTeams: any = { "Aging": false, "CDP": false, "Payment Posting": false, "Patient Statement": false }
+    
+    public claimInitialDenialReason:any = [
+        { reasonName: "Service not covered" },
+        { reasonName: "Benefit Maximum Met" },
+        { reasonName: "Benefits assigned to member" },
+        { reasonName: "COB Info Required" },
+        { reasonName: "Freqency Limitation & Coinsurance" },
+        { reasonName: "Frequency Limit & Deductibles" },
+        { reasonName: "Frequency Limitation" },
+        { reasonName: "Member Not Eligible" },
+        { reasonName: "Coinsurance applied" },
+        { reasonName: "Deductible applied" },
+        { reasonName: "Deductibles & Coinsurance" },
+        { reasonName: "Alternate Benefit Applied" },
+        { reasonName: "Provider Out of Network" },
+        { reasonName: "Service Not Covered" },
+        { reasonName: "Provider not authorized for service" },
+        { reasonName: "Service Not Covered & Coinsurance" },
+        { reasonName: "Waiting Period" },
+        { reasonName: "Medical Necessity" },
+        { reasonName: "Accounts payment received" },
+        { reasonName: "Copay" },
+        { reasonName: "Coins+ Deductible+Freq Limit" },
+        { reasonName: "Coins+Deductible +Est 0" },
+        { reasonName: "Provider out of network+Ded+Coins" },
+        { reasonName: "Alt Benefit+Deductible+Coins" },
+        { reasonName: "Frequency limitation" },
+        { reasonName: "In Acc To Primary Eob" },
+        { reasonName: "Coins+Alt Benefit" },
+        { reasonName: "Estimated amount is $0+Deductible" },
+        { reasonName: "Coins+Deductible+Alt Benefit" },
+        { reasonName: "Provider Out Of Network+Coins" },
+        { reasonName: "Benefit Maxed Out" },
+        { reasonName: "Bundled Service Applied" },
+        { reasonName: "Appeal Upheld" },
+        { reasonName: "N/A" },
+        { reasonName: "Processed under Capitaion" },
+        { reasonName: "Medical Records (CRA) Missed" },
+        { reasonName: "Additional Info Needed" },
+        { reasonName: "Incorrect Billing" },
+        { reasonName: "Incorrect denial" },
+        { reasonName: "Incorrect Provider Info" },
+        { reasonName: "Untimely Filing" },
+        { reasonName: "Claim not on file" },
+        { reasonName: "Pre-auth unavailable" },
+        { reasonName: "Crown Not Paid" },
+        { reasonName: "Crown Not Walked Out" },
+        { reasonName: "Pre-auth Denied" },
+        { reasonName: "Duplicate Claim" },
+        { reasonName: "Patient Not Assigned To The Facility" },
+        { reasonName: "Provider is not PCD" },
+        { reasonName: "Incorrect Walkout" },
+      ];
+    
+    public claimStatusRcm: any  = [
+        { name: "Billed to insurance" },
+        { name: "Claim Settled & Under Review" },
+        { name: "Claim Settled & Closed" },
+        { name: "Claim Settled & BTP" },
+        { name: "Claim settled & to be adjusted" },
+      ];
+
+    public claimStatusEs:any = [
+        {name:'Partial paid and Recreated'},
+        {name:'Open'},
+    ] 
 }

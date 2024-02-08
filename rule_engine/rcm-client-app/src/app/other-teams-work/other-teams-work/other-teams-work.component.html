@@ -415,22 +415,22 @@
                                                         Due Balance
                                                     </div>
                                                 </th>
-                                                <th class="remarks-bg">
+                                                <th class="remarks-bg" *ngIf="showColumns.showAttach">
                                                     <div class="dFlex">
                                                         Enter Your Remarks
                                                     </div>
                                                 </th>
-                                                <th class="remarks-bg">
+                                                <th class="remarks-bg" *ngIf="showColumns.showAttach">
                                                     <div class="dFlex">
                                                         Attach File
                                                     </div>
                                                 </th>
-                                                <th class="remarks-bg">
+                                                <th class="remarks-bg" *ngIf="showColumns.showAttach">
                                                     <div class="dFlex">
                                                         Submit Back
                                                     </div>
                                                 </th>
-                                                <th class="remarks-bg">
+                                                <th class="remarks-bg" *ngIf="showColumns.showAttach">
                                                     <div class="dFlex">
                                                         Assign to other team
                                                     </div>
@@ -486,18 +486,18 @@
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="">{{det.lastTeamRemark}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight">{{currentTeamName?.teamName}}</td>
-                                                        <td *ngIf="showColumns.currentStatus">1</td>
+                                                        <td *ngIf="showColumns.currentStatus">1</td>  <!--  //api changes required -->
                                                         <td *ngIf="showColumns.nextActionRequird">2</td>
                                                         <td *ngIf="showColumns.nextFollowUpDate">3</td>
                                                         <td *ngIf="showColumns.providerSpeciality">4</td>
                                                         <td *ngIf="showColumns.dueBalance">5</td>
-                                                        <td><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
+                                                        <td *ngIf="showColumns.showAttach"><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
                                                                 style="width: 200px;"></textarea>
                                                         </td>
-                                                        <td> <app-attach-file [inputConfig]="{'claimUuid':det.uuid,'attachmentCount':det.attachmentCount,'isOtherTeam':true}" (emitToParent)="receiveChildEvent($event)" ></app-attach-file></td>
-                                                        <td><button type="button" class="btn btn-primary btn-sm" (click)="openModalAndValidateFields(det)"> 
+                                                        <td *ngIf="showColumns.showAttach"> <app-attach-file [inputConfig]="{'claimUuid':det.uuid,'attachmentCount':det.attachmentCount,'isOtherTeam':true}" (emitToParent)="receiveChildEvent($event)" ></app-attach-file></td>
+                                                        <td *ngIf="showColumns.showAttach"><button type="button" class="btn btn-primary btn-sm" (click)="openModalAndValidateFields(det)"> 
                                                                 Submit</button></td>
-                                                        <td>
+                                                        <td *ngIf="showColumns.showAttach">
                                                             <div class="otherTeam">
                                                                 <div class="billingDropdown ">
                                                                     <select class="form-control" (change)="selectOtherTeam($event,det.uuid)">

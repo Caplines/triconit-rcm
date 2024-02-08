@@ -54,15 +54,21 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredLastTeam:any=[];
   tabSwitch: any = {'submitted': false, 'unSubmitted': false };
   tabValue:any;
-  showColumns:any={"currentStatus":false,"nextActionRequired":false,"nextFollowUpDate":false,"providerSpeciality":false,"dueBalance":false};
-  columnMappings: {[key: string]: string[]} = {
+  showColumns:any={"currentStatus":false,"nextActionRequired":false,"nextFollowUpDate":false,"providerSpeciality":false,"dueBalance":false,"showAttach":false};
+  columnPermissionsByTeam: any = {
     'Aging': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
     'CDP': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
-    'Credentialing': ['currentStatus', 'nextActionRequired'],
+    'Credentialing': ['currentStatus', 'nextActionRequired','showAttach'],
     'Patient Statement': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueBalance'],
     'Payment Posting': ['currentStatus', 'nextActionRequired', 'providerSpeciality'],
-    'Quality': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
-    'Need to hold': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
+    'LC3': ['showAttach'],
+    'Office': ['showAttach'],
+    'Ortho': ['showAttach'],
+    'PPO IV': ['showAttach'],
+    'Medicaid IV': ['showAttach'],
+    'Need to hold': ['showAttach'],
+    'Quality': ['showAttach'],
+    'Patient Calling': ['showAttach'],
   };
   
 
@@ -931,7 +937,8 @@ AssignClaimWithRemark(claimUuid:any,hasAttachedFiles:boolean){
   }
   
   showOrHideColumns(currentTeamName: any) {
-    const columnsToShow = this.columnMappings[currentTeamName.teamName] || [];
+
+    const columnsToShow = this.columnPermissionsByTeam[currentTeamName.teamName] || [];
     Object.keys(this.showColumns).forEach(column => {
       this.showColumns[column] = columnsToShow.includes(column);
     });
