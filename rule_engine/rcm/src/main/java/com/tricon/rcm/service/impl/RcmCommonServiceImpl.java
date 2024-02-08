@@ -527,22 +527,28 @@ public class RcmCommonServiceImpl {
 			// section)
 			case 13:
 				logger.info("Inside section 13-> Claim Level Information");
-				validationFail = claimSectionValidationUtil
-						.validationForClaimInfoSectionFields(sectionRequestBody.getClaimInfoModel());
+				validationFail = sectionRequestBody.isFinalSubmit()
+						? claimSectionValidationUtil
+								.validationForClaimInfoSectionFields(sectionRequestBody.getClaimInfoModel())
+						: true;
 				if (!validationFail)
 					break;
 				response = claimSectionimpl.saveClaimLevelInformation(sectionRequestBody.getClaimInfoModel(),
-						partialHeader, section.getSectionId(), sectionRequestBody.getClaimUuid());
+						partialHeader, section.getSectionId(), sectionRequestBody.getClaimUuid(),
+						sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
 			case 19:
 				logger.info("Inside section 19->Appeal");
-				validationFail = claimSectionValidationUtil
-						.validationForAppealInfoSectionFields(sectionRequestBody.getAppealInfoModel());
+				validationFail = sectionRequestBody.isFinalSubmit()
+						? claimSectionValidationUtil
+								.validationForAppealInfoSectionFields(sectionRequestBody.getAppealInfoModel())
+						: true;
 				if (!validationFail)
 					break;
 				response = claimSectionimpl.saveAppealInformation(sectionRequestBody.getAppealInfoModel(),
-						partialHeader, section.getSectionId(), sectionRequestBody.getClaimUuid());
+						partialHeader, section.getSectionId(), sectionRequestBody.getClaimUuid(),
+						sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
 			default:

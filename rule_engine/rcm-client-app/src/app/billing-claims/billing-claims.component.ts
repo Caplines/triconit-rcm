@@ -109,7 +109,8 @@ export class BillingClaimsComponent {
     'REQUEST_REBILLING': 23,
     'REBILLING': 24,
     'NEED_TO_CALL_INSURANCE': 25,
-    'CURRENT_STATUS_AND_NEXT_ACTION': 26
+    'CURRENT_STATUS_AND_NEXT_ACTION': 26,
+    'ATTACHMENT':27
   };
 
   toggleTab: any = {};

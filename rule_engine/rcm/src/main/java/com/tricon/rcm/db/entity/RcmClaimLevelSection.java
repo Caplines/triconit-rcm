@@ -60,4 +60,6 @@ public class RcmClaimLevelSection extends BaseAuditEntity implements java.io.Ser
 	@Column(name = "claim_status_rcm")
 	private String claimStatusRcm;
 
+	@Column(name = "final_submit")
+	private boolean finalSubmit;
 }

@@ -7,4 +7,5 @@ import com.tricon.rcm.db.entity.RcmClaimLevelSection;
 public interface RcmClaimLevelInfoRepo  extends JpaRepository<RcmClaimLevelSection, Integer>{
 
 	RcmClaimLevelSection findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(String claimUuid,String createdBy,int teamId);
+	RcmClaimLevelSection findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(String claimUuid,String createdBy);
 }

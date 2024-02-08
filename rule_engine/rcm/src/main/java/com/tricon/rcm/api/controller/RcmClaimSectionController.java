@@ -162,16 +162,16 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@GetMapping(value = "api/get-claim-level-info/{claimUuid}")
+	@GetMapping(value = "api/get-claim-level-info/{claimUuid}/{withTeam}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getClaimLevelInfo(@PathVariable("claimUuid")String claimUuid,Model model) {
+	public ResponseEntity<?> getClaimLevelInfo(@PathVariable("claimUuid")String claimUuid,@PathVariable("withTeam")boolean withTeam,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		ClaimLevelInformationDto response = null;
 		try {
-			response = claimSection.fetchClaimLevelInfo(partialHeader,claimUuid);
+			response = claimSection.fetchClaimLevelInfo(partialHeader,claimUuid,withTeam);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -180,16 +180,16 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@GetMapping(value = "api/get-appeal-level-info/{claimUuid}")
+	@GetMapping(value = "api/get-appeal-level-info/{claimUuid}/{withTeam}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getAppealLevelInfo(@PathVariable("claimUuid")String claimUuid,Model model) {
+	public ResponseEntity<?> getAppealLevelInfo(@PathVariable("claimUuid")String claimUuid,@PathVariable("withTeam")boolean withTeam,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		AppealInformationDto response = null;
 		try {
-			response = claimSection.fetchAppealLevelInfo(partialHeader,claimUuid);
+			response = claimSection.fetchAppealLevelInfo(partialHeader,claimUuid,withTeam);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

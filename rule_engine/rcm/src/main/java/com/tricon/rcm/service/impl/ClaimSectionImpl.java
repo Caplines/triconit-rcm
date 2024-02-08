@@ -456,7 +456,7 @@ public class ClaimSectionImpl {
 	
 	
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveClaimLevelInformation(ClaimLevelInformationDto claimLvelInfoDto, PartialHeader partialHeader,int sectionId,String claimuuid)
+	public Boolean saveClaimLevelInformation(ClaimLevelInformationDto claimLvelInfoDto, PartialHeader partialHeader,int sectionId,String claimuuid,boolean isFinalSubmit)
 			throws Exception {	
 		RcmClaims claim = claimRepo.findByClaimUuid(claimuuid);
 		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
@@ -471,6 +471,7 @@ public class ClaimSectionImpl {
 			claimLevelSection.setClaimStatusRcm(claimLvelInfoDto.getClaimStatusRcm());
 			claimLevelSection.setInitialDenial(claimLvelInfoDto.getInitialDenial());
 			claimLevelSection.setCreatedBy(createdBy);
+			claimLevelSection.setFinalSubmit(isFinalSubmit);
 			claimLevelSection.setTeamId(teamRepo.findById(partialHeader.getTeamId()));
 			claimLevelSection
 					.setClaimProcessingDate(Constants.SDF_MYSL_DATE.parse(claimLvelInfoDto.getClaimProcessingDate()));
@@ -480,26 +481,30 @@ public class ClaimSectionImpl {
 		return null;
 	}
 
-	public ClaimLevelInformationDto fetchClaimLevelInfo(PartialHeader partialHeader, String claimUuid)
-			throws Exception {
-		RcmClaims claim = claimRepo.findByClaimUuid(claimUuid);
-		if (claim != null) {
-			RcmClaimLevelSection claimLevelSections = claimLevelInfoRepo
-					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(claim.getClaimUuid(),
+	public ClaimLevelInformationDto fetchClaimLevelInfo(PartialHeader partialHeader, String claimUuid,
+			boolean showWithTeam) throws Exception {
+		ClaimLevelInformationDto responseDto = null;
+		RcmClaimLevelSection claimLevelSections = null;
+		if (showWithTeam) {
+			claimLevelSections = claimLevelInfoRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(claimUuid,
 							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
-			ClaimLevelInformationDto responseDto = new ClaimLevelInformationDto();
-			if (claimLevelSections != null) {
-				responseDto.setClaimProcessingDate(
-						Constants.SDF_MYSL_DATE.format(claimLevelSections.getClaimProcessingDate()));
-				BeanUtils.copyProperties(claimLevelSections, responseDto);
-			}
+		} else {
+			claimLevelSections = claimLevelInfoRepo.findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(
+					claimUuid, partialHeader.getJwtUser().getUuid());
+		}
+		if (claimLevelSections != null) {
+			responseDto = new ClaimLevelInformationDto();
+			responseDto.setClaimProcessingDate(
+					Constants.SDF_MYSL_DATE.format(claimLevelSections.getClaimProcessingDate()));
+			BeanUtils.copyProperties(claimLevelSections, responseDto);
 			return responseDto;
 		}
 		return null;
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveAppealInformation(AppealInformationDto appealInfoDto, PartialHeader partialHeader,int sectionId,String claimuuid)
+	public Boolean saveAppealInformation(AppealInformationDto appealInfoDto, PartialHeader partialHeader,int sectionId,String claimuuid,boolean isFinalSubmit)
 			throws Exception {
 		RcmClaims claim = claimRepo.findByClaimUuid(claimuuid);
 		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
@@ -512,6 +517,7 @@ public class ClaimSectionImpl {
 			appealInformation.setRemarks(appealInfoDto.getRemarks());
 			appealInformation.setModeOfAppeal(appealInfoDto.getModeOfAppeal());
 			appealInformation.setCreatedBy(createdBy);
+			appealInformation.setFinalSubmit(isFinalSubmit);
 			appealInformation.setTeamId(teamRepo.findById(partialHeader.getTeamId()));
 			appealInformation = appealInfoRepo.save(appealInformation);
 			return appealInformation != null ? true : null;
@@ -519,16 +525,21 @@ public class ClaimSectionImpl {
 		return null;
 	}
 
-	public AppealInformationDto fetchAppealLevelInfo(PartialHeader partialHeader, String claimUuid) throws Exception {
-		RcmClaims claim = claimRepo.findByClaimUuid(claimUuid);
-		if (claim != null) {
-			RcmAppealLevelInformation appealLevelInformation = appealInfoRepo
-					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(claim.getClaimUuid(),
+	public AppealInformationDto fetchAppealLevelInfo(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
+			throws Exception {
+		AppealInformationDto responseDto = null;
+		RcmAppealLevelInformation appealLevelInformation = null;
+		if (showWithTeam) {
+			appealLevelInformation = appealInfoRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(claimUuid,
 							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
-			AppealInformationDto responseDto = new AppealInformationDto();
-			if (appealLevelInformation != null) {
-				BeanUtils.copyProperties(appealLevelInformation, responseDto);
-			}
+		} else {
+			appealLevelInformation = appealInfoRepo.findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(
+					claimUuid, partialHeader.getJwtUser().getUuid());
+		}
+		if (appealLevelInformation != null) {
+			responseDto = new AppealInformationDto();
+			BeanUtils.copyProperties(appealLevelInformation, responseDto);
 			return responseDto;
 		}
 		return null;

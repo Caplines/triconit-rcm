@@ -47,5 +47,7 @@ public class RcmAppealLevelInformation extends BaseAuditEntity implements java.i
 	@Column(name = "appeal_document")
 	private String appealDocument;
 	
+	@Column(name = "final_submit")
+	private boolean finalSubmit;
 
 }
