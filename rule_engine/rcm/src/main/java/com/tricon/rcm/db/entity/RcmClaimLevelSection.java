@@ -41,14 +41,14 @@ public class RcmClaimLevelSection extends BaseAuditEntity implements java.io.Ser
 	@Column(name = "claim_id")
 	private String claimId;
 	
-	@Column(name = "network_type")
+	@Column(name = "network_type",length =10 )
 	private String network;
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name = "claim_processing_date")
 	private Date claimProcessingDate;
 	
-	@Column(name = "claim_pass_first_go")
+	@Column(name = "claim_pass_first_go",length =10)
 	private String claimPassFirstGo;
 	
 	@Column(name = "initial_denial")

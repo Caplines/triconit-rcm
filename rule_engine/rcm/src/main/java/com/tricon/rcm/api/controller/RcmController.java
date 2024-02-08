@@ -2,6 +2,7 @@ package com.tricon.rcm.api.controller;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,7 @@ import com.tricon.rcm.dto.ClaimStatusUpdate;
 import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
+import com.tricon.rcm.dto.CommonSectionsRequestBodyDto;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
@@ -88,6 +90,9 @@ public class RcmController extends BaseHeaderController{
 	
 	@Autowired
 	ClaimSectionImpl claimSection;
+	@Autowired
+	RcmCommonServiceImpl rcmCommonService;
+
 
 	/**
 	 * Fetch Claims From Eagle Soft or Google Sheet
@@ -850,4 +855,34 @@ public class RcmController extends BaseHeaderController{
 //		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 //	}
 
+	
+	@PostMapping(value = "api/save-section-info")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
+	public ResponseEntity<?> saveSectionsData(@RequestBody CommonSectionsRequestBodyDto sectionRequestBody,
+			Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		Boolean response = null;
+		if (!StringUtils.isNoneBlank(sectionRequestBody.getClaimUuid())
+				|| sectionRequestBody.getSectionId() == null) {
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		try {
+			// cross check verify section permission
+			boolean sectionAccess = rcmCommonService.validateUserSectionAccess(partialHeader,
+					sectionRequestBody.getSectionId());
+			if (!sectionAccess)
+				return ResponseEntity.badRequest()
+						.body(new GenericResponse(HttpStatus.BAD_REQUEST, "Section Permission Denied!", null));
+			response = rcmCommonService.commonSectionInformationsForAll(sectionRequestBody, partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 }
