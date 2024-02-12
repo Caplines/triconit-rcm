@@ -25,6 +25,7 @@ import com.tricon.rcm.dto.ClaimAssignDto;
 import com.tricon.rcm.dto.ClaimAssignWithRemarkAndTeam;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
+import com.tricon.rcm.dto.ListOfClaimsCountsDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmArchiveClaimsDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
@@ -814,6 +815,25 @@ public class RcmController extends BaseHeaderController{
 			e.printStackTrace();
 			logger.error(e.getMessage());
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", response));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@PostMapping(value = "api/claim/pendency")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> getClaimsDataAccordingToCounts(@RequestBody ListOfClaimsCountsDto requestDto,
+			Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		String response = null;
+		try {
+			response = claimServiceImpl.claimsDataAccordingToCountsType(requestDto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}

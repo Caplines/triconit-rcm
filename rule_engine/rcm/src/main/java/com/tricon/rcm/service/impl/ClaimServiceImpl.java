@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -68,6 +69,7 @@ import com.tricon.rcm.dto.ClaimDetailDto;
 import com.tricon.rcm.dto.ClaimEditDetailDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
+import com.tricon.rcm.dto.ListOfClaimsCountsDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PendencyDataCountDto;
 import com.tricon.rcm.dto.PendencyKeyValDto;
@@ -4140,6 +4142,22 @@ public class ClaimServiceImpl {
 			}
 		}
 		return responseDto;
+	}
+	
+	public String claimsDataAccordingToCountsType(ListOfClaimsCountsDto requestDto) {
+		if (!StringUtils.isNoneBlank(requestDto.getPageName())
+				&& !Constants.PAGE_NAME.contains(requestDto.getPageName())) {
+			return "Page Not match";
+		}
+		if ((requestDto.getPageName().equals("Pendancy") && requestDto.getCountType() == null)
+				|| (requestDto.getPageName().equals("Pendancy")
+						&& !Constants.COUNT_TYPE.contains(requestDto.getCountType()))) {
+			return "Count Type Not match";
+		}
+		if (!requestDto.getPageName().equals("Pendancy") && requestDto.getTeamId() == null) {
+			return MessageConstants.TEAM_REQUIRED;
+		}
+		return null;
 	}
 	
 	

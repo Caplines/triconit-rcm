@@ -136,5 +136,12 @@ public class Constants {
 	public static final int OVERDUE_CLAIM_DATE_DIFF=7;
 	public static final String SUBMITTED_CLAIMS="submitted";
 	public static final String UNSUBMITTED_CLAIMS="unSubmitted";
+	
+
+	public static final List<String> PAGE_NAME = Arrays.asList("Pendancy", "Pendancy-other", "Pendancy-other-dos",
+			"Pendancy-other-dop");
+	public static final List<String> COUNT_TYPE = Arrays.asList("opdt", "opdos", "opdtd",
+			"opdosd","tp");
+	
 
 }
