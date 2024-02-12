@@ -95,6 +95,7 @@ import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimStatusUpdate;
 import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
+import com.tricon.rcm.dto.CommonSectionsRequestBodyDto;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
 import com.tricon.rcm.dto.FindTLExistDto;
@@ -115,6 +116,7 @@ import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.RuleRemarkDto;
 import com.tricon.rcm.dto.SearchParamDto;
+import com.tricon.rcm.dto.SectionDto;
 import com.tricon.rcm.dto.ServiceValidationDataDto;
 import com.tricon.rcm.dto.TPValidationResponseDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
@@ -2890,7 +2892,7 @@ public class ClaimServiceImpl {
 		//RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (validateClaimRight) {
 
-			if (!claim.isPending()) {
+			if (!claim.isPending() || dto.isByPassPendingCheck()) {
 				claimEditDetailDto.setMessage( "Claim Already Submitted");
 				return claimEditDetailDto;
 		}
@@ -4138,6 +4140,39 @@ public class ClaimServiceImpl {
 			}
 		}
 		return responseDto;
+	}
+	
+	
+	public Boolean saveClaimSectionDatAfterSubmission(CommonSectionsRequestBodyDto sectionRequestBody,
+			PartialHeader partialHeader) throws Exception {
+		
+		boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
+		if (!validateClaimRight) {
+			return false;
+	    }
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(sectionRequestBody.getClaimUuid());
+		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+		RcmClaimAssignment assign = rcmClaimAssignmentRepo
+				.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
+		if (assign == null) {
+			//Not assigned to user
+			return false;
+		}
+		boolean sectionAccess = rcmCommonServiceImpl.validateUserSectionAccess(partialHeader,
+				sectionRequestBody.getSectionId());
+		if (!sectionAccess) {
+		Boolean save = rcmCommonServiceImpl.commonSectionInformationsForAll(sectionRequestBody,partialHeader);
+		RcmOffice office =officeRepo.findByUuid(claim.getOffice().getUuid());
+		if (save.booleanValue() && sectionRequestBody.isFinalSubmit()) {
+			//TO DO  -- dto.getAssignToTeam() logic navneet
+			//assignClaimToOtherTeamWithRemarkCommon(partialHeader,sectionRequestBody.getClaimUuid(),
+			//			dto.getAssignToTeam(),"Please Work on Claim",claim,assign,user,office,null);
+			
+		}
+		return save;
+		}
+		else return sectionAccess;
+	    
 	}
 
 //	public List<FreshClaimDataViewDto> fetchSubmittedClaimDetails(PartialHeader partialHeader) throws Exception {

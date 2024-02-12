@@ -871,13 +871,10 @@ public class RcmController extends BaseHeaderController{
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
 		try {
-			// cross check verify section permission
-			boolean sectionAccess = rcmCommonService.validateUserSectionAccess(partialHeader,
-					sectionRequestBody.getSectionId());
-			if (!sectionAccess)
+			response = claimServiceImpl.saveClaimSectionDatAfterSubmission(sectionRequestBody,partialHeader);
+			if (!response)
 				return ResponseEntity.badRequest()
 						.body(new GenericResponse(HttpStatus.BAD_REQUEST, "Section Permission Denied!", null));
-			response = rcmCommonService.commonSectionInformationsForAll(sectionRequestBody, partialHeader);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

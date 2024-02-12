@@ -1577,36 +1577,36 @@
                                 *ngIf="claimRcm.currentState==0 && actionButtons && (isBilling || isInternalAudit)">
                                 <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
                             (claimRcm.primary && claimRcm.pending) )" type="button" class="btn btn-success"
-                                    [disabled]="inSave" (click)="saveClaim('latter')">
+                                    [disabled]="inSave" (click)="saveClaim('latter',false)">
                                     Save For Later Processing
                                 </button>
                                 <button *ngIf="claimRcm.pending  && selectedTeam== claimRcm.currentTeamId" type="button"
-                                    class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assigntl')">
+                                    class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assigntl',false)">
                                     Assign to
                                     Team Lead
                                 </button>
                                 <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
                                                           (claimRcm.primary && claimRcm.pending)
                                                        ) && isBilling " type="button" class="btn btn-success"
-                                    [disabled]="inSave" (click)="saveClaim('submit')">
+                                    [disabled]="inSave" (click)="saveClaim('submit',false)">
                                     Mark as Submitted
                                 </button>
                                 <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
                                                          (claimRcm.primary && claimRcm.pending)
                                                        )" type="button" class="btn btn-success" [disabled]="inSave"
-                                    (click)="saveClaim('assign')">
+                                    (click)="saveClaim('assign',false)">
                                     Assign to Other Team
                                 </button>
                                 <button *ngIf="claimRcm.allowEdit && isInternalAudit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
                                                                                          (claimRcm.primary && claimRcm.pending)
                                                                                        )" type="button"
-                                    class="btn btn-success" [disabled]="inSave" (click)="saveClaim('reviewed')">
+                                    class="btn btn-success" [disabled]="inSave" (click)="saveClaim('reviewed',false)">
                                     Reviewed
                                 </button>
                                 <button
                                     *ngIf="claimRcm.pending  && selectedTeam == claimRcm.currentTeamId && isSuperAdmin"
                                     type="button" class="btn btn-success" [disabled]="inSave"
-                                    (click)="saveClaim('assign')">
+                                    (click)="saveClaim('assign',false)">
                                     Assign to
                                     Other Team
                                 </button>

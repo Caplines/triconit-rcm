@@ -110,7 +110,7 @@ export class BillingClaimsComponent {
     'REBILLING': 24,
     'NEED_TO_CALL_INSURANCE': 25,
     'CURRENT_STATUS_AND_NEXT_ACTION': 26,
-    'ATTACHMENT':27
+    'ATTACHMENT': 27
   };
 
   toggleTab: any = {};
@@ -265,8 +265,8 @@ export class BillingClaimsComponent {
   //ths.ivfData = 'dsf'
   // }
 
-  saveClaim(type: string) {
-
+  saveClaim(type: string, byPassPendingCheck: boolean) {
+    //Only for Pending claims
     let ths = this;
     ths.assignType = type;
     ths.claimEditModel = {};
@@ -277,6 +277,7 @@ export class BillingClaimsComponent {
     ths.claimEditModel.serCVDto = ths.claimServiceLevelModel?.dto;
     ths.claimEditModel.submissionDto = ths.submissionDto;
     ths.claimEditModel.ruleRemarkDto = [];
+    ths.claimEditModel.byPassPendingCheck = byPassPendingCheck;
     ths.claimRules.forEach(x => {
       x.sectionName = "ClaimLevelValidation"
       //if (x.remark != null && x.remark.trim() != '') 
@@ -1465,7 +1466,7 @@ export class BillingClaimsComponent {
     this.overidePreferredSubmission = false;
     if (choice === 'yes') {
       this.overidePreferredSubmission = true;
-      this.saveClaim('submit');
+      this.saveClaim('submit', false);
     }
     this.closeArchPopup('check-preferredModeOfSubmission-modal');
   }

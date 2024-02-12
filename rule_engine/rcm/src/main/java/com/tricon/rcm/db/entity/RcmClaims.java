@@ -248,7 +248,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	//@Column(name = "insurance_code")
 	//private String insuranceCode;
 	
-	//@Column(name = "current_status",columnDefinition = "integer default 0")
-	//private int currentStatus;//Integer values 0 =Billed 1=unbilled 2= ... so on..
+	@Column(name = "current_status",columnDefinition = "integer default 0")
+	private int currentStatus;//
 
 }

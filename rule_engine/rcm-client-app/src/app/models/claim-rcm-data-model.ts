@@ -102,12 +102,12 @@ export interface ClaimEditModel {
 	submissionDto?: SubmissionDetailModel;
 	ruleRemarkDto?: Array<ClaimRuleRemarkModel>;
 	submission?: boolean;
-	//Ayush
 	assignToTL?: boolean;
 	assignToOtherTeam?: boolean;
 	assignTouuid?: string;
 	assignToTeam?: number;
 	assignToComment?: string;
+	byPassPendingCheck?: boolean;
 
 
 }
