@@ -134,5 +134,12 @@ public class Constants {
 	public static final int OVERDUE_UNBILLED_MEDICAID  = 2;
 	public static final int OVERDUE_UNBILLED_NON_MEDICAID=3;
 	public static final int OVERDUE_CLAIM_DATE_DIFF=7;
+	
+
+	public static final List<String> PAGE_NAME = Arrays.asList("Pendancy", "Pendancy-other", "Pendancy-other-dos",
+			"Pendancy-other-dop");
+	public static final List<String> COUNT_TYPE = Arrays.asList("opdt", "opdos", "opdtd",
+			"opdosd","tp");
+	
 
 }
