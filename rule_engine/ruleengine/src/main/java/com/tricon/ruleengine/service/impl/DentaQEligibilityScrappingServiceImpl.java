@@ -700,18 +700,24 @@ public class DentaQEligibilityScrappingServiceImpl extends BaseScrappingServiceI
 	}
 	private boolean fetchPagginationHistoryNew(WebDriver driver, EligibilityDto dto) {
 		
+		
+		try {
+			Thread.sleep(12000);
+		}catch(Exception p) {
+			p.printStackTrace();
+		}
 		WebElement historyTab = driver.findElement(By.id("history-tab"));
 		List<WebElement> aas = historyTab.findElements(By.tagName("a"));
 		boolean callNext = false;
 		// System.out.println("CALL>...");
 		try {
-			Thread.sleep(12000);
+			
 			for (WebElement a : aas) {
 				if (a.getText() != null && a.getText().equals("Next")) {
 					// System.out.println("CALL>... FOUND");
 					callNext = true;
 					a.click();
-					Thread.sleep(15000);//Because history api is very slow,..
+					Thread.sleep(25000);//Because history api is very slow,..
 					WebElement htable = driver.findElement(By.id("historyTable"));
 					List<WebElement> ele = htable.findElement(By.tagName("tbody")).findElements(By.tagName("tr"));
 					for (WebElement e : ele) {

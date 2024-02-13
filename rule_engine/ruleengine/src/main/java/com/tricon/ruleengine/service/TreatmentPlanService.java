@@ -43,10 +43,10 @@ public interface TreatmentPlanService {
 	
 	public Rules getRulesFromList(List<Rules> rules, String name);
 	
-	public void saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
+	public String saveReportsList(Authentication authentication, List<Rules> rules, CommonDataCheck tp,
 			IVFTableSheet ivfSheet, List<TPValidationResponseDto> list, Office off,int userType,String insuranceType,IVFormType iVFormType,String ignoredValues);
 	
-	public void saveReportsListBatch(Authentication authentication, List<Rules> rules, IVFTableSheet ivfSheet,
+	public String saveReportsListBatch(Authentication authentication, List<Rules> rules, IVFTableSheet ivfSheet,
 			List<TPValidationResponseDto> list, Office off,IVFormType iVFormType,String mode);
 	
 	public Object getTreatmentClaimData(TreatmentClaimDto dto);
