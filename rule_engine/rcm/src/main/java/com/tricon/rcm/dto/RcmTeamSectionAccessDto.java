@@ -20,6 +20,7 @@ public class RcmTeamSectionAccessDto {
 	public static class SectionData{
 		
 		private Integer sectionId;
+		private String sectionDisplayName;
 		private String sectionName;
 		private RcmSectionCategory sectionCategory;
 		private Boolean editAccess;
@@ -56,11 +57,20 @@ public class RcmTeamSectionAccessDto {
 		public void setSectionCategory(RcmSectionCategory sectionCategory) {
 			this.sectionCategory = sectionCategory;
 		}
+		
+		public String getSectionDisplayName() {
+			return sectionDisplayName;
+		}
+		public void setSectionDisplayName(String sectionDisplayName) {
+			this.sectionDisplayName = sectionDisplayName;
+		}
 		@Override
 		public String toString() {
-			return "SectionData [sectionId=" + sectionId + ", sectionName=" + sectionName + ", editAccess=" + editAccess
-					+ ", viewAccess=" + viewAccess + "]";
+			return "SectionData [sectionId=" + sectionId + ", sectionDisplayName=" + sectionDisplayName
+					+ ", sectionName=" + sectionName + ", sectionCategory=" + sectionCategory + ", editAccess="
+					+ editAccess + ", viewAccess=" + viewAccess + "]";
 		}
+		
 		
 		
 	}

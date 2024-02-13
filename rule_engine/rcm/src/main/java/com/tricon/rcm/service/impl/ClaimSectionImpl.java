@@ -255,7 +255,8 @@ public class ClaimSectionImpl {
 							.findAny().orElse(null);
 					SectionData sectionData = new SectionData();
 					sectionData.setSectionId(section.getId());
-					sectionData.setSectionName(section.getDisplayName());
+					sectionData.setSectionDisplayName(section.getDisplayName());
+					sectionData.setSectionName(section.getSectionName());
 					sectionData.setSectionCategory(section.getSectionCategory());
 					sectionData.setEditAccess(
 							existingSectionMappingWithClient != null ? existingSectionMappingWithClient.isEditAccess()
@@ -327,7 +328,8 @@ public class ClaimSectionImpl {
 						// existingSectionMappingWithClient & existingUserMappingWithClient
 						SectionData sectionData = new SectionData();
 						sectionData.setSectionId(section.getId());
-						sectionData.setSectionName(section.getDisplayName());
+						sectionData.setSectionDisplayName(section.getDisplayName());
+						sectionData.setSectionName(section.getSectionName());
 						sectionData.setSectionCategory(section.getSectionCategory());
 						sectionData.setEditAccess(existingUserMappingWithClient == null
 								? (existingSectionMappingWithClient != null
