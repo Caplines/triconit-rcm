@@ -4206,7 +4206,7 @@ public class ClaimServiceImpl {
 					Field f = value.getClass().getDeclaredField("sectionId");
 					f.setAccessible(true);
 					boolean sectionAccess = rcmCommonServiceImpl.validateUserSectionAccess(partialHeader,
-							(int) f.get(value));
+							(int) f.get(value),createdBy);
 					if (!sectionAccess) {
 						allSectionAccess = false;
 						response=false;

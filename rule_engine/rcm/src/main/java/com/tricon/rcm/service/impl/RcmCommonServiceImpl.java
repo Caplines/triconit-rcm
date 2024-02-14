@@ -490,8 +490,7 @@ public class RcmCommonServiceImpl {
 		userTempRepo.save(tempUser);
 	}
 	
-	public boolean validateUserSectionAccess(PartialHeader partialHeader, int sectionId) throws Exception {
-		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+	public boolean validateUserSectionAccess(PartialHeader partialHeader,int sectionId,RcmUser user) throws Exception {
 		if (user != null) {
 			if (partialHeader.getRole().equals(Constants.SUPER_ADMIN)) {
 				RcmClientSectionMapping clientSecrtionMapping = clientSectionMappingRepo
