@@ -15233,14 +15233,18 @@ public class RuleBook {
 
 				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_105,
 						Constants.rule_log_debug, bw);
-				boolean pass = true;
+				//boolean pass = true;
 				List<TPValidationResponseDto> dList = new ArrayList<>();
 				IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 				Set<String> fcodes = new TreeSet<>();
 				Set<String> surfaces = new TreeSet<>();
 				Set<String> teethC = new TreeSet<>();
 				try {
-					 
+					String comment = ivf.getComments();
+					if (comment == null)  comment = "";
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule105.pass.message", new Object[] {comment}, locale), Constants.PASS,
+							String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
 
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -15419,6 +15423,56 @@ public class RuleBook {
 				return dList;
 			}
 			return dList;
+	}
+	
+	// D9999 for above to $100
+	public List<TPValidationResponseDto> Rule109(List<Object> tpList, MessageSource messageSource,
+					Rules rule, BufferedWriter bw) {
+
+				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_109,
+						Constants.rule_log_debug, bw);
+				boolean pass = true;
+				List<TPValidationResponseDto> dList = new ArrayList<>();
+				Set<String> fcodes = new TreeSet<>();
+				Set<String> surfaces = new TreeSet<>();
+				Set<String> teethC = new TreeSet<>();
+				try {
+					 for (Object obj : tpList) {
+							CommonDataCheck tp = (CommonDataCheck) obj;
+							String code = tp.getServiceCode();
+							surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+							teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+							fcodes.add(tp.getServiceCode());
+							if (code.equals("D9999")){
+								RuleEngineLogger.generateLogs(clazz,"TP Fees :" + tp.getFee() ,Constants.rule_log_debug, bw);
+									double fees = 0;
+								if (!tp.getFee().trim().equals(""))
+									fees = Double.parseDouble(tp.getFee());
+								if (fees>100) pass=false;
+							}
+					}
+					if (!pass) {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+								"rule109.error.message",
+								new Object[] { },
+								locale), Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+								String.join(",", fcodes)));
+
+					} else {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule109.pass.message", new Object[] {}, locale), Constants.PASS,
+								String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+
+					}
+
+				} catch (Exception ex) {
+					ex.printStackTrace();
+					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+							Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+					return dList;
+				}
+				return dList;
 	}
 
 	// Insurance and Address

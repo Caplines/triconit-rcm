@@ -150,6 +150,7 @@ public class Constants {
 	public static final String RULE_ID_106="Codes Compatible with Arch";
 	public static final String RULE_ID_107="Codes compatible with quads";
 	public static final String RULE_ID_108="Ortho treatment not given";
+	public static final String RULE_ID_109="D9999 for above to $100";
 	
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
@@ -177,6 +178,7 @@ public class Constants {
 	//public static final SimpleDateFormat SIMPLE_DATE_FORMAT_DB= new SimpleDateFormat("yyyy-MM-dd");
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_YEAR= new SimpleDateFormat("yyyy");
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_HEADER= new SimpleDateFormat("MMM dd,yyyy");
+	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_UNIQUE= new SimpleDateFormat("MMyy");
 	
 	
    public static final String FAIL = "FAIL";

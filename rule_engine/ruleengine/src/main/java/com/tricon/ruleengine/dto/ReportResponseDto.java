@@ -27,6 +27,7 @@ public class ReportResponseDto {
     private String apt_date;
     private String ins_name;
     private String plan_type;
+    private String unique_id;
     
     
 	
@@ -166,6 +167,12 @@ public class ReportResponseDto {
 	}
 	public void setPlan_type(String plan_type) {
 		this.plan_type = plan_type;
+	}
+	public String getUnique_id() {
+		return unique_id;
+	}
+	public void setUnique_id(String unique_id) {
+		this.unique_id = unique_id;
 	}
 
 	

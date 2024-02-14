@@ -224,14 +224,23 @@ public class ReportController {
 		int ctr=0;
 		if (li != null)
 			for (ReportResponseDto d : li) {
-				
+				String uniqueGen="";
+				try {
+				String[] d2= d.getRd_created_date().split("/");
+				//01/31/2024 21:54:56
+				uniqueGen = d2[1]+d2[2].substring(2,4)+d.getIvf_form_id()+d.getRd_group_run();
+				d.setUnique_id(uniqueGen);
+				}catch(Exception g) {
+					g.printStackTrace();
+				}
 				if (dto.getReportType().equalsIgnoreCase(ReportTypeEnum.ReportType.Teamwise.toString())
 					|| dto.getReportType().equalsIgnoreCase(ReportTypeEnum.ReportType.TeamwiseDOS.toString())) {
-					k = (++ctr) + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
+					k = (++ctr)  +").UNI Id - "+uniqueGen+" - "+ " Patient ID- " + d.getPatient_id() + " Patient Name- "
 							+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " " + inv + d.getTreatement_plan_id()
 							+ " Run By-" + d.getName();
+					
 				}else {
-					k = d.getRd_group_run() + "). Patient ID- " + d.getPatient_id() + " Patient Name- "
+					k = d.getRd_group_run() +").UNI Id - "+uniqueGen+" - "+ " Patient ID- " + d.getPatient_id() + " Patient Name- "
 							+ d.getPatient_name() + " IVF ID-" + d.getIvf_form_id() + " " + inv + d.getTreatement_plan_id()
 							+ " Run By-" + d.getName();
 				}

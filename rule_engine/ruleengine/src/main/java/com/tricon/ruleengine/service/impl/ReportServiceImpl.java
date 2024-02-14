@@ -801,6 +801,8 @@ public class ReportServiceImpl implements ReportService {
     	   cell.setCellValue("Appointment Date");
     	   cell = row.createCell(++columnCount);
     	   cell.setCellValue("Date Created");
+    	   cell = row.createCell(++columnCount);
+    	   cell.setCellValue("Unique Id");
 
       	  
       	  
@@ -829,7 +831,8 @@ public class ReportServiceImpl implements ReportService {
 	        	  cell = row.createCell(++columnCount);
 	        	  cell.setCellValue(d.getRep_create_date());
 	        	  cell = row.createCell(++columnCount);
-	        	  
+	        	  cell.setCellValue(d.getUnique_id());
+	        	  cell = row.createCell(++columnCount);
 	        	  
 	          }
 	        }
