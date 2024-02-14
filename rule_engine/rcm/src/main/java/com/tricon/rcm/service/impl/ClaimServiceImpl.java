@@ -1,6 +1,7 @@
 package com.tricon.rcm.service.impl;
 
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -114,6 +115,7 @@ import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmResponseMessageDto;
+import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.RuleRemarkDto;
@@ -176,6 +178,7 @@ import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 import com.tricon.rcm.util.RuleConstants;
 import com.tricon.rcm.util.MessageUtil;
+import com.tricon.rcm.util.NextTeamClaimTransferUtil;
 
 @Service
 public class ClaimServiceImpl {
@@ -297,6 +300,9 @@ public class ClaimServiceImpl {
 	
 	@Autowired
 	RcmCompanyRepo companyRepo;
+	
+	@Autowired
+	MasterServiceImpl masterService;
 	
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
@@ -1764,6 +1770,9 @@ public class ClaimServiceImpl {
 			// Wrong claimId;
 		}
 		//if (implDto.getSecInsurance()==null) implDto.setSecInsurance("N/A");
+		if(implDto != null) {
+			implDto.setNextTeam(NextTeamClaimTransferUtil.getNextTeam(implDto.getAssignedToTeam()));
+		}
 		
 		return implDto;
 
@@ -4161,36 +4170,94 @@ public class ClaimServiceImpl {
 	}
 	
 	
-	public Boolean saveClaimSectionDatAfterSubmission(CommonSectionsRequestBodyDto sectionRequestBody,
+	public boolean saveClaimSectionDatAfterSubmission(CommonSectionsRequestBodyDto sectionRequestBody,
 			PartialHeader partialHeader) throws Exception {
-		
-		boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
+
+		Boolean response = false;
+		boolean allSectionAccess = true;
+		boolean allCheckValidation = true;
+		boolean validateClaimRight = checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),
+				partialHeader.getCompany().getUuid());
 		if (!validateClaimRight) {
 			return false;
-	    }
+		}
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(sectionRequestBody.getClaimUuid());
-		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
-		RcmClaimAssignment assign = rcmClaimAssignmentRepo
-				.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
+
+		RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(
+				partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
 		if (assign == null) {
-			//Not assigned to user
+			// Not assigned to user
 			return false;
 		}
-		boolean sectionAccess = rcmCommonServiceImpl.validateUserSectionAccess(partialHeader,
-				sectionRequestBody.getSectionId());
-		if (!sectionAccess) {
-		Boolean save = rcmCommonServiceImpl.commonSectionInformationsForAll(sectionRequestBody,partialHeader);
-		RcmOffice office =officeRepo.findByUuid(claim.getOffice().getUuid());
-		if (save.booleanValue() && sectionRequestBody.isFinalSubmit()) {
-			//TO DO  -- dto.getAssignToTeam() logic navneet
-			//assignClaimToOtherTeamWithRemarkCommon(partialHeader,sectionRequestBody.getClaimUuid(),
-			//			dto.getAssignToTeam(),"Please Work on Claim",claim,assign,user,office,null);
-			
+
+		List<SectionDto> sectionsData = masterService.getSections();
+
+		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+
+		RcmTeam team = rcmTeamRepo.findById(partialHeader.getTeamId());
+
+		for (Field field : CommonSectionsRequestBodyDto.class.getDeclaredFields()) {
+			if (field.getName().equals("claimUuid") || field.getName().equals("finalSubmit")) {
+				continue;
+			} else {
+				field.setAccessible(true);
+				Object value = field.get(sectionRequestBody); // Get the value of the field
+				if (value != null) {
+					Field f = value.getClass().getDeclaredField("sectionId");
+					f.setAccessible(true);
+					boolean sectionAccess = rcmCommonServiceImpl.validateUserSectionAccess(partialHeader,
+							(int) f.get(value));
+					if (!sectionAccess) {
+						allSectionAccess = false;
+						response=false;
+						break;
+					}
+					if (!sectionRequestBody.isFinalSubmit() && allSectionAccess) {
+						response = rcmCommonServiceImpl.saveCommonSectionInformations(sectionRequestBody, partialHeader,
+								(int) f.get(value), sectionsData, createdBy, claim, team);
+						if (!response) break;
+					} else {
+						boolean checkValidation = rcmCommonServiceImpl.commonSectionInformationsForAllWithValidation(
+								sectionRequestBody, partialHeader, (int) f.get(value), sectionsData);
+						if (!checkValidation) {
+							response=false;
+							allCheckValidation = false;
+							break;
+						}
+					}
+				}
+			}
 		}
-		return save;
+
+		if (sectionRequestBody.isFinalSubmit() && allCheckValidation && allSectionAccess) {
+			response = false;
+			for (Field field : CommonSectionsRequestBodyDto.class.getDeclaredFields()) {
+				if (field.getName().equals("claimUuid") || field.getName().equals("finalSubmit")) {
+					continue;
+				} else {
+					field.setAccessible(true);
+					Object value = field.get(sectionRequestBody); // Get the value of the field
+					if (value != null) {
+						Field f = value.getClass().getDeclaredField("sectionId");
+						f.setAccessible(true);
+						response = rcmCommonServiceImpl.saveCommonSectionInformations(sectionRequestBody,
+								partialHeader, (int) f.get(value), sectionsData, createdBy, claim, team);
+						logger.info("save section  response->" + response);
+						if (!response)
+							break;
+					}
+				}
+			}
+			if (response) {
+				RcmOffice office = officeRepo.findByUuid(claim.getOffice().getUuid());
+				RcmTeamDto nextTeam = NextTeamClaimTransferUtil.getNextTeam(partialHeader.getTeamId());
+				String claimTransfer=assignClaimToOtherTeamWithRemarkCommon(partialHeader, sectionRequestBody.getClaimUuid(),
+						nextTeam.getTeamId(), "Please Work on Claim", claim, assign, createdBy, office, null);
+				logger.info("claim transfer response->" + claimTransfer);
+			}
 		}
-		else return sectionAccess;
-	    
+		return response;
+
 	}
 
 //	public List<FreshClaimDataViewDto> fetchSubmittedClaimDetails(PartialHeader partialHeader) throws Exception {

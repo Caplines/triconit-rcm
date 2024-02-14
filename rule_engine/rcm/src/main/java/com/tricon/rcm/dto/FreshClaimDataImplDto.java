@@ -128,5 +128,7 @@ public class FreshClaimDataImplDto {
     
     String ruleEngineRunRemark;
     
+    RcmTeamDto nextTeam;
+    
 }
 

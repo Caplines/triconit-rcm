@@ -9,4 +9,5 @@ public class AppealInformationDto {
 	 private String aiToolUsed;
 	 private String remarks;
 	 private String appealDocument;
+	 private int sectionId;
 }

@@ -884,17 +884,13 @@ public class RcmController extends BaseHeaderController{
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		Boolean response = null;
-		if (!StringUtils.isNoneBlank(sectionRequestBody.getClaimUuid())
-				|| sectionRequestBody.getSectionId() == null) {
+		boolean response = false;
+		if (!StringUtils.isNoneBlank(sectionRequestBody.getClaimUuid())) {
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
 		try {
 			response = claimServiceImpl.saveClaimSectionDatAfterSubmission(sectionRequestBody,partialHeader);
-			if (!response)
-				return ResponseEntity.badRequest()
-						.body(new GenericResponse(HttpStatus.BAD_REQUEST, "Section Permission Denied!", null));
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

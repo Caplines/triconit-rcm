@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.ClaimUserSectionMapping;
 import com.tricon.rcm.db.entity.RcmClaimDefaultSection;
+import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmTeam;
@@ -102,8 +103,6 @@ public class RcmCommonServiceImpl {
 	@Autowired
 	RcmClientSectionMappingRepo clientSectionMappingRepo;
 	
-	@Autowired
-	MasterServiceImpl masterService;
 	
 	@Autowired
 	ClaimSectionValidationUtil claimSectionValidationUtil;
@@ -513,13 +512,11 @@ public class RcmCommonServiceImpl {
 		return false;
 	}
 
-	public Boolean commonSectionInformationsForAll(CommonSectionsRequestBodyDto sectionRequestBody,
-			PartialHeader partialHeader) throws Exception {
-		List<SectionDto> sectionsData = masterService.getSections();
-		Boolean response = null;
-		boolean validationFail = false;
-		SectionDto section = sectionsData.stream()
-				.filter(x -> x.getSectionId() == sectionRequestBody.getSectionId() && x.isActive()).findAny()
+	public boolean saveCommonSectionInformations(CommonSectionsRequestBodyDto sectionRequestBody,
+			PartialHeader partialHeader, int sectionId, List<SectionDto> sectionsData, RcmUser createdBy,
+			RcmClaims claim, RcmTeam team) throws Exception {
+		boolean response = false;
+		SectionDto section = sectionsData.stream().filter(x -> x.getSectionId() == sectionId && x.isActive()).findAny()
 				.orElse(null);
 		if (section != null) {
 			switch (section.getSectionId()) {
@@ -527,33 +524,48 @@ public class RcmCommonServiceImpl {
 			// section)
 			case 13:
 				logger.info("Inside section 13-> Claim Level Information");
-				validationFail = sectionRequestBody.isFinalSubmit()
-						? claimSectionValidationUtil
-								.validationForClaimInfoSectionFields(sectionRequestBody.getClaimInfoModel())
-						: true;
-				if (!validationFail)
-					break;
 				response = claimSectionimpl.saveClaimLevelInformation(sectionRequestBody.getClaimInfoModel(),
-						partialHeader, section.getSectionId(), sectionRequestBody.getClaimUuid(),
-						sectionRequestBody.isFinalSubmit());
+						section.getSectionId(), claim, createdBy, team, sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
 			case 19:
 				logger.info("Inside section 19->Appeal");
-				validationFail = sectionRequestBody.isFinalSubmit()
-						? claimSectionValidationUtil
-								.validationForAppealInfoSectionFields(sectionRequestBody.getAppealInfoModel())
-						: true;
-				if (!validationFail)
-					break;
 				response = claimSectionimpl.saveAppealInformation(sectionRequestBody.getAppealInfoModel(),
-						partialHeader, section.getSectionId(), sectionRequestBody.getClaimUuid(),
-						sectionRequestBody.isFinalSubmit());
+						section.getSectionId(), claim, createdBy, team, sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
 			default:
 				logger.error("section not found");
-				response = null;
+			}
+		}
+		return response;
+	}
+
+	public boolean commonSectionInformationsForAllWithValidation(CommonSectionsRequestBodyDto sectionRequestBody,
+			PartialHeader partialHeader, int sectionId, List<SectionDto> sectionsData) {
+		boolean response = false;
+		SectionDto section = sectionsData.stream().filter(x -> x.getSectionId() == sectionId && x.isActive()).findAny()
+				.orElse(null);
+		if (section != null) {
+			switch (section.getSectionId()) {
+			// Case 1 to 13 has been covered already in phase 1 so it will start case 13(New
+			// section)
+			case 13:
+				logger.info("Inside section 13-> Claim Level Information");
+				if (sectionRequestBody.isFinalSubmit())
+					response = claimSectionValidationUtil
+							.validationForClaimInfoSectionFields(sectionRequestBody.getClaimInfoModel());
+				logger.info("validation response->" + response);
+				break;
+			case 19:
+				logger.info("Inside section 19->Appeal");
+				if (sectionRequestBody.isFinalSubmit())
+					response = claimSectionValidationUtil
+							.validationForAppealInfoSectionFields(sectionRequestBody.getAppealInfoModel());
+				logger.info("validation response->" + response);
+				break;
+			default:
+				logger.error("section not found");
 			}
 		}
 		return response;

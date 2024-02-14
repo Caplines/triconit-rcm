@@ -458,10 +458,8 @@ public class ClaimSectionImpl {
 	
 	
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveClaimLevelInformation(ClaimLevelInformationDto claimLvelInfoDto, PartialHeader partialHeader,int sectionId,String claimuuid,boolean isFinalSubmit)
-			throws Exception {	
-		RcmClaims claim = claimRepo.findByClaimUuid(claimuuid);
-		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+	public boolean saveClaimLevelInformation(ClaimLevelInformationDto claimLvelInfoDto, int sectionId, RcmClaims claim,
+			RcmUser createdBy, RcmTeam team, boolean isFinalSubmit) throws Exception {
 		RcmClaimLevelSection claimLevelSection = null;
 		if (claim != null) {
 			claimLevelSection = new RcmClaimLevelSection();
@@ -474,13 +472,13 @@ public class ClaimSectionImpl {
 			claimLevelSection.setInitialDenial(claimLvelInfoDto.getInitialDenial());
 			claimLevelSection.setCreatedBy(createdBy);
 			claimLevelSection.setFinalSubmit(isFinalSubmit);
-			claimLevelSection.setTeamId(teamRepo.findById(partialHeader.getTeamId()));
+			claimLevelSection.setTeamId(team);
 			claimLevelSection
 					.setClaimProcessingDate(Constants.SDF_MYSL_DATE.parse(claimLvelInfoDto.getClaimProcessingDate()));
 			claimLevelSection = claimLevelInfoRepo.save(claimLevelSection);
-			return claimLevelSection != null ? true : null;
+			return claimLevelSection != null ? true : false;
 		}
-		return null;
+		return false;
 	}
 
 	public ClaimLevelInformationDto fetchClaimLevelInfo(PartialHeader partialHeader, String claimUuid,
@@ -506,10 +504,8 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveAppealInformation(AppealInformationDto appealInfoDto, PartialHeader partialHeader,int sectionId,String claimuuid,boolean isFinalSubmit)
+	public boolean saveAppealInformation(AppealInformationDto appealInfoDto,int sectionId,RcmClaims claim,RcmUser createdBy,RcmTeam team,boolean isFinalSubmit)
 			throws Exception {
-		RcmClaims claim = claimRepo.findByClaimUuid(claimuuid);
-		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		RcmAppealLevelInformation appealInformation = null;
 		if (claim != null) {
 			appealInformation = new RcmAppealLevelInformation();
@@ -520,11 +516,11 @@ public class ClaimSectionImpl {
 			appealInformation.setModeOfAppeal(appealInfoDto.getModeOfAppeal());
 			appealInformation.setCreatedBy(createdBy);
 			appealInformation.setFinalSubmit(isFinalSubmit);
-			appealInformation.setTeamId(teamRepo.findById(partialHeader.getTeamId()));
+			appealInformation.setTeamId(team);
 			appealInformation = appealInfoRepo.save(appealInformation);
-			return appealInformation != null ? true : null;
+			return appealInformation != null ? true : false;
 		}
-		return null;
+		return false;
 	}
 
 	public AppealInformationDto fetchAppealLevelInfo(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)

@@ -12,5 +12,6 @@ public class ClaimLevelInformationDto {
 	private String initialDenial;
 	private String claimStatusEs;
 	private String claimStatusRcm;
+	private int sectionId;
 
 }
