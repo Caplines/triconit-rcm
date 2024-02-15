@@ -27,6 +27,8 @@ import { DatePipe } from '@angular/common';
   encapsulation: ViewEncapsulation.None,
 })
 
+  
+
 export class BillingClaimsComponent {
 
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
@@ -116,6 +118,23 @@ export class BillingClaimsComponent {
   toggleTab: any = {};
   toggleSideBar: boolean = false;
 
+  claimSectionModal:any={
+    CLAIM_LEVEL_INFORMATION:{},
+    APPEAL:{
+      modeOfAppeal:'',
+      aiToolUsed:'',
+      remarks:'',
+      appealDocument:''
+    }
+  };
+   finalSaveClaimDataModel :any= {
+    claimUuid: '',
+    finalSubmit: true
+  };
+  sectionLevelData:any=[];
+  emptyFields: any= {};
+
+  isSectionValidated:boolean=true;
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
@@ -142,8 +161,11 @@ export class BillingClaimsComponent {
       (res: any) => {
         if (res.status === 200) {
           console.log(res.data);
+          this.sectionLevelData = res.data;
           ths.setClaimSectionRights(res);
           ths.fetchClaimsByUuid(uuid);
+          this.fetchClaimLevelInfoSection();
+          this.fetchAppealSection();
         }
       });
 
@@ -1596,4 +1618,177 @@ export class BillingClaimsComponent {
     }
   }
 
-}    
+  
+
+fetchClaimLevelInfoSection(){
+  this.appService.fetchClaimLevelInfoSection(this.claimUUid,(res:any)=>{
+    if(res && res.data){
+      this.claimSectionModal['CLAIM_LEVEL_INFORMATION'] = res.data;
+      console.log(this.claimSectionModal);
+      
+    }
+  })
+}
+
+fetchAppealSection(){
+  this.appService.fetchAppealSection(this.claimUUid,(res:any)=>{
+    if(res && res.data){
+      this.claimSectionModal['APPEAL'] = res.data;
+      console.log(this.claimSectionModal);
+      
+    }
+  })
+}
+
+saveClaimLevelinfo(isFinalSubmit:boolean){
+  this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = 13;
+  let params:any = {
+    claimUuid:this.claimUUid,
+    finalSubmit:isFinalSubmit,
+    claimInfoModel:this.claimSectionModal['CLAIM_LEVEL_INFORMATION']
+  }
+  
+  this.appService.saveClaimLevelInfoSection(params,(res:any)=>{
+      if(res.status){
+        console.log(res);
+        
+      }
+  })
+  
+}
+
+saveAppealLevelinfo(isFinalSubmit:boolean){
+  this.claimSectionModal['APPEAL']['sectionId'] = 19;
+  let params:any = {
+    claimUuid:this.claimUUid,
+    finalSubmit:isFinalSubmit,
+    appealInfoModel:this.claimSectionModal['APPEAL']
+  }
+  
+  this.appService.saveClaimLevelInfoSection(params,(res:any)=>{
+      if(res.status){
+        console.log(res);
+        
+      }
+  })
+}
+
+  checkSectionFieldValidation() {
+    let ths: any = this;
+    ths.isSectionValidated=true;
+    let data: any = [];
+    ths.sectionLevelData[0].teamsWithSections.forEach((team: any) => {
+      data = team.sectionData.filter((item: any) => item.editAccess);
+    });
+
+    
+    for (const section of data) {
+      if (section.sectionId == ths.sectionIds[section.sectionName]) {
+        const methodName: any = `validate_${section.sectionName}`
+        let isSectionVal :boolean= ths[methodName]();   //validation method will be called here
+        if(!isSectionVal){
+          ths.isSectionValidated=false;
+        } else{
+          ths.createSectionModal(section.sectionName);
+        }
+      }
+    }
+    // console.log(this.finalSaveClaimDataModel);
+    
+
+    if (this.isSectionValidated) {
+     this.finalSaveSection();
+    }
+
+  }
+
+  createSectionModal(sectionName:any){
+        if(sectionName === 'CLAIM_LEVEL_INFORMATION'){
+          this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = 13;
+          this.finalSaveClaimDataModel.claimInfoModel = this.claimSectionModal['CLAIM_LEVEL_INFORMATION'];
+        } 
+        else if (sectionName === 'APPEAL'){
+          this.claimSectionModal['APPEAL']['sectionId'] = 19;
+          this.finalSaveClaimDataModel.appealInfoModel = this.claimSectionModal['APPEAL'];
+        }
+  }
+
+  validate_CLAIM_LEVEL_INFORMATION() {
+    let isSectionValidated=true;
+    this.emptyFields["CLAIM_LEVEL_INFORMATION"] = {};
+    this.emptyFields["CLAIM_LEVEL_INFORMATION"].network = '';
+    if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimId) {
+      this.emptyFields["CLAIM_LEVEL_INFORMATION"]['claimId'] = true;
+      isSectionValidated = false;
+    }
+     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimProcessingDate) {
+      this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimProcessingDate = true;
+      isSectionValidated = false;
+    }
+     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].network) {
+      this.emptyFields["CLAIM_LEVEL_INFORMATION"].network = true;
+     isSectionValidated = false;
+    }
+     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimPassFirstGo) {
+      this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimPassFirstGo = true;
+     isSectionValidated = false;
+    }
+     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].initialDenial) {
+      this.emptyFields["CLAIM_LEVEL_INFORMATION"].initialDenial = true;
+      isSectionValidated = false;
+    }
+     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusEs) {
+      this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimStatusEs = true;
+      this.isSectionValidated = false;
+    }
+     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusRcm) {
+      this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimStatusRcm = true;
+      isSectionValidated = false;
+    }
+    // if(this.isSectionValidated) {
+    //   this.finalSaveClaimDataModel.claimInfoModel = this.claimSectionModal['CLAIM_LEVEL_INFORMATION'];
+    //   return  this.isSectionValidated;
+    // }
+    
+    return isSectionValidated;
+  }
+
+validate_APPEAL(){
+  this.isSectionValidated=true;
+  this.emptyFields["APPEAL"] = {};
+    this.emptyFields["APPEAL"].network = '';
+    if (!this.claimSectionModal["APPEAL"].modeOfAppeal) {
+      this.emptyFields["APPEAL"]['modeOfAppeal'] = true;
+      this.isSectionValidated = false;
+    }
+     if (!this.claimSectionModal["APPEAL"].aiToolUsed) {
+      this.emptyFields["APPEAL"].aiToolUsed = true;
+      this.isSectionValidated = false;
+    }
+     if (!this.claimSectionModal["APPEAL"].appealDocument) {
+      this.emptyFields["APPEAL"].appealDocument = true;
+      this.isSectionValidated = false;
+    }
+     if (!this.claimSectionModal["APPEAL"].remarks) {
+      this.emptyFields["APPEAL"].remarks = true;
+      this.isSectionValidated = false;
+    }
+    // else {
+    //   this.finalSaveClaimDataModel.appealInfoModel = this.claimSectionModal['APPEAL'];
+    //   return this.isSectionValidated;
+    // }
+    return this.isSectionValidated;
+}
+
+
+finalSaveSection(){
+  this.finalSaveClaimDataModel['claimUuid'] = this.claimUUid;
+  this.appService.saveClaimLevelInfoSection(this.finalSaveClaimDataModel,(res:any)=>{
+    if(res.status){
+      console.log(res);
+    }
+})
+}
+
+
+}

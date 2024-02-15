@@ -551,4 +551,17 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['save-manage-user-section'], callback)
   }
 
+  saveClaimLevelInfoSection(params: any, callback: any) {
+    this.postData(params, this.httpUrl['save-section-info'], callback)
+  }
+
+  fetchClaimLevelInfoSection(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-claim-level-info']+ "/" + uuid+"/"+true, callback,true)
+  }
+
+  fetchAppealSection(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-appeal-level-info']+ "/" + uuid+"/"+true, callback,true)
+  }
+
+
 }
