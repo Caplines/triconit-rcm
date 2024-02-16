@@ -1790,5 +1790,21 @@ finalSaveSection(){
 })
 }
 
+copyUrl(){
+  let inputEl = document.createElement("input");
+  let browserLink = window.location.href;
+  document.body.appendChild(inputEl);
+  inputEl.value = browserLink;
+  inputEl.select();
+  document.execCommand("copy");
+  document.body.removeChild(inputEl);
+
+  let tooltip = document.getElementById("tooltip");
+  tooltip.style.visibility = "visible";
+  setTimeout(function(){
+    tooltip.style.visibility = "hidden";
+  }, 2000);
+}
+
 
 }
