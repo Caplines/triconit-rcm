@@ -140,8 +140,10 @@ public class ClaimUtil {
 		claims.setTreatingProviderFromClaimOnSheet(re.getTreatingProviderName());// Only from Sheet Data..
 		claims.setPatientId(re.getAccountId());
 		claims.setPatientName(re.getPatientName());
+		claims.setPatientContactNo(re.getPatientContactNo());
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {
 			claims.setPrimInsuranceCompanyId(prim);
+			claims.setInsuranceContactNo(re.getPrimaryInsuranceContactNo());
 			claims.setPrimaryStaus(Constants.Primary_Status_Primary);
 			claims.setProviderId(re.getProviderIdProviderName());
 			claims.setSecMemberId(re.getPrimaryMemberId());
@@ -176,6 +178,7 @@ public class ClaimUtil {
 		}
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
 			claims.setSecInsuranceCompanyId(sec);
+			claims.setInsuranceContactNo(re.getSecondaryInsuranceContactNo());
 			claims.setPrimaryStaus(Constants.Primary_Status_Secondary);
 			claims.setProviderId(re.getProviderIdReport());
 			claims.setSecMemberId(re.getSecondaryMemberId());
@@ -229,7 +232,7 @@ public class ClaimUtil {
 		claims.setTimelyFilingLimitData(timelyLmt);
 		claims.setRcmInsuranceType(rcmInsuranceType);
 		claims.setPending(true);
-
+		
 		try {
 			claims.setPatientBirthDate(new java.sql.Date(Constants.SDF_ES_DATE.parse(re.getPaitentDob()).getTime()));
 		} catch (Exception dt) {

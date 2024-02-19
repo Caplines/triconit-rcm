@@ -44,8 +44,10 @@ public class ClaimFromSheet {
 	private String secondaryPolicyHolder;
 	private String secondaryPolicyHolderDob;
 	private List<String> serviceCodes;
-	
-	
+	private String primaryInsuranceContactNo;
+	private String secondaryInsuranceContactNo;
+	private String patientContactNo;
+	private List<String> toothAndSurfaces;
 	
 	public ClaimFromSheet() {
 		
