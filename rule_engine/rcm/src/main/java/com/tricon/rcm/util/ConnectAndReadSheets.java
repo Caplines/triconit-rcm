@@ -320,6 +320,11 @@ public class ConnectAndReadSheets {
 					dto.setPatientName("");
 				}
 				try {
+					dto.setPatientContactNo(obj.get(++x));//G
+				} catch (Exception m) {
+					dto.setPatientContactNo("");
+				}
+				try {
 					dto.setPaitentDob(obj.get(++x));//G
 				} catch (Exception m) {
 					dto.setPaitentDob("");
@@ -369,6 +374,11 @@ public class ConnectAndReadSheets {
 					dto.setInsuranceName(obj.get(++x));//P
 				} catch (Exception m) {
 					dto.setInsuranceName("");
+				}
+				try {
+					dto.setPrimaryInsuranceContactNo(obj.get(++x));//P
+				} catch (Exception m) {
+					dto.setPrimaryInsuranceContactNo("");
 				}
 				try {
 					dto.setPrimaryMemberId(obj.get(++x));//Q
@@ -441,6 +451,11 @@ public class ConnectAndReadSheets {
 					dto.setSecondaryInsuranceName("");
 				}
 				try {
+					dto.setSecondaryInsuranceContactNo(obj.get(++x));//AD
+				} catch (Exception m) {
+					dto.setSecondaryInsuranceContactNo("");
+				}
+				try {
 					dto.setSecondaryMemberId(obj.get(++x));//AE
 				} catch (Exception m) {
 					dto.setSecondaryMemberId("");
@@ -466,13 +481,23 @@ public class ConnectAndReadSheets {
 					dto.setSecondaryPolicyHolderDob("");
 				}
 				
-				List<String> d=new ArrayList<>();
+				
 				try {
 					
 					dto.setServiceCodes(Arrays.asList(obj.get(++x).split(",")));//AJ
 					
 				} catch (Exception m) {
+					List<String> d=new ArrayList<>();
 					dto.setServiceCodes(d);
+				}
+				
+				try {
+					
+					dto.setToothAndSurfaces(Arrays.asList(obj.get(++x).split(",")));//AJ
+					
+				} catch (Exception m) {
+					List<String> tooth=new ArrayList<>();
+					dto.setServiceCodes(tooth);
 				}
 
 				list.add(dto);

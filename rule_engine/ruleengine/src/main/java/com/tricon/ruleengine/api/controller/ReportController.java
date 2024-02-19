@@ -229,7 +229,7 @@ public class ReportController {
 				String[] d2= d.getRd_created_date().split("/");
 				//01/31/2024 21:54:56
 				uniqueGen = d2[1]+d2[2].substring(2,4)+d.getIvf_form_id()+d.getRd_group_run();
-				d.setUnique_id(uniqueGen);
+				d.setUnique_id(uniqueGen+d.getTreatement_plan_id());
 				}catch(Exception g) {
 					g.printStackTrace();
 				}

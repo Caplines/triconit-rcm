@@ -3557,9 +3557,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		 String uniqueID="";
 		 if (ivfSheet!=null) {
 			 if (ivfSheet.getUniqueID().split("_").length > 1)
-				 uniqueID = ivfSheet.getUniqueID().split("_")[1];
+				 uniqueID = ivfSheet.getUniqueID().split("_")[1]+tp.getId();
 				else
-				uniqueID =ivfSheet.getUniqueID();
+				uniqueID =ivfSheet.getUniqueID()+tp.getId();
 		 }	
 		 if (SAVE_REPORT_DATA.equalsIgnoreCase("false")) {
 			//return;//Not need for report in Dev env.

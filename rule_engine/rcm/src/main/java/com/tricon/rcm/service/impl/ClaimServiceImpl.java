@@ -745,6 +745,8 @@ public class ClaimServiceImpl {
 							//Save Data in rcm_claim_detail (new Enhancement)
 							if (re.getServiceCodes().size()>0) {
 								RcmClaimDetail det=null;
+								int serviceCount= 0;
+								List<String> toothSurfaces=re.getToothAndSurfaces();
 								for(String cds:re.getServiceCodes()) {
 									det =new RcmClaimDetail();
 									det.setApptId("");
@@ -760,9 +762,21 @@ public class ClaimServiceImpl {
 									det.setProviderLastName("");
 									det.setServiceCode(cds.trim());
 									det.setStatus("");
+									
 									det.setSurface("");
 									det.setTooth("");
+									try {
+										 String[] ths = toothSurfaces.get(serviceCount++).split("#");
+										 det.setTooth(ths[0]);
+										 if (ths.length>1) {
+											 det.setSurface(ths[1]);
+										 }
+										 
+										}catch(Exception b ) {
+										b.printStackTrace();
+									  }
 									rcmClaimDetailRepo.save(det);
+									serviceCount++;
 								}
 									
 							}

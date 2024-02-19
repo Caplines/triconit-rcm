@@ -165,6 +165,7 @@
                                                                         (click)="sortData(filteredItems,'count','desc','nestedCount',data.unFormatedName);isSorted[data.unFormatedName] = true"></a>
                                                                 </span>
                                                             </div>
+                                                            <small *ngIf="data.teamId == 20 || data.teamId == 11 || data.teamId == 18 ||data.teamId == 12 ||data.teamId == 16 ||data.teamId == 15">(Coming soon)</small>
                                                         </th>
                                                         <th *ngIf="last"></th>
                                                     </ng-container>
