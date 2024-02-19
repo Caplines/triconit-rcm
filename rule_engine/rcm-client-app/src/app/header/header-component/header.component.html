@@ -90,8 +90,8 @@
                 *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && (currentTeamId == 7|| currentTeamId == 3 || true)) || (( staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && (currentTeamId == 7 || currentTeamId == 3 ||  true))">
                 <a href="javascript:void(0);" [routerLink]="['/all-pendency']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
-                        [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />Pendency
-                    - Other Teams</a>
+                        [src]="rla.isActive? '../../assets/img/team-pendency-green-icon.png':'../../assets/img/team-pendency-gray-icon.png'" />
+                       {{currentTeamId == 5 ? 'Pending with Capline':'Pendency - Other Teams'}}</a>
             </li>
             <!-- <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7) || (staticUtil.isRoleLead() && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/dashboard-active.png':'../../assets/img/dashboard.png'" />Billing Pendency Dashboard</a></li> -->
             <li

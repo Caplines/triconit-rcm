@@ -105,7 +105,7 @@
                                                 </th>
                                                 <th class="width-200">
                                                     <div class="dFlex">
-                                                        User Assignment
+                                                        {{currentTeamId == 5 ? 'POC Assigned':'User Assignment' }}
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['fname']}"
@@ -231,6 +231,11 @@
                                                     <td class="text-count" [ngClass]="{'opac-zero':lg.count == 0 }">  {{lg.count}}</td>
                                                     <td *ngIf="teamId == 7" class="text-count" [ngClass]="{'opac-zero':lg.remoteLiteRejections == 0 }">{{lg.remoteLiteRejections}}</td>
                                                     <td *ngIf="teamId == 7" class="text-count" [ngClass]="{'opac-zero':lg.totalBillingRejection == 0 }">{{lg.totalBillingRejection}}</td>
+                                                     <!-- <td class="text-center" [ngClass]="{'opac-zero':lg.opdtd == 0 }"> <a href="javascript:void(0);"  (click)="openSpecificPendencyData(lg,'opdtd')" >{{lg.opdtd}}</a></td>
+                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.opdosd == 0 }"> <a href="javascript:void(0);" (click)="openSpecificPendencyData(lg,'opdosd')" >{{lg.opdosd}}</a></td>
+                                                    <td class="text-count" [ngClass]="{'opac-zero':lg.count == 0 }">   <a href="javascript:void(0);" (click)="openSpecificPendencyData(lg,'count')" >{{lg.count}}</a></td>
+                                                    <td *ngIf="teamId == 7" class="text-count" [ngClass]="{'opac-zero':lg.remoteLiteRejections == 0 }"> <a href="javascript:void(0);" (click)="openSpecificPendencyData(lg,'remoteLiteRejections')" >{{lg.remoteLiteRejections}}</a></td>
+                                                    <td *ngIf="teamId == 7" class="text-count" [ngClass]="{'opac-zero':lg.totalBillingRejection == 0 }"> <a href="javascript:void(0);" (click)="openSpecificPendencyData(lg,'total')" >{{lg.totalBillingRejection}}</a></td> -->
                                                 </tr>
                                             </ng-container>
                                         </tbody>

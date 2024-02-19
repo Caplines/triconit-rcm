@@ -44,6 +44,7 @@ export class OfficeAssignmentComponent implements OnInit {
   filteredItems: any = [];
   filterName:any;
   isRoleAssociate:boolean;
+  currentTeamId:number = Utils.selectedTeam();
 
   constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
@@ -383,6 +384,18 @@ selectAll(event: any, filterProperty: any) {
     });
     this.filterCompanyName("selectAll");
   }
+}
+
+openSpecificPendencyData(user:any,colName:any){
+   
+    const queryParams = { pageName: 'Other' };
+    const url = this.router.createUrlTree([`/pendency/${user.officeUuid}/${user.clientUuid}/${user[colName]}`], { queryParams }).toString();
+    window.open(url, '_blank');
+}
+
+get staticUtil():any {
+
+  return Utils;
 }
 
 // sortDosDesc(){

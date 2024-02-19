@@ -6,6 +6,7 @@ import Utils from '../../util/utils';
 import { DatePipe } from '@angular/common';
 import { DownLoadService } from 'src/app/service/download.service';
 import { AppConstants } from 'src/app/constants/app.constants';
+import { Router } from '@angular/router';
 @Component({
   selector: 'all-pendency',
   templateUrl: './all-pendency.component.html',
@@ -38,7 +39,7 @@ export class AllPendencyComponent {
 
   officeData:any= [];
 
-  constructor(public constants:AppConstants,private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService) {
+  constructor(public constants:AppConstants,private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService,private router:Router) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
     this.clearTotalCount();
   }
@@ -423,6 +424,13 @@ clearTotalCount(){
     e.count=0;
   })
 }
+
+openSpecificPendencyData(user:any,teamId:any){
+
+  const queryParams = { pageName: 'Other' };
+  const url =  this.router.createUrlTree([`/pendency/${user.officeUuid}/${user.clientUuid}/${teamId}`],{queryParams}).toString();
+   window.open(url, '_blank');
+} 
 
 
 }
