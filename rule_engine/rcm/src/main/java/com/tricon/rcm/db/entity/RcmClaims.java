@@ -246,6 +246,9 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "rule_engine_run_remark")
 	private String ruleEngineRunRemark;
 	
+	@Column(name = "patient_contact_no")
+	private String patientContactNo;
+	
 	@Column(name = "insurance_contact_no")
 	private String insuranceContactNo;
 	//@Column(name = "insurance_code")
