@@ -536,8 +536,14 @@ public class RcmCommonServiceImpl {
 				
 			case 20:
 				logger.info("Inside section 20->Patient Payment");
-				response = claimSectionimpl.savePatientPaymentSection(sectionRequestBody.getPatientPaymentInfoModel(),
-						section.getSectionId(), claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+//				response = claimSectionimpl.savePatientPaymentSection(sectionRequestBody.getPatientPaymentInfoModel(),
+//						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+				logger.info("response->" + response);
+				break;
+			case 12:
+				logger.info("Inside section 12->EOB");
+//				response = claimSectionimpl.saveEOBSection(sectionRequestBody.getEobInfoModel(),
+//						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
 			default:
@@ -573,8 +579,15 @@ public class RcmCommonServiceImpl {
 			case 20:
 				logger.info("Inside section 20->Patient Payment");
 				if (sectionRequestBody.isFinalSubmit())
-					response = claimSectionValidationUtil
-							.validationForPatientPaymentSectionFields(sectionRequestBody.getPatientPaymentInfoModel());
+//					response = claimSectionValidationUtil
+//							.validationForPatientPaymentSectionFields(sectionRequestBody.getPatientPaymentInfoModel());
+				logger.info("validation response->" + response);
+				break;
+			case 12:
+				logger.info("Inside section 12->EOB");
+//				if (sectionRequestBody.isFinalSubmit())
+//					response = claimSectionValidationUtil
+//							.validationForEOBSectionFields(sectionRequestBody.getEobInfoModel());
 				logger.info("validation response->" + response);
 				break;
 			default:
