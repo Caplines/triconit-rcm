@@ -15194,10 +15194,15 @@ public class RuleBook {
 			try {
 				 for (Object obj : tpList) {
 						CommonDataCheck tp = (CommonDataCheck) obj;
+						CodeWithCoverage codeWithCoverage= null;
 						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 						fcodes.add(tp.getServiceCode());
-						coverageList = CoverageUtil.findZeroCoverageCodeList(tp,ivf);
+						codeWithCoverage = CoverageUtil.findZeroCoverageCodeList(tp,ivf);
+						if (codeWithCoverage!=null) {
+							if (coverageList==null ) coverageList = new ArrayList<>();
+							coverageList.add(codeWithCoverage);
+						}
 				}
 				if (coverageList != null) pass=false;
 				
@@ -15242,9 +15247,20 @@ public class RuleBook {
 				try {
 					String comment = ivf.getComments();
 					if (comment == null)  comment = "";
-					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule105.pass.message", new Object[] {comment}, locale), Constants.PASS,
-							String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+					if (comment.trim().equals("")) {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule105.error.message", new Object[] {}, locale), Constants.FAIL,
+								String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+					}else if (comment.toLowerCase().contains("this member does not have other coverages")){
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule105.pass.message", new Object[] {comment}, locale), Constants.PASS,
+								String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+					}else {
+						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+								messageSource.getMessage("rule105.error1.message", new Object[] {comment}, locale), Constants.FAIL,
+								String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+					}
+					
 
 				} catch (Exception ex) {
 					ex.printStackTrace();
