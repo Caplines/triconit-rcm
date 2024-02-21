@@ -1,6 +1,7 @@
 package com.tricon.rcm.util;
 
 import org.apache.commons.lang3.StringUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -8,7 +9,6 @@ import org.springframework.stereotype.Service;
 import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.EOBDto;
-import com.tricon.rcm.dto.PatientPaymentSectionDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
 
 @Service
@@ -75,33 +75,33 @@ public class ClaimSectionValidationUtil {
 		else return true;
 	}
 
-	public boolean validationForPatientPaymentSectionFields(PatientPaymentSectionDto patientPaymentInfoModel) {
-		logger.info("PatientPaymentSectionDto->" + patientPaymentInfoModel);
-		if (patientPaymentInfoModel == null)
-			return false;
-		
-		//For Amount Collected Claims
-		
-		if (!StringUtils.isNoneBlank(patientPaymentInfoModel.getAmountCollectedClaims())) return false;
-		
-		//For DateOfPayments
-		
-		else if (!StringUtils.isNoneBlank(patientPaymentInfoModel.getDateOfPayment())) return false;
-		
-		//For DueBalance In PMS
-		
-		else if (!StringUtils.isNoneBlank(patientPaymentInfoModel.getDueBalanceInPMS())) return false;
-		
-		//For Mode Of Payment
-		
-		else if (!StringUtils.isNoneBlank(patientPaymentInfoModel.getModeOfPayment())) return false;
-		
-		//For PostedInPMS
-		
-		else if ( !StringUtils.isNoneBlank(patientPaymentInfoModel.getPostedInPMS())) return false;
-		
-		else return true;
-	}
+//	public boolean validationForPatientPaymentSectionFields(PatientPaymentSectionDto patientPaymentInfoModel) {
+//		logger.info("PatientPaymentSectionDto->" + patientPaymentInfoModel);
+//		if (patientPaymentInfoModel == null)
+//			return false;
+//		
+//		//For Amount Collected Claims
+//		
+//		if (!StringUtils.isNoneBlank(patientPaymentInfoModel.getAmountCollectedClaims())) return false;
+//		
+//		//For DateOfPayments
+//		
+//		else if (!StringUtils.isNoneBlank(patientPaymentInfoModel.getDateOfPayment())) return false;
+//		
+//		//For DueBalance In PMS
+//		
+//		else if (!StringUtils.isNoneBlank(patientPaymentInfoModel.getDueBalanceInPMS())) return false;
+//		
+//		//For Mode Of Payment
+//		
+//		else if (!StringUtils.isNoneBlank(patientPaymentInfoModel.getModeOfPayment())) return false;
+//		
+//		//For PostedInPMS
+//		
+//		else if ( !StringUtils.isNoneBlank(patientPaymentInfoModel.getPostedInPMS())) return false;
+//		
+//		else return true;
+//	}
 
 	public boolean validationForEOBSectionFields(EOBDto eobInfoModel) {
 		logger.info("EOBDto->" + eobInfoModel);
