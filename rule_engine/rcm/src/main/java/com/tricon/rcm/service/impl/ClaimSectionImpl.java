@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -15,7 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.ClaimUserSectionMapping;
+import com.tricon.rcm.db.entity.EOBSectionInformation;
+import com.tricon.rcm.db.entity.PaymentInformationSection;
 import com.tricon.rcm.db.entity.RcmAppealLevelInformation;
+import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimLevelSection;
 import com.tricon.rcm.db.entity.RcmClaimSection;
 import com.tricon.rcm.db.entity.RcmClaims;
@@ -26,14 +30,19 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
+import com.tricon.rcm.dto.EOBDto;
+import com.tricon.rcm.dto.EobSectionEditDto;
 import com.tricon.rcm.dto.PartialHeader;
+import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
+import com.tricon.rcm.jpa.repository.EOBSectionRepo;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmAppealInfoRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimDefaultSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLevelInfoRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
@@ -41,7 +50,10 @@ import com.tricon.rcm.jpa.repository.RcmClaimSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimUserSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmClientSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
+import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
+import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
+import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 
@@ -88,7 +100,23 @@ public class ClaimSectionImpl {
 	@Autowired
 	RcmAppealInfoRepo appealInfoRepo;
 	
+	@Autowired
+	EOBSectionRepo eobRepo;
 	
+	@Autowired
+	RcmTeamRepo rcmTeamRepo;
+	
+	@Autowired
+	RcmClaimAssignmentRepo rcmClaimAssignmentRepo;
+	
+	@Autowired
+	RcmClaimRepository rcmClaimRepository;
+	
+	@Autowired
+	RcmUserCompanyRepo rcmUserCompanyRepo;
+	
+	@Autowired
+	RcmInsurancePaymentSectionRepo paymentSectionRepo;
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -458,7 +486,7 @@ public class ClaimSectionImpl {
 	
 	
 	@Transactional(rollbackOn = Exception.class)
-	public boolean saveClaimLevelInformation(ClaimLevelInformationDto claimLvelInfoDto, int sectionId, RcmClaims claim,
+	public boolean saveClaimLevelInformation(ClaimLevelInformationDto claimLvelInfoDto, RcmClaims claim,
 			RcmUser createdBy, RcmTeam team, boolean isFinalSubmit) throws Exception {
 		RcmClaimLevelSection claimLevelSection = null;
 		if (claim != null) {
@@ -504,7 +532,7 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public boolean saveAppealInformation(AppealInformationDto appealInfoDto,int sectionId,RcmClaims claim,RcmUser createdBy,RcmTeam team,boolean isFinalSubmit)
+	public boolean saveAppealInformation(AppealInformationDto appealInfoDto,RcmClaims claim,RcmUser createdBy,RcmTeam team,boolean isFinalSubmit)
 			throws Exception {
 		RcmAppealLevelInformation appealInformation = null;
 		if (claim != null) {
@@ -544,5 +572,143 @@ public class ClaimSectionImpl {
 	}
 
 	
+	@Transactional(rollbackOn = Exception.class)
+	public boolean saveEOBSection(EOBDto eobInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
+			boolean finalSubmit) throws Exception {
+		EOBSectionInformation eobInformation = null;
+		if (claim != null) {
+			eobInformation = new EOBSectionInformation();
+			eobInformation.setAttachByTeam(team);
+			eobInformation.setEobLink(eobInfoModel.getEobLink());
+			eobInformation.setClaim(claim);
+			eobInformation.setCreatedBy(createdBy);
+			eobInformation.setFinalSubmit(finalSubmit);
+			eobInformation = eobRepo.save(eobInformation);
+			return eobInformation != null ? true : false;
+		}
+		return false;
+	}
+
+	public EOBDto fetchEOBInformation(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
+			throws Exception {
+		EOBDto responseDto = null;
+		EOBSectionInformation eobSections = null;
+		if (showWithTeam) {
+			eobSections = eobRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidAndAttachByTeamIdAndMarkAsDeletedFalseOrderByCreatedDateDesc(
+							claimUuid, partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+		} else {
+			eobSections = eobRepo.findFirstByClaimClaimUuidAndCreatedByUuidAndMarkAsDeletedFalseOrderByCreatedDateDesc(
+					claimUuid, partialHeader.getJwtUser().getUuid());
+		}
+		if (eobSections != null) {
+			responseDto = new EOBDto();
+			responseDto.setAttachBy(userRepo.findByUuid(eobSections.getCreatedBy().getUuid()).getFirstName());
+			responseDto.setAttachByTeam(rcmTeamRepo.findById(eobSections.getAttachByTeam().getId()).getDescription());
+			responseDto.setDate(Constants.SDF_MYSL_DATE.format((eobSections.getCreatedDate())));
+			BeanUtils.copyProperties(eobSections, responseDto);
+			return responseDto;
+		}
+		return null;
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public String removeEobSectionDetails(EobSectionEditDto ids, PartialHeader partialHeader) throws Exception {
+		boolean validateClaimRight = checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),
+				partialHeader.getCompany().getUuid());
+
+		if (!validateClaimRight) {
+			return "wrong claim";
+		}
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(ids.getClaimUuid());
+
+		RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(
+				partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
+		if (assign == null) {
+			// Not assigned to user
+			return "claim not assigned to this user";
+		}
+
+		List<EOBSectionInformation> listOfEob = eobRepo
+				.findByClaimClaimUuidAndAttachByTeamIdAndMarkAsDeletedFalseAndCreatedByUuidAndIdIn(ids.getClaimUuid(),
+						partialHeader.getTeamId(), partialHeader.getJwtUser().getUuid(), ids.getIds());
+		if (!listOfEob.isEmpty()) {
+			listOfEob.forEach(x -> {
+				x.setMarkAsDeleted(true);
+				x.setUpdatedBy(userRepo.findByUuid(partialHeader.getJwtUser().getUuid()));
+			});
+			eobRepo.saveAll(listOfEob);
+			return MessageConstants.RECORDS_UPDATE;
+		}
+		return MessageConstants.RECORD_NOT_EXIST;
+	}
+
+	private boolean checkifCompanyIdMatchesList(String userid, String userCompanyId) {
+		List<String> companies = rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(userid);
+		return ClaimUtil.checkifCompanyIdMatchesList(userCompanyId, companies);
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public boolean saveInsurancePaymentInformationSection(PaymentInformationSectionDto paymentInformationInfoModel,
+			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
+
+		// if paid amount is 0 then no need to save data in db
+		if (Double.parseDouble(paymentInformationInfoModel.getPaidAmount()) == 0.0) {
+			return true;
+		} else {
+			PaymentInformationSection paymentInsuranceInformation = null;
+			if (claim != null) {
+				paymentInsuranceInformation = new PaymentInformationSection();
+				paymentInsuranceInformation
+						.setAmountPostedInEs(Double.parseDouble(paymentInformationInfoModel.getAmountPostedInEs()));
+				paymentInsuranceInformation.setAmountReceivedInBank(
+						Double.parseDouble(paymentInformationInfoModel.getAmountReceivedInBank()));
+				paymentInsuranceInformation.setCheckCashDate(
+						Constants.SDF_MYSL_DATE.parse(paymentInformationInfoModel.getCheckCashDate()));
+				if (paymentInformationInfoModel.getPaymentMode().equals(Constants.PAYMENT_MODE_CHECK)) {
+					paymentInsuranceInformation.setCheckDeliverTo(paymentInformationInfoModel.getCheckDeliverTo());
+				}
+				paymentInsuranceInformation.setCheckNumber(paymentInformationInfoModel.getCheckNumber());
+				paymentInsuranceInformation.setPaymentIssueTo(paymentInformationInfoModel.getPaymentIssueTo());
+				paymentInsuranceInformation.setPaymentMode(paymentInformationInfoModel.getPaymentMode());
+				paymentInsuranceInformation.setClaim(claim);
+				paymentInsuranceInformation.setAmountDateReceivedInBank(
+						Constants.SDF_MYSL_DATE.parse(paymentInformationInfoModel.getAmountDateReceivedInBank()));
+				paymentInsuranceInformation.setCreatedBy(createdBy);
+				paymentInsuranceInformation.setFinalSubmit(finalSubmit);
+				paymentInsuranceInformation.setTeam(team);
+				paymentInsuranceInformation = paymentSectionRepo.save(paymentInsuranceInformation);
+				return paymentInsuranceInformation != null ? true : false;
+			}
+		}
+		return false;
+	}
+
+	public PaymentInformationSectionDto fetchInsurancePaymentInformation(PartialHeader partialHeader, String claimUuid,
+			boolean showWithTeam) throws Exception {
+		PaymentInformationSectionDto responseDto = null;
+		PaymentInformationSection paymentInsuranceInformation = null;
+		if (showWithTeam) {
+			paymentInsuranceInformation = paymentSectionRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdOrderByCreatedDateDesc(claimUuid,
+							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+		} else {
+			paymentInsuranceInformation = paymentSectionRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(claimUuid,
+							partialHeader.getJwtUser().getUuid());
+		}
+		if (paymentInsuranceInformation != null) {
+			responseDto = new PaymentInformationSectionDto();
+			responseDto.setAmountReceivedInBank(Double.toString(paymentInsuranceInformation.getAmountReceivedInBank()));
+			responseDto.setAmountPostedInEs(Double.toString(paymentInsuranceInformation.getAmountPostedInEs()));
+			responseDto
+					.setCheckCashDate(Constants.SDF_MYSL_DATE.format((paymentInsuranceInformation.getCheckCashDate())));
+			responseDto.setAmountDateReceivedInBank(
+					Constants.SDF_MYSL_DATE.format((paymentInsuranceInformation.getAmountDateReceivedInBank())));
+			BeanUtils.copyProperties(paymentInsuranceInformation, responseDto);
+			return responseDto;
+		}
+		return null;
+	}
 
 }

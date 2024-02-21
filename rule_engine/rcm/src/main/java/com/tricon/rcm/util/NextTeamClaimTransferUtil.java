@@ -10,8 +10,8 @@ public class NextTeamClaimTransferUtil {
 		RcmTeamDto dto=null;
 		if(currentTeamId==RcmTeamEnum.BILLING.getId()) {
 			dto=new RcmTeamDto();
-			dto.setTeamId(RcmTeamEnum.AR.getId());
-			dto.setTeamName(RcmTeamEnum.AR.getDescription());//aging
+			dto.setTeamId(RcmTeamEnum.PAYMENT_POSTING.getId());
+			dto.setTeamName(RcmTeamEnum.PAYMENT_POSTING.getDescription());//posting
 		}
 		return dto;
 	}

@@ -4244,6 +4244,7 @@ public class ClaimServiceImpl {
 		boolean validateClaimRight = checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),
 				partialHeader.getCompany().getUuid());
 		if (!validateClaimRight) {
+			logger.error("claim not valid");
 			return false;
 		}
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(sectionRequestBody.getClaimUuid());
@@ -4251,6 +4252,7 @@ public class ClaimServiceImpl {
 		RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(
 				partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
 		if (assign == null) {
+			logger.error("claim not assigned to this user");
 			// Not assigned to user
 			return false;
 		}
@@ -4262,29 +4264,35 @@ public class ClaimServiceImpl {
 		RcmTeam team = rcmTeamRepo.findById(partialHeader.getTeamId());
 
 		for (Field field : CommonSectionsRequestBodyDto.class.getDeclaredFields()) {
-			if (field.getName().equals("claimUuid") || field.getName().equals("finalSubmit")) {
+			if (field.getName().equals("claimUuid") || field.getName().equals("finalSubmit") || field.getName().equals("moveToNextTeam")) {
 				continue;
 			} else {
 				field.setAccessible(true);
+				int sectionId=0;
 				Object value = field.get(sectionRequestBody); // Get the value of the field
 				if (value != null) {
 					Field f = value.getClass().getDeclaredField("sectionId");
 					f.setAccessible(true);
+					if (f.get(value) instanceof Integer) {
+						sectionId = (int) f.get(value);
+					}
 					boolean sectionAccess = rcmCommonServiceImpl.validateUserSectionAccess(partialHeader,
-							(int) f.get(value),createdBy);
+							sectionId,createdBy);
 					if (!sectionAccess) {
+						logger.error("section access denied!");
 						allSectionAccess = false;
 						response=false;
 						break;
 					}
 					if (!sectionRequestBody.isFinalSubmit() && allSectionAccess) {
 						response = rcmCommonServiceImpl.saveCommonSectionInformations(sectionRequestBody, partialHeader,
-								(int) f.get(value), sectionsData, createdBy, claim, team);
+								sectionId, sectionsData, createdBy, claim, team);
 						if (!response) break;
 					} else {
 						boolean checkValidation = rcmCommonServiceImpl.commonSectionInformationsForAllWithValidation(
-								sectionRequestBody, partialHeader, (int) f.get(value), sectionsData);
+								sectionRequestBody, partialHeader, sectionId, sectionsData);
 						if (!checkValidation) {
+							logger.error("validation fail!");
 							response=false;
 							allCheckValidation = false;
 							break;
@@ -4297,16 +4305,20 @@ public class ClaimServiceImpl {
 		if (sectionRequestBody.isFinalSubmit() && allCheckValidation && allSectionAccess) {
 			response = false;
 			for (Field field : CommonSectionsRequestBodyDto.class.getDeclaredFields()) {
-				if (field.getName().equals("claimUuid") || field.getName().equals("finalSubmit")) {
+				if (field.getName().equals("claimUuid") || field.getName().equals("finalSubmit")|| field.getName().equals("moveToNextTeam")) {
 					continue;
 				} else {
 					field.setAccessible(true);
+					int sectionId=0;
 					Object value = field.get(sectionRequestBody); // Get the value of the field
 					if (value != null) {
 						Field f = value.getClass().getDeclaredField("sectionId");
 						f.setAccessible(true);
+						if (f.get(value) instanceof Integer) {
+							sectionId = (int) f.get(value);
+						}
 						response = rcmCommonServiceImpl.saveCommonSectionInformations(sectionRequestBody,
-								partialHeader, (int) f.get(value), sectionsData, createdBy, claim, team);
+								partialHeader, sectionId, sectionsData, createdBy, claim, team);
 						logger.info("save section  response->" + response);
 						if (!response)
 							break;
@@ -4324,7 +4336,6 @@ public class ClaimServiceImpl {
 		return response;
 
 	}
-
 //	public List<FreshClaimDataViewDto> fetchSubmittedClaimDetails(PartialHeader partialHeader) throws Exception {
 //		String selectedtRole = partialHeader.getRole();
 //		int selectedTeamId = partialHeader.getTeamId();

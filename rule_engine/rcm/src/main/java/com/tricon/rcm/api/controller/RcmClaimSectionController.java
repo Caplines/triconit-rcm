@@ -20,8 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
+import com.tricon.rcm.dto.EOBDto;
+import com.tricon.rcm.dto.EobSectionEditDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PartialHeader;
+import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.service.impl.ClaimSectionImpl;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.util.MessageConstants;
@@ -190,6 +193,67 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		AppealInformationDto response = null;
 		try {
 			response = claimSection.fetchAppealLevelInfo(partialHeader,claimUuid,withTeam);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	@GetMapping(value = "api/get-eob-info/{claimUuid}/{withTeam}")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> getEOBInfo(@PathVariable("claimUuid") String claimUuid,
+			@PathVariable("withTeam") boolean withTeam, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		EOBDto response = null;
+		try {
+			response = claimSection.fetchEOBInformation(partialHeader, claimUuid, withTeam);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@PostMapping(value = "api/remove-eob-data")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ASSO','TL')")
+	public ResponseEntity<?> editEobSectionDetails(@RequestBody EobSectionEditDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+
+		if (dto.getIds().isEmpty() || dto.getIds().stream().anyMatch(x -> x == null)
+				|| !StringUtils.isNoneBlank(dto.getClaimUuid())) {
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		String response = null;
+		try {
+			response = claimSection.removeEobSectionDetails(dto, partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@GetMapping(value = "api/get-insurance-payment-info/{claimUuid}/{withTeam}")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> getInsurancePaymentInfo(@PathVariable("claimUuid") String claimUuid,
+			@PathVariable("withTeam") boolean withTeam, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		PaymentInformationSectionDto response = null;
+		try {
+			response = claimSection.fetchInsurancePaymentInformation(partialHeader, claimUuid, withTeam);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

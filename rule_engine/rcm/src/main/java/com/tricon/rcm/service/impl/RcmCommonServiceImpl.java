@@ -524,13 +524,13 @@ public class RcmCommonServiceImpl {
 			case 13:
 				logger.info("Inside section 13-> Claim Level Information");
 				response = claimSectionimpl.saveClaimLevelInformation(sectionRequestBody.getClaimInfoModel(),
-						section.getSectionId(), claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
 			case 19:
 				logger.info("Inside section 19->Appeal");
 				response = claimSectionimpl.saveAppealInformation(sectionRequestBody.getAppealInfoModel(),
-						section.getSectionId(), claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
 				
@@ -542,8 +542,15 @@ public class RcmCommonServiceImpl {
 				break;
 			case 12:
 				logger.info("Inside section 12->EOB");
-//				response = claimSectionimpl.saveEOBSection(sectionRequestBody.getEobInfoModel(),
-//						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+				response = claimSectionimpl.saveEOBSection(sectionRequestBody.getEobInfoModel(),
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+				logger.info("response->" + response);
+				break;
+				
+			case 14:
+				logger.info("Inside section 14->Insurance Payment Information");
+				response = claimSectionimpl.saveInsurancePaymentInformationSection(sectionRequestBody.getPaymentInformationInfoModel(),
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
 			default:
@@ -585,9 +592,16 @@ public class RcmCommonServiceImpl {
 				break;
 			case 12:
 				logger.info("Inside section 12->EOB");
-//				if (sectionRequestBody.isFinalSubmit())
-//					response = claimSectionValidationUtil
-//							.validationForEOBSectionFields(sectionRequestBody.getEobInfoModel());
+				if (sectionRequestBody.isFinalSubmit())
+					response = claimSectionValidationUtil
+							.validationForEOBSectionFields(sectionRequestBody.getEobInfoModel());
+				logger.info("validation response->" + response);
+				break;
+			case 14:
+				logger.info("Inside section 14->Insurance Payment Information");
+				if (sectionRequestBody.isFinalSubmit())
+					response = claimSectionValidationUtil
+							.validationForInsurancePaymentInformationSectionFields(sectionRequestBody.getPaymentInformationInfoModel());
 				logger.info("validation response->" + response);
 				break;
 			default:
