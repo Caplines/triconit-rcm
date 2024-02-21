@@ -1231,23 +1231,59 @@ public class ClaimServiceImpl {
 			 }
 			
 		}
-		// submitted and unsbmitted claims except billing and internal audit teams
+		// submitted and unsubmitted claims except billing and internal audit teams
 		else if (sub.equals(Constants.SUBMITTED_CLAIMS)) {
-			list = rcmClaimRepository.fetchSubmittedClaimForOtherTeam(partialHeader.getCompany().getUuid(), teamId);
+			
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId())  {
+					list = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeamInd(partialHeader.getCompany().getUuid(), teamId,partialHeader.getJwtUser().getUuid());
+				}
+			}
+ 			else {
+ 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+ 					list = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeam(partialHeader.getCompany().getUuid(), teamId);	
+ 				}
+ 			}
+			
 			list.forEach(data -> {
 				final FreshClaimDataViewDto dataView = new FreshClaimDataViewDto();
 				BeanUtils.copyProperties(data, dataView);
 				listView.add(dataView);
 			});
+			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+				 //Need to get Claim remark in of non billing and internal audit
+				
+				 listView.forEach(data->{
+					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+				 });
+			 }
 		} else if (sub.equals(Constants.UNSUBMITTED_CLAIMS)) {
-			list = rcmClaimRepository.fetchUnSubmittedClaimForOtherTeam(partialHeader.getCompany().getUuid(), teamId);
+			//SAME AS FRESH
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId())  {
+					list = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamInd(partialHeader.getCompany().getUuid(), teamId,partialHeader.getJwtUser().getUuid());
+				}
+			}
+ 			else {
+ 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+ 					list = rcmClaimRepository.fetchFreshClaimDetailsOtherTeam(partialHeader.getCompany().getUuid(), teamId);	
+ 				}
+ 			}
 			list.forEach(data -> {
 				final FreshClaimDataViewDto dataView = new FreshClaimDataViewDto();
 				BeanUtils.copyProperties(data, dataView);
 				listView.add(dataView);
 			});
+			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+				 //Need to get Claim remark in of non billing and internal audit
+				
+				 listView.forEach(data->{
+					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+				 });
+			 }
 		}
 		else {
+			//SEND BACK OPTION
 			//boolean otherTeam =false;
 			if (teamId == RcmTeamEnum.BILLING.getId()) {
 			list = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBilling(partialHeader.getCompany().getUuid(), teamId);

@@ -7,46 +7,47 @@
                         <div class="detail-box-form">
                             <div class="listClaimBox mt-2 mb-1">
                                 <div class="btn-group btn-group-toggle">
-                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.unSubmitted}">
-                                    <input class="form-check-input" type="radio" name="options" [disabled]="loader.listClaimLoader" id="option1"
-                                        (change)="switchTab('unSubmitted')">Unbilled Claims
-                                </label>
-                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.submitted}">
-                                    <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader" name="options" id="option2"
-                                        (change)="switchTab('submitted')">Build Claims
-                                </label>
-                            </div>
-                            <div class="otherTeamBox mt-2 mb-2">
-                                <button type="button" class="icon-btn" (click)="downloadPdf()"
-                                    [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
-                                    <img src="../../assets/img/pdf.png" /></button><span
-                                    *ngIf="loader.exportPDFLoader"
-                                    class="spinner-border text-danger mx-1"></span>
-                                <button type="button" class="icon-btn" (click)="exportToCsv()"
-                                    [disabled]="filteredItems.length==0">
-                                    <img src="../../assets/img/xls.png" /></button><span
-                                    *ngIf="loader.exportCSVLoader"
-                                    class="spinner-border text-success mx-1"></span>
-                            </div>
+                                    <label class="btn btn-light" [ngClass]="{'active':tabSwitch.unSubmitted}">
+                                        <input class="form-check-input" type="radio" name="options"
+                                            [disabled]="loader.listClaimLoader" id="option1"
+                                            (change)="switchTab('unSubmitted')">Unbilled Claims
+                                    </label>
+                                    <label class="btn btn-light" [ngClass]="{'active':tabSwitch.submitted}">
+                                        <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader"
+                                            name="options" id="option2" (change)="switchTab('submitted')">Billed Claims
+                                    </label>
                                 </div>
+                                <div class="otherTeamBox mt-2 mb-2">
+                                    <button type="button" class="icon-btn" (click)="downloadPdf()"
+                                        [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
+                                        <img src="../../assets/img/pdf.png" /></button><span
+                                        *ngIf="loader.exportPDFLoader" class="spinner-border text-danger mx-1"></span>
+                                    <button type="button" class="icon-btn" (click)="exportToCsv()"
+                                        [disabled]="filteredItems.length==0">
+                                        <img src="../../assets/img/xls.png" /></button><span
+                                        *ngIf="loader.exportCSVLoader" class="spinner-border text-success mx-1"></span>
+                                </div>
+                            </div>
                             <ng-container *ngIf="errorMessage">
                                 <div class="inner-container">
-                                    <div class="alert text-center alert-danger alert-dismissible fade show" role="alert">
+                                    <div class="alert text-center alert-danger alert-dismissible fade show"
+                                        role="alert">
                                         <strong> {{errorMessage}} </strong>
                                         <button type="button" class="close" (click)="closeError();">
-                                          <span aria-hidde  n="true">&times;</span>
+                                            <span aria-hidde n="true">&times;</span>
                                         </button>
-                                      </div>
+                                    </div>
                                 </div>
                             </ng-container>
                             <ng-container *ngIf="alert.showAlert">
                                 <div class="inner-container">
-                                    <div class="alert text-center alert-dismissible fade show alert-success" role="alert">
+                                    <div class="alert text-center alert-dismissible fade show alert-success"
+                                        role="alert">
                                         <strong> {{alert.alertMsg}} </strong>
                                         <button type="button" class="close" (click)="closeError();">
-                                          <span aria-hidde  n="true">&times;</span>
+                                            <span aria-hidde n="true">&times;</span>
                                         </button>
-                                      </div>
+                                    </div>
                                 </div>
                             </ng-container>
 
@@ -71,7 +72,8 @@
                                                                             [checked]="isFilterAllSelected.officeName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'officeName')">
-                                                                        {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.officeName ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.officeName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -165,16 +167,23 @@
                                                     <div class="dFlex">
                                                         Age Bracket
                                                         <div class="dropdown">
-                                                            <img (click)="showHideFilteredDropdown('ageBracket')" src="../../assets/img/filterIcon.png"
+                                                            <img (click)="showHideFilteredDropdown('ageBracket')"
+                                                                src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
-                                                            <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                            <div class="dropdown-menu filter-dropdown-menu"
+                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.ageBracket">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
-                                                                        <input type="checkbox" [checked]="isFilterAllSelected.ageBracket" value="selectAll"
+                                                                        <input type="checkbox"
+                                                                            [checked]="isFilterAllSelected.ageBracket"
+                                                                            value="selectAll"
                                                                             (change)="selectAll($event,'ageBracket')">
-                                                                        {{isFilterAllSelected.ageBracket ? 'Clear All':'Select All'}}</label>
-                                                                    <button (click)="showFilteredDropdown.ageBracket=false;" type="button" class="close" data-dismiss="modal"
+                                                                        {{isFilterAllSelected.ageBracket ? 'Clear
+                                                                        All':'Select All'}}</label>
+                                                                    <button
+                                                                        (click)="showFilteredDropdown.ageBracket=false;"
+                                                                        type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
                                                                 <ng-container *ngFor="let data of filteredAgeBracket">
@@ -213,13 +222,15 @@
                                                                             [checked]="isFilterAllSelected.insuranceName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceName')">
-                                                                        {{isFilterAllSelected.insuranceName ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceName ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                <ng-container *ngFor="let data of filteredInsuranceName">
+                                                                <ng-container
+                                                                    *ngFor="let data of filteredInsuranceName">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -229,7 +240,7 @@
                                                                     </label>
                                                                 </ng-container>
                                                             </div>
-                                                        </div> 
+                                                        </div>
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['primaryInsurance']}"
@@ -255,13 +266,15 @@
                                                                             [checked]="isFilterAllSelected.insuranceType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceType')">
-                                                                        {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceType ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
                                                                 </div>
-                                                                <ng-container *ngFor="let data of filteredInsuranceType">
+                                                                <ng-container
+                                                                    *ngFor="let data of filteredInsuranceType">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -271,7 +284,7 @@
                                                                     </label>
                                                                 </ng-container>
                                                             </div>
-                                                        </div> 
+                                                        </div>
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['prName']}"
@@ -285,7 +298,9 @@
                                                 <th>
                                                     <div class="dFlex">
                                                         Claim Type<div class="dropdown">
-                                                            <img  (click)="showHideFilteredDropdown('claimType')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                            <img (click)="showHideFilteredDropdown('claimType')"
+                                                                src="../../assets/img/filterIcon.png"
+                                                                style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
                                                                 (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.claimType">
@@ -295,7 +310,8 @@
                                                                             [checked]="isFilterAllSelected.claimType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'claimType')">
-                                                                        {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.claimType ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.claimType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -311,7 +327,7 @@
                                                                     </label>
                                                                 </ng-container>
                                                             </div>
-                                                    </div>
+                                                        </div>
                                                     </div>
                                                 </th>
                                                 <th>
@@ -328,8 +344,10 @@
                                                 </th>
                                                 <th>
                                                     <div class="dFlex">
-                                                         Assigned By <div class="dropdown">
-                                                            <img  (click)="showHideFilteredDropdown('lastTeam')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
+                                                        Assigned By <div class="dropdown">
+                                                            <img (click)="showHideFilteredDropdown('lastTeam')"
+                                                                src="../../assets/img/filterIcon.png"
+                                                                style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
                                                                 (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.lastTeam">
@@ -339,7 +357,8 @@
                                                                             [checked]="isFilterAllSelected.lastTeam"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'lastTeam')">
-                                                                        {{isFilterAllSelected.lastTeam ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.lastTeam ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.lastTeam=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -355,7 +374,7 @@
                                                                     </label>
                                                                 </ng-container>
                                                             </div>
-                                                    </div>
+                                                        </div>
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted}"
@@ -374,14 +393,14 @@
 
                                                 <th>
                                                     <div class="dFlex">
-                                                            Pending Since Date<span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up"
-                                                                    [ngClass]="{'selected': !isSorted['pendingSince']}"
-                                                                    (click)="sortData(filteredItems,'pendingSince','asc','dateOnly'); isSorted['pendingSince'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down"
-                                                                    [ngClass]="{'selected': isSorted['pendingSince']}"
-                                                                    (click)="sortData(filteredItems,'pendingSince','desc','dateOnly');isSorted['pendingSince'] = true"></a>
-                                                            </span>  
+                                                        Pending Since Date<span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['pendingSince']}"
+                                                                (click)="sortData(filteredItems,'pendingSince','asc','dateOnly'); isSorted['pendingSince'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['pendingSince']}"
+                                                                (click)="sortData(filteredItems,'pendingSince','desc','dateOnly');isSorted['pendingSince'] = true"></a>
+                                                        </span>
                                                     </div>
                                                 </th>
 
@@ -452,60 +471,96 @@
                                                                 class="loader-data "></span> </td>
                                                     </tr>
                                                     <tr>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}">{{det.officeName}}</td>
-                                                        <td class="noWrape"><a [ngClass]="{'changeColor' : det.colorChange}"
-                                                            [routerLink]="['/billing-claims/', det.uuid]"
-                                                            target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                            {{det.officeName}}</td>
+                                                        <td class="noWrape"><a
+                                                                [ngClass]="{'changeColor' : det.colorChange}"
+                                                                [routerLink]="['/billing-claims/', det.uuid]"
+                                                                target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
                                                         <td><a [ngClass]="{'changeColor' : det.colorChange}"
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
-                                                        <td><a [ngClass]="{'changeColor' : det.colorChange}" [routerLink]="['/billing-claims/', det.uuid]"
+                                                        <td><a [ngClass]="{'changeColor' : det.colorChange}"
+                                                                [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}">{{det.claimAge}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}">{{det.timelyFilingLimitData}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.ageBracket}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                            {{det.claimAge}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                            {{det.timelyFilingLimitData}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            class="noWrape">{{det.ageBracket}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            *ngIf="det.claimId | claimTypeFilter">
                                                             {{det.primaryInsurance}}
                                                         </td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            *ngIf="! (det.claimId | claimTypeFilter)">
                                                             {{det.secondaryInsurance}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">{{det.prName}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">{{det.secName}}
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            *ngIf="det.claimId | claimTypeFilter">{{det.prName}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            *ngIf="! (det.claimId | claimTypeFilter)">{{det.secName}}
                                                         </td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.claimId | claimTypeFilter">Primary</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight" *ngIf="det.claimId | claimTypeFilter">
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            *ngIf="det.claimId | claimTypeFilter">Primary</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            *ngIf="! (det.claimId | claimTypeFilter)">Secondary</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            class="alignRight" *ngIf="det.claimId | claimTypeFilter">
                                                             {{det.primeSecSubmittedTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight"
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            class="alignRight"
                                                             *ngIf="! (det.claimId | claimTypeFilter)">
                                                             {{det.secTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}">{{det.lastTeam==null?'N/A':det.lastTeam}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="">{{det.lastTeamRemark}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="alignRight">{{currentTeamName?.teamName}}</td>
-                                                        <td *ngIf="showColumns.currentStatus">1</td>  <!--  //api changes required -->
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                            {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="">
+                                                            {{det.lastTeamRemark}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}
+                                                        </td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            class="alignRight">{{currentTeamName?.teamName}}</td>
+                                                        <td *ngIf="showColumns.currentStatus">1</td>
+                                                        <!--  //api changes required -->
                                                         <td *ngIf="showColumns.nextActionRequird">2</td>
                                                         <td *ngIf="showColumns.nextFollowUpDate">3</td>
                                                         <td *ngIf="showColumns.providerSpeciality">4</td>
                                                         <td *ngIf="showColumns.dueBalance">5</td>
-                                                        <td *ngIf="showColumns.showAttach"><textarea name="{{det.uuid}}" class="form-control"  [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}" [(ngModel)]="submitBtnConfig['remarks'][det.uuid]" rows="1"
-                                                                style="width: 200px;"></textarea>
+                                                        <td *ngIf="showColumns.showAttach"><textarea name="{{det.uuid}}"
+                                                                class="form-control"
+                                                                [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}"
+                                                                [(ngModel)]="submitBtnConfig['remarks'][det.uuid]"
+                                                                rows="1" style="width: 200px;"></textarea>
                                                         </td>
-                                                        <td *ngIf="showColumns.showAttach"> <app-attach-file [inputConfig]="{'claimUuid':det.uuid,'attachmentCount':det.attachmentCount,'isOtherTeam':true}" (emitToParent)="receiveChildEvent($event)" ></app-attach-file></td>
-                                                        <td *ngIf="showColumns.showAttach"><button type="button" class="btn btn-primary btn-sm" (click)="openModalAndValidateFields(det)"> 
+                                                        <td *ngIf="showColumns.showAttach"> <app-attach-file
+                                                                [inputConfig]="{'claimUuid':det.uuid,'attachmentCount':det.attachmentCount,'isOtherTeam':true}"
+                                                                (emitToParent)="receiveChildEvent($event)"></app-attach-file>
+                                                        </td>
+                                                        <td *ngIf="showColumns.showAttach"><button type="button"
+                                                                class="btn btn-primary btn-sm"
+                                                                (click)="openModalAndValidateFields(det)">
                                                                 Submit</button></td>
                                                         <td *ngIf="showColumns.showAttach">
                                                             <div class="otherTeam">
                                                                 <div class="billingDropdown ">
-                                                                    <select class="form-control" (change)="selectOtherTeam($event,det.uuid)">
-                                                                        <option value="0" [selected]="true" [hidden]="true">Select Team</option>
-                                                                        <option *ngFor="let data of otherTeams" [value]="data.teamId">{{data.teamName}}</option>
+                                                                    <select class="form-control"
+                                                                        (change)="selectOtherTeam($event,det.uuid)">
+                                                                        <option value="0" [selected]="true"
+                                                                            [hidden]="true">Select Team</option>
+                                                                        <option *ngFor="let data of otherTeams"
+                                                                            [value]="data.teamId">{{data.teamName}}
+                                                                        </option>
                                                                     </select>
 
-                                                                </div><button type="button" class="btn btn-primary btn-sm" [disabled]="!this.submitBtnConfig['otherTeamId'][det.uuid]" (click)="openModalAndValidateFields(det)">Assign</button>
+                                                                </div><button type="button"
+                                                                    class="btn btn-primary btn-sm"
+                                                                    [disabled]="!this.submitBtnConfig['otherTeamId'][det.uuid]"
+                                                                    (click)="openModalAndValidateFields(det)">Assign</button>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -526,45 +581,42 @@
 
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal attachModal" *ngIf="showModal">
+    <div class="modal-content rounded-0" [ngClass]="{'opacityLow':loader}">
+        <span class="close" (click)="closeModal()">&times;</span>
+        <div class="alert alert-info" role="alert">
+            <img src="../../assets/img/info-icon-border.png">Do you want to Proceed ?
         </div>
+        <div><span class="text-danger" *ngIf="errorMessage">*{{errorMessage}}</span></div>
+        <div class="row">
+            <div class="col-sm-12">
+                <ol class="file-list" *ngIf="selectedFiles?.length > 0">
+                    <li *ngFor="let data of selectedFiles">
+                        <span style="display: inline-flex; align-items: center; justify-content: space-between;">
+                            <span class="fileEllipsis" title="{{ data.file.name }}">{{ data.file.name }} </span>
+                            <select [disabled]="true" class="form-control" style="width: 240px; margin-left: 15px;"
+                                name="type">
+                                <ng-container *ngFor="let item of appConstants.attachmentType">
+                                    <ng-container *ngIf="item.id == data.attachmentTypeId">
+                                        <option [value]="item.id">{{item.value}}</option>
+                                    </ng-container>
+                                </ng-container>
+                            </select>
+                        </span>
+                    </li>
+                </ol>
+                <div class="confirm-btn d-flex justify-content-center mt-3">
+                    <button class="btn btn-primary mx-2" (click)="submitConfirmation();">Yes</button>
+                    <button class="btn btn-danger" (click)="showModal=false;">Cancel</button>
+                </div>
+            </div>
         </div>
 
-        <!-- Confirmation Modal -->
-        <div class="modal attachModal" *ngIf="showModal">
-            <div class="modal-content rounded-0"
-                [ngClass]="{'opacityLow':loader}">
-                <span class="close"
-                    (click)="closeModal()">&times;</span>
-                    <div class="alert alert-info" role="alert">
-                        <img src="../../assets/img/info-icon-border.png">Do you want to Proceed ?
-                    </div>  
-                  <div><span class="text-danger" *ngIf="errorMessage">*{{errorMessage}}</span></div>  
-                    <div class="row">
-                        <div class="col-sm-12">
-                            <ol class="file-list"
-                                    *ngIf="selectedFiles?.length > 0">
-                                    <li
-                                        *ngFor="let data of selectedFiles">
-                                        <span style="display: inline-flex; align-items: center; justify-content: space-between;">
-                                       <span class="fileEllipsis"  title="{{ data.file.name }}">{{ data.file.name }} </span>
-                                            <select [disabled]="true" class="form-control"  style="width: 240px; margin-left: 15px;" name="type">
-                                                <ng-container *ngFor="let item of appConstants.attachmentType">
-                                                    <ng-container *ngIf="item.id == data.attachmentTypeId">
-                                                        <option [value]="item.id">{{item.value}}</option>
-                                                    </ng-container>
-                                                </ng-container>
-                                            </select>
-                                        </span>
-                                    </li>
-                                </ol>
-                            <div class="confirm-btn d-flex justify-content-center mt-3">
-                                <button class="btn btn-primary mx-2" (click)="submitConfirmation();">Yes</button>
-                                <button class="btn btn-danger" (click)="showModal=false;">Cancel</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-            </div>
     </div>
-  
-        <!-- </div> -->
+</div>
+
+<!-- </div> -->
