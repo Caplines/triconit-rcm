@@ -129,6 +129,9 @@ public class FreshClaimDataImplDto {
     String ruleEngineRunRemark;
     
     RcmTeamDto nextTeam;
+    int currentStatus;
     
+    String insuranceContactNo;
+	String patientContactNo;
 }
 

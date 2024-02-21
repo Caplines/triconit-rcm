@@ -9,12 +9,13 @@
     <div class="container-fluid cldet">
         <div class="row">
             <div class="col-lg-12 pt-5">
-                <div class="page-heading">Claim Detail Page {{invalidClaim}} 
-                        <button id="copyButton" class="btn btn-sm btn-info"  (click)="copyUrl()"> Copy URL</button>
-                        <small  id="tooltip" class="ms-2" style="visibility:hidden;font-size: 12px !important;">URL copied!</small>
+                <div class="page-heading">Claim Detail Page {{invalidClaim}}
+                    <button id="copyButton" class="btn btn-sm btn-info" (click)="copyUrl()"> Copy URL</button>
+                    <small id="tooltip" class="ms-2" style="visibility:hidden;font-size: 12px !important;">URL
+                        copied!</small>
                 </div>
-               
-                    <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary"
+
+                <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary"
                     style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-text-right" viewBox="0 0 16 16">
@@ -103,6 +104,13 @@
                                                 }}
                                             </div>
                                         </div>
+                                        <div class="custom-row flexAlign">
+                                            <label for="" class="">Insurance Contact </label>
+                                            <div>
+                                                {{claimRcm.insuranceContactNo}}
+                                            </div>
+
+                                        </div>
                                     </div>
                                     <div class="col-md-3 mb-2">
                                         <div class="custom-row">
@@ -145,6 +153,13 @@
                                                 'MMM dd, YYYY'
                                                 }}
                                             </div>
+                                        </div>
+                                        <div class="custom-row">
+                                            <label for="" class="">Patient Contact</label>
+                                            <div>
+                                                {{claimRcm.patientContactNo}}
+                                            </div>
+
                                         </div>
                                     </div>
                                     <div class="col-md-3 mb-2">
@@ -1260,8 +1275,7 @@
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['submissionDetail']}"
                                     *ngIf="!isInternalAuditLogin && checkForSectionAccess(sectionIds['CLAIM_SUBMISSION'],'view')">
                                     <a data-toggle="collapse" aria-expanded="false">
-                                        Enter
-                                        Claim Submission Details
+                                        Enter Claim Submission Details
                                     </a>
                                     <div class="down-icon" (click)="showHide('submissionDetail')">
                                         <a href="javascript:void(0)"
@@ -1463,35 +1477,51 @@
 
                                     </div>
                                 </div>
-                                <ng-container *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'view')">
+                                <ng-container
+                                    *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Level Information
                                         </a>
                                         <div class="down-icon" (click)="showHide('claimLevelInfo')">
-                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['claimLevelInfo']}"></a>
+                                            <a href="javascript:void(0)"
+                                                [ngClass]="{'close':toggleTab['claimLevelInfo']}"></a>
                                         </div>
                                     </div>
-                                
+
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                                    <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse" [ngClass]="{'show':!toggleTab['claimLevelInfo']}"
-                                        id="CLAIM_LEVEL_INFORMATION">
+                                    <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
+                                        [ngClass]="{'show':!toggleTab['claimLevelInfo']}" id="CLAIM_LEVEL_INFORMATION">
                                         <div class="col-md-4 mb-2">
-                                            <div class="custom-row text-number">   
-                                                 <label for="claim">Claim #</label>
-                                                <input type="text" id="claim" *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION" [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimId']" class="form-control" [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimId']}">
+                                            <div class="custom-row text-number">
+                                                <label for="claim">Claim #</label>
+                                                <input type="text" id="claim"
+                                                    *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimId']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimId']}">
                                             </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="claimDate">Claim Processing Date</label>
-                                                <input type="date" id="claimDate" *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION" [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']" class="form-control" [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']}">
+                                                <input type="date" id="claimDate"
+                                                    *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']}">
                                             </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="network">Network</label>
-                                                <select  id="network" class="form-control" *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION" [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['network']" [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['network']}">
+                                                <select id="network" class="form-control"
+                                                    *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['network']"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['network']}">
                                                     <option selected="true" hidden="true">Select Network</option>
                                                     <option value="in">In</option>
                                                     <option value="out">Out</option>
@@ -1499,9 +1529,13 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
-                                            <div class="custom-row text-number">   
-                                                 <label for="claimPassed">Claim Passed in First Go?</label>
-                                                 <select  id="claimPassed" class="form-control" *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION" [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo']" [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimPassFirstGo']}">
+                                            <div class="custom-row text-number">
+                                                <label for="claimPassed">Claim Passed in First Go?</label>
+                                                <select id="claimPassed" class="form-control"
+                                                    *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo']"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimPassFirstGo']}">
                                                     <option selected="true" hidden="true">Select</option>
                                                     <option value="yes">Yes</option>
                                                     <option value="no">No</option>
@@ -1511,9 +1545,14 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="intialDenial">Initial Denial</label>
-                                                <select  id="intialDenial" class="form-control" *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION" [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['initialDenial']" [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['initialDenial']}">
+                                                <select id="intialDenial" class="form-control"
+                                                    *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['initialDenial']"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['initialDenial']}">
                                                     <option selected="true" hidden="true">Select</option>
-                                                    <ng-container *ngFor="let item of appConstants.claimInitialDenialReason">
+                                                    <ng-container
+                                                        *ngFor="let item of appConstants.claimInitialDenialReason">
                                                         <option [value]="item.reasonName">{{item.reasonName}}</option>
                                                     </ng-container>
                                                 </select>
@@ -1522,7 +1561,11 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="statusEs">Current Status of Claim in ES</label>
-                                                <select  id="statusEs" class="form-control" *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION" [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimStatusEs']" [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimStatusEs']}">
+                                                <select id="statusEs" class="form-control"
+                                                    *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimStatusEs']"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimStatusEs']}">
                                                     <option selected="true" hidden="true">Select</option>
                                                     <ng-container *ngFor="let item of appConstants.claimStatusEs">
                                                         <option [value]="item.name">{{item.name}}</option>
@@ -1532,8 +1575,13 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="statusRcm">Current Status of Claim in RCM {{this.claimRcm.allowEdit}}</label>
-                                                <select  id="statusRcm" class="form-control" *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION" [disabled]="!this.claimRcm.allowEdit && (!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit)" [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimStatusRcm']" [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimStatusRcm']}">
+                                                <label for="statusRcm">Current Status of Claim in RCM
+                                                    {{this.claimRcm.allowEdit}}</label>
+                                                <select id="statusRcm" class="form-control"
+                                                    *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                    [disabled]="!this.claimRcm.allowEdit && (!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit)"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimStatusRcm']"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimStatusRcm']}">
                                                     <option selected="true" hidden="true">Select</option>
                                                     <ng-container *ngFor="let item of appConstants.claimStatusRcm">
                                                         <option [value]="item.name">{{item.name}}</option>
@@ -1542,23 +1590,25 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
-                                           
+
                                         </div>
                                         <div class="col-md-4 mb-2">
-                                          
+
                                         </div>
                                         <div class="col-md-4 mb-2">
-                                            <button class="btn btn-success" (click)="saveClaimLevelinfo(false)" [hidden]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && !this.claimRcm.allowEdit">Save</button>
+                                            <button class="btn btn-success" (click)="saveClaimLevelinfo(false)"
+                                                [hidden]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'edit') && this.claimRcm.allowEdit">Save</button>
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <!-- <button class="btn btn-outline-primary" (click)="checkSectionFieldValidation()">Final Submit</button> -->
                                         </div>
                                         <div class="col-md-4 mb-2">
-                                          
+
                                         </div>
                                     </div>
                                 </ng-container>
-                                <ng-container *ngIf="checkForSectionAccess(sectionIds['APPEAL'],'view')">
+                                <ng-container
+                                    *ngIf="!claimRcm.pending &&  checkForSectionAccess(sectionIds['APPEAL'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Appeal
@@ -1567,14 +1617,17 @@
                                             <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['appeal']}"></a>
                                         </div>
                                     </div>
-                                
+
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                                    <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse" [ngClass]="{'show':!toggleTab['appeal']}"
-                                        id="APPEAL">
+                                    <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
+                                        [ngClass]="{'show':!toggleTab['appeal']}" id="APPEAL">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="moa">Mode of Appeal</label>
-                                                <select  id="moa" class="form-control"  [disabled]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.APPEAL['modeOfAppeal']" [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['modeOfAppeal']}">
+                                                <select id="moa" class="form-control"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.APPEAL['modeOfAppeal']"
+                                                    [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['modeOfAppeal']}">
                                                     <option selected="true" hidden="true">Select Network</option>
                                                     <option value="portal">Portal</option>
                                                     <option value="fax">Fax</option>
@@ -1583,9 +1636,12 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
-                                            <div class="custom-row text-number">   
-                                                 <label for="aiTool">AI Tool Used?</label>
-                                                 <select  id="aiTool" class="form-control"  [disabled]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.APPEAL['aiToolUsed']" [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['aiToolUsed']}">
+                                            <div class="custom-row text-number">
+                                                <label for="aiTool">AI Tool Used?</label>
+                                                <select id="aiTool" class="form-control"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.APPEAL['aiToolUsed']"
+                                                    [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['aiToolUsed']}">
                                                     <option selected="true" hidden="true">Select</option>
                                                     <option value="yes">Yes</option>
                                                     <option value="no">No</option>
@@ -1593,34 +1649,40 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
-                                           
+
                                         </div>
 
-                                          <div class="col-md-4 mb-2">
-                                            <div class="custom-row text-number">   
-                                                 <label for="claim">Appeal Document</label>
-                                                <input type="text" id="claim"  [disabled]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.APPEAL['appealDocument']" class="form-control" [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['appealDocument']}">
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="claim">Appeal Document</label>
+                                                <input type="text" id="claim"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.APPEAL['appealDocument']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['appealDocument']}">
                                             </div>
                                         </div>
 
-                                          <div class="col-md-4 mb-2">
-                                            <div class="custom-row text-number">   
-                                                 <label for="claim">Remarks</label>
-                                                <input type="text" id="claim"  [disabled]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit" [(ngModel)]="this.claimSectionModal.APPEAL['remarks']" class="form-control" [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['remarks']}">
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="claim">Remarks</label>
+                                                <input type="text" id="claim"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.APPEAL['remarks']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['remarks']}">
                                             </div>
                                         </div>
 
                                         <div class="col-md-4 mb-2">
-                                          
+
                                         </div>
                                         <div class="col-md-4 mb-2">
-                                            <button class="btn btn-success" (click)="saveAppealLevelinfo(false)" [hidden]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit">Save</button>
+                                            <button class="btn btn-success" (click)="saveAppealLevelinfo(false)"
+                                                [hidden]="!checkForSectionAccess(sectionIds['APPEAL'],'edit') && !this.claimRcm.allowEdit">Save</button>
                                         </div>
                                         <div class="col-md-4 mb-2">
-                                            <button class="btn btn-outline-primary" (click)="checkSectionFieldValidation()">Final Submit</button>
-                                        </div>
-                                        <div class="col-md-4 mb-2">
-                                          
+
                                         </div>
                                     </div>
                                 </ng-container>
@@ -1739,7 +1801,7 @@
                             <!-- Modal End -->
 
                             <div class="action-buttons"
-                                *ngIf="claimRcm.currentState==0 && actionButtons && (isBilling || isInternalAudit)">
+                                *ngIf="claimRcm.currentStatus==0 && claimRcm.currentState==0 && actionButtons && (isBilling || isInternalAudit)">
                                 <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
                             (claimRcm.primary && claimRcm.pending) )" type="button" class="btn btn-success"
                                     [disabled]="inSave" (click)="saveClaim('latter',false)">
@@ -1756,6 +1818,7 @@
                                     [disabled]="inSave" (click)="saveClaim('submit',false)">
                                     Mark as Submitted
                                 </button>
+
                                 <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
                                                          (claimRcm.primary && claimRcm.pending)
                                                        )" type="button" class="btn btn-success" [disabled]="inSave"
@@ -1784,6 +1847,42 @@
 
 
                             </div>
+                            <div class="action-buttons"
+                                *ngIf="claimRcm.currentStatus!=0 && claimRcm.currentState==0 && actionButtons && !claimRcm.pending">
+                                <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && !claimRcm.pending) ||
+                                                                                      (claimRcm.primary && !claimRcm.pending)
+                                                                                   ) && isBilling " type="button"
+                                    class="btn btn-success" [disabled]="inSave" (click)="saveClaim('submit',false)">
+                                    Final Submit
+                                </button>
+                                <button *ngIf="claimRcm.allowEdit && isInternalAudit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus) ||
+                                               (claimRcm.primary) )" type="button" class="btn btn-success"
+                                    [disabled]="inSave" (click)="saveClaim('reviewed',false)">
+                                    Reviewed
+                                </button>
+                                <button *ngIf="claimRcm.allowEdit && !(isBilling || isInternalAudit)" type="button"
+                                    class="btn btn-success" (click)="checkSectionFieldValidation(true,true,true)">
+                                    Final Submit
+                                </button>
+                                <button *ngIf="selectedTeam== claimRcm.currentTeamId" type="button"
+                                    class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assigntl',false)">
+                                    Assign to
+                                    Team Lead
+                                </button>
+                                <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus) ||
+                                       (claimRcm.primary))" type="button" class="btn btn-success" [disabled]="inSave"
+                                    (click)="saveClaim('assign',false)">
+                                    Assign to Other Team
+                                </button>
+
+                                <button *ngIf="selectedTeam == claimRcm.currentTeamId && isSuperAdmin" type="button"
+                                    class="btn btn-success" [disabled]="inSave" (click)="saveClaim('assign',false)">
+                                    Assign to
+                                    Other Team
+                                </button>
+
+                            </div>
+
                             <div class="action-buttons"
                                 *ngIf="claimRcm.currentState==1 && claimRcm.claimCmpMatchesLoggedCmp">
                                 <button *ngIf="claimRcm.pending" type="button" class="btn btn-success"

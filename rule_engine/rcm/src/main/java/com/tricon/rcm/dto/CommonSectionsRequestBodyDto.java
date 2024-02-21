@@ -9,5 +9,6 @@ public class CommonSectionsRequestBodyDto {
 	private ClaimLevelInformationDto claimInfoModel;
 	private AppealInformationDto appealInfoModel;
 	private boolean finalSubmit;
+	private boolean moveToNextTeam;
 
 }

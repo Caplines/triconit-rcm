@@ -27,7 +27,7 @@ import { DatePipe } from '@angular/common';
   encapsulation: ViewEncapsulation.None,
 })
 
-  
+
 
 export class BillingClaimsComponent {
 
@@ -89,13 +89,15 @@ export class BillingClaimsComponent {
     "D2331", "D2332", "D2335", "D2391", "D2392", "D2393", "D2394", "D0431",
     "D2140", "D2150", "D2160", "D2161"];*/
   sectionIds: any = {
-    'SECTION_CLAIM_DETAIL': 1, 'RULE_ENGINE_VALIDATION': 9, 'CLAIM_SUBMISSION': 10,
-    'SERVICE_LEVEL_VALIDATION_AUTO': 7, 'CLAIM_LEVEL_VALIDATION_AUTO': 5,
-    'CLAIM_LEVEL_VALIDATION_MANUAL': 6,
+    'SECTION_CLAIM_DETAIL': 1,
     'LINKS_RELATED_DOCUMENTS': 2,
     'REMARKS_BY_OTHER': 3,
     'REBILLED_CLAIM': 4,
+    'CLAIM_LEVEL_VALIDATION_AUTO': 5,
+    'CLAIM_LEVEL_VALIDATION_MANUAL': 6,
+    'SERVICE_LEVEL_VALIDATION_AUTO': 7,
     'SERVICE_LEVEL_VALIDATION_MANUAL': 8,
+    'RULE_ENGINE_VALIDATION': 9, 'CLAIM_SUBMISSION': 10,
     'SERVICE_LEVEL_INFORMATION': 11,
     'EOB': 12,
     'CLAIM_LEVEL_INFORMATION': 13,
@@ -118,23 +120,24 @@ export class BillingClaimsComponent {
   toggleTab: any = {};
   toggleSideBar: boolean = false;
 
-  claimSectionModal:any={
-    CLAIM_LEVEL_INFORMATION:{},
-    APPEAL:{
-      modeOfAppeal:'',
-      aiToolUsed:'',
-      remarks:'',
-      appealDocument:''
+  claimSectionModal: any = {
+    CLAIM_LEVEL_INFORMATION: {},
+    APPEAL: {
+      modeOfAppeal: '',
+      aiToolUsed: '',
+      remarks: '',
+      appealDocument: ''
     }
   };
-   finalSaveClaimDataModel :any= {
+  finalSaveClaimDataModel: any = {
     claimUuid: '',
-    finalSubmit: true
+    finalSubmit: true,
+    moveToNextTeam: true
   };
-  sectionLevelData:any=[];
-  emptyFields: any= {};
+  sectionLevelData: any = [];
+  emptyFields: any = {};
 
-  isSectionValidated:boolean=true;
+  isSectionValidated: boolean = true;
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
@@ -296,6 +299,7 @@ export class BillingClaimsComponent {
     ths.claimEditModel.ruleEngineRunRemark = ths.claimRcm.ruleEngineRunRemark;
     ths.claimEditModel.claimNoteDtoList = ths.claimRcm.claimNotes;
     ths.claimEditModel.claimRemark = ths.claimRcm.claimRemarks;
+    debugger;
     ths.claimEditModel.serCVDto = ths.claimServiceLevelModel?.dto;
     ths.claimEditModel.submissionDto = ths.submissionDto;
     ths.claimEditModel.ruleRemarkDto = [];
@@ -324,7 +328,13 @@ export class BillingClaimsComponent {
       //do From Validation
       //debugger;
       let valid = ths.validateData();
-      if (valid) {
+      let validSec = true;
+      if (!ths.claimRcm.pending) {//if Already submitted one Time
+        ths.checkSectionFieldValidation(false, false, false);
+        validSec = ths.isSectionValidated;
+      }
+      debugger;
+      if (valid && validSec) {
 
         let prefer = this.checkForValidPreferredSbmisssion();
 
@@ -336,7 +346,17 @@ export class BillingClaimsComponent {
         ths.inSave = true;
         ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
           ths.inSave = false;
-          this.showAlertPopup(callback);
+          if (!ths.claimRcm.pending) {//if Already submitted one Time
+            ths.checkSectionFieldValidation(false, true, true);
+            //this.showAlertPopup(callback);
+          } else {
+            this.showAlertPopup(callback);
+          }
+
+
+
+
+
         });
       }
     }
@@ -370,12 +390,17 @@ export class BillingClaimsComponent {
       ths.assignModel.toOtherTeam = true;
       let valid = true;
       if (!this.isSuperAdmin) valid = ths.validateData();
+      let validSec = true;
+      if (!ths.claimRcm.pending) {//if Already submitted one Time
+        ths.checkSectionFieldValidation(false, true, false);
+        validSec = ths.isSectionValidated;
+      }
       if (ths.isInternalAudit) {
 
         ths.claimEditModel.assignToTeam = 7;//ths.teamsMs[0].teamId;
       }
 
-      if (valid) {
+      if (valid && validSec) {
         ths.openAssignModal('other');
 
         //Open Modal
@@ -422,7 +447,7 @@ export class BillingClaimsComponent {
   validateData(): boolean {
     let ths = this;
     let valid: boolean = true;
-    //debugger;
+    debugger;
     ths.claimRules.forEach(x => {
       //console.log(x.ruleId);
       if ((x.remark == null || x.remark.trim() === '') && x.messageType === 1 && x.ruleType == 'C'
@@ -589,11 +614,11 @@ export class BillingClaimsComponent {
         if (document.getElementById("claimValidationsRE") != null) {
           if (document.getElementById("ruleEngineRunRemark") != null && (ths.claimRcm.ruleEngineRunRemark == null || ths.claimRcm.ruleEngineRunRemark.trim() === '')) {
             ths.addErrorDisplay(document.getElementById("ruleEngineRunRemark"));
-
+            valid = false;
           }
           //ths.addErrorDisplay(document.getElementById("claimValidationsRE"));
         }
-        valid = false;
+
       }
 
 
@@ -911,7 +936,7 @@ export class BillingClaimsComponent {
     if (this.claimRcm == undefined) return true;
     //if (!this.isBilling) return true;
     else if (!right) return true;
-    else if (!this.claimRcm.pending) return true;
+    //else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
     if (this.claimRcm.firstTeamId == 3 && this.isBilling
     ) { //use case claim->/e28dd916-4da7-45c7-9884-ee6fd3cac759
@@ -923,7 +948,7 @@ export class BillingClaimsComponent {
   makeReadOnly(): boolean {
     if (this.claimRcm == undefined) return true;
     //if (!this.isBilling) return true;
-    else if (!this.claimRcm.pending) return true;
+    //else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
     if (this.claimRcm.firstTeamId == 3 && this.isBilling
     ) { //use case claim->/e28dd916-4da7-45c7-9884-ee6fd3cac759
@@ -938,7 +963,7 @@ export class BillingClaimsComponent {
     if (!right) return true;
     if (this.claimRcm == undefined) return true;
     if (!this.claimRcm.allowEdit) return true;
-    if (!this.claimRcm.pending) return true;
+    //if (!this.claimRcm.pending) return true;
     if (this.claimRcm.firstTeamId == 3 && this.isBilling
     ) {
       return false;
@@ -1618,130 +1643,132 @@ export class BillingClaimsComponent {
     }
   }
 
-  
 
-fetchClaimLevelInfoSection(){
-  this.appService.fetchClaimLevelInfoSection(this.claimUUid,(res:any)=>{
-    if(res && res.data){
-      this.claimSectionModal['CLAIM_LEVEL_INFORMATION'] = res.data;
-      console.log(this.claimSectionModal);
-      
-    }
-  })
-}
 
-fetchAppealSection(){
-  this.appService.fetchAppealSection(this.claimUUid,(res:any)=>{
-    if(res && res.data){
-      this.claimSectionModal['APPEAL'] = res.data;
-      console.log(this.claimSectionModal);
-      
-    }
-  })
-}
+  fetchClaimLevelInfoSection() {
+    this.appService.fetchClaimLevelInfoSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['CLAIM_LEVEL_INFORMATION'] = res.data;
+        console.log(this.claimSectionModal);
 
-saveClaimLevelinfo(isFinalSubmit:boolean){
-  this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = 13;
-  let params:any = {
-    claimUuid:this.claimUUid,
-    finalSubmit:isFinalSubmit,
-    claimInfoModel:this.claimSectionModal['CLAIM_LEVEL_INFORMATION']
-  }
-  
-  this.appService.saveClaimLevelInfoSection(params,(res:any)=>{
-      if(res.status){
-        console.log(res);
-        
       }
-  })
-  
-}
-
-saveAppealLevelinfo(isFinalSubmit:boolean){
-  this.claimSectionModal['APPEAL']['sectionId'] = 19;
-  let params:any = {
-    claimUuid:this.claimUUid,
-    finalSubmit:isFinalSubmit,
-    appealInfoModel:this.claimSectionModal['APPEAL']
+    })
   }
-  
-  this.appService.saveClaimLevelInfoSection(params,(res:any)=>{
-      if(res.status){
-        console.log(res);
-        
-      }
-  })
-}
 
-  checkSectionFieldValidation() {
+  fetchAppealSection() {
+    this.appService.fetchAppealSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['APPEAL'] = res.data;
+        console.log(this.claimSectionModal);
+
+      }
+    })
+  }
+
+  saveClaimLevelinfo(isFinalSubmit: boolean) {
+    this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = 13;
+    let params: any = {
+      claimUuid: this.claimUUid,
+      finalSubmit: isFinalSubmit,
+      claimInfoModel: this.claimSectionModal['CLAIM_LEVEL_INFORMATION']
+    }
+
+    this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        console.log(res);
+
+      }
+    })
+
+  }
+
+  saveAppealLevelinfo(isFinalSubmit: boolean) {
+    this.claimSectionModal['APPEAL']['sectionId'] = 19;
+    let params: any = {
+      claimUuid: this.claimUUid,
+      finalSubmit: isFinalSubmit,
+      appealInfoModel: this.claimSectionModal['APPEAL']
+    }
+
+    this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        console.log(res);
+
+      }
+    })
+  }
+
+  checkSectionFieldValidation(moveToNextTeam: boolean, save: boolean, showResponseStatus: boolean) {
     let ths: any = this;
-    ths.isSectionValidated=true;
+    ths.isSectionValidated = true;
     let data: any = [];
     ths.sectionLevelData[0].teamsWithSections.forEach((team: any) => {
       data = team.sectionData.filter((item: any) => item.editAccess);
     });
 
-    
+
     for (const section of data) {
       if (section.sectionId == ths.sectionIds[section.sectionName]) {
         const methodName: any = `validate_${section.sectionName}`
-        let isSectionVal :boolean= ths[methodName]();   //validation method will be called here
-        if(!isSectionVal){
-          ths.isSectionValidated=false;
-        } else{
+        let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
+        //method names are creates using convention  validate_{sectioname}
+        if (!isSectionVal) {
+          ths.isSectionValidated = false;
+        } else {
           ths.createSectionModal(section.sectionName);
         }
       }
     }
     // console.log(this.finalSaveClaimDataModel);
-    
 
-    if (this.isSectionValidated) {
-     this.finalSaveSection();
+
+    if (ths.isSectionValidated && save) {
+      ths.finalSaveSection(moveToNextTeam, showResponseStatus);
     }
 
   }
 
-  createSectionModal(sectionName:any){
-        if(sectionName === 'CLAIM_LEVEL_INFORMATION'){
-          this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = 13;
-          this.finalSaveClaimDataModel.claimInfoModel = this.claimSectionModal['CLAIM_LEVEL_INFORMATION'];
-        } 
-        else if (sectionName === 'APPEAL'){
-          this.claimSectionModal['APPEAL']['sectionId'] = 19;
-          this.finalSaveClaimDataModel.appealInfoModel = this.claimSectionModal['APPEAL'];
-        }
+  createSectionModal(sectionName: any) {
+    if (sectionName === 'CLAIM_LEVEL_INFORMATION') {
+      this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = 13;
+      this.finalSaveClaimDataModel.claimInfoModel = this.claimSectionModal['CLAIM_LEVEL_INFORMATION'];
+    }
+    else if (sectionName === 'APPEAL') {
+      this.claimSectionModal['APPEAL']['sectionId'] = 19;
+      this.finalSaveClaimDataModel.appealInfoModel = this.claimSectionModal['APPEAL'];
+    }
   }
 
   validate_CLAIM_LEVEL_INFORMATION() {
-    let isSectionValidated=true;
+    debugger;
+    let isSectionValidated = true;
     this.emptyFields["CLAIM_LEVEL_INFORMATION"] = {};
     this.emptyFields["CLAIM_LEVEL_INFORMATION"].network = '';
     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimId) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"]['claimId'] = true;
       isSectionValidated = false;
     }
-     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimProcessingDate) {
+    if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimProcessingDate) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimProcessingDate = true;
       isSectionValidated = false;
     }
-     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].network) {
+    if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].network) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].network = true;
-     isSectionValidated = false;
+      isSectionValidated = false;
     }
-     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimPassFirstGo) {
+    if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimPassFirstGo) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimPassFirstGo = true;
-     isSectionValidated = false;
+      isSectionValidated = false;
     }
-     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].initialDenial) {
+    if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].initialDenial) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].initialDenial = true;
       isSectionValidated = false;
     }
-     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusEs) {
+    if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusEs) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimStatusEs = true;
-      this.isSectionValidated = false;
+      isSectionValidated = false;
     }
-     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusRcm) {
+    if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusRcm) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimStatusRcm = true;
       isSectionValidated = false;
     }
@@ -1749,62 +1776,138 @@ saveAppealLevelinfo(isFinalSubmit:boolean){
     //   this.finalSaveClaimDataModel.claimInfoModel = this.claimSectionModal['CLAIM_LEVEL_INFORMATION'];
     //   return  this.isSectionValidated;
     // }
-    
+
     return isSectionValidated;
   }
 
-validate_APPEAL(){
-  this.isSectionValidated=true;
-  this.emptyFields["APPEAL"] = {};
+  validate_APPEAL() {
+    let isSectionValidated = true;
+    this.emptyFields["APPEAL"] = {};
     this.emptyFields["APPEAL"].network = '';
     if (!this.claimSectionModal["APPEAL"].modeOfAppeal) {
       this.emptyFields["APPEAL"]['modeOfAppeal'] = true;
-      this.isSectionValidated = false;
+      isSectionValidated = false;
     }
-     if (!this.claimSectionModal["APPEAL"].aiToolUsed) {
+    if (!this.claimSectionModal["APPEAL"].aiToolUsed) {
       this.emptyFields["APPEAL"].aiToolUsed = true;
-      this.isSectionValidated = false;
+      isSectionValidated = false;
     }
-     if (!this.claimSectionModal["APPEAL"].appealDocument) {
+    if (!this.claimSectionModal["APPEAL"].appealDocument) {
       this.emptyFields["APPEAL"].appealDocument = true;
-      this.isSectionValidated = false;
+      isSectionValidated = false;
     }
-     if (!this.claimSectionModal["APPEAL"].remarks) {
+    if (!this.claimSectionModal["APPEAL"].remarks) {
       this.emptyFields["APPEAL"].remarks = true;
-      this.isSectionValidated = false;
+      isSectionValidated = false;
     }
     // else {
     //   this.finalSaveClaimDataModel.appealInfoModel = this.claimSectionModal['APPEAL'];
     //   return this.isSectionValidated;
     // }
-    return this.isSectionValidated;
-}
+    return isSectionValidated;
+  }
 
+  validate_LINKS_RELATED_DOCUMENTS() {
+    return true;
+  }
+  validate_REMARKS_BY_OTHER() {
+    return true;
+  }
+  validate_SECTION_CLAIM_DETAIL() {
+    return true;
+  }
+  validate_REBILLED_CLAIM() {
+    return true;
+  }
+  validate_CLAIM_LEVEL_VALIDATION_AUTO() {
+    return true;
+  }
+  validate_CLAIM_LEVEL_VALIDATION_MANUAL() {
+    return true;
+  }
+  validate_SERVICE_LEVEL_VALIDATION_AUTO() {
+    return true;
+  }
+  validate_SERVICE_LEVEL_VALIDATION_MANUAL() {
+    return true;
+  }
+  validate_RULE_ENGINE_VALIDATION() { return true; }
+  validate_CLAIM_SUBMISSION() { return true; }
+  validate_SERVICE_LEVEL_INFORMATION() { return true; }
+  validate_EOB() { return true; }
+  validate_INSURANCE_PAYMENT_INFORMATION() {
+    return true;
+  }
+  validate_PATIENT_STATEMENT() {
+    return true;
+  }
+  validate_ASSIGN_TO_OTHER() {
+    return true;
+  }
+  validate_INSURANCE_FOLLOW_UP() {
+    return true;
+  }
+  validate_RECREATE_CLAIM() {
+    return true;
+  }
+  validate_PATIENT_PAYMENT() {
+    return true;
+  }
+  validate_PATIENT_COMMUNICATION() {
+    return true;
+  }
+  validate_COLLECTION_AGENCY() {
+    return true;
+  }
+  validate_REQUEST_REBILLING() {
+    return true;
+  }
+  validate_REBILLING() {
+    return true;
+  }
+  validate_NEED_TO_CALL_INSURANCE() {
+    return true;
+  }
+  validate_CURRENT_STATUS_AND_NEXT_ACTION() {
+    return true;
+  }
+  validate_ATTACHMENT() {
+    return true;
+  }
 
-finalSaveSection(){
-  this.finalSaveClaimDataModel['claimUuid'] = this.claimUUid;
-  this.appService.saveClaimLevelInfoSection(this.finalSaveClaimDataModel,(res:any)=>{
-    if(res.status){
-      console.log(res);
-    }
-})
-}
+  finalSaveSection(moveToNextTeam: boolean, showResponseStatus: boolean) {
+    this.finalSaveClaimDataModel['claimUuid'] = this.claimUUid;
+    this.finalSaveClaimDataModel['moveToNextTeam'] = moveToNextTeam;
+    this.appService.saveClaimLevelInfoSection(this.finalSaveClaimDataModel, (res: any) => {
+      if (res.status) {
+        console.log(res);
+        if (showResponseStatus) {
 
-copyUrl(){
-  let inputEl = document.createElement("input");
-  let browserLink = window.location.href;
-  document.body.appendChild(inputEl);
-  inputEl.value = browserLink;
-  inputEl.select();
-  document.execCommand("copy");
-  document.body.removeChild(inputEl);
+        }
 
-  let tooltip = document.getElementById("tooltip");
-  tooltip.style.visibility = "visible";
-  setTimeout(function(){
-    tooltip.style.visibility = "hidden";
-  }, 2000);
-}
+      }
+    })
+  }
 
+  copyUrl() {
+    let inputEl = document.createElement("input");
+    let browserLink = window.location.href;
+    document.body.appendChild(inputEl);
+    inputEl.value = browserLink;
+    inputEl.select();
+    document.execCommand("copy");
+    document.body.removeChild(inputEl);
+
+    let tooltip = document.getElementById("tooltip");
+    tooltip.style.visibility = "visible";
+    setTimeout(function () {
+      tooltip.style.visibility = "hidden";
+    }, 2000);
+  }
+
+  get newClaimTransferToTeam(): number {
+    //TODO Write Logic- Ayush
+    return 0;
+  }
 
 }

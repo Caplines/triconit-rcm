@@ -79,5 +79,8 @@ public interface RcmClaimDetailDto {
 	int getCurrentState();
 	String getPreferredModeOfSubmission();
 	String getRuleEngineRunRemark();
+	int getCurrentStatus();
+	String getInsuranceContactNo();
+	String getPatientContactNo();
 	
 }

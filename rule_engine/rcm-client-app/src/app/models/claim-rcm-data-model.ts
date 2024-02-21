@@ -80,7 +80,11 @@ export interface ClaimRcmDataModel {
 	currentState?: number;
 	preferredModeOfSubmission?: string;
 	claimCmpMatchesLoggedCmp?: boolean;
-	ruleEngineRunRemark?: string
+	ruleEngineRunRemark?: string;
+	currentStatus?: number;
+	insuranceContactNo?: string;
+	patientContactNo?: string;
+
 }
 
 

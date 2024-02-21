@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.tricon.rcm.enums.RcmTeamEnum;
+
 public class Constants {
 
 	public static final String COMPANY_NAME = "Smilepoint";// This matches with Company Table Name Column... Same in
@@ -142,6 +144,10 @@ public class Constants {
 			"Pendancy-other-dop");
 	public static final List<String> COUNT_TYPE = Arrays.asList("opdt", "opdos", "opdtd",
 			"opdosd","tp");
+	
+	//TEAM TRANSFER
+	public static final int FROMBILLINGTOPOSTING=RcmTeamEnum.PAYMENT_POSTING.getId();
+	public static final int CLAIM_POSTING_STATE=1;
 	
 
 }
