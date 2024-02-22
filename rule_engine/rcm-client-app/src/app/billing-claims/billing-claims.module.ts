@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { BillingClaimsRoutingModule } from './billing-claims-routing.module';
@@ -11,7 +11,7 @@ import { PipesModule } from '../pipe/pipe-module';
 import { AttachFileModule } from '../shared/attach-file/attach-file.module';
 import { DatePipe } from '@angular/common';
 
-import {PdfViewerModule} from "ng2-pdf-viewer";
+import { PdfViewerModule } from "ng2-pdf-viewer";
 
 
 
@@ -26,6 +26,9 @@ import {PdfViewerModule} from "ng2-pdf-viewer";
     PdfViewerModule,
   ],
   providers: [ApplicationServiceService, ClaimService, DownLoadService, DatePipe],
-  exports: [BillingClaimsComponent]
+  exports: [BillingClaimsComponent],
+  schemas: [
+    CUSTOM_ELEMENTS_SCHEMA
+  ],
 })
 export class BillingClaimsModule { }

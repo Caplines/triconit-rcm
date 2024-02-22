@@ -128,16 +128,16 @@ export class BillingClaimsComponent {
       remarks: '',
       appealDocument: ''
     },
-    INSURANCE_PAYMENT_INFORMATION:{
-        "paymentIssueTo": "",
-        "amountReceivedInBank": "",
-        "amountPostedInEs": "",
-        "checkDeliverTo": "",
-        "checkNumber": "",
-        "amountDateReceivedInBank": "",
-        "checkCashDate": "",
-        "paidAmount": "",
-        "paymentMode":"",
+    INSURANCE_PAYMENT_INFORMATION: {
+      "paymentIssueTo": "",
+      "amountReceivedInBank": "",
+      "amountPostedInEs": "",
+      "checkDeliverTo": "",
+      "checkNumber": "",
+      "amountDateReceivedInBank": "",
+      "checkCashDate": "",
+      "paidAmount": "",
+      "paymentMode": "",
     }
 
   };
@@ -1678,7 +1678,7 @@ export class BillingClaimsComponent {
   }
 
   saveClaimLevelinfo(isFinalSubmit: boolean) {
-    this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] =  this.sectionIds['CLAIM_LEVEL_INFORMATION'];
+    this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['CLAIM_LEVEL_INFORMATION'];
     let params: any = {
       claimUuid: this.claimUUid,
       finalSubmit: isFinalSubmit,
@@ -1922,7 +1922,7 @@ export class BillingClaimsComponent {
     return 0;
   }
 
-  saveInsurancePaymentInfo(isFinalSubmit:boolean){
+  saveInsurancePaymentInfo(isFinalSubmit: boolean) {
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['sectionId'] = this.sectionIds['INSURANCE_PAYMENT_INFORMATION'];
     let params: any = {
       claimUuid: this.claimUUid,

@@ -6,7 +6,7 @@
     </div>
 </div>
 <div [ngClass]="{'setPadding':appService.setPaddingContainer}">
-    <div class="container-fluid cldet"  [ngClass]="{'for-hide-btn':claimRcm.assoicatedClaimUuid == null}">
+    <div class="container-fluid cldet" [ngClass]="{'for-hide-btn':claimRcm.assoicatedClaimUuid == null}">
         <div class="row">
             <div class="col-lg-12 pt-5">
                 <div class="page-heading">Claim Detail Page {{invalidClaim}}
@@ -60,7 +60,7 @@
                                 </div>
                                 <div *ngIf="loader.claimDetail" class="loader-data"></div>
                                 <div *ngIf="!loader.claimDetail" class="form-row collapse"
-                                    [ngClass]="{'show':!toggleTab['claimDetails'],'hide_class':checkForSectionAccess(sectionIds['SECTION_CLAIM_DETAIL'],'view')}"
+                                    [ngClass]="{'show':!toggleTab['claimDetails'],'hide_class':!checkForSectionAccess(sectionIds['SECTION_CLAIM_DETAIL'],'view')}"
                                     id="claimDetails">
                                     <div class="col-md-3 mb-2">
                                         <div class="custom-row">
@@ -1784,7 +1784,8 @@
 
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="amountDateReceivedInBank">Date when Amount Received in Bank</label>
+                                                <label for="amountDateReceivedInBank">Date when Amount Received in
+                                                    Bank</label>
                                                 <input type="date" id="amountDateReceivedInBank"
                                                     [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
@@ -1806,14 +1807,13 @@
                                     </div>
                                 </ng-container>
 
-                                <ng-container  *ngIf="checkForSectionAccess(sectionIds['EOB'],'view')">
+                                <ng-container *ngIf="checkForSectionAccess(sectionIds['EOB'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['eob']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="EOB">
-                                           EOB
+                                            EOB
                                         </a>
                                         <div class="down-icon" (click)="showHide('serviceCodeLevel')">
-                                            <a href="javascript:void(0)"
-                                                [ngClass]="{'close':toggleTab['eob']}"></a>
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['eob']}"></a>
                                         </div>
                                     </div>
 
@@ -1838,7 +1838,7 @@
                                                         <td>Aging</td>
                                                         <td>Puneet</td>
                                                     </tr>
-                                                 
+
                                                 </tbody>
                                             </table>
                                             <!-- <div class="not-found" *ngIf="claimServiceLevelModel?.claimFound==false">
@@ -1848,18 +1848,20 @@
 
                                         <div class="pdf-viewer-container my-3">
                                             <div class="d-flex justify-content-between my-3">
-                                                <span>Enter Link in the box if you would like to attach another EOB and press Save Button</span>
+                                                <span>Enter Link in the box if you would like to attach another EOB and
+                                                    press Save Button</span>
                                                 <span class="d-flex">
                                                     <input type="text" class="form-control mx-2">
                                                     <button class="btn btn-primary btn-sm">Save</button>
                                                 </span>
                                             </div>
 
-                                            <div class="pdf-viewer ">
-                                                <!-- <pdf-viewer [src]="'https://hiayush.netlify.app/Ayush%20Srivastava%20Resume.pdf'"></pdf-viewer> -->
+                                            <div class="pdf-viewer">
+                                                <!--  <pdf-viewer style="display: block; min-height: 250px"
+                                                    [src]="'https://www.caplineruleengine.com/queryivdatatopdf?o=Liberty&p=134568&id=324187'"></pdf-viewer>-->
                                             </div>
-                                            
-                                            </div>
+
+                                        </div>
                                     </div>
                                 </ng-container>
                             </div>
