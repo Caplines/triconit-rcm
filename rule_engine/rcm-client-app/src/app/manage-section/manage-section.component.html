@@ -1,7 +1,12 @@
 <div class="right-container manage-section">
     <div class="container-fluid">
         <div class="row">
-            <div class="col-sm"></div>
+            <div class="col-sm mt-4">
+                <select  class="form-control" (change)="selectClient($event)">
+                    <option selected="true" hidden="true">Select Client Name</option>
+                    <option [value]="data.clientName" *ngFor="let data of clients">{{data.clientName}}</option>
+                </select>
+            </div>
             <div class="col-lg-12 pt-3">
                 <div class="loader-data" role="status" *ngIf="loader &&  manageSectionData.length==0">
                 </div>
@@ -34,7 +39,7 @@
                                             <div class="manage-section-row">
                                                 <ng-container *ngFor="let sec of teams.sectionData;let i=index;trackBy: trackByFn">
                                                     <div class="manage-section-col-sm-3">
-                                                        <strong> {{sec.sectionName}}</strong>
+                                                        <strong> {{sec.sectionDisplayName}}</strong>
                                                         <div class="manageCheckcontainer" *ngIf="!inputConfig?.isEditSection">
                                                             <div class="form-check">
                                                                 <input class="form-check-input"  [(ngModel)]="sec.viewAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'view')" type="checkbox" value="" id="view{{index}}{{idx}}{{i}}">

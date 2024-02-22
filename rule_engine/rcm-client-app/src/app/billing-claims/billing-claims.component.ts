@@ -127,7 +127,19 @@ export class BillingClaimsComponent {
       aiToolUsed: '',
       remarks: '',
       appealDocument: ''
+    },
+    INSURANCE_PAYMENT_INFORMATION:{
+        "paymentIssueTo": "",
+        "amountReceivedInBank": "",
+        "amountPostedInEs": "",
+        "checkDeliverTo": "",
+        "checkNumber": "",
+        "amountDateReceivedInBank": "",
+        "checkCashDate": "",
+        "paidAmount": "",
+        "paymentMode":"",
     }
+
   };
   finalSaveClaimDataModel: any = {
     claimUuid: '',
@@ -1666,7 +1678,7 @@ export class BillingClaimsComponent {
   }
 
   saveClaimLevelinfo(isFinalSubmit: boolean) {
-    this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = 13;
+    this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] =  this.sectionIds['CLAIM_LEVEL_INFORMATION'];
     let params: any = {
       claimUuid: this.claimUUid,
       finalSubmit: isFinalSubmit,
@@ -1683,7 +1695,7 @@ export class BillingClaimsComponent {
   }
 
   saveAppealLevelinfo(isFinalSubmit: boolean) {
-    this.claimSectionModal['APPEAL']['sectionId'] = 19;
+    this.claimSectionModal['APPEAL']['sectionId'] = this.sectionIds['APPEAL'];
     let params: any = {
       claimUuid: this.claimUUid,
       finalSubmit: isFinalSubmit,
@@ -1908,6 +1920,22 @@ export class BillingClaimsComponent {
   get newClaimTransferToTeam(): number {
     //TODO Write Logic- Ayush
     return 0;
+  }
+
+  saveInsurancePaymentInfo(isFinalSubmit:boolean){
+    this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['sectionId'] = this.sectionIds['INSURANCE_PAYMENT_INFORMATION'];
+    let params: any = {
+      claimUuid: this.claimUUid,
+      finalSubmit: isFinalSubmit,
+      paymentInformationInfoModel: this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']
+    }
+
+    this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        console.log(res);
+
+      }
+    })
   }
 
 }

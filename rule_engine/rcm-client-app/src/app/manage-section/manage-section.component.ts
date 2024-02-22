@@ -29,6 +29,8 @@ export class ManageSectionComponent {
   // filterItems: any = [];
   @Input() inputConfig:any;
 
+  copiedManageSectionData:any=[];
+
   constructor(private _service:ApplicationServiceService,public constants:AppConstants){
 
   }
@@ -39,15 +41,15 @@ export class ManageSectionComponent {
     } else{
       this.fetchSectionData();
     }
+    this.fetchClientNames();
   }
 
   fetchSectionData(){
     this.loader = true;
     this._service.fetchManageSectionData((res:any)=>{
       if(res){
-        console.log(res);
         this.manageSectionData = res.data;
-        // this.displayPage(1);
+        this.copiedManageSectionData = JSON.parse(JSON.stringify(this.manageSectionData));
         this.loader = false;
 
       }
@@ -103,7 +105,6 @@ export class ManageSectionComponent {
 
 
   editSelectedData(event: any, clientUuid: string, teamId: number, sectionId: number, viewAccess: any, editAccess: any, type: any) {
-  
     const clientIndex = this.userManageSectionData.findIndex((client: any) => client.clientUuid === clientUuid);
     if (clientIndex === -1) {
       this.userManageSectionData.push({
@@ -149,7 +150,6 @@ export class ManageSectionComponent {
   
   
   saveManageSecData(idx:any){
-      
         let params:any = this.manageSectionData[idx];
         this._service.saveManageSectionData([params],(res:any)=>{
           if(res){
@@ -160,7 +160,6 @@ export class ManageSectionComponent {
   }
 
   saveManageUserSecData(idx:any){
-
         let params:any = this.userManageSectionData[idx];
         this._service.saveUserManageSectionData([params],(res:any)=>{
           if(res){
@@ -204,6 +203,19 @@ export class ManageSectionComponent {
         this.loader = false;
       }
     })
+  }
+
+  fetchClientNames(){
+    this._service.getClientsName((res:any)=>{
+      if(res){
+        console.log(res);
+        this.clients = res.data;
+      }
+    })
+  }
+
+  selectClient(event:any){
+    this.manageSectionData =  this.copiedManageSectionData.filter((e:any)=>e.clientName == event.target.value)  ;
   }
 
 

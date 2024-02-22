@@ -6,7 +6,7 @@
     </div>
 </div>
 <div [ngClass]="{'setPadding':appService.setPaddingContainer}">
-    <div class="container-fluid cldet">
+    <div class="container-fluid cldet"  [ngClass]="{'for-hide-btn':claimRcm.assoicatedClaimUuid == null}">
         <div class="row">
             <div class="col-lg-12 pt-5">
                 <div class="page-heading">Claim Detail Page {{invalidClaim}}
@@ -15,7 +15,7 @@
                         copied!</small>
                 </div>
 
-                <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary"
+                <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary claim-steps-btn"
                     style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-text-right" viewBox="0 0 16 16">
@@ -1684,6 +1684,182 @@
                                         <div class="col-md-4 mb-2">
 
                                         </div>
+                                    </div>
+                                </ng-container>
+                                <ng-container
+                                    *ngIf="checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'view')">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
+                                        <a data-toggle="collapse" aria-expanded="false">
+                                            Insurance Payment Information
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('appeal')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['appeal']}"></a>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
+                                    <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
+                                        [ngClass]="{'show':!toggleTab['appeal']}" id="INSURANCE_PAYMENT_INFORMATION">
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="paymentIssueTo">Payment Issued To</label>
+                                                <select id="paymentIssueTo" class="form-control"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentIssueTo']"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentIssueTo']}">
+                                                    <option selected="true" hidden="true">Select</option>
+                                                    <option value="provider">Provider</option>
+                                                    <option value="patient">Patient</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="paymentMode">Mode of Payment</label>
+                                                <select id="paymentMode" class="form-control"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode']"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentMode']}">
+                                                    <option selected="true" hidden="true">Select</option>
+                                                    <option value="Check">Check</option>
+                                                    <option value="Eft">EFT</option>
+                                                    <option value="Vcc">VCC</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="amountReceivedInBank">Amount Received in Bank</label>
+                                                <input type="text" id="amountReceivedInBank"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountReceivedInBank']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank']}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="amountPostedInEs">Amount Posted in ES</label>
+                                                <input type="text" id="amountPostedInEs"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountPostedInEs']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs']}">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="checkDeliverTo">Check Delivered To</label>
+                                                <input type="text" id="checkDeliverTo"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkDeliverTo']}">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="checkNumber">Check #</label>
+                                                <input type="text" id="checkNumber"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkNumber']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkNumber']}">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="checkCashDate">Check Cash Date #</label>
+                                                <input type="date" id="checkCashDate"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate']}">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="amountDateReceivedInBank">Date when Amount Received in Bank</label>
+                                                <input type="date" id="amountDateReceivedInBank"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank']}">
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4 mb-2">
+
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+                                            <button class="btn btn-success" (click)="saveInsurancePaymentInfo(false)"
+                                                [hidden]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'edit') && !this.claimRcm.allowEdit">Save</button>
+                                        </div>
+                                        <div class="col-md-4 mb-2">
+
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <ng-container  *ngIf="checkForSectionAccess(sectionIds['EOB'],'view')">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['eob']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="EOB">
+                                           EOB
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('serviceCodeLevel')">
+                                            <a href="javascript:void(0)"
+                                                [ngClass]="{'close':toggleTab['eob']}"></a>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="loader.serviceCode" class="loader-data"></div>
+                                    <div *ngIf="!loader.serviceCode" class="form-row  collapse"
+                                        [ngClass]="{'show':!toggleTab['serviceCodeLevel']}">
+                                        <div class="table-responsive">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Date</th>
+                                                        <th>EOB Link</th>
+                                                        <th>Attached By Team</th>
+                                                        <th>Attached By User</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    <tr>
+                                                        <td>10/3/2023</td>
+                                                        <td> <a href="javascript:void(0);">Link</a></td>
+                                                        <td>Aging</td>
+                                                        <td>Puneet</td>
+                                                    </tr>
+                                                 
+                                                </tbody>
+                                            </table>
+                                            <!-- <div class="not-found" *ngIf="claimServiceLevelModel?.claimFound==false">
+                                                Claim Data Not Found
+                                            </div> -->
+                                        </div>
+
+                                        <div class="pdf-viewer-container my-3">
+                                            <div class="d-flex justify-content-between my-3">
+                                                <span>Enter Link in the box if you would like to attach another EOB and press Save Button</span>
+                                                <span class="d-flex">
+                                                    <input type="text" class="form-control mx-2">
+                                                    <button class="btn btn-primary btn-sm">Save</button>
+                                                </span>
+                                            </div>
+
+                                            <div class="pdf-viewer ">
+                                                <!-- <pdf-viewer [src]="'https://hiayush.netlify.app/Ayush%20Srivastava%20Resume.pdf'"></pdf-viewer> -->
+                                            </div>
+                                            
+                                            </div>
                                     </div>
                                 </ng-container>
                             </div>

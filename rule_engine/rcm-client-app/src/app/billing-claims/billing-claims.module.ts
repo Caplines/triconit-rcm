@@ -11,6 +11,9 @@ import { PipesModule } from '../pipe/pipe-module';
 import { AttachFileModule } from '../shared/attach-file/attach-file.module';
 import { DatePipe } from '@angular/common';
 
+import {PdfViewerModule} from "ng2-pdf-viewer";
+
+
 
 @NgModule({
   declarations: [BillingClaimsComponent],
@@ -19,7 +22,8 @@ import { DatePipe } from '@angular/common';
     BillingClaimsRoutingModule,
     FormsModule,
     PipesModule,
-    AttachFileModule
+    AttachFileModule,
+    PdfViewerModule,
   ],
   providers: [ApplicationServiceService, ClaimService, DownLoadService, DatePipe],
   exports: [BillingClaimsComponent]

@@ -423,6 +423,22 @@
     opacity: 1;
 }
 
+.for-hide-btn{
+
+    .page-heading{
+        margin-top: 20px;
+    }
+
+    .steps-taken{
+        margin-top: 0px;
+    }
+
+    .claim-steps-btn{
+        top: 70px !important;
+    }
+
+}
+
 @keyframes animateleft {
     from {
         right: 0;
