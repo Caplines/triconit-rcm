@@ -1,6 +1,9 @@
 package com.tricon.rcm.api.controller;
 
+import java.io.InputStream;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -48,6 +51,7 @@ import com.tricon.rcm.dto.ClaimSubDet;
 import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.CommonSectionsRequestBodyDto;
+import com.tricon.rcm.dto.EobLink;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
@@ -897,5 +901,45 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@ApiOperation(value = "Api for Saving EOB -Pdf Link of Claim", response = String.class, responseContainer = "Map")
+	@PostMapping("api/saveeoblink")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<Object> saveEobLink(@RequestBody EobLink dto,Model model) {
+		EobLink response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return null;
+		try {
+			response = claimServiceImpl.saveEobLink(dto,partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@ApiOperation(value = "Api for Viewing EOB -Pdf Link of Claim", response = String.class, responseContainer = "Map")
+	@GetMapping("api/vieweoblink/{name}")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public void viewEobLink(@PathVariable("name") String fileName,Model model,HttpServletResponse response) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader != null) {
+			try {
+				InputStream in =claimServiceImpl.viewEobLink(fileName,partialHeader);
+				response.setContentType("application/pdf");
+				response.setHeader("Content-Disposition", String.format("attachment; filename="+fileName));
+				org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
+				response.flushBuffer();
+				in.close();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+		
 	}
 }

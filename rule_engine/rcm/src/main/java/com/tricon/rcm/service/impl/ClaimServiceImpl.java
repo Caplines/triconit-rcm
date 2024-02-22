@@ -1,7 +1,12 @@
 package com.tricon.rcm.service.impl;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -17,6 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -101,6 +107,7 @@ import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.CommonSectionsRequestBodyDto;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
+import com.tricon.rcm.dto.EobLink;
 import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
 import com.tricon.rcm.dto.FreshClaimDataViewDto;
@@ -206,6 +213,9 @@ public class ClaimServiceImpl {
 
 	@Value("${google.client.secret}")
 	private String CLIENT_SECRET_DIR;
+	
+	@Value("${eoblink.folder}")
+	private String eobLinkFolder;
 
 	@Autowired
 	RcmOfficeRepository officeRepo;
@@ -4336,6 +4346,61 @@ public class ClaimServiceImpl {
 		return response;
 
 	}
+	
+     public EobLink saveEobLink(EobLink dto,PartialHeader partialHeader) {
+    	
+		    boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
+				if (!validateClaimRight) {
+					return null;
+			 }
+	        RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+	        if (claim.getCurrentState() == Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED){
+		    	dto.setStatus("Claim is Already UnArchived");
+		    	dto.setSaved(false);
+		    	return dto;
+		    }
+		    if (validateClaimRight) {
+				RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(
+						partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
+				if (assign == null) {
+					dto.setStatus("claim not assigned to this user");
+					// Not assigned to user
+					dto.setSaved(false);
+					return dto;
+				}else {
+					String fileName=dto.getClaimUuid()+new Date().getTime()+"."+dto.getExtension();
+					try {
+						FileUtils.copyURLToFile(
+						new URL(dto.getLink()),  new File(eobLinkFolder+"/"+fileName), 60000, 60000);
+						dto.setSaved(true);
+						dto.setStatus(fileName);
+					}catch(Exception c) {
+						c.printStackTrace();
+						dto.setSaved(false);
+						dto.setStatus(c.getMessage());
+					}
+				}
+			
+			}else {
+				dto.setSaved(false);
+				dto.setStatus("Wrong Client");
+				return dto;
+			}
+			return dto;
+    }
+     
+    public InputStream viewEobLink(String fileName,PartialHeader partialHeader) {
+     	
+	  File initialFile = new File(eobLinkFolder+"/"+fileName);
+      InputStream targetStream=null ;
+		try {
+			targetStream = new FileInputStream(initialFile);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		   return targetStream;
+	 }
 //	public List<FreshClaimDataViewDto> fetchSubmittedClaimDetails(PartialHeader partialHeader) throws Exception {
 //		String selectedtRole = partialHeader.getRole();
 //		int selectedTeamId = partialHeader.getTeamId();
