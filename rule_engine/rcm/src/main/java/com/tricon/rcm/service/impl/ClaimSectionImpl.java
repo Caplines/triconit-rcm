@@ -785,10 +785,30 @@ public class ClaimSectionImpl {
 				data.add(responseData);
 			}
 
-		} else {	
-			List<RcmServiceLevelInformation> serviceLevelNotes=serviceLevelRepo.findServiceLevelNotesByClaimUuid(claimUuid);
+		} else {
+			ServiceLevelNotes notes = null;
+			List<ServiceLevelNotes> notesList = new ArrayList<>();
+			List<RcmServiceLevelInformation> serviceLevelNotes = serviceLevelRepo
+					.findServiceLevelNotesByClaimUuid(claimUuid);
+			for (RcmServiceLevelInformation serviceCodes : serviceLevelData) {
+				notes = new ServiceLevelNotes();
+				for (RcmServiceLevelInformation serviceNotes : serviceLevelNotes) {
+					if (serviceCodes.getId() == serviceNotes.getId()
+							&& serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())) {
+						continue;
+					} else if (serviceCodes.getId() != serviceNotes.getId()
+							&& serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())) {
+						notes.setNotes(serviceNotes.getNotes());
+						notes.setServiceCode(serviceNotes.getServiceCode());
+						notesList.add(notes);
+					}
+				}
+			}
 			for (RcmServiceLevelInformation list : serviceLevelData) {
 				responseData = new ServiceLevelRequestBodyDto();
+				if (notesList.stream().anyMatch(x -> x.getServiceCode().equals(list.getServiceCode()))) {
+					responseData.setServiceCodeNotes(notesList);
+				}
 				BeanUtils.copyProperties(list, responseData);
 				data.add(responseData);
 			}
