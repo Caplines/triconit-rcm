@@ -592,7 +592,7 @@ public class ClaimSectionImpl {
 			eobInformation.setFinalSubmit(finalSubmit);
 			// set eob file path
 			String fileName = claim.getClaimUuid() + new Date().getTime() + "." + eobInfoModel.getExtension();
-			FileUtils.copyURLToFile(new URL(eobInfoModel.getEobLink()), new File(eobLinkFolder + "/" + fileName), 60000,
+			FileUtils.copyURLToFile(new URL(eobInfoModel.getEobLink()), new File(eobLinkFolder + File.separator+ fileName), 60000,
 					60000);
 			eobInformation.setEobFilePath(fileName);
 			eobInformation = eobRepo.save(eobInformation);

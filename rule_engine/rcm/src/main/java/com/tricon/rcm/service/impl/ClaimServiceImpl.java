@@ -4390,8 +4390,7 @@ public class ClaimServiceImpl {
     }
      
     public InputStream viewEobLink(String fileName,PartialHeader partialHeader) {
-     	
-	  File initialFile = new File(eobLinkFolder+"/"+fileName);
+	  File initialFile = new File(eobLinkFolder+File.separator+fileName+".pdf");
       InputStream targetStream=null ;
 		try {
 			targetStream = new FileInputStream(initialFile);
