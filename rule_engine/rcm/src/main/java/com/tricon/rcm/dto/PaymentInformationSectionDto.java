@@ -6,14 +6,14 @@ import lombok.Data;
 public class PaymentInformationSectionDto {
 
 	private String paymentIssueTo;
-	private String amountReceivedInBank;
-	private String amountPostedInEs;
+	private double amountReceivedInBank;
+	private double amountPostedInEs;
 	private String checkDeliverTo;
 	private String checkNumber;
 	private String paymentMode;
 	private String amountDateReceivedInBank;
 	private String checkCashDate;
 	private int sectionId;
-	private String paidAmount;
+	private double paidAmount;
 	
 }

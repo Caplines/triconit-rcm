@@ -25,11 +25,14 @@ import com.tricon.rcm.db.entity.EOBSectionInformation;
 import com.tricon.rcm.db.entity.PaymentInformationSection;
 import com.tricon.rcm.db.entity.RcmAppealLevelInformation;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
+import com.tricon.rcm.db.entity.RcmClaimDetail;
 import com.tricon.rcm.db.entity.RcmClaimLevelSection;
 import com.tricon.rcm.db.entity.RcmClaimSection;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
+import com.tricon.rcm.db.entity.RcmOffice;
+import com.tricon.rcm.db.entity.RcmServiceLevelInformation;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AppealInformationDto;
@@ -42,6 +45,8 @@ import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
+import com.tricon.rcm.dto.ServiceLevelInformationDto;
+import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.EOBSectionRepo;
@@ -49,6 +54,7 @@ import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmAppealInfoRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimDefaultSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimDetailRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLevelInfoRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimSectionRepo;
@@ -56,8 +62,10 @@ import com.tricon.rcm.jpa.repository.RcmClaimUserSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmClientSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
+import com.tricon.rcm.jpa.repository.ServiceLevelInformationRepo;
 import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
@@ -122,6 +130,14 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmInsurancePaymentSectionRepo paymentSectionRepo;
+	@Autowired
+	ServiceLevelInformationRepo serviceLevelRepo;
+	
+	@Autowired
+	RcmClaimDetailRepo claimDetailRepo;
+	
+	@Autowired
+	RcmOfficeRepository officeRepo;
 	@Value("${eoblink.folder}")
 	private String eobLinkFolder;
 
@@ -666,16 +682,16 @@ public class ClaimSectionImpl {
 			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
 
 		// if paid amount is 0 then no need to save data in db
-		if (Double.parseDouble(paymentInformationInfoModel.getPaidAmount()) == 0.0) {
+		if (paymentInformationInfoModel.getPaidAmount() == 0.0) {
 			return true;
 		} else {
 			PaymentInformationSection paymentInsuranceInformation = null;
 			if (claim != null) {
 				paymentInsuranceInformation = new PaymentInformationSection();
 				paymentInsuranceInformation
-						.setAmountPostedInEs(Double.parseDouble(paymentInformationInfoModel.getAmountPostedInEs()));
+						.setAmountPostedInEs(paymentInformationInfoModel.getAmountPostedInEs());
 				paymentInsuranceInformation.setAmountReceivedInBank(
-						Double.parseDouble(paymentInformationInfoModel.getAmountReceivedInBank()));
+						paymentInformationInfoModel.getAmountReceivedInBank());
 				paymentInsuranceInformation.setCheckCashDate(
 						Constants.SDF_MYSL_DATE.parse(paymentInformationInfoModel.getCheckCashDate()));
 				if (paymentInformationInfoModel.getPaymentMode().equals(Constants.PAYMENT_MODE_CHECK)) {
@@ -712,8 +728,8 @@ public class ClaimSectionImpl {
 		}
 		if (paymentInsuranceInformation != null) {
 			responseDto = new PaymentInformationSectionDto();
-			responseDto.setAmountReceivedInBank(Double.toString(paymentInsuranceInformation.getAmountReceivedInBank()));
-			responseDto.setAmountPostedInEs(Double.toString(paymentInsuranceInformation.getAmountPostedInEs()));
+			responseDto.setAmountReceivedInBank(paymentInsuranceInformation.getAmountReceivedInBank());
+			responseDto.setAmountPostedInEs(paymentInsuranceInformation.getAmountPostedInEs());
 			responseDto
 					.setCheckCashDate(Constants.SDF_MYSL_DATE.format((paymentInsuranceInformation.getCheckCashDate())));
 			responseDto.setAmountDateReceivedInBank(
@@ -724,4 +740,59 @@ public class ClaimSectionImpl {
 		return null;
 	}
 
+	@Transactional(rollbackOn = Exception.class)
+	public boolean saveServiceLevelInformationSection(ServiceLevelInformationDto serviceLevelInformationInfoModel,
+			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) {
+		RcmServiceLevelInformation serviceLevelData = null;
+		for (ServiceLevelRequestBodyDto data : serviceLevelInformationInfoModel.getServiceLevelBody()) {
+			serviceLevelData = new RcmServiceLevelInformation();
+			serviceLevelData.setClaim(claim);
+			serviceLevelData.setCreatedBy(createdBy);
+			serviceLevelData.setFinalSubmit(finalSubmit);
+			serviceLevelData.setTeam(team);
+			BeanUtils.copyProperties(data, serviceLevelData);
+			serviceLevelData = serviceLevelRepo.save(serviceLevelData);
+		}
+		return serviceLevelData != null ? true : false;
+	}
+
+	public List<ServiceLevelRequestBodyDto> fetchServiceLevelInformation(PartialHeader partialHeader, String claimUuid,
+			boolean showWithTeam) throws Exception {
+		ServiceLevelRequestBodyDto responseData = null;
+		RcmServiceLevelInformation serviceLevelDto = null;
+		List<ServiceLevelRequestBodyDto> data = new ArrayList<>();
+		List<RcmServiceLevelInformation> listOfServiceLevelDto = new ArrayList<>();
+		boolean validateClaimRight = checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),
+				partialHeader.getCompany().getUuid());
+		if (!validateClaimRight) {
+			logger.error("claim not valid");
+			return data;
+		}
+		List<RcmServiceLevelInformation> serviceLevelData = serviceLevelRepo.findServiceLevelCodesByClaimUuid(claimUuid);
+		if (serviceLevelData.isEmpty()) {
+			// fetch data from rcm claim_detail table and insert into
+			// rcm_service_level_information table
+			List<RcmClaimDetail> claimDetailData = claimDetailRepo.findByClaimClaimUuid(claimUuid);
+			for (RcmClaimDetail list : claimDetailData) {
+				serviceLevelDto = new RcmServiceLevelInformation();
+				BeanUtils.copyProperties(list, serviceLevelDto);
+				listOfServiceLevelDto.add(serviceLevelDto);
+			}
+			listOfServiceLevelDto = serviceLevelRepo.saveAll(listOfServiceLevelDto);
+			for (RcmServiceLevelInformation list : listOfServiceLevelDto) {
+				responseData = new ServiceLevelRequestBodyDto();
+				BeanUtils.copyProperties(list, responseData);
+				data.add(responseData);
+			}
+
+		} else {	
+			List<RcmServiceLevelInformation> serviceLevelNotes=serviceLevelRepo.findServiceLevelNotesByClaimUuid(claimUuid);
+			for (RcmServiceLevelInformation list : serviceLevelData) {
+				responseData = new ServiceLevelRequestBodyDto();
+				BeanUtils.copyProperties(list, responseData);
+				data.add(responseData);
+			}
+		}
+		return data;
+	}
 }

@@ -139,6 +139,8 @@ public class Constants {
 	public static final String SUBMITTED_CLAIMS="submitted";
 	public static final String UNSUBMITTED_CLAIMS="unSubmitted";
 	public static final String PAYMENT_MODE_CHECK="Check";
+	public static final String PAYMENT_MODE_EFT="EFT";
+	public static final String PAYMENT_MODE_VCC="VCC";
 	
 
 	public static final List<String> PAGE_NAME = Arrays.asList("Pendancy", "Pendancy-other", "Pendancy-other-dos",

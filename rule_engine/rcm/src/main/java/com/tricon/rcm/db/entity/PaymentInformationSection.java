@@ -42,10 +42,10 @@ public class PaymentInformationSection extends BaseAuditEntity implements java.i
 	private String paymentIssueTo;
 
 	@Column(name = "amount_received_in_bank")
-	private Double amountReceivedInBank;
+	private double amountReceivedInBank;
 
 	@Column(name = "amount_posted_in_es")
-	private Double amountPostedInEs;
+	private double amountPostedInEs;
 
 	@Column(name = "check_deliver_to")
 	private String checkDeliverTo;

@@ -10,6 +10,7 @@ public class CommonSectionsRequestBodyDto {
 	private AppealInformationDto appealInfoModel;
 	private EOBDto eobInfoModel;
 	private PaymentInformationSectionDto paymentInformationInfoModel;
+	private ServiceLevelInformationDto serviceLevelInformationInfoModel;
 	private boolean finalSubmit;
 	private boolean moveToNextTeam;
 
