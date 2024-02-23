@@ -106,6 +106,9 @@ public class RcmCommonServiceImpl {
 	
 	@Autowired
 	ClaimSectionValidationUtil claimSectionValidationUtil;
+	
+	@Autowired
+	ClaimSectionImpl claimServiceImpl;
 
 	public List<RcmOfficeDto> getAllOffices() {
 
@@ -490,7 +493,8 @@ public class RcmCommonServiceImpl {
 		userTempRepo.save(tempUser);
 	}
 	
-	public boolean validateUserSectionAccess(PartialHeader partialHeader,int sectionId,RcmUser user) throws Exception {
+	public boolean validateUserSectionAccess(PartialHeader partialHeader, int sectionId, RcmUser user)
+			throws Exception {
 		if (user != null) {
 			if (partialHeader.getRole().equals(Constants.SUPER_ADMIN)) {
 				RcmClientSectionMapping clientSecrtionMapping = clientSectionMappingRepo
@@ -500,12 +504,27 @@ public class RcmCommonServiceImpl {
 					return true;
 				}
 			} else {
-				ClaimUserSectionMapping checkSectionAccessOfLoginUser = userSectionRepo
-						.findByCompanyUuidAndTeamIdIdAndSectionIdAndUserUuid(partialHeader.getCompany().getUuid(),
-								partialHeader.getTeamId(), sectionId, user.getUuid());
-				if (checkSectionAccessOfLoginUser != null && checkSectionAccessOfLoginUser.isEditAccess()) {
-					return true;
+//				ClaimUserSectionMapping checkSectionAccessOfLoginUser = userSectionRepo
+//						.findByCompanyUuidAndTeamIdIdAndSectionIdAndUserUuid(partialHeader.getCompany().getUuid(),
+//								partialHeader.getTeamId(), sectionId, user.getUuid());
+//				if (checkSectionAccessOfLoginUser != null && checkSectionAccessOfLoginUser.isEditAccess()) {
+//					return true;
+//				}
+
+				List<ClientSectionMappingDto> sectionAccessPermission = claimServiceImpl.sectionsPermissionOfUser(
+						partialHeader.getJwtUser().getUuid(), partialHeader.getCompany().getUuid(),
+						partialHeader.getTeamId());
+				if (sectionAccessPermission.isEmpty()) {
+					return false;
+				} else {
+					List<RcmTeamSectionAccessDto> teamWithSection = sectionAccessPermission.get(0)
+							.getTeamsWithSections();
+					List<SectionData> sections = teamWithSection.get(0).getSectionData();
+					SectionData section = sections.stream()
+							.filter(x -> x.getSectionId() == sectionId && x.getEditAccess()).findAny().orElse(null);
+					return section != null ? true : false;
 				}
+
 			}
 		}
 		return false;
