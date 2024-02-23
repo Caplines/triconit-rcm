@@ -38,6 +38,9 @@ public class EOBSectionInformation extends BaseAuditEntity implements java.io.Se
 	@Column(name = "eob_link", columnDefinition = "text")
 	private String eobLink;
 	
+	@Column(name = "eob_file_path")
+	private String eobFilePath;
+	
 	
 	@Column(name = "mark_as_deleted")
 	private boolean markAsDeleted;

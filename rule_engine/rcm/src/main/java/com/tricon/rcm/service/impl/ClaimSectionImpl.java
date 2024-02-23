@@ -117,6 +117,8 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmInsurancePaymentSectionRepo paymentSectionRepo;
+	@Value("${eoblink.folder}")
+	private String eobLinkFolder;
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -583,6 +585,11 @@ public class ClaimSectionImpl {
 			eobInformation.setClaim(claim);
 			eobInformation.setCreatedBy(createdBy);
 			eobInformation.setFinalSubmit(finalSubmit);
+			// set eob file path
+			String fileName = claim.getClaimUuid() + new Date().getTime() + "." + eobInfoModel.getExtension();
+			FileUtils.copyURLToFile(new URL(eobInfoModel.getEobLink()), new File(eobLinkFolder + "/" + fileName), 60000,
+					60000);
+			eobInformation.setEobFilePath(fileName);
 			eobInformation = eobRepo.save(eobInformation);
 			return eobInformation != null ? true : false;
 		}
@@ -603,6 +610,7 @@ public class ClaimSectionImpl {
 		}
 		if (eobSections != null) {
 			responseDto = new EOBDto();
+			responseDto.setEobPathLink(eobSections.getEobFilePath());			
 			responseDto.setAttachBy(userRepo.findByUuid(eobSections.getCreatedBy().getUuid()).getFirstName());
 			responseDto.setAttachByTeam(rcmTeamRepo.findById(eobSections.getAttachByTeam().getId()).getDescription());
 			responseDto.setDate(Constants.SDF_MYSL_DATE.format((eobSections.getCreatedDate())));
