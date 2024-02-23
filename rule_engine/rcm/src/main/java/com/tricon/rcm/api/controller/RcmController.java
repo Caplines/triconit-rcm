@@ -921,25 +921,5 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@ApiOperation(value = "Api for Viewing EOB -Pdf Link of Claim", response = String.class, responseContainer = "Map")
-	@GetMapping("api/vieweoblink/{name}")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public void viewEobLink(@PathVariable("name") String fileName,Model model,HttpServletResponse response) {
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if (partialHeader != null) {
-			try {
-				InputStream in =claimServiceImpl.viewEobLink(fileName,partialHeader);
-				response.setContentType("application/pdf");
-				response.setHeader("Content-Disposition", String.format("attachment; filename="+fileName));
-				org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
-				response.flushBuffer();
-				in.close();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-		
-	}
+	
 }

@@ -786,7 +786,7 @@ public class ClaimServiceImpl {
 										b.printStackTrace();
 									  }
 									rcmClaimDetailRepo.save(det);
-									serviceCount++;
+									
 								}
 									
 							}
