@@ -4299,6 +4299,7 @@ public class ClaimServiceImpl {
 								sectionId, sectionsData, createdBy, claim, team);
 						if (!response) break;
 					} else {
+						/*Will add validation latter if needed
 						boolean checkValidation = rcmCommonServiceImpl.commonSectionInformationsForAllWithValidation(
 								sectionRequestBody, partialHeader, sectionId, sectionsData);
 						if (!checkValidation) {
@@ -4306,7 +4307,7 @@ public class ClaimServiceImpl {
 							response=false;
 							allCheckValidation = false;
 							break;
-						}
+						}*/
 					}
 				}
 			}
