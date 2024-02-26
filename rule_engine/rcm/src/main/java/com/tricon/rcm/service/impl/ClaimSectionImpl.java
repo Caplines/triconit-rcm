@@ -618,28 +618,30 @@ public class ClaimSectionImpl {
 		return false;
 	}
 
-	public EOBDto fetchEOBInformation(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
+	public List<EOBDto> fetchEOBInformation(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
 			throws Exception {
 		EOBDto responseDto = null;
-		EOBSectionInformation eobSections = null;
+		List<EOBSectionInformation> eobSections = null;
+		List<EOBDto> responseData = new ArrayList<>();
 		if (showWithTeam) {
-			eobSections = eobRepo
-					.findFirstByClaimClaimUuidAndCreatedByUuidAndAttachByTeamIdAndMarkAsDeletedFalseOrderByCreatedDateDesc(
-							claimUuid, partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+			eobSections = eobRepo.findByClaimClaimUuidAndCreatedByUuidAndAttachByTeamIdAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid,
+					partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
 		} else {
-			eobSections = eobRepo.findFirstByClaimClaimUuidAndCreatedByUuidAndMarkAsDeletedFalseOrderByCreatedDateDesc(
-					claimUuid, partialHeader.getJwtUser().getUuid());
+			eobSections = eobRepo.findByClaimClaimUuidAndCreatedByUuidAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid,
+					partialHeader.getJwtUser().getUuid());
 		}
 		if (eobSections != null) {
-			responseDto = new EOBDto();
-			responseDto.setEobPathLink(eobSections.getEobFilePath());			
-			responseDto.setAttachBy(userRepo.findByUuid(eobSections.getCreatedBy().getUuid()).getFirstName());
-			responseDto.setAttachByTeam(rcmTeamRepo.findById(eobSections.getAttachByTeam().getId()).getDescription());
-			responseDto.setDate(Constants.SDF_MYSL_DATE.format((eobSections.getCreatedDate())));
-			BeanUtils.copyProperties(eobSections, responseDto);
-			return responseDto;
+			for (EOBSectionInformation data : eobSections) {
+				responseDto = new EOBDto();
+				responseDto.setEobPathLink(data.getEobFilePath());
+				responseDto.setAttachBy(userRepo.findByUuid(data.getCreatedBy().getUuid()).getFirstName());
+				responseDto.setAttachByTeam(rcmTeamRepo.findById(data.getAttachByTeam().getId()).getDescription());
+				responseDto.setDate(Constants.SDF_MYSL_DATE.format((data.getCreatedDate())));
+				BeanUtils.copyProperties(eobSections, responseDto);
+				responseData.add(responseDto);
+			}
 		}
-		return null;
+		return responseData;
 	}
 
 	@Transactional(rollbackOn = Exception.class)

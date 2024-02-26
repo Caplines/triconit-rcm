@@ -209,7 +209,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		EOBDto response = null;
+		List<EOBDto> response = null;
 		try {
 			response = claimSection.fetchEOBInformation(partialHeader, claimUuid, withTeam);
 		} catch (Exception e) {
