@@ -4247,10 +4247,10 @@ public class ClaimServiceImpl {
 	}
 	
 	
-	public boolean saveClaimSectionDatAfterSubmission(CommonSectionsRequestBodyDto sectionRequestBody,
+	public Object saveClaimSectionDatAfterSubmission(CommonSectionsRequestBodyDto sectionRequestBody,
 			PartialHeader partialHeader) throws Exception {
 
-		Boolean response = false;
+		Object response =null;
 		boolean allSectionAccess = true;
 		boolean allCheckValidation = true;
 		boolean validateClaimRight = checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),
@@ -4299,7 +4299,7 @@ public class ClaimServiceImpl {
 					if (!sectionRequestBody.isFinalSubmit() && allSectionAccess) {
 						response = rcmCommonServiceImpl.saveCommonSectionInformations(sectionRequestBody, partialHeader,
 								sectionId, sectionsData, createdBy, claim, team);
-						if (!response) break;
+						if (response==null) break;
 					} else {
 						/*Will add validation latter if needed
 						boolean checkValidation = rcmCommonServiceImpl.commonSectionInformationsForAllWithValidation(
@@ -4316,7 +4316,7 @@ public class ClaimServiceImpl {
 		}
 
 		if (sectionRequestBody.isFinalSubmit() && allCheckValidation && allSectionAccess) {
-			response = false;
+			response = null;
 			for (Field field : CommonSectionsRequestBodyDto.class.getDeclaredFields()) {
 				if (field.getName().equals("claimUuid") || field.getName().equals("finalSubmit")|| field.getName().equals("moveToNextTeam")) {
 					continue;
@@ -4333,12 +4333,12 @@ public class ClaimServiceImpl {
 						response = rcmCommonServiceImpl.saveCommonSectionInformations(sectionRequestBody,
 								partialHeader, sectionId, sectionsData, createdBy, claim, team);
 						logger.info("save section  response->" + response);
-						if (!response)
+						if (response==null)
 							break;
 					}
 				}
 			}
-			if (response && sectionRequestBody.isMoveToNextTeam() ) {
+			if (response!=null && sectionRequestBody.isMoveToNextTeam() ) {
 				RcmOffice office = officeRepo.findByUuid(claim.getOffice().getUuid());
 				RcmTeamDto nextTeam = NextTeamClaimTransferUtil.getNextTeam(partialHeader.getTeamId());
 				String claimTransfer=assignClaimToOtherTeamWithRemarkCommon(partialHeader, sectionRequestBody.getClaimUuid(),
@@ -4393,7 +4393,7 @@ public class ClaimServiceImpl {
     }
      
     public InputStream viewEobLink(String fileName,PartialHeader partialHeader) {
-	  File initialFile = new File(eobLinkFolder+File.separator+fileName+".pdf");
+	  File initialFile = new File(eobLinkFolder+File.separator+fileName);
       InputStream targetStream=null ;
 		try {
 			targetStream = new FileInputStream(initialFile);

@@ -141,6 +141,9 @@ public class ClaimSectionImpl {
 	RcmOfficeRepository officeRepo;
 	@Value("${eoblink.folder}")
 	private String eobLinkFolder;
+	@Value("${rcm.serverdomain}")
+	private String serverDomainLink;
+	
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -597,7 +600,7 @@ public class ClaimSectionImpl {
 
 	
 	@Transactional(rollbackOn = Exception.class)
-	public boolean saveEOBSection(EOBDto eobInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
+	public Object saveEOBSection(EOBDto eobInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
 			boolean finalSubmit) throws Exception {
 		EOBSectionInformation eobInformation = null;
 		if (claim != null) {
@@ -613,33 +616,36 @@ public class ClaimSectionImpl {
 					60000);
 			eobInformation.setEobFilePath(fileName);
 			eobInformation = eobRepo.save(eobInformation);
-			return eobInformation != null ? true : false;
+			eobInfoModel.setEobPathLink(serverDomainLink+"/api/vieweoblink/"+eobInformation.getEobFilePath());
+			//return eobInformation != null ? true : false;
 		}
-		return false;
+		return eobInfoModel;
 	}
 
-	public EOBDto fetchEOBInformation(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
+	public List<EOBDto> fetchEOBInformation(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
 			throws Exception {
 		EOBDto responseDto = null;
-		EOBSectionInformation eobSections = null;
+		List<EOBSectionInformation> eobSections = null;
+		List<EOBDto> responseData = new ArrayList<>();
 		if (showWithTeam) {
-			eobSections = eobRepo
-					.findFirstByClaimClaimUuidAndCreatedByUuidAndAttachByTeamIdAndMarkAsDeletedFalseOrderByCreatedDateDesc(
-							claimUuid, partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+			eobSections = eobRepo.findByClaimClaimUuidAndCreatedByUuidAndAttachByTeamIdAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid,
+					partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
 		} else {
-			eobSections = eobRepo.findFirstByClaimClaimUuidAndCreatedByUuidAndMarkAsDeletedFalseOrderByCreatedDateDesc(
-					claimUuid, partialHeader.getJwtUser().getUuid());
+			eobSections = eobRepo.findByClaimClaimUuidAndCreatedByUuidAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid,
+					partialHeader.getJwtUser().getUuid());
 		}
 		if (eobSections != null) {
-			responseDto = new EOBDto();
-			responseDto.setEobPathLink(eobSections.getEobFilePath());			
-			responseDto.setAttachBy(userRepo.findByUuid(eobSections.getCreatedBy().getUuid()).getFirstName());
-			responseDto.setAttachByTeam(rcmTeamRepo.findById(eobSections.getAttachByTeam().getId()).getDescription());
-			responseDto.setDate(Constants.SDF_MYSL_DATE.format((eobSections.getCreatedDate())));
-			BeanUtils.copyProperties(eobSections, responseDto);
-			return responseDto;
+			for (EOBSectionInformation data : eobSections) {
+				responseDto = new EOBDto();
+				responseDto.setEobPathLink(data.getEobFilePath());
+				responseDto.setAttachBy(userRepo.findByUuid(data.getCreatedBy().getUuid()).getFirstName());
+				responseDto.setAttachByTeam(rcmTeamRepo.findById(data.getAttachByTeam().getId()).getDescription());
+				responseDto.setDate(Constants.SDF_MYSL_DATE.format((data.getCreatedDate())));
+				BeanUtils.copyProperties(eobSections, responseDto);
+				responseData.add(responseDto);
+			}
 		}
-		return null;
+		return responseData;
 	}
 
 	@Transactional(rollbackOn = Exception.class)
