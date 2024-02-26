@@ -11,6 +11,7 @@ public class CommonSectionsRequestBodyDto {
 	private EOBDto eobInfoModel;
 	private PaymentInformationSectionDto paymentInformationInfoModel;
 	private ServiceLevelInformationDto serviceLevelInformationInfoModel;
+	private RcmFollowUpInsuranceDto rcmFollowUpInsuranceInfoModel;
 	private boolean finalSubmit;
 	private boolean moveToNextTeam;
 

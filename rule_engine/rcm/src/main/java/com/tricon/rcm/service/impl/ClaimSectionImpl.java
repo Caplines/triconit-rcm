@@ -31,6 +31,7 @@ import com.tricon.rcm.db.entity.RcmClaimSection;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
+import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmServiceLevelInformation;
 import com.tricon.rcm.db.entity.RcmTeam;
@@ -42,6 +43,7 @@ import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.EobSectionEditDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
+import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
@@ -51,6 +53,7 @@ import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.EOBSectionRepo;
+import com.tricon.rcm.jpa.repository.FollowUpInsuranceRepo;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmAppealInfoRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
@@ -141,6 +144,9 @@ public class ClaimSectionImpl {
 	RcmOfficeRepository officeRepo;
 	@Value("${eoblink.folder}")
 	private String eobLinkFolder;
+	@Autowired
+	FollowUpInsuranceRepo followUpRepo;
+	
 	@Value("${rcm.serverdomain}")
 	private String serverDomainLink;
 	
@@ -513,7 +519,7 @@ public class ClaimSectionImpl {
 	
 	
 	@Transactional(rollbackOn = Exception.class)
-	public boolean saveClaimLevelInformation(ClaimLevelInformationDto claimLvelInfoDto, RcmClaims claim,
+	public Boolean saveClaimLevelInformation(ClaimLevelInformationDto claimLvelInfoDto, RcmClaims claim,
 			RcmUser createdBy, RcmTeam team, boolean isFinalSubmit) throws Exception {
 		RcmClaimLevelSection claimLevelSection = null;
 		if (claim != null) {
@@ -531,9 +537,9 @@ public class ClaimSectionImpl {
 			claimLevelSection
 					.setClaimProcessingDate(Constants.SDF_MYSL_DATE.parse(claimLvelInfoDto.getClaimProcessingDate()));
 			claimLevelSection = claimLevelInfoRepo.save(claimLevelSection);
-			return claimLevelSection != null ? true : false;
+			return claimLevelSection != null ? true : null;
 		}
-		return false;
+		return null;
 	}
 
 	public ClaimLevelInformationDto fetchClaimLevelInfo(PartialHeader partialHeader, String claimUuid,
@@ -559,7 +565,7 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public boolean saveAppealInformation(AppealInformationDto appealInfoDto,RcmClaims claim,RcmUser createdBy,RcmTeam team,boolean isFinalSubmit)
+	public Boolean saveAppealInformation(AppealInformationDto appealInfoDto,RcmClaims claim,RcmUser createdBy,RcmTeam team,boolean isFinalSubmit)
 			throws Exception {
 		RcmAppealLevelInformation appealInformation = null;
 		if (claim != null) {
@@ -573,7 +579,7 @@ public class ClaimSectionImpl {
 			appealInformation.setFinalSubmit(isFinalSubmit);
 			appealInformation.setTeamId(team);
 			appealInformation = appealInfoRepo.save(appealInformation);
-			return appealInformation != null ? true : false;
+			return appealInformation != null ? true : null;
 		}
 		return false;
 	}
@@ -617,7 +623,9 @@ public class ClaimSectionImpl {
 			eobInformation.setEobFilePath(fileName);
 			eobInformation = eobRepo.save(eobInformation);
 			eobInfoModel.setEobPathLink(serverDomainLink+"/api/vieweoblink/"+eobInformation.getEobFilePath());
-			//return eobInformation != null ? true : false;
+			eobInfoModel.setAttachByTeam(team.getName());
+			eobInfoModel.setAttachBy(createdBy.getFirstName());
+			eobInfoModel.setDate(Constants.SDF_MYSL_DATE.format((eobInformation.getCreatedDate())));
 		}
 		return eobInfoModel;
 	}
@@ -686,7 +694,7 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public boolean saveInsurancePaymentInformationSection(PaymentInformationSectionDto paymentInformationInfoModel,
+	public Boolean saveInsurancePaymentInformationSection(PaymentInformationSectionDto paymentInformationInfoModel,
 			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
 
 		// if paid amount is 0 then no need to save data in db
@@ -715,10 +723,10 @@ public class ClaimSectionImpl {
 				paymentInsuranceInformation.setFinalSubmit(finalSubmit);
 				paymentInsuranceInformation.setTeam(team);
 				paymentInsuranceInformation = paymentSectionRepo.save(paymentInsuranceInformation);
-				return paymentInsuranceInformation != null ? true : false;
+				return paymentInsuranceInformation != null ? true : null;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	public PaymentInformationSectionDto fetchInsurancePaymentInformation(PartialHeader partialHeader, String claimUuid,
@@ -749,7 +757,7 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public boolean saveServiceLevelInformationSection(ServiceLevelInformationDto serviceLevelInformationInfoModel,
+	public Boolean saveServiceLevelInformationSection(ServiceLevelInformationDto serviceLevelInformationInfoModel,
 			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) {
 		RcmServiceLevelInformation serviceLevelData = null;
 		for (ServiceLevelRequestBodyDto data : serviceLevelInformationInfoModel.getServiceLevelBody()) {
@@ -761,7 +769,7 @@ public class ClaimSectionImpl {
 			BeanUtils.copyProperties(data, serviceLevelData);
 			serviceLevelData = serviceLevelRepo.save(serviceLevelData);
 		}
-		return serviceLevelData != null ? true : false;
+		return serviceLevelData != null ? true : null;
 	}
 
 	public List<ServiceLevelRequestBodyDto> fetchServiceLevelInformation(PartialHeader partialHeader, String claimUuid,
@@ -822,5 +830,28 @@ public class ClaimSectionImpl {
 			}
 		}
 		return data;
+	}
+	@Transactional(rollbackOn = Exception.class)
+	public Boolean saveFollowUpInsuranceSection(RcmFollowUpInsuranceDto rcmFollowUpInsuranceInfoModel, RcmClaims claim,
+			RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) throws Exception {
+		RcmInsuranceFollowUpSection followUpInformation = null;
+		if (claim != null) {
+			followUpInformation = new RcmInsuranceFollowUpSection();
+			followUpInformation.setCurrentClaimStatus(rcmFollowUpInsuranceInfoModel.getCurrentClaimStatus());
+			followUpInformation.setFollowUpRemarks(rcmFollowUpInsuranceInfoModel.getFollowUpRemarks());
+			followUpInformation.setClaim(claim);
+			followUpInformation.setInsuranceRepName(rcmFollowUpInsuranceInfoModel.getInsuranceRepName());
+			followUpInformation.setModeOfFolloWUp(rcmFollowUpInsuranceInfoModel.getModeOfFolloWUp());
+			followUpInformation.setNextFollowUpRequired(rcmFollowUpInsuranceInfoModel.getNextFollowUpRequired());
+			followUpInformation.setNextFollowUphDate(
+					Constants.SDF_MYSL_DATE.parse(rcmFollowUpInsuranceInfoModel.getNextFollowUphDate()));
+			followUpInformation.setRefNumber(rcmFollowUpInsuranceInfoModel.getRefNumber());
+			followUpInformation.setCreatedBy(createdBy);
+			followUpInformation.setFinalSubmit(finalSubmit);
+			followUpInformation.setTeam(team);
+			followUpInformation = followUpRepo.save(followUpInformation);
+			return followUpInformation != null ? true : null;
+		}
+		return null;
 	}
 }

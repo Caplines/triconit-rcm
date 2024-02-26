@@ -578,6 +578,13 @@ public class RcmCommonServiceImpl {
 						 claim, createdBy, team, sectionRequestBody.isFinalSubmit(),partialHeader.getClientName());
 				logger.info("response->" + response);
 				break;
+				
+			case 17:
+				logger.info("Inside section 17->Follow-up Insurance");
+				response = claimSectionimpl.saveFollowUpInsuranceSection(sectionRequestBody.getRcmFollowUpInsuranceInfoModel(),
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit(),partialHeader.getClientName());
+				logger.info("response->" + response);
+				break;
 			default:
 				logger.error("section not found");
 			}
@@ -634,6 +641,13 @@ public class RcmCommonServiceImpl {
 				if (sectionRequestBody.isFinalSubmit())
 					response = claimSectionValidationUtil
 							.validationForServiceLevelInformationSectionFields(sectionRequestBody.getServiceLevelInformationInfoModel());
+				logger.info("validation response->" + response);
+				break;
+			case 17:
+				logger.info("Inside section 17->Follow-up Insurance");
+				if (sectionRequestBody.isFinalSubmit())
+					response = claimSectionValidationUtil
+							.validationForFollowUpInsuranceSectionFields(sectionRequestBody.getRcmFollowUpInsuranceInfoModel());
 				logger.info("validation response->" + response);
 				break;
 			default:

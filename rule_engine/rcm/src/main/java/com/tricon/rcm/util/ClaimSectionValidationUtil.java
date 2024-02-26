@@ -10,6 +10,7 @@ import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
+import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
 import com.tricon.rcm.dto.ServiceLevelInformationDto;
 
 @Service
@@ -215,6 +216,16 @@ public class ClaimSectionValidationUtil {
 
 		boolean isValid = true;
 		if (serviceLevelInformationInfoModel.getServiceLevelBody().isEmpty()) {
+			return false;
+		}
+
+		return isValid;
+	}
+
+	public boolean validationForFollowUpInsuranceSectionFields(RcmFollowUpInsuranceDto rcmFollowUpInsuranceInfoModel) {
+		logger.info("RcmFollowUpInsuranceDto->" + rcmFollowUpInsuranceInfoModel);
+		boolean isValid = true;
+		if (rcmFollowUpInsuranceInfoModel == null) {
 			return false;
 		}
 
