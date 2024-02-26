@@ -367,14 +367,14 @@ public class RuleEngineService {
 										}catch(Exception s) {
 											logger.error(s.getMessage());
 										}
-										if (isBilling) {
+										if (isBilling || isMedicare) {
 										claim = ClaimUtil.createClaimFromESData(claim, off, re,
 												ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()),
 												user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
 												rcmInsuranceType, timely.getTimelyFilingLimit(),insuranceNameTypeDto.getPreferredModeOfSubmission(), claimTypeEnum);
 										missing=false;
 										}
-										if (isMedicaid || isMedicare || isChip) {
+										if (isMedicaid || isChip) {
 											claim = ClaimUtil.createClaimFromESData(claim, off, re,
 													ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()),
 													user, ins, ins, systemStatusBilling, claimTypeEnum.getSuffix(),
@@ -398,7 +398,7 @@ public class RuleEngineService {
 											rcmIssueClaimsRepo.save(isC);
 										}
 										/// createAssginmentData
-										if (assignedUserBilling != null && isBilling) {
+										if (assignedUserBilling != null && (isBilling || isMedicare ) ) {
 											rcmAssigment = new RcmClaimAssignment();
 											//
 											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -407,7 +407,7 @@ public class RuleEngineService {
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
 										}
-										if (assignedUserInternalAudit != null && (isMedicaid|| isMedicare || isChip)) {
+										if (assignedUserInternalAudit != null && (isMedicaid||  isChip)) {
 											rcmAssigment = new RcmClaimAssignment();
 											//
 											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
