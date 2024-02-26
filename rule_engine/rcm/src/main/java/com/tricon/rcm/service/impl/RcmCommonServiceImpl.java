@@ -530,10 +530,10 @@ public class RcmCommonServiceImpl {
 		return false;
 	}
 
-	public boolean saveCommonSectionInformations(CommonSectionsRequestBodyDto sectionRequestBody,
+	public Object saveCommonSectionInformations(CommonSectionsRequestBodyDto sectionRequestBody,
 			PartialHeader partialHeader, int sectionId, List<SectionDto> sectionsData, RcmUser createdBy,
 			RcmClaims claim, RcmTeam team) throws Exception {
-		boolean response = false;
+		Object response = null;
 		SectionDto section = sectionsData.stream().filter(x -> x.getSectionId() == sectionId && x.isActive()).findAny()
 				.orElse(null);
 		if (section != null) {
@@ -563,7 +563,7 @@ public class RcmCommonServiceImpl {
 				logger.info("Inside section 12->EOB");
 				response = claimSectionimpl.saveEOBSection(sectionRequestBody.getEobInfoModel(),
 						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
-				logger.info("response->" + response);
+				//logger.info("response->" + response);
 				break;
 				
 			case 14:

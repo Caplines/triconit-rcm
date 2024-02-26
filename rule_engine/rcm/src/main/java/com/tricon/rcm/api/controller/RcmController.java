@@ -888,7 +888,7 @@ public class RcmController extends BaseHeaderController{
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		boolean response = false;
+		Object response = false;
 		if (!StringUtils.isNoneBlank(sectionRequestBody.getClaimUuid())) {
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));

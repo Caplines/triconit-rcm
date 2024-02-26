@@ -141,6 +141,9 @@ public class ClaimSectionImpl {
 	RcmOfficeRepository officeRepo;
 	@Value("${eoblink.folder}")
 	private String eobLinkFolder;
+	@Value("${rcm.serverdomain}")
+	private String serverDomainLink;
+	
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -597,7 +600,7 @@ public class ClaimSectionImpl {
 
 	
 	@Transactional(rollbackOn = Exception.class)
-	public boolean saveEOBSection(EOBDto eobInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
+	public Object saveEOBSection(EOBDto eobInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
 			boolean finalSubmit) throws Exception {
 		EOBSectionInformation eobInformation = null;
 		if (claim != null) {
@@ -613,9 +616,10 @@ public class ClaimSectionImpl {
 					60000);
 			eobInformation.setEobFilePath(fileName);
 			eobInformation = eobRepo.save(eobInformation);
-			return eobInformation != null ? true : false;
+			eobInfoModel.setEobPathLink(serverDomainLink+"/api/vieweoblink/"+eobInformation.getEobFilePath());
+			//return eobInformation != null ? true : false;
 		}
-		return false;
+		return eobInfoModel;
 	}
 
 	public List<EOBDto> fetchEOBInformation(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
