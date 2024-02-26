@@ -21,6 +21,5 @@ public class ServiceLevelRequestBodyDto {
 	private int sNum;
 	private String estPrimary;
 	private String fee;
-	private boolean finalSubmit;
 	private List<ServiceLevelNotes>serviceCodeNotes;
 }

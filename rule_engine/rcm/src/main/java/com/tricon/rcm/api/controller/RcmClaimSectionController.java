@@ -263,7 +263,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
-	@GetMapping(value = "api/get-service_level_info/{claimUuid}/{withTeam}")
+	@GetMapping(value = "api/get-service-level-info/{claimUuid}/{withTeam}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
 	public ResponseEntity<?> getServiceLevelInfo(@PathVariable("claimUuid") String claimUuid,
 			@PathVariable("withTeam") boolean withTeam, Model model) {
