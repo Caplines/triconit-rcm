@@ -727,14 +727,14 @@ public class ClaimServiceImpl {
 								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
 							}
 							boolean missing=true;
-							if (isBilling) {
+							if (isBilling || isMedicare ) {
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
 									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),""
 									,claimTypeEnum);
 							missing=false;
 							}
-							if (isMedicaid || isMedicare || isChip) {
+							if (  isMedicaid || isChip) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
@@ -812,7 +812,7 @@ public class ClaimServiceImpl {
 								rcmIssueClaimsRepo.save(isC);
 							}
 							/// createAssginmentData
-							if (assignedUserBilling != null && isBilling) {
+							if (assignedUserBilling != null && (isBilling || isMedicare )) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -821,7 +821,7 @@ public class ClaimServiceImpl {
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
 							}
-							if (assignedUserInternalAudit != null && (isMedicaid|| isMedicare || isChip)) {
+							if (assignedUserInternalAudit != null && (isMedicaid  || isChip)) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -1022,7 +1022,7 @@ public class ClaimServiceImpl {
 							//boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
 							//boolean isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 							boolean missing=true;
-							if (isBilling) {
+							if (isBilling || isMedicare) {
 							
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
@@ -1030,7 +1030,7 @@ public class ClaimServiceImpl {
 									claimTypeEnum);
 							missing=false;
 							}
-							if (isMedicaid || isMedicare || isChip) {
+							if (isMedicaid  || isChip) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
@@ -1093,7 +1093,7 @@ public class ClaimServiceImpl {
 								rcmIssueClaimsRepo.save(isC);
 							}
 							/// createAssginmentData
-							if (assignedUserBilling != null && isBilling) {
+							if (assignedUserBilling != null && (isBilling || isMedicare)) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -1102,7 +1102,7 @@ public class ClaimServiceImpl {
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
 							}
-							if (assignedUserInternalAudit != null && (isMedicaid|| isMedicare || isChip)) {
+							if (assignedUserInternalAudit != null && ( isMedicaid || isChip)) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -3994,6 +3994,7 @@ public class ClaimServiceImpl {
 			Date date = new Date();
 			RcmClaimArchiveHistory history=new RcmClaimArchiveHistory();
 			history.setReason(dto.getReason());
+			history.setClaim(claim);
 			history.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED);
 			rcmClaimArchiveHistoryRepo.save(history);
 			String claimId=date.getTime()+Constants.HYPHEN+Constants.ARCHIVE_PREFIX+claim.getClaimId();
@@ -4033,6 +4034,7 @@ public class ClaimServiceImpl {
 			//Date date = new Date();
 			RcmClaimArchiveHistory history=new RcmClaimArchiveHistory();
 			history.setReason(dto.getReason());
+			history.setClaim(claim);
 			history.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED);
 			rcmClaimArchiveHistoryRepo.save(history);
 			claim.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED);
