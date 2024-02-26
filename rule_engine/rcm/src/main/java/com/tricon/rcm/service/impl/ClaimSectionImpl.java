@@ -637,7 +637,8 @@ public class ClaimSectionImpl {
 		if (eobSections != null) {
 			for (EOBSectionInformation data : eobSections) {
 				responseDto = new EOBDto();
-				responseDto.setEobPathLink(data.getEobFilePath());
+				responseDto.setEobLink(data.getEobLink());
+				responseDto.setEobPathLink(serverDomainLink+"/api/vieweoblink/"+data.getEobFilePath());
 				responseDto.setAttachBy(userRepo.findByUuid(data.getCreatedBy().getUuid()).getFirstName());
 				responseDto.setAttachByTeam(rcmTeamRepo.findById(data.getAttachByTeam().getId()).getDescription());
 				responseDto.setDate(Constants.SDF_MYSL_DATE.format((data.getCreatedDate())));
