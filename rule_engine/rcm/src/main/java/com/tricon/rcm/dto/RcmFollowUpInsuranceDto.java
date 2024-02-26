@@ -15,5 +15,4 @@ public class RcmFollowUpInsuranceDto {
 	private String FollowByTeam;
 	private String FollowByUser;
 	private int sectionId;
-	private int sNo;
 }

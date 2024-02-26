@@ -790,6 +790,7 @@ public class ClaimSectionImpl {
 			List<RcmClaimDetail> claimDetailData = claimDetailRepo.findByClaimClaimUuid(claimUuid);
 			for (RcmClaimDetail list : claimDetailData) {
 				serviceLevelDto = new RcmServiceLevelInformation();
+				serviceLevelDto.setSNum(list.getId()+1);			
 				BeanUtils.copyProperties(list, serviceLevelDto);
 				listOfServiceLevelDto.add(serviceLevelDto);
 			}
@@ -869,8 +870,7 @@ public class ClaimSectionImpl {
 		}
 		if (!followUpInsuranceInformation.isEmpty()) {
 			for (RcmInsuranceFollowUpSection data : followUpInsuranceInformation) {
-				responseDto = new RcmFollowUpInsuranceDto();
-				responseDto.setSNo(data.getId());		
+				responseDto = new RcmFollowUpInsuranceDto();	
 				responseDto.setFollowByUser(userRepo.findByUuid(data.getCreatedBy().getUuid()).getFirstName());
 				responseDto.setFollowByTeam(rcmTeamRepo.findById(data.getTeam().getId()).getDescription());
 				responseDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE.format(data.getNextFollowUpDate()));

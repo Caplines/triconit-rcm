@@ -28,7 +28,7 @@ public class RcmServiceLevelInformation extends BaseAuditEntity implements java.
 	private int id;
 	
 	@Column(name = "s_no")
-	private int sNo;
+	private int sNum;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "claim_id", referencedColumnName = "claim_uuid")

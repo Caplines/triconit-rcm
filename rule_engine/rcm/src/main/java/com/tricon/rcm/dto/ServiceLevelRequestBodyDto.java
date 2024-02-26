@@ -18,7 +18,7 @@ public class ServiceLevelRequestBodyDto {
 	private String action;
 	private String tooth;
 	private String surface;
-	private int sNo;
+	private int sNum;
 	private String estPrimary;
 	private String fee;
 	private boolean finalSubmit;
