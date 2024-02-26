@@ -633,7 +633,7 @@ public class ClaimSectionImpl {
 	public List<EOBDto> fetchEOBInformation(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
 			throws Exception {
 		EOBDto responseDto = null;
-		List<EOBSectionInformation> eobSections = null;
+		List<EOBSectionInformation> eobSections = new ArrayList<>();
 		List<EOBDto> responseData = new ArrayList<>();
 		if (showWithTeam) {
 			eobSections = eobRepo.findByClaimClaimUuidAndCreatedByUuidAndAttachByTeamIdAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid,
@@ -642,15 +642,14 @@ public class ClaimSectionImpl {
 			eobSections = eobRepo.findByClaimClaimUuidAndCreatedByUuidAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid,
 					partialHeader.getJwtUser().getUuid());
 		}
-		if (eobSections != null) {
+		if (!eobSections.isEmpty()) {
 			for (EOBSectionInformation data : eobSections) {
 				responseDto = new EOBDto();
-				responseDto.setEobLink(data.getEobLink());
 				responseDto.setEobPathLink(serverDomainLink+"/api/vieweoblink/"+data.getEobFilePath());
 				responseDto.setAttachBy(userRepo.findByUuid(data.getCreatedBy().getUuid()).getFirstName());
 				responseDto.setAttachByTeam(rcmTeamRepo.findById(data.getAttachByTeam().getId()).getDescription());
 				responseDto.setDate(Constants.SDF_MYSL_DATE.format((data.getCreatedDate())));
-				BeanUtils.copyProperties(eobSections, responseDto);
+				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);
 			}
 		}
@@ -841,10 +840,10 @@ public class ClaimSectionImpl {
 			followUpInformation.setFollowUpRemarks(rcmFollowUpInsuranceInfoModel.getFollowUpRemarks());
 			followUpInformation.setClaim(claim);
 			followUpInformation.setInsuranceRepName(rcmFollowUpInsuranceInfoModel.getInsuranceRepName());
-			followUpInformation.setModeOfFolloWUp(rcmFollowUpInsuranceInfoModel.getModeOfFolloWUp());
+			followUpInformation.setModeOfFollowUp(rcmFollowUpInsuranceInfoModel.getModeOfFollowUp());
 			followUpInformation.setNextFollowUpRequired(rcmFollowUpInsuranceInfoModel.getNextFollowUpRequired());
-			followUpInformation.setNextFollowUphDate(
-					Constants.SDF_MYSL_DATE.parse(rcmFollowUpInsuranceInfoModel.getNextFollowUphDate()));
+			followUpInformation.setNextFollowUpDate(
+					Constants.SDF_MYSL_DATE.parse(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate()));
 			followUpInformation.setRefNumber(rcmFollowUpInsuranceInfoModel.getRefNumber());
 			followUpInformation.setCreatedBy(createdBy);
 			followUpInformation.setFinalSubmit(finalSubmit);
@@ -853,5 +852,32 @@ public class ClaimSectionImpl {
 			return followUpInformation != null ? true : null;
 		}
 		return null;
+	}
+	
+	public List<RcmFollowUpInsuranceDto> fetchFollowUpInsuranceInformation(PartialHeader partialHeader,
+			String claimUuid, boolean showWithTeam) throws Exception {
+		RcmFollowUpInsuranceDto responseDto = null;
+		List<RcmFollowUpInsuranceDto> responseData = new ArrayList<>();
+		List<RcmInsuranceFollowUpSection> followUpInsuranceInformation = new ArrayList<>();
+		if (showWithTeam) {
+			followUpInsuranceInformation = followUpRepo
+					.findByClaimClaimUuidAndCreatedByUuidAndTeamIdOrderByCreatedDateDesc(claimUuid,
+							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+		} else {
+			followUpInsuranceInformation = followUpRepo.findByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(
+					claimUuid, partialHeader.getJwtUser().getUuid());
+		}
+		if (!followUpInsuranceInformation.isEmpty()) {
+			for (RcmInsuranceFollowUpSection data : followUpInsuranceInformation) {
+				responseDto = new RcmFollowUpInsuranceDto();
+				responseDto.setSNo(data.getId());		
+				responseDto.setFollowByUser(userRepo.findByUuid(data.getCreatedBy().getUuid()).getFirstName());
+				responseDto.setFollowByTeam(rcmTeamRepo.findById(data.getTeam().getId()).getDescription());
+				responseDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE.format(data.getNextFollowUpDate()));
+				BeanUtils.copyProperties(data, responseDto);
+				responseData.add(responseDto);
+			}
+		}
+		return responseData;
 	}
 }

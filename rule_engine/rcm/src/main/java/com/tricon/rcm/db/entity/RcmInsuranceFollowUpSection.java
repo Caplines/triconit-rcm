@@ -39,7 +39,7 @@ public class RcmInsuranceFollowUpSection extends BaseAuditEntity implements java
 	private RcmTeam team;
 	
 	@Column(name = "folllow_up_mode",length = 20)
-	private String modeOfFolloWUp;
+	private String modeOfFollowUp;
 	
 	@Column(name = "ref_number")
 	private String refNumber;
@@ -58,7 +58,7 @@ public class RcmInsuranceFollowUpSection extends BaseAuditEntity implements java
 	
 	@Temporal(TemporalType.DATE)
 	@Column(name = "next_follow_up_date")
-	private Date nextFollowUphDate;
+	private Date nextFollowUpDate;
 	
 	@Column(name = "final_submit")
 	private boolean finalSubmit;

@@ -1,5 +1,7 @@
 package com.tricon.rcm.jpa.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
@@ -7,5 +9,7 @@ import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
 public interface FollowUpInsuranceRepo extends JpaRepository<RcmInsuranceFollowUpSection, Integer>{
 	
 	
+	List<RcmInsuranceFollowUpSection> findByClaimClaimUuidAndCreatedByUuidAndTeamIdOrderByCreatedDateDesc(String claimUuid,String createdBy,int teamId);
+	List<RcmInsuranceFollowUpSection> findByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(String claimUuid,String createdBy);
 
 }
