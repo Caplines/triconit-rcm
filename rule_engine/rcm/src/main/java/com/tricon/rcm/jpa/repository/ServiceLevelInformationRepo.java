@@ -31,7 +31,7 @@ public interface ServiceLevelInformationRepo extends JpaRepository<RcmServiceLev
 	@Query(value="SELECT COALESCE(MAX(group_run), 0) from rcm_service_level_section where claim_id=:claimUuid",nativeQuery=true)
 	int getMaxRunFromServiceLevel(@Param("claimUuid") String claimUuid);
 	
-	@Query(value = "select notes as Notes,service_code as ServiceCode,u.first_name as CreatedBy,t.description as TeamName from rcm_service_level_section s " + "inner join rcm_user u on u.uuid=s.created_by "
+	@Query(value = "select notes as Notes,service_code as ServiceCode,u.first_name as CreatedBy,t.description as TeamName,s.created_date as Date from rcm_service_level_section s " + "inner join rcm_user u on u.uuid=s.created_by "
 			+ "inner join rcm_team t on t.id=s.team_id where s.claim_id=:claimUuid "
 			+ "and s.group_run <>:maxGroupRun and s.mark_as_deleted=false", nativeQuery = true)
 	List<RcmServiceNotesDto> findOldServiceLevelCodesByClaimUuid(@Param("claimUuid") String claimUuid,

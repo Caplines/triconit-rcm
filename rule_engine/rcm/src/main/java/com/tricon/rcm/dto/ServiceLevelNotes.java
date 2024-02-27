@@ -9,5 +9,6 @@ public class ServiceLevelNotes {
 	private String notes;
 	private String createdBy;
 	private String teamName;
+	private String createdDate;
 	
 }

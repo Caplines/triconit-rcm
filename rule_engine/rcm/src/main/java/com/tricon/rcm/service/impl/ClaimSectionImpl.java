@@ -799,6 +799,7 @@ public class ClaimSectionImpl {
 				serviceLevelDto = new RcmServiceLevelInformation();
 				BeanUtils.copyProperties(list, serviceLevelDto);
 				serviceLevelDto.setGroupRun(1);
+				serviceLevelDto.setTeam(rcmTeamRepo.findById(partialHeader.getTeamId()));
 				listOfServiceLevelDto.add(serviceLevelDto);
 			}
 			listOfServiceLevelDto = serviceLevelRepo.saveAll(listOfServiceLevelDto);
@@ -822,6 +823,7 @@ public class ClaimSectionImpl {
 						notes.setNotes(serviceNotes.getNotes());
 						notes.setServiceCode(serviceNotes.getServiceCode());
 						notes.setCreatedBy(serviceNotes.getCreatedBy());
+						notes.setCreatedDate(Constants.SDF_MYSL_DATE.format(serviceNotes.getDate()));
 						notes.setTeamName(serviceNotes.getTeamName());
 						oldNotesList.add(notes);
 					}
