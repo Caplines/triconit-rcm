@@ -11,6 +11,7 @@ public class EOBDto {
 	private String date;
 	private String attachByTeam;
 	private String attachBy;
+	private String attachByLastName;
 	private String eobPathLink;
 	private int id;
 }

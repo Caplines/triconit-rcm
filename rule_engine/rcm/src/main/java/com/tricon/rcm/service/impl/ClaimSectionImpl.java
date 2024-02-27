@@ -2,6 +2,7 @@ package com.tricon.rcm.service.impl;
 
 import java.io.File;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -610,7 +611,8 @@ public class ClaimSectionImpl {
 	public Object saveEOBSection(EOBDto eobInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
 			boolean finalSubmit) throws Exception {
 		EOBSectionInformation eobInformation = null;
-		if(!StringUtils.isNoneBlank(eobInfoModel.getEobLink())) return null;
+		if (!StringUtils.isNoneBlank(eobInfoModel.getEobLink()))
+			return null;
 		if (claim != null) {
 			eobInformation = new EOBSectionInformation();
 			eobInformation.setAttachByTeam(team);
@@ -618,16 +620,32 @@ public class ClaimSectionImpl {
 			eobInformation.setClaim(claim);
 			eobInformation.setCreatedBy(createdBy);
 			eobInformation.setFinalSubmit(finalSubmit);
-			// set eob file path
-			String fileName = claim.getClaimUuid() + new Date().getTime() + "." + eobInfoModel.getExtension();
-			FileUtils.copyURLToFile(new URL(eobInfoModel.getEobLink()), new File(eobLinkFolder + File.separator+ fileName), 60000,
-					60000);
-			eobInformation.setEobFilePath(fileName);
-			eobInformation = eobRepo.save(eobInformation);
-			eobInfoModel.setEobPathLink(serverDomainLink+"/api/vieweoblink/"+eobInformation.getEobFilePath());
-			eobInfoModel.setAttachByTeam(team.getName());
-			eobInfoModel.setAttachBy(createdBy.getFirstName());
-			eobInfoModel.setDate(Constants.SDF_MYSL_DATE.format((eobInformation.getCreatedDate())));
+			try {
+				// set eob file path
+				String fileName = claim.getClaimUuid() + new Date().getTime() + "." + eobInfoModel.getExtension();
+				URL url = new URL(eobInfoModel.getEobLink());
+				URLConnection connection = url.openConnection();
+				String contentType = connection.getContentType();
+				if (contentType != null && contentType.toLowerCase().contains("application/pdf")) {
+					FileUtils.copyURLToFile(url, new File(eobLinkFolder + File.separator + fileName), 60000, 60000);
+					eobInformation.setEobFilePath(fileName);
+					eobInformation = eobRepo.save(eobInformation);
+					eobInfoModel
+							.setEobPathLink(serverDomainLink + "/api/vieweoblink/" + eobInformation.getEobFilePath());
+					eobInfoModel.setAttachByTeam(team.getName());
+					eobInfoModel.setAttachBy(createdBy.getFirstName());
+					eobInfoModel.setDate(Constants.SDF_MYSL_DATE.format((eobInformation.getCreatedDate())));
+				} else {
+					logger.error("Invalid Url");
+					eobInfoModel.setEobPathLink("Invalid Url");
+					return null;
+				}
+			} catch (Exception e) {
+				logger.error("Invalid File Format");
+				eobInfoModel.setEobPathLink("Invalid Format");
+				return null;
+			}
+
 		}
 		return eobInfoModel;
 	}
@@ -645,11 +663,14 @@ public class ClaimSectionImpl {
 					partialHeader.getJwtUser().getUuid());
 		}
 		if (!eobSections.isEmpty()) {
+			RcmUser attachBy=userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+			RcmTeam team=rcmTeamRepo.findById(partialHeader.getTeamId());
 			for (EOBSectionInformation data : eobSections) {
 				responseDto = new EOBDto();
 				responseDto.setEobPathLink(serverDomainLink+"/api/vieweoblink/"+data.getEobFilePath());
-				responseDto.setAttachBy(userRepo.findByUuid(data.getCreatedBy().getUuid()).getFirstName());
-				responseDto.setAttachByTeam(rcmTeamRepo.findById(data.getAttachByTeam().getId()).getDescription());
+				responseDto.setAttachBy(attachBy.getFirstName());
+				responseDto.setAttachByLastName(attachBy.getLastName());		
+				responseDto.setAttachByTeam(team.getDescription());
 				responseDto.setDate(Constants.SDF_MYSL_DATE.format((data.getCreatedDate())));
 				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);
@@ -795,11 +816,12 @@ public class ClaimSectionImpl {
 			// fetch data from rcm claim_detail table and insert into
 			// rcm_service_level_information table
 			List<RcmClaimDetail> claimDetailData = claimDetailRepo.findByClaimClaimUuid(claimUuid);
+			RcmTeam team=rcmTeamRepo.findById(partialHeader.getTeamId());
 			for (RcmClaimDetail list : claimDetailData) {
 				serviceLevelDto = new RcmServiceLevelInformation();
 				BeanUtils.copyProperties(list, serviceLevelDto);
 				serviceLevelDto.setGroupRun(1);
-				serviceLevelDto.setTeam(rcmTeamRepo.findById(partialHeader.getTeamId()));
+				serviceLevelDto.setTeam(team);
 				listOfServiceLevelDto.add(serviceLevelDto);
 			}
 			listOfServiceLevelDto = serviceLevelRepo.saveAll(listOfServiceLevelDto);
@@ -836,21 +858,7 @@ public class ClaimSectionImpl {
 					if (notesData.getServiceCode().equals(list.getServiceCode())) {
 						newNotesList.add(notesData);
 						responseData.setServiceCodeNotes(newNotesList);
-					}
-//					if (notesData.getServiceCode().equals(list.getServiceCode())
-//							&& newNotesList.stream().anyMatch(x -> x.getNotes().equals(list.getNotes()))) {
-//						continue;
-//					}
-//					else if(notesData.getServiceCode().equals(list.getServiceCode())
-//							&& newNotesList.stream().anyMatch(x -> !x.getNotes().equals(list.getNotes()))) {
-//						ServiceLevelNotes mergeOldNotes = new ServiceLevelNotes();
-//						mergeOldNotes.setServiceCode(notesData.getServiceCode());
-//						mergeOldNotes.setNotes(list.getNotes());
-//						mergeOldNotes.setCreatedBy(notesData.getCreatedBy());
-//						mergeOldNotes.setTeamName(notesData.getTeamName());
-//						newNotesList.add(mergeOldNotes);
-//						responseData.setServiceCodeNotes(newNotesList);
-//					}			
+					}		
 				}
 				BeanUtils.copyProperties(list, responseData);
 				data.add(responseData);
@@ -896,10 +904,13 @@ public class ClaimSectionImpl {
 					claimUuid, partialHeader.getJwtUser().getUuid());
 		}
 		if (!followUpInsuranceInformation.isEmpty()) {
+			RcmUser attachBy=userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+			RcmTeam team=rcmTeamRepo.findById(partialHeader.getTeamId());
 			for (RcmInsuranceFollowUpSection data : followUpInsuranceInformation) {
 				responseDto = new RcmFollowUpInsuranceDto();	
-				responseDto.setFollowByUser(userRepo.findByUuid(data.getCreatedBy().getUuid()).getFirstName());
-				responseDto.setFollowByTeam(rcmTeamRepo.findById(data.getTeam().getId()).getDescription());
+				responseDto.setFollowByUser(attachBy.getFirstName());
+				responseDto.setFollowByUserLastName(attachBy.getLastName());
+				responseDto.setFollowByTeam(team.getDescription());
 				responseDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE.format(data.getNextFollowUpDate()));
 				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);

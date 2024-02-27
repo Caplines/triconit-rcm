@@ -12,7 +12,8 @@ public class RcmFollowUpInsuranceDto {
 	private String followUpRemarks;
 	private String nextFollowUpRequired;
 	private String nextFollowUpDate;
-	private String FollowByTeam;
-	private String FollowByUser;
+	private String followByTeam;
+	private String followByUser;
+	private String followByUserLastName;
 	private int sectionId;
 }
