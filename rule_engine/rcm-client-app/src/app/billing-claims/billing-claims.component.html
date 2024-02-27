@@ -1842,7 +1842,8 @@
                                                                 (click)="viewLink(data.eobPathLink)">View PDF</a></td>
                                                         <td>{{data.attachByTeam}}</td>
                                                         <td>{{data.attachBy}}</td>
-                                                        <td> <button class="btn btn-sm btn-outline-danger"
+                                                        <td *ngIf="checkForSectionAccess(sectionIds['EOB'],'edit')">
+                                                            <button class="btn btn-sm btn-outline-danger"
                                                                 (click)="removeEobById(data.id)">Delete </button> </td>
                                                     </tr>
                                                 </tbody>
@@ -1852,7 +1853,8 @@
                                             </div> -->
                                         </div>
                                         <div class="container-fluid pdf-viewer-container my-3">
-                                            <div class="row align-items-center my-3 justify-content-end">
+                                            <div *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB'],'edit')"
+                                                class="row align-items-center my-3 justify-content-end">
                                                 <span>Enter Link in the box if you would like to attach another EOB and
                                                     press Save Button</span>
                                                 <span class="d-flex">
@@ -2041,7 +2043,8 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="save-btn">
+                                        <div *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION'],'edit')"
+                                            class="save-btn">
                                             <button class="btn btn-sm btn-primary" (click)="saveServiceLevelInfo()">
                                                 Save
                                             </button>
