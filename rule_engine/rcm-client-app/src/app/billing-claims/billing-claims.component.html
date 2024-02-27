@@ -1821,47 +1821,182 @@
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['serviceCodeLevel']}">
                                         <div class="table-responsive">
-                                            <table class="table">
+                                            <table class="table table-striped">
                                                 <thead>
                                                     <tr>
                                                         <th>Date</th>
                                                         <th>EOB Link</th>
                                                         <th>Attached By Team</th>
                                                         <th>Attached By User</th>
+                                                        <th>Action
+                                                             <!-- <button class="btn btn-sm btn-danger" (click)="deleteAllEobLink()">Delete All Claims</button> -->
+                                                            </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-
-                                                    <tr>
-                                                        <td>10/3/2023</td>
-                                                        <td> <a href="javascript:void(0);">Link</a></td>
-                                                        <td>Aging</td>
-                                                        <td>Puneet</td>
+                                                    <tr *ngFor="let data of claimSectionModal['EOB'].data;let idx=index;">
+                                                        <td>{{data.date}}</td>
+                                                        <td> <a href="javascript:void(0);" (click)="viewLink(data.eobPathLink)" >View PDF</a></td>
+                                                        <td>{{data.attachByTeam}}</td>
+                                                        <td>{{data.attachBy}}</td>
+                                                        <td> <button class="btn btn-sm btn-outline-danger" (click)="removeEobById(data.id)">Delete </button> </td>
                                                     </tr>
-
                                                 </tbody>
                                             </table>
                                             <!-- <div class="not-found" *ngIf="claimServiceLevelModel?.claimFound==false">
                                                 Claim Data Not Found
                                             </div> -->
                                         </div>
-
-                                        <div class="pdf-viewer-container my-3">
-                                            <div class="d-flex justify-content-between my-3">
+                                        <div class="container-fluid pdf-viewer-container my-3">
+                                            <div class="row align-items-center my-3 justify-content-end">
                                                 <span>Enter Link in the box if you would like to attach another EOB and
                                                     press Save Button</span>
                                                 <span class="d-flex">
-                                                    <input type="text" class="form-control mx-2">
-                                                    <button class="btn btn-primary btn-sm">Save</button>
+                                                    <input type="text" class="form-control mx-2" *ngIf="claimSectionModal['EOB']" [(ngModel)]="claimSectionModal['EOB']['pdfLink']">
+                                                    <button class="btn btn-primary btn-sm" [disabled]="!claimSectionModal['EOB']['pdfLink']" (click)="getPdfUrlAndSaveEOB(false)">Save</button>
                                                 </span>
                                             </div>
 
-                                            <div class="pdf-viewer">
-                                                <!--  <pdf-viewer style="display: block; min-height: 250px"
-                                                    [src]="'https://www.caplineruleengine.com/queryivdatatopdf?o=Liberty&p=134568&id=324187'"></pdf-viewer>-->
+                                            <div class="pdf-viewer" *ngIf="pdfUrlSrc">
+                                                <button (click)="zoom_in()">Zoom</button>
+                                                <button (click)="zoom_out()">Zoom out </button>
+
+                                                <input type="text" class="form-control mx-2" [(ngModel)]="stringToSearch">
+                                                <button (click)="search()">Search </button>
+                                                
+                                                 <pdf-viewer style="display: block; min-height: 250px"
+                                                    [src]="pdfUrlSrc"
+                                                    [render-text]="true"
+                                                    [zoom]="zoom_to"></pdf-viewer>
                                             </div>
 
                                         </div>
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION'],'view')">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="SERVICE_LEVEL_INFORMATION">
+                                            SERVICE LEVEL INFORMATION
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('SERVICE_LEVEL_INFORMATION')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['SERVICE_LEVEL_INFORMATION']}"></a>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="loader.serviceCode" class="loader-data"></div>
+                                    <div *ngIf="!loader.serviceCode" class="form-row  collapse"
+                                        [ngClass]="{'show':!toggleTab['SERVICE_LEVEL_INFORMATION']}">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="row-grey">S.No.</th>
+                                                        <th class="row-grey">Service Code</th>
+                                                        <th class="row-grey">Tooth#</th>
+                                                        <th class="row-grey">Ledger Amt</th>
+                                                        <th class="row-grey">Est. Amount</th>
+                                                        <th class="row-grey">Surface</th>
+                                                        <th>Allowed Amount</th>
+                                                        <th>Paid Amount</th>
+                                                        <th>Adjustment Amount</th>
+                                                        <th>Adjustment Reason</th>
+                                                        <th>Bill to Patient Amount</th>
+                                                        <th>BTP Reason</th>
+                                                        <th>Action (Radio Button)</th>
+                                                        <th>Notes</th>
+                                                        <th>View Notes</th>
+                                                        <th>Reconciliation</th>
+                                                        <ng-container *ngIf="clientName != 'Smilepoint'">
+                                                            <th></th>
+                                                        </ng-container>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <ng-container *ngFor="let data of claimSectionModal['SERVICE_LEVEL_INFORMATION'];let idx=index;let last=last;">
+                                                    <tr>
+                                                        <ng-container class="row-grey" *ngIf="clientName != 'Smilepoint'">
+                                                           <td>
+                                                            <!-- <input type="text" class="form-control" [(ngModel)]="data.snum"> -->
+                                                            {{idx+1}}
+                                                        </td>  
+                                                           <td><input type="text" class="form-control" [(ngModel)]="data.serviceCode"></td>  
+                                                           <td><input type="text" class="form-control" [(ngModel)]="data.tooth"></td>  
+                                                           <td><input type="text" class="form-control" [(ngModel)]="data.fee"></td>  
+                                                           <td><input type="text" class="form-control" [(ngModel)]="data.estPrimary"> </td> 
+                                                           <td><input type="text" class="form-control" [(ngModel)]="data.surface"> </td> 
+                                                        </ng-container>
+                                                        <ng-container  class="row-grey" *ngIf="clientName == 'Smilepoint'">
+                                                            <td class="row-grey" > {{idx+1}}</td>
+                                                            <td class="row-grey" > {{data.serviceCode}}</td>
+                                                            <td class="row-grey" > {{data.tooth}}</td>
+                                                            <td class="row-grey" > {{data.fee}}</td>
+                                                            <td class="row-grey" > {{data.estPrimary}}</td>
+                                                            <td class="row-grey" > {{data.surface}}</td>
+                                                        </ng-container>
+                                                       <td> <input type="text" class="form-control" [(ngModel)]="data.allowedAmount"/></td>
+                                                       <td><input type="text" class="form-control" [(ngModel)]="data.paidAmount"/> </td>
+                                                       <td> <input type="text" class="form-control" [(ngModel)]="data.adjustmentAmount"> </td>
+                                                       <td> 
+                                                        <select class="form-control" [(ngModel)]="data.adjustmentReason">
+                                                            <option selected="true" hidden="true">Select</option> 
+                                                            <option [value]="reason.reasonName" *ngFor="let reason of appConstants.claimInitialDenialReason">{{reason.reasonName}}</option> 
+                                                        </select>
+                                                     </td>
+                                                     <td> <input type="text" class="form-control" [(ngModel)]="data.billToPatientAmount"> </td>
+                                                       <td> 
+                                                        <select class="form-control" [(ngModel)]="data.btpReason">
+                                                            <option selected="true" hidden="true">Select</option> 
+                                                            <option [value]="reason.reasonName" *ngFor="let reason of appConstants.claimInitialDenialReason">{{reason.reasonName}}</option> 
+                                                        </select>
+                                                     </td>
+                                                       <td> 
+                                                        <div class="form-check-inline">
+                                                            <input type="radio" class="form-check-input" id="post"  name="action{{idx}}" value="Post" [(ngModel)]="data.action" >
+                                                            <label class="form-check-label" for="post">Post </label>
+                                                        </div>
+                                                        <div class="form-check-inline">
+                                                            <input type="radio" [checked]="data.action" id="assign" class="form-check-input" name="action{{idx}}"  value="Assign" [(ngModel)]="data.action" >
+                                                            <label class="form-check-label" for="assign">Assign</label>
+                                                        </div>
+                                                        </td>
+                                                       <td>
+                                                            <textarea style="overflow:hidden;" rows="4" cols="40" [(ngModel)]="data.notes"></textarea>
+                                                        </td>
+                                                        <td> <a href="javascript:void(0)" (click)="viewFullNotes(data.serviceCodeNotes)">View More</a> </td> 
+                                                        <td>{{getReconcialition()}}</td> 
+                                                        <ng-container *ngIf="clientName != 'Smilepoint'">
+                                                            <td *ngIf="!last"><button class="btn btn-sm btn-danger" (click)="removeSectionLevelRow(idx)">-</button></td> 
+                                                            <td *ngIf="last">
+                                                                 <button class="btn btn-sm btn-success" (click)="addNewSectionLevelField()">+</button>
+                                                            </td>
+                                                        </ng-container>
+                                                    </tr>
+                                                </ng-container>
+                                                    <tr>
+                                                        <td>Total</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>{{sectionLevelInfoTotalConfig.fee}}</td>
+                                                        <td>{{sectionLevelInfoTotalConfig.estPrimary}}</td>
+                                                        <td></td>
+                                                        <td>{{sectionLevelInfoTotalConfig.allowedAmount}}</td>
+                                                        <td>{{sectionLevelInfoTotalConfig.paidAmount}}</td>
+                                                        <td>{{sectionLevelInfoTotalConfig.adjustmentAmount}}</td>
+                                                        <td></td>
+                                                        <td>{{sectionLevelInfoTotalConfig.billToPatientAmount}}</td>
+                                                        <td colspan="5"></td>
+                                                    </tr>
+
+
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="save-btn">
+                                            <button class="btn btn-sm btn-primary" (click)="saveServiceLevelInfo()">
+                                                Save
+                                            </button>
+                                        </div>
+
                                     </div>
                                 </ng-container>
                             </div>
@@ -2269,6 +2404,27 @@
                         </div>
 
                     </ng-container>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal notes-modal" tabindex="-1" role="dialog" *ngIf="viewNotesConfig.showNotes">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header flex-row">
+                        <h4 class="modal-title w-100">Notes</h4>
+                        <button (click)="closeNoteModal()" type="button"
+                            class="btn btn-sm btn-ligt close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <ul>
+                            <li *ngFor="let note of viewNotesConfig.viewNotes">{{note}}</li>
+                        </ul>
+                    </div>
+                    <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                            (click)="closeNoteModal()">close</button>
+                    </div>
                 </div>
             </div>
         </div>

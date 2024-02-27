@@ -556,11 +556,31 @@ export class ApplicationServiceService extends BaseService {
   }
 
   fetchClaimLevelInfoSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-claim-level-info']+ "/" + uuid+"/"+true, callback,true)
+    this.getData({}, this.httpUrl['get-claim-level-info']+ "/" + uuid+"/"+true, callback,false)
   }
 
   fetchAppealSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-appeal-level-info']+ "/" + uuid+"/"+true, callback,true)
+    this.getData({}, this.httpUrl['get-appeal-level-info']+ "/" + uuid+"/"+true, callback,false)
+  }
+
+  fetchInsurancePaymentInfoSection(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-insurance-payment-info']+ "/" + uuid+"/"+true, callback,false)
+  }
+
+  fetchEobSection(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-eob-info']+ "/" + uuid+"/"+true, callback,false)
+  }
+
+  fetchServiceLevelInfoSection(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-service_level_info']+ "/" + uuid+"/"+true, callback,false)
+  }
+
+    removeEobData(param: any, callback: any) {
+    this.postData(param, this.httpUrl['remove-eob-data'], callback)
+  }
+
+    getPdfUrlEob(param: any, callback: any) {
+    this.getData({}, this.httpUrl['vieweoblink']+ "/" + param, callback,false)
   }
 
 

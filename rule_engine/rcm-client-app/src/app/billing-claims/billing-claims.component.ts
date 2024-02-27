@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -19,6 +19,8 @@ import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
 import Utils from '../util/utils';
 import { DownLoadService } from '../service/download.service';
 import { DatePipe } from '@angular/common';
+import { PdfViewerComponent } from 'ng2-pdf-viewer';
+// import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 
 @Component({
   selector: 'app-billing-claims',
@@ -138,7 +140,11 @@ export class BillingClaimsComponent {
       "checkCashDate": "",
       "paidAmount": "",
       "paymentMode": "",
-    }
+    },
+    EOB:{
+      data:[]
+    },
+    SERVICE_LEVEL_INFORMATION:[]
 
   };
   finalSaveClaimDataModel: any = {
@@ -148,8 +154,14 @@ export class BillingClaimsComponent {
   };
   sectionLevelData: any = [];
   emptyFields: any = {};
-
   isSectionValidated: boolean = true;
+  stringToSearch:any='';
+  zoom_to:any=1.0;
+  pdfUrlSrc:any="";
+  sectionLevelInfoTotalConfig:any={allowedAmount:0,paidAmount:0,adjustmentAmount:0,billToPatientAmount:0,estPrimary:0,fee:0};
+  viewNotesConfig:any={showNotes:false,viewNotes:[]};
+  @ViewChild(PdfViewerComponent, {static: false}) private pdfViewer!: PdfViewerComponent;
+
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
@@ -181,6 +193,9 @@ export class BillingClaimsComponent {
           ths.fetchClaimsByUuid(uuid);
           this.fetchClaimLevelInfoSection();
           this.fetchAppealSection();
+          this.fetchInsurancePaymentInfoSection();
+          this.fetchEobSection();
+          this.fetchServiceLevelInfoSection();
         }
       });
 
@@ -192,9 +207,7 @@ export class BillingClaimsComponent {
   }
 
   checkForSectionAccess(sectionid: number, accessType: string): boolean {
-    const result = this.claimSettingDataModel?.teamsWithSections[0].sectionData.filter((obj) => {
-      return obj.sectionId === sectionid;
-    });
+    const result = this.claimSettingDataModel?.teamsWithSections[0].sectionData.filter(obj => obj.sectionId === sectionid);
     if (result != null && result.length == 1) {
       if (accessType === 'view') return result[0].viewAccess;
       else return result[0].editAccess;
@@ -1661,7 +1674,6 @@ export class BillingClaimsComponent {
     this.appService.fetchClaimLevelInfoSection(this.claimUUid, (res: any) => {
       if (res && res.data) {
         this.claimSectionModal['CLAIM_LEVEL_INFORMATION'] = res.data;
-        console.log(this.claimSectionModal);
 
       }
     })
@@ -1671,10 +1683,41 @@ export class BillingClaimsComponent {
     this.appService.fetchAppealSection(this.claimUUid, (res: any) => {
       if (res && res.data) {
         this.claimSectionModal['APPEAL'] = res.data;
-        console.log(this.claimSectionModal);
 
       }
     })
+  }
+
+  fetchInsurancePaymentInfoSection(){
+    this.appService.fetchInsurancePaymentInfoSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'] = res.data;
+
+      }
+    })
+  }
+
+  fetchEobSection(){
+    if(this.checkForSectionAccess(this.sectionIds['EOB'],'view')){
+    this.appService.fetchEobSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['EOB'].data = res.data;
+      }
+    })
+  }
+
+  }
+
+  fetchServiceLevelInfoSection(){
+    if(this.checkForSectionAccess(this.sectionIds['SERVICE_LEVEL_INFORMATION'],'view')){
+    this.appService.fetchServiceLevelInfoSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'] = res.data;
+        this.addUndistributedSectionLevelField();
+        this.getTotalServiceLevelInfo();
+      }
+    })
+  }
   }
 
   saveClaimLevelinfo(isFinalSubmit: boolean) {
@@ -1924,6 +1967,10 @@ export class BillingClaimsComponent {
 
   saveInsurancePaymentInfo(isFinalSubmit: boolean) {
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['sectionId'] = this.sectionIds['INSURANCE_PAYMENT_INFORMATION'];
+    this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['paidAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['paidAmount'] ? this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['paidAmount'] : 0;
+    this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'];  //converting into Number type using bitwise operator
+    this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'];  //converting into Number type using bitwise operator
+    this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'];  //converting into Number type using bitwise operator
     let params: any = {
       claimUuid: this.claimUUid,
       finalSubmit: isFinalSubmit,
@@ -1936,6 +1983,174 @@ export class BillingClaimsComponent {
 
       }
     })
+  }
+
+
+  zoom_in() {
+    this.zoom_to = this.zoom_to + 0.25;
+  }
+
+  zoom_out() {
+    if (this.zoom_to > 1) {
+       this.zoom_to = this.zoom_to - 0.25;
+    }
+  }
+
+  search() {
+    this.pdfViewer.pdfViewer.eventBus.on('updatefindmatchescount', (data:any) => {
+      this.stringToSearch = data.matchesCount.total;
+      console.log(this.stringToSearch);
+      
+  });
+  }
+
+  getPdfUrlAndSaveEOB(isFinal:boolean){
+    
+      this.claimSectionModal['EOB']['sectionId'] = this.sectionIds['EOB'];
+      this.claimSectionModal['EOB']['extension'] = "pdf";
+    let params: any = {
+      claimUuid: this.claimUUid,
+      finalSubmit: isFinal,
+      eobInfoModel: {
+        'eobLink':this.claimSectionModal['EOB']['pdfLink'],
+        'sectionId' : this.claimSectionModal['EOB']['sectionId'],
+        'extension':'pdf'
+      }
+    };
+    this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        this.claimSectionModal['EOB']['pdfLink'] ='';
+        this.claimSectionModal['EOB'].data.push(res.data);
+        this.pdfUrlSrc = res.data.eobPathLink;
+      }
+    })
+
+  }
+
+  viewLink(link:any){
+    this.pdfUrlSrc = link;
+  }
+
+  removeEobById(id:any){
+      let params:any = {
+        "claimUuid":this.claimUUid,
+        "ids": [id]
+      };
+      this.appService.removeEobData(params,(res:any)=>{
+        if(res){
+          console.log(res);
+        }
+      }
+      )
+  }
+
+  deleteAllEobLink(){
+      let removeIds:any = [];
+      this.claimSectionModal.data.forEach((e:any)=>{
+          removeIds.push(e.id);
+      });
+      let params:any = {
+        "claimUuid":this.claimUUid,
+        "ids": removeIds
+      };
+      this.appService.removeEobData(params,(res:any)=>{
+        if(res){
+          console.log(res);
+        }
+      }
+      )
+  }
+
+  saveServiceLevelInfo(){
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['SERVICE_LEVEL_INFORMATION'];
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].forEach((e:any) => {
+        e.billToPatientAmount = +e.billToPatientAmount;
+        e.adjustmentAmount = +e.adjustmentAmount;
+        e.paidAmount = +e.paidAmount;
+        e.allowedAmount = +e.allowedAmount;
+    });
+    let params: any = {
+      claimUuid: this.claimUUid,
+      serviceLevelInformationInfoModel: {
+        serviceLevelBody:this.claimSectionModal['SERVICE_LEVEL_INFORMATION'],
+        sectionId : this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['sectionId'],
+      }
+    };
+    this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        console.log(res);
+      }
+    })
+  }
+
+  addNewSectionLevelField(){
+    let model:any ={
+      "notes": "",
+      "btpReason": "",
+      "adjustmentReason": "",
+      "billToPatientAmount": 0,
+      "adjustmentAmount": 0,
+      "paidAmount": 0,
+      "allowedAmount": 0,
+      "serviceCode": "",
+      "action": '',
+      "tooth": "",
+      "surface": "",
+      "estPrimary": "",
+      "fee": "",
+      "snum": this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].length
+  };
+
+  this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].splice(this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].length-1,0,model);
+
+  }
+
+  addUndistributedSectionLevelField(){
+    let model:any ={
+      "notes": "",
+      "btpReason": "",
+      "adjustmentReason": "",
+      "billToPatientAmount": 0,
+      "adjustmentAmount": 0,
+      "paidAmount": 0,
+      "allowedAmount": 0,
+      "serviceCode": "Undistributed",
+      "action": '',
+      "tooth": "",
+      "surface": "",
+      "estPrimary": 0,
+      "fee":0,
+      "snum": this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].length+1
+  };
+  this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].push(model);
+  }
+
+  removeSectionLevelRow(idx:any){
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].splice(idx,1);
+  }
+
+  viewFullNotes(notes:any){
+    this.viewNotesConfig.showNotes = true;
+    this.viewNotesConfig.viewNotes = notes;
+  }
+
+  getReconcialition(){
+    return "true";
+  }
+
+  getTotalServiceLevelInfo(){
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].forEach((e:any)=>{
+        this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount+ +e.allowedAmount;
+        this.sectionLevelInfoTotalConfig.adjustmentAmount = this.sectionLevelInfoTotalConfig.adjustmentAmount+ +e.adjustmentAmount;
+        this.sectionLevelInfoTotalConfig.paidAmount = this.sectionLevelInfoTotalConfig.paidAmount+ +e.paidAmount;
+        this.sectionLevelInfoTotalConfig.estPrimary = this.sectionLevelInfoTotalConfig.estPrimary+ +e.estPrimary;
+        this.sectionLevelInfoTotalConfig.fee = this.sectionLevelInfoTotalConfig.fee+ +e.fee;
+        this.sectionLevelInfoTotalConfig.billToPatientAmount = this.sectionLevelInfoTotalConfig.billToPatientAmount+ +e.billToPatientAmount;
+    })
+  }
+
+  closeNoteModal(){
+    this.viewNotesConfig.showNotes = false;
   }
 
 }

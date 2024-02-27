@@ -119,7 +119,12 @@ export class BaseService {
     
     'save-section-info': '/api/save-section-info',
     'get-claim-level-info': '/api/get-claim-level-info',
-    'get-appeal-level-info': "/api/get-appeal-level-info"
+    'get-appeal-level-info': "/api/get-appeal-level-info",
+    'get-insurance-payment-info': "/api/get-insurance-payment-info",
+    'get-eob-info': "/api/get-eob-info",
+    'remove-eob-data': "/api/remove-eob-data",
+    'vieweoblink': "/api/vieweoblink",
+    'get-service_level_info': "/api/get-service-level-info",
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {
