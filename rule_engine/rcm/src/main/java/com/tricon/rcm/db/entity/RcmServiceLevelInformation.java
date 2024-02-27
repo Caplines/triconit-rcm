@@ -107,6 +107,9 @@ public class RcmServiceLevelInformation extends BaseAuditEntity implements java.
 	@Column(name = "action")
 	private String action;
 	
+	@Column(name = "group_run")
+	private int groupRun;
+	
 	@Column(name = "final_submit")
 	private boolean finalSubmit;
 	

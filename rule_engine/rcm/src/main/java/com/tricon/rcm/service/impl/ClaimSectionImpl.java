@@ -51,6 +51,7 @@ import com.tricon.rcm.dto.ServiceLevelInformationDto;
 import com.tricon.rcm.dto.ServiceLevelNotes;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
+import com.tricon.rcm.dto.customquery.RcmServiceNotesDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.EOBSectionRepo;
 import com.tricon.rcm.jpa.repository.FollowUpInsuranceRepo;
@@ -609,6 +610,7 @@ public class ClaimSectionImpl {
 	public Object saveEOBSection(EOBDto eobInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
 			boolean finalSubmit) throws Exception {
 		EOBSectionInformation eobInformation = null;
+		if(!StringUtils.isNoneBlank(eobInfoModel.getEobLink())) return null;
 		if (claim != null) {
 			eobInformation = new EOBSectionInformation();
 			eobInformation.setAttachByTeam(team);
@@ -759,14 +761,16 @@ public class ClaimSectionImpl {
 	public Boolean saveServiceLevelInformationSection(ServiceLevelInformationDto serviceLevelInformationInfoModel,
 			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) {
 		RcmServiceLevelInformation serviceLevelData = null;
+		int maxRun=serviceLevelRepo.getMaxRunFromServiceLevel(claim.getClaimUuid());
 		for (ServiceLevelRequestBodyDto data : serviceLevelInformationInfoModel.getServiceLevelBody()) {
 			serviceLevelData = new RcmServiceLevelInformation();
 			serviceLevelData.setClaim(claim);
 			serviceLevelData.setCreatedBy(createdBy);
 			serviceLevelData.setFinalSubmit(finalSubmit);
-			serviceLevelData.setTeam(team);
+			serviceLevelData.setTeam(team);		
+			serviceLevelData.setGroupRun(maxRun+1);	
 			BeanUtils.copyProperties(data, serviceLevelData);
-			serviceLevelData = serviceLevelRepo.save(serviceLevelData);
+			serviceLevelRepo.save(serviceLevelData);
 		}
 		return serviceLevelData != null ? true : null;
 	}
@@ -783,15 +787,18 @@ public class ClaimSectionImpl {
 			logger.error("claim not valid");
 			return data;
 		}
-		List<RcmServiceLevelInformation> serviceLevelData = serviceLevelRepo.findServiceLevelCodesByClaimUuid(claimUuid);
+
+		int maxRun = serviceLevelRepo.getMaxRunFromServiceLevel(claimUuid);
+		List<RcmServiceLevelInformation> serviceLevelData = serviceLevelRepo
+				.findServiceLevelCodesByClaimUuid(claimUuid);
 		if (serviceLevelData.isEmpty()) {
 			// fetch data from rcm claim_detail table and insert into
 			// rcm_service_level_information table
 			List<RcmClaimDetail> claimDetailData = claimDetailRepo.findByClaimClaimUuid(claimUuid);
 			for (RcmClaimDetail list : claimDetailData) {
 				serviceLevelDto = new RcmServiceLevelInformation();
-				serviceLevelDto.setSNum(list.getId()+1);			
 				BeanUtils.copyProperties(list, serviceLevelDto);
+				serviceLevelDto.setGroupRun(1);
 				listOfServiceLevelDto.add(serviceLevelDto);
 			}
 			listOfServiceLevelDto = serviceLevelRepo.saveAll(listOfServiceLevelDto);
@@ -802,28 +809,46 @@ public class ClaimSectionImpl {
 			}
 
 		} else {
+			List<RcmServiceNotesDto> oldServiceNotes = serviceLevelRepo.findOldServiceLevelCodesByClaimUuid(claimUuid,
+					maxRun);
 			ServiceLevelNotes notes = null;
-			List<ServiceLevelNotes> notesList = new ArrayList<>();
-			List<RcmServiceLevelInformation> serviceLevelNotes = serviceLevelRepo
-					.findServiceLevelNotesByClaimUuid(claimUuid);
+			List<ServiceLevelNotes> oldNotesList = new ArrayList<>();
+			List<ServiceLevelNotes> newNotesList = new ArrayList<>();
 			for (RcmServiceLevelInformation serviceCodes : serviceLevelData) {
 				notes = new ServiceLevelNotes();
-				for (RcmServiceLevelInformation serviceNotes : serviceLevelNotes) {
-					if (serviceCodes.getId() == serviceNotes.getId()
-							&& serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())) {
-						continue;
-					} else if (serviceCodes.getId() != serviceNotes.getId()
-							&& serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())) {
+				for (RcmServiceNotesDto serviceNotes : oldServiceNotes) {
+					notes = new ServiceLevelNotes();
+					if (serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())) {
 						notes.setNotes(serviceNotes.getNotes());
 						notes.setServiceCode(serviceNotes.getServiceCode());
-						notesList.add(notes);
+						notes.setCreatedBy(serviceNotes.getCreatedBy());
+						notes.setTeamName(serviceNotes.getTeamName());
+						oldNotesList.add(notes);
 					}
 				}
 			}
 			for (RcmServiceLevelInformation list : serviceLevelData) {
 				responseData = new ServiceLevelRequestBodyDto();
-				if (notesList.stream().anyMatch(x -> x.getServiceCode().equals(list.getServiceCode()))) {
-					responseData.setServiceCodeNotes(notesList);
+				newNotesList = new ArrayList<>();
+				for (ServiceLevelNotes notesData : oldNotesList) {
+					if (notesData.getServiceCode().equals(list.getServiceCode())) {
+						newNotesList.add(notesData);
+						responseData.setServiceCodeNotes(newNotesList);
+					}
+//					if (notesData.getServiceCode().equals(list.getServiceCode())
+//							&& newNotesList.stream().anyMatch(x -> x.getNotes().equals(list.getNotes()))) {
+//						continue;
+//					}
+//					else if(notesData.getServiceCode().equals(list.getServiceCode())
+//							&& newNotesList.stream().anyMatch(x -> !x.getNotes().equals(list.getNotes()))) {
+//						ServiceLevelNotes mergeOldNotes = new ServiceLevelNotes();
+//						mergeOldNotes.setServiceCode(notesData.getServiceCode());
+//						mergeOldNotes.setNotes(list.getNotes());
+//						mergeOldNotes.setCreatedBy(notesData.getCreatedBy());
+//						mergeOldNotes.setTeamName(notesData.getTeamName());
+//						newNotesList.add(mergeOldNotes);
+//						responseData.setServiceCodeNotes(newNotesList);
+//					}			
 				}
 				BeanUtils.copyProperties(list, responseData);
 				data.add(responseData);
