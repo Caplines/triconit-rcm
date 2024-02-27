@@ -15,7 +15,7 @@
                         copied!</small>
                 </div>
 
-                <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary claim-steps-btn"
+                <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary claim-steps-btn" [ngClass]="{'toggle-claim-steps':toggleSideBar}"
                     style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-text-right" viewBox="0 0 16 16">
@@ -1963,7 +1963,14 @@
                                                             <textarea style="overflow:hidden;" rows="4" cols="40" [(ngModel)]="data.notes"></textarea>
                                                         </td>
                                                         <td> <a href="javascript:void(0)" (click)="viewFullNotes(data.serviceCodeNotes)">View More</a> </td> 
-                                                        <td>{{getReconcialition()}}</td> 
+                                                        <td>
+                                                            <ng-container *ngIf="idx%2 == 0;else elsePart" >
+                                                                    <img src="../../assets/img/correct_mark.png">
+                                                            </ng-container>   
+                                                            <ng-template #elsePart>
+                                                                    <img src="../../assets/img/cross_incorrec.png">
+                                                            </ng-template>
+                                                        </td> 
                                                         <ng-container *ngIf="clientName != 'Smilepoint'">
                                                             <td *ngIf="!last"><button class="btn btn-sm btn-danger" (click)="removeSectionLevelRow(idx)">-</button></td> 
                                                             <td *ngIf="last">
@@ -2418,7 +2425,7 @@
                     </div>
                     <div class="modal-body">
                         <ul>
-                            <li *ngFor="let note of viewNotesConfig.viewNotes">{{note}}</li>
+                            <li *ngFor="let note of viewNotesConfig.viewNotes;let idx=index;">{{note.createdBy}} {{note.createdDate}} : {{note.notes}}</li>
                         </ul>
                     </div>
                     <div class="modal-footer justify-content-center">

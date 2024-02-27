@@ -1713,7 +1713,9 @@ export class BillingClaimsComponent {
     this.appService.fetchServiceLevelInfoSection(this.claimUUid, (res: any) => {
       if (res && res.data) {
         this.claimSectionModal['SERVICE_LEVEL_INFORMATION'] = res.data;
-        this.addUndistributedSectionLevelField();
+        if(!this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].some((e:any)=>e.serviceCode == 'Undistributed')){
+          this.addUndistributedSectionLevelField();
+        }
         this.getTotalServiceLevelInfo();
       }
     })
