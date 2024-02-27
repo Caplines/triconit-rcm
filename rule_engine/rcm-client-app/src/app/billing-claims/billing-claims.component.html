@@ -15,7 +15,8 @@
                         copied!</small>
                 </div>
 
-                <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary claim-steps-btn" [ngClass]="{'toggle-claim-steps':toggleSideBar}"
+                <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary claim-steps-btn"
+                    [ngClass]="{'toggle-claim-steps':toggleSideBar}"
                     style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-text-right" viewBox="0 0 16 16">
@@ -1829,17 +1830,20 @@
                                                         <th>Attached By Team</th>
                                                         <th>Attached By User</th>
                                                         <th>Action
-                                                             <!-- <button class="btn btn-sm btn-danger" (click)="deleteAllEobLink()">Delete All Claims</button> -->
-                                                            </th>
+                                                            <!-- <button class="btn btn-sm btn-danger" (click)="deleteAllEobLink()">Delete All Claims</button> -->
+                                                        </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <tr *ngFor="let data of claimSectionModal['EOB'].data;let idx=index;">
+                                                    <tr
+                                                        *ngFor="let data of claimSectionModal['EOB'].data;let idx=index;">
                                                         <td>{{data.date}}</td>
-                                                        <td> <a href="javascript:void(0);" (click)="viewLink(data.eobPathLink)" >View PDF</a></td>
+                                                        <td> <a href="javascript:void(0);"
+                                                                (click)="viewLink(data.eobPathLink)">View PDF</a></td>
                                                         <td>{{data.attachByTeam}}</td>
                                                         <td>{{data.attachBy}}</td>
-                                                        <td> <button class="btn btn-sm btn-outline-danger" (click)="removeEobById(data.id)">Delete </button> </td>
+                                                        <td> <button class="btn btn-sm btn-outline-danger"
+                                                                (click)="removeEobById(data.id)">Delete </button> </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1852,8 +1856,12 @@
                                                 <span>Enter Link in the box if you would like to attach another EOB and
                                                     press Save Button</span>
                                                 <span class="d-flex">
-                                                    <input type="text" class="form-control mx-2" *ngIf="claimSectionModal['EOB']" [(ngModel)]="claimSectionModal['EOB']['pdfLink']">
-                                                    <button class="btn btn-primary btn-sm" [disabled]="!claimSectionModal['EOB']['pdfLink']" (click)="getPdfUrlAndSaveEOB(false)">Save</button>
+                                                    <input type="text" class="form-control mx-2"
+                                                        *ngIf="claimSectionModal['EOB']"
+                                                        [(ngModel)]="claimSectionModal['EOB']['pdfLink']">
+                                                    <button class="btn btn-primary btn-sm"
+                                                        [disabled]="!claimSectionModal['EOB']['pdfLink']"
+                                                        (click)="getPdfUrlAndSaveEOB(false)">Save</button>
                                                 </span>
                                             </div>
 
@@ -1861,25 +1869,27 @@
                                                 <button (click)="zoom_in()">Zoom</button>
                                                 <button (click)="zoom_out()">Zoom out </button>
 
-                                                <input type="text" class="form-control mx-2" [(ngModel)]="stringToSearch">
+                                                <input type="text" class="form-control mx-2"
+                                                    [(ngModel)]="stringToSearch">
                                                 <button (click)="search()">Search </button>
-                                                
-                                                 <pdf-viewer style="display: block; min-height: 250px"
-                                                    [src]="pdfUrlSrc"
-                                                    [render-text]="true"
-                                                    [zoom]="zoom_to"></pdf-viewer>
+
+                                                <pdf-viewer style="display: block; min-height: 250px" [src]="pdfUrlSrc"
+                                                    [render-text]="true" [zoom]="zoom_to"></pdf-viewer>
                                             </div>
 
                                         </div>
                                     </div>
                                 </ng-container>
-                                <ng-container *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION'],'view')">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
+                                <ng-container
+                                    *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION'],'view')">
+                                    <div class="bold-b-text"
+                                        [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="SERVICE_LEVEL_INFORMATION">
                                             SERVICE LEVEL INFORMATION
                                         </a>
                                         <div class="down-icon" (click)="showHide('SERVICE_LEVEL_INFORMATION')">
-                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['SERVICE_LEVEL_INFORMATION']}"></a>
+                                            <a href="javascript:void(0)"
+                                                [ngClass]="{'close':toggleTab['SERVICE_LEVEL_INFORMATION']}"></a>
                                         </div>
                                     </div>
 
@@ -1912,73 +1922,106 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    <ng-container *ngFor="let data of claimSectionModal['SERVICE_LEVEL_INFORMATION'];let idx=index;let last=last;">
-                                                    <tr>
-                                                        <ng-container class="row-grey" *ngIf="clientName != 'Smilepoint'">
-                                                           <td>
-                                                            <!-- <input type="text" class="form-control" [(ngModel)]="data.snum"> -->
-                                                            {{idx+1}}
-                                                        </td>  
-                                                           <td><input type="text" class="form-control" [(ngModel)]="data.serviceCode"></td>  
-                                                           <td><input type="text" class="form-control" [(ngModel)]="data.tooth"></td>  
-                                                           <td><input type="text" class="form-control" [(ngModel)]="data.fee"></td>  
-                                                           <td><input type="text" class="form-control" [(ngModel)]="data.estPrimary"> </td> 
-                                                           <td><input type="text" class="form-control" [(ngModel)]="data.surface"> </td> 
-                                                        </ng-container>
-                                                        <ng-container  class="row-grey" *ngIf="clientName == 'Smilepoint'">
-                                                            <td class="row-grey" > {{idx+1}}</td>
-                                                            <td class="row-grey" > {{data.serviceCode}}</td>
-                                                            <td class="row-grey" > {{data.tooth}}</td>
-                                                            <td class="row-grey" > {{data.fee}}</td>
-                                                            <td class="row-grey" > {{data.estPrimary}}</td>
-                                                            <td class="row-grey" > {{data.surface}}</td>
-                                                        </ng-container>
-                                                       <td> <input type="text" class="form-control" [(ngModel)]="data.allowedAmount"/></td>
-                                                       <td><input type="text" class="form-control" [(ngModel)]="data.paidAmount"/> </td>
-                                                       <td> <input type="text" class="form-control" [(ngModel)]="data.adjustmentAmount"> </td>
-                                                       <td> 
-                                                        <select class="form-control" [(ngModel)]="data.adjustmentReason">
-                                                            <option selected="true" hidden="true">Select</option> 
-                                                            <option [value]="reason.reasonName" *ngFor="let reason of appConstants.claimInitialDenialReason">{{reason.reasonName}}</option> 
-                                                        </select>
-                                                     </td>
-                                                     <td> <input type="text" class="form-control" [(ngModel)]="data.billToPatientAmount"> </td>
-                                                       <td> 
-                                                        <select class="form-control" [(ngModel)]="data.btpReason">
-                                                            <option selected="true" hidden="true">Select</option> 
-                                                            <option [value]="reason.reasonName" *ngFor="let reason of appConstants.claimInitialDenialReason">{{reason.reasonName}}</option> 
-                                                        </select>
-                                                     </td>
-                                                       <td> 
-                                                        <div class="form-check-inline">
-                                                            <input type="radio" class="form-check-input" id="post"  name="action{{idx}}" value="Post" [(ngModel)]="data.action" >
-                                                            <label class="form-check-label" for="post">Post </label>
-                                                        </div>
-                                                        <div class="form-check-inline">
-                                                            <input type="radio" [checked]="data.action" id="assign" class="form-check-input" name="action{{idx}}"  value="Assign" [(ngModel)]="data.action" >
-                                                            <label class="form-check-label" for="assign">Assign</label>
-                                                        </div>
-                                                        </td>
-                                                       <td>
-                                                            <textarea style="overflow:hidden;" rows="4" cols="40" [(ngModel)]="data.notes"></textarea>
-                                                        </td>
-                                                        <td> <a href="javascript:void(0)" (click)="viewFullNotes(data.serviceCodeNotes)">View More</a> </td> 
-                                                        <td>
-                                                            <ng-container *ngIf="idx%2 == 0;else elsePart" >
-                                                                    <img src="../../assets/img/correct_mark.png">
-                                                            </ng-container>   
-                                                            <ng-template #elsePart>
-                                                                    <img src="../../assets/img/cross_incorrec.png">
-                                                            </ng-template>
-                                                        </td> 
-                                                        <ng-container *ngIf="clientName != 'Smilepoint'">
-                                                            <td *ngIf="!last"><button class="btn btn-sm btn-danger" (click)="removeSectionLevelRow(idx)">-</button></td> 
-                                                            <td *ngIf="last">
-                                                                 <button class="btn btn-sm btn-success" (click)="addNewSectionLevelField()">+</button>
+                                                    <ng-container
+                                                        *ngFor="let data of claimSectionModal['SERVICE_LEVEL_INFORMATION'];let idx=index;let last=last;">
+                                                        <tr>
+                                                            <ng-container class="row-grey"
+                                                                *ngIf="clientName != 'Smilepoint'">
+                                                                <td>
+                                                                    <!-- <input type="text" class="form-control" [(ngModel)]="data.snum"> -->
+                                                                    {{idx+1}}
+                                                                </td>
+                                                                <td><input type="text" class="form-control"
+                                                                        [(ngModel)]="data.serviceCode"></td>
+                                                                <td><input type="text" class="form-control"
+                                                                        [(ngModel)]="data.tooth"></td>
+                                                                <td><input type="text" class="form-control"
+                                                                        [(ngModel)]="data.fee"></td>
+                                                                <td><input type="text" class="form-control"
+                                                                        [(ngModel)]="data.estPrimary"> </td>
+                                                                <td><input type="text" class="form-control"
+                                                                        [(ngModel)]="data.surface"> </td>
+                                                            </ng-container>
+                                                            <ng-container class="row-grey"
+                                                                *ngIf="clientName == 'Smilepoint'">
+                                                                <td class="row-grey"> {{idx+1}}</td>
+                                                                <td class="row-grey"> {{data.serviceCode}}</td>
+                                                                <td class="row-grey"> {{data.tooth}}</td>
+                                                                <td class="row-grey"> {{data.fee}}</td>
+                                                                <td class="row-grey"> {{data.estPrimary}}</td>
+                                                                <td class="row-grey"> {{data.surface}}</td>
+                                                            </ng-container>
+                                                            <td> <input type="text" class="form-control"
+                                                                    [(ngModel)]="data.allowedAmount" /></td>
+                                                            <td><input type="text" class="form-control"
+                                                                    [(ngModel)]="data.paidAmount" /> </td>
+                                                            <td> <input type="text" class="form-control"
+                                                                    [(ngModel)]="data.adjustmentAmount"> </td>
+                                                            <td>
+                                                                <select class="form-control"
+                                                                    [(ngModel)]="data.adjustmentReason">
+                                                                    <option selected="true" hidden="true">Select
+                                                                    </option>
+                                                                    <option [value]="reason.reasonName"
+                                                                        *ngFor="let reason of appConstants.claimInitialDenialReason">
+                                                                        {{reason.reasonName}}</option>
+                                                                </select>
                                                             </td>
-                                                        </ng-container>
-                                                    </tr>
-                                                </ng-container>
+                                                            <td> <input type="text" class="form-control"
+                                                                    [(ngModel)]="data.billToPatientAmount"> </td>
+                                                            <td>
+                                                                <select class="form-control"
+                                                                    [(ngModel)]="data.btpReason">
+                                                                    <option selected="true" hidden="true">Select
+                                                                    </option>
+                                                                    <option [value]="reason.reasonName"
+                                                                        *ngFor="let reason of appConstants.claimInitialDenialReason">
+                                                                        {{reason.reasonName}}</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <div class="form-check-inline">
+                                                                    <input type="radio" class="form-check-input"
+                                                                        id="post" name="action{{idx}}" value="Post"
+                                                                        [(ngModel)]="data.action">
+                                                                    <label class="form-check-label" for="post">Post
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check-inline">
+                                                                    <input type="radio" [checked]="data.action"
+                                                                        id="assign" class="form-check-input"
+                                                                        name="action{{idx}}" value="Assign"
+                                                                        [(ngModel)]="data.action">
+                                                                    <label class="form-check-label"
+                                                                        for="assign">Assign</label>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <textarea style="overflow:hidden;" rows="4" cols="40"
+                                                                    [(ngModel)]="data.notes"></textarea>
+                                                            </td>
+                                                            <td> <a href="javascript:void(0)"
+                                                                    (click)="viewFullNotes(data.serviceCodeNotes)">View
+                                                                    More</a> </td>
+                                                            <td>
+                                                                <ng-container *ngIf="idx%2 == 0;else elsePart">
+                                                                    <img src="../../assets/img/correct_mark.png">
+                                                                </ng-container>
+                                                                <ng-template #elsePart>
+                                                                    <img src="../../assets/img/cross_incorrec.png">
+                                                                </ng-template>
+                                                            </td>
+                                                            <ng-container *ngIf="clientName != 'Smilepoint'">
+                                                                <td *ngIf="!last"><button class="btn btn-sm btn-danger"
+                                                                        (click)="removeSectionLevelRow(idx)">-</button>
+                                                                </td>
+                                                                <td *ngIf="last">
+                                                                    <button class="btn btn-sm btn-success"
+                                                                        (click)="addNewSectionLevelField()">+</button>
+                                                                </td>
+                                                            </ng-container>
+                                                        </tr>
+                                                    </ng-container>
                                                     <tr>
                                                         <td>Total</td>
                                                         <td></td>
@@ -2425,7 +2468,8 @@
                     </div>
                     <div class="modal-body">
                         <ul>
-                            <li *ngFor="let note of viewNotesConfig.viewNotes;let idx=index;">{{note.createdBy}} {{note.createdDate}} : {{note.notes}}</li>
+                            <li *ngFor="let note of viewNotesConfig.viewNotes;let idx=index;">{{note.createdBy}}
+                                {{note.createdDate}} : {{note.notes}}</li>
                         </ul>
                     </div>
                     <div class="modal-footer justify-content-center">
