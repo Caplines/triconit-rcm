@@ -721,7 +721,7 @@ public class ClaimSectionImpl {
 
 		// if paid amount is 0 then no need to save data in db
 		if (paymentInformationInfoModel.getPaidAmount() == 0.0) {
-			return true;
+			return false;
 		} else {
 			PaymentInformationSection paymentInsuranceInformation = null;
 			if (claim != null) {
