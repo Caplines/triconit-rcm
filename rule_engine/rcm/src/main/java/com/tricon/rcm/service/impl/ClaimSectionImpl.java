@@ -655,21 +655,15 @@ public class ClaimSectionImpl {
 		EOBDto responseDto = null;
 		List<EOBSectionInformation> eobSections = new ArrayList<>();
 		List<EOBDto> responseData = new ArrayList<>();
-		if (showWithTeam) {
-			eobSections = eobRepo.findByClaimClaimUuidAndCreatedByUuidAndAttachByTeamIdAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid,
-					partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
-		} else {
-			eobSections = eobRepo.findByClaimClaimUuidAndCreatedByUuidAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid,
-					partialHeader.getJwtUser().getUuid());
-		}
+		eobSections = eobRepo.findByClaimClaimUuidAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid);
 		if (!eobSections.isEmpty()) {
-			RcmUser attachBy=userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
-			RcmTeam team=rcmTeamRepo.findById(partialHeader.getTeamId());
 			for (EOBSectionInformation data : eobSections) {
+				RcmUser attachBy = userRepo.findByUuid(data.getCreatedBy().getUuid());
+				RcmTeam team = rcmTeamRepo.findById(data.getAttachByTeam().getId());
 				responseDto = new EOBDto();
-				responseDto.setEobPathLink(serverDomainLink+"/api/vieweoblink/"+data.getEobFilePath());
+				responseDto.setEobPathLink(serverDomainLink + "/api/vieweoblink/" + data.getEobFilePath());
 				responseDto.setAttachBy(attachBy.getFirstName());
-				responseDto.setAttachByLastName(attachBy.getLastName());		
+				responseDto.setAttachByLastName(attachBy.getFirstName());
 				responseDto.setAttachByTeam(team.getDescription());
 				responseDto.setDate(Constants.SDF_MYSL_DATE.format((data.getCreatedDate())));
 				BeanUtils.copyProperties(data, responseDto);
@@ -897,16 +891,15 @@ public class ClaimSectionImpl {
 		List<RcmInsuranceFollowUpSection> followUpInsuranceInformation = new ArrayList<>();
 		if (showWithTeam) {
 			followUpInsuranceInformation = followUpRepo
-					.findByClaimClaimUuidAndCreatedByUuidAndTeamIdOrderByCreatedDateDesc(claimUuid,
-							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+					.findByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
 		} else {
 			followUpInsuranceInformation = followUpRepo.findByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(
 					claimUuid, partialHeader.getJwtUser().getUuid());
 		}
 		if (!followUpInsuranceInformation.isEmpty()) {
-			RcmUser attachBy=userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
-			RcmTeam team=rcmTeamRepo.findById(partialHeader.getTeamId());
 			for (RcmInsuranceFollowUpSection data : followUpInsuranceInformation) {
+				RcmUser attachBy=userRepo.findByUuid(data.getCreatedBy().getUuid());
+				RcmTeam team=rcmTeamRepo.findById(data.getTeam().getId());
 				responseDto = new RcmFollowUpInsuranceDto();	
 				responseDto.setFollowByUser(attachBy.getFirstName());
 				responseDto.setFollowByUserLastName(attachBy.getLastName());
