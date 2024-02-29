@@ -12,6 +12,7 @@ public class CommonSectionsRequestBodyDto {
 	private PaymentInformationSectionDto paymentInformationInfoModel;
 	private ServiceLevelInformationDto serviceLevelInformationInfoModel;
 	private RcmFollowUpInsuranceDto rcmFollowUpInsuranceInfoModel;
+	private RcmPatientStatementDto rcmPatientStatementInfoModel;
 	private boolean finalSubmit;
 	private boolean moveToNextTeam;
 

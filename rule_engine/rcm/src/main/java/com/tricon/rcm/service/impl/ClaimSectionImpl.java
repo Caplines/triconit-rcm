@@ -34,6 +34,7 @@ import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
 import com.tricon.rcm.db.entity.RcmOffice;
+import com.tricon.rcm.db.entity.RcmPatientStatementSection;
 import com.tricon.rcm.db.entity.RcmServiceLevelInformation;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
@@ -45,6 +46,7 @@ import com.tricon.rcm.dto.EobSectionEditDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
+import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
@@ -69,6 +71,7 @@ import com.tricon.rcm.jpa.repository.RcmClientSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmPatientStatementRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
 import com.tricon.rcm.jpa.repository.ServiceLevelInformationRepo;
@@ -151,6 +154,9 @@ public class ClaimSectionImpl {
 	
 	@Value("${rcm.serverdomain}")
 	private String serverDomainLink;
+	
+	@Autowired
+	RcmPatientStatementRepo patientStatementRepo;
 	
 
 	@Transactional(rollbackOn = Exception.class)
@@ -760,8 +766,6 @@ public class ClaimSectionImpl {
 		}
 		if (paymentInsuranceInformation != null) {
 			responseDto = new PaymentInformationSectionDto();
-			responseDto.setAmountReceivedInBank(paymentInsuranceInformation.getAmountReceivedInBank());
-			responseDto.setAmountPostedInEs(paymentInsuranceInformation.getAmountPostedInEs());
 			responseDto
 					.setCheckCashDate(Constants.SDF_MYSL_DATE.format((paymentInsuranceInformation.getCheckCashDate())));
 			responseDto.setAmountDateReceivedInBank(
@@ -910,5 +914,60 @@ public class ClaimSectionImpl {
 			}
 		}
 		return responseData;
+	}
+	@Transactional(rollbackOn = Exception.class)
+	public Boolean savePatientStatementSection(RcmPatientStatementDto rcmPatientStatementInfoModel, RcmClaims claim,
+			RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) throws Exception {
+		RcmPatientStatementSection patientStatement = null;
+		if (claim != null) {
+			patientStatement = new RcmPatientStatementSection();
+			patientStatement.setClaim(claim);
+			patientStatement.setStatus(rcmPatientStatementInfoModel.getStatus());	
+			patientStatement.setAmountStatement(rcmPatientStatementInfoModel.getAmountStatement());
+			patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
+			patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement());
+			patientStatement.setReason(rcmPatientStatementInfoModel.getReason());
+			patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
+			patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
+			patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
+			patientStatement.setStatementSendingDate(
+					Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
+			patientStatement
+					.setNextReviewDate(Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
+			patientStatement.setStatementSendingDate(
+					Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
+			patientStatement.setNextStatementDate(
+					Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
+			patientStatement.setCreatedBy(createdBy);
+			patientStatement.setFinalSubmit(finalSubmit);
+			patientStatement.setTeam(team);
+			patientStatement = patientStatementRepo.save(patientStatement);
+			return patientStatement != null ? true : null;
+		}
+		return null;
+	}
+	
+	public RcmPatientStatementDto fetchPatientStatementInformation(PartialHeader partialHeader, String claimUuid,
+			boolean showWithTeam) throws Exception {
+		RcmPatientStatementSection patientStatement = null;
+		RcmPatientStatementDto responseDto = null;
+		if (showWithTeam) {
+			patientStatement = patientStatementRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdOrderByCreatedDateDesc(claimUuid,
+							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+		} else {
+			patientStatement = patientStatementRepo.findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(
+					claimUuid, partialHeader.getJwtUser().getUuid());
+		}
+		if (patientStatement != null) {
+			responseDto = new RcmPatientStatementDto();
+			responseDto.setNextReviewDate(Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
+			responseDto.setNextStatementDate(Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
+			responseDto.setStatementSendingDate(
+					Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
+			BeanUtils.copyProperties(patientStatement, responseDto);
+			return responseDto;
+		}
+		return null;
 	}
 }

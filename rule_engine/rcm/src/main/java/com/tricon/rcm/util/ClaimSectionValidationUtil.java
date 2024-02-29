@@ -11,6 +11,7 @@ import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
+import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.ServiceLevelInformationDto;
 
 @Service
@@ -226,6 +227,16 @@ public class ClaimSectionValidationUtil {
 		logger.info("RcmFollowUpInsuranceDto->" + rcmFollowUpInsuranceInfoModel);
 		boolean isValid = true;
 		if (rcmFollowUpInsuranceInfoModel == null) {
+			return false;
+		}
+
+		return isValid;
+	}
+
+	public boolean validationForPatientStatementSectionFields(RcmPatientStatementDto rcmPatientStatementInfoModel) {
+		logger.info("RcmPatientStatementDto->" + rcmPatientStatementInfoModel);
+		boolean isValid = true;
+		if (rcmPatientStatementInfoModel == null) {
 			return false;
 		}
 
