@@ -62,14 +62,14 @@ public class ClaimScheduler {
 			dto.setSource(ClaimSourceEnum.EAGLESOFT.toString());
 			int log=-1;
 			//ruleEngineService.pullAndSaveInsuranceFromRE(dto,user);
-			String[] status = ruleEngineService.pullAndSaveClaimFromRE(dto,user,li,ClaimTypeEnum.P,comp,log).split("___");
+			String[] status = ruleEngineService.pullAndSaveClaimFromRE(dto,user,li,ClaimTypeEnum.P,comp,null,log).split("___");
 			
 			try {
 			if (status.length==2) log=Integer.parseInt(status[1]);
 			}catch(Exception p) {
 				
 			}
-			ruleEngineService.pullAndSaveClaimFromRE(dto,user,li,ClaimTypeEnum.S,comp,log);
+			ruleEngineService.pullAndSaveClaimFromRE(dto,user,li,ClaimTypeEnum.S,comp,null,log);
 			//ruleEngineService.pullAndSaveRemoteLiteData(dto,user,logId);
 			ruleEngineService.pullClaimDetailsFromES(comp,null);
 			//break;

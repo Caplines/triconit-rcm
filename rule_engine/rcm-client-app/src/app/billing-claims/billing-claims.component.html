@@ -14,9 +14,8 @@
                     <small id="tooltip" class="ms-2" style="visibility:hidden;font-size: 12px !important;">URL
                         copied!</small>
                 </div>
-
-                <button type="button" (click)="toggleSideBar = !toggleSideBar" class="btn btn-primary claim-steps-btn"
-                    [ngClass]="{'toggle-claim-steps':toggleSideBar}"
+                <button *ngIf="displayPhaseSection" type="button" (click)="toggleSideBar = !toggleSideBar"
+                    class="btn btn-primary claim-steps-btn" [ngClass]="{'toggle-claim-steps':toggleSideBar}"
                     style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-text-right" viewBox="0 0 16 16">
@@ -215,7 +214,6 @@
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">Provider Type</label>
-                                            be
                                             <div>{{claimRcm.claimType}}</div>
                                         </div>
                                         <div class="custom-row">
@@ -1479,7 +1477,7 @@
                                     </div>
                                 </div>
                                 <ng-container
-                                    *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'view')">
+                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Level Information
@@ -1609,7 +1607,7 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="!claimRcm.pending &&  checkForSectionAccess(sectionIds['APPEAL'],'view')">
+                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending &&  checkForSectionAccess(sectionIds['APPEAL'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Appeal
@@ -1688,7 +1686,7 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'view')">
+                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending  && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Insurance Payment Information
@@ -1808,7 +1806,8 @@
                                     </div>
                                 </ng-container>
 
-                                <ng-container *ngIf="checkForSectionAccess(sectionIds['EOB'],'view')">
+                                <ng-container
+                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['EOB'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['eob']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="EOB">
                                             EOB
@@ -1844,7 +1843,8 @@
                                                         <td>{{data.attachBy}}</td>
                                                         <td *ngIf="checkForSectionAccess(sectionIds['EOB'],'edit')">
                                                             <button class="btn btn-sm btn-outline-danger"
-                                                                (click)="removeEobById(data.id)">Delete </button> </td>
+                                                                (click)="removeEobById(data.id)">Delete </button>
+                                                        </td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -1883,11 +1883,11 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION'],'view')">
+                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION'],'view')">
                                     <div class="bold-b-text"
                                         [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="SERVICE_LEVEL_INFORMATION">
-                                            SERVICE LEVEL INFORMATION
+                                            Sevice Level Information
                                         </a>
                                         <div class="down-icon" (click)="showHide('SERVICE_LEVEL_INFORMATION')">
                                             <a href="javascript:void(0)"
@@ -2277,23 +2277,17 @@
 
                         </div>
                     </div>
-                    <div class="steps-taken vertical" [ngClass]="{'toggleSidebar':toggleSideBar}">
+                    <div *ngIf="displayPhaseSection" class="steps-taken vertical"
+                        [ngClass]="{'toggleSidebar':toggleSideBar}">
                         <ul>
-                            <li class="done"><span class="claimDate">Nov 15, 2023</span> Claim Uploaded <span
-                                    class="teamname">Claim team</span></li>
-                            <li class="done"><span class="claimDate">Nov 18, 2023</span>Claim Submitted<span
-                                    class="teamname">Billing team</span></li>
-                            <li class="done waiting"><span class="claimDate">Nov 22, 2023</span>EOB<span
-                                    class="teamname">Posting team</span></li>
-                            <li><span class="claimDate">Nov 25, 2023</span>Assigned to CDP<span class="teamname">Posting
-                                    team</span></li>
-                            <li><span class="claimDate">Nov 26, 2023</span>Call Insurance<span class="teamname">CDP
-                                    team</span></li>
-                            <li><span class="claimDate">Nov 28, 2023</span>Assigned for Rebilling<span
-                                    class="teamname">Rebilled team</span></li>
-                            <li><span class="claimDate">Nov 30, 2023</span>Rebilled<span class="teamname">Rebilled
-                                    team</span></li>
-                            <li>Close</li>
+                            <ng-container *ngFor="let steps of claimSteps">
+                                <li class="done">
+                                    <span class="claimDate">{{steps.dt | date: 'MMM dd, YYYY'}}</span> {{steps.status}}
+                                    <span class="teamname" *ngIf="steps.name==null">Systyem</span>
+                                    <span class="teamname" *ngIf="steps.name!=null">{{steps.name}}</span>
+                                </li>
+                            </ng-container>
+                            <!-- <li>Close</li> -->
                         </ul>
                     </div>
                 </div>

@@ -337,7 +337,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 						+"     inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
 						//+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId "
 						+" 	left join rcm_claims cl on cl.updated_by=us.uuid "
-						+"     and rut.team_id=:teamId  and  cl.pending is false and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.first_worked_team_id=:teamId  "
+						+"     and rut.team_id=:teamId  and  cl.pending is false and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED//+" and cl.first_worked_team_id=:teamId  "
 					    + " inner join rcm_claims_submission_details cl_sub_det on cl_sub_det.claim_id=cl.claim_uuid  "
                     	+" 	and  CAST(cl_sub_det.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
 						+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
@@ -351,23 +351,20 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	//Production can be considered on the basis of processing of claim in ES instead of when we are marking that as submitted in the RCM Tool
 	//we are marking that as submitted in the RCM Tool
 	@Query(nativeQuery = true, value = 
-		       " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
-						+" us.uuid as uuid,us.first_name "
-						+" 	 as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
-						+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
-						+"     inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
-						//+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId "
-						+" 	left join rcm_claims cl on cl.updated_by=us.uuid "
-						+"     and rut.team_id=:teamId  and  cl.pending is false and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.first_worked_team_id=:teamId  "
-						//+" 	and  CAST(cl.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
-						//+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') " --
-						+ " left join rcm_claims_submission_details rcsd on cl.claim_uuid= rcsd.claim_id and rcsd.es_date is not null "
-						+" 	and  CAST(rcsd.es_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
-						+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
-						+" 	left join office off on off.uuid=cl.office_id  "
-						+ " inner join company comp on comp.uuid=off.company_id  "
-						+ " inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
-						+" 	where   cmp.company_id in (:companyIds) and rut.team_id=:teamId group by us.uuid,comp.name")
+			" select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+			+ " us.uuid as uuid,us.first_name"
+			+ " as fName,us.last_name as lName,comp.name as companyName from rcm_user us"
+			+ " inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid"
+			+ " inner join company comp on comp.uuid=cmp.company_id"
+			+ " left join rcm_user_assign_office assig on assig.user_id=us.uuid  and assig.team_id=:teamId and assig.user_id=:userId"
+			+ " left join rcm_user_team rut on rut.rcm_user_id=us.uuid and  rut.team_id=:teamId"
+			+ " left join office off on off.uuid=assig.office_id"
+			+ " left join rcm_claims_submission_details rcsd on rcsd.submitted_by=us.uuid and rcsd.es_date is not null"
+			+ " and  CAST(rcsd.es_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d')"
+			+ " left join rcm_claims cl on cl.claim_uuid= rcsd.claim_id"
+			+ " and  cl.pending is false and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			//+ " -- and cl.first_worked_team_id=:teamId"
+			+ " where   cmp.company_id in (:companyIds) and rut.team_id=:teamId group by us.uuid,comp.name")
 	List<ProductionDto> claimProductionByForBillingAssoicate(@Param("companyIds") List<String> companyIds,
 			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate,@Param("userId") String userId);
 	
@@ -422,7 +419,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+"     and   taken_back is false and cl.first_worked_team_id=:teamId and cl.current_team_id<>:teamId "
 			+" 	left join office off on off.uuid=cl.office_id  "
 			+ " inner join company comp on comp.uuid=off.company_id  "
-			+ " inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
+			+ " left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
 			+" 	where   cmp.company_id in (:companyIds)  and rut.team_id=:teamId group by us.uuid,comp.name")
      List<ProductionDto> claimProductionForInternalAuditAssoicate(@Param("companyIds") List<String> companyIds,
 		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate,@Param("userId") String userId);
@@ -441,7 +438,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			//+" and cl.first_worked_team_id=:teamId"
 			+" 	left join office off on off.uuid=cl.office_id  "
 			+ " inner join company comp on comp.uuid=off.company_id  "
-			+ " inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
+			+ " left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
 			+" 	where   cmp.company_id in (:companyIds) and rut.team_id=:teamId group by us.uuid,comp.name")
      List<ProductionDto> claimProductionForOtherTeamAssoicate(@Param("companyIds") List<String> companyIds,
 		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate,@Param("userId") String userId);
@@ -477,7 +474,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			"  left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id"+
 			"  left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id"+
 			"  left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id"+
-			"  left join rcm_claim_assignment assign on  assign.claim_id=cl.claim_uuid and assign.active=1"+
+			"  left join rcm_claim_assignment assign on  assign.claim_id=cl.claim_uuid and assign.active=1 and assign.assigned_to is not null "+
 			"  left join rcm_user us on us.uuid=assign.assigned_to"+
 			"  where claim_uuid=:claimUuid ")//and cmp.uuid=:companyId
 	RcmClaimDetailDto fetchIndividualClaim(@Param("claimUuid")  String claimUuid) ;
@@ -590,20 +587,20 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	@Query(nativeQuery = true, value = ""
 			+ " select cl.claim_uuid from rcm_claims cl inner join office off on off.uuid=cl.office_id and "
-			+ " off.company_id=:companyId  where pending is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_uuid "
+			+ " off.company_id=:companyId  where cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_uuid "
 			+ " not in (select cl.claim_uuid ascl from rcm_claims cl inner join rcm_claim_assignment ass on "
 			+ " ass.claim_id=cl.claim_uuid inner join office off on off.uuid=cl.office_id  where  "
-			+ " cl.pending is true and  ass.active=1 and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and off.company_id=:companyId )")
+			+ " ass.active=1 and ass.assigned_to is not null and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and off.company_id=:companyId )")
 	List<String> getUnAsignedClaims(@Param("companyId") String companyId);
 	
 	
-	@Query(nativeQuery = true, value = ""
+	/*@Query(nativeQuery = true, value = ""
 			+ " select cl.claim_uuid from rcm_claims cl inner join office off on off.uuid=cl.office_id and "
 			+ " off.company_id=:companyId and  off.office_id=:officeId where pending is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_uuid "
 			+ " not in (select cl.claim_uuid ascl from rcm_claims cl inner join rcm_claim_assignment ass on "
 			+ " ass.claim_id=cl.claim_uuid inner join office off on off.uuid=cl.office_id  where  "
 			+ " cl.pending is true  and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and off.company_id=:companyId and  off.office_id=:officeId )")
-	List<String> getUnAsignedClaimByOffice(@Param("companyId") String companyId,@Param("officeId") String officeId);
+	List<String> getUnAsignedClaimByOffice(@Param("companyId") String companyId,@Param("officeId") String officeId);*/
 
 	
 	@Query(nativeQuery = true, value = ""

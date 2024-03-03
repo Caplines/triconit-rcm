@@ -20,6 +20,7 @@ import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
+import com.tricon.rcm.jpa.repository.ClaimCycleRepo;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimDetailRepo;
@@ -37,10 +38,12 @@ import com.tricon.rcm.jpa.repository.RcmRemoteLiteRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
+import com.tricon.rcm.util.ClaimMovementUtil;
 import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.ConnectAndReadSheets;
 import com.tricon.rcm.util.Constants;
 import com.google.common.collect.Collections2;
+import com.tricon.rcm.db.entity.ClaimCycle;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimDetail;
 import com.tricon.rcm.db.entity.RcmClaimLog;
@@ -161,6 +164,9 @@ public class RuleEngineService {
 	
 	@Autowired
 	RcmClaimDetailRepo rcmClaimDetailRepo;
+	
+	@Autowired
+	ClaimCycleServiceImpl claimCycleService;
 
 	HttpHeaders headers = null;
 
@@ -186,7 +192,7 @@ public class RuleEngineService {
 	 * @return
 	 */
 	public String pullAndSaveClaimFromRE(ClaimSourceDto dto, RcmUser user,
-			List<TimelyFilingLimitDto> timelyFilingLimits, ClaimTypeEnum claimTypeEnum, RcmCompany comp, int logId) {
+			List<TimelyFilingLimitDto> timelyFilingLimits, ClaimTypeEnum claimTypeEnum, RcmCompany comp,RcmTeam currentTeam, int logId) {
 
 		String success = "";
 		// int logId = -1;
@@ -391,6 +397,7 @@ public class RuleEngineService {
 											isBilling=true;
 										}
 										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
+										claimCycleService.createNewClaimCycle(claim, Constants.Claim_upLoaded, currentTeam, user);
 										RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(
 												re.getClaimId() + claimTypeEnum.getSuffix(), off, source);
 										if (isC != null) {
@@ -406,6 +413,8 @@ public class RuleEngineService {
 													"", systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
+											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Unbilled_Billing.getType(),assignedTeamBilling, user);
+										
 										}
 										if (assignedUserInternalAudit != null && (isMedicaid||  isChip)) {
 											rcmAssigment = new RcmClaimAssignment();
@@ -415,6 +424,7 @@ public class RuleEngineService {
 													"", systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
+											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Unbilled_Internal_Audit.getType(),assignedTeamInternalAudit, user);
 										}
 										/*
 										 * if (re.getSecStatus().equalsIgnoreCase(Constants.secondaryClaimTypeES)) {
@@ -973,6 +983,11 @@ public class RuleEngineService {
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
 							claimUUid, claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT);
 					rcmClaimAssignmentRepo.save(rcmAssigment);
+					String status = "";
+					if (teamId == RcmTeamEnum.BILLING.getId()) status=ClaimStatusEnum.Unbilled_Billing.getType();
+					else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) status=ClaimStatusEnum.Unbilled_Internal_Audit.getType();
+							
+					claimCycleService.createNewClaimCycle(claim, status,assignedTeam, assignedBy);
 				} else {
 					logger.error("Unassigned claims(" + claimUUid + ") is already assigned to a user whose team id is: "
 							+ teamId + " ");

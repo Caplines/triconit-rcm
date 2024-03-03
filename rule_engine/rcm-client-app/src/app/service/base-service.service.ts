@@ -116,7 +116,7 @@ export class BaseService {
     'fetch-manage-user-section': '/api/claim-user-with-section',
     'save-manage-user-section': '/api/manage-claim-user-section',
     'fetch-user-claim-section-permission': '/api/claim/user-section-permission',
-    
+
     'save-section-info': '/api/save-section-info',
     'get-claim-level-info': '/api/get-claim-level-info',
     'get-appeal-level-info': "/api/get-appeal-level-info",
@@ -125,6 +125,7 @@ export class BaseService {
     'remove-eob-data': "/api/remove-eob-data",
     'vieweoblink': "/api/vieweoblink",
     'get-service_level_info': "/api/get-service-level-info",
+    'fetch-claim-steps': "/api/claimstep"
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

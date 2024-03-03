@@ -151,6 +151,11 @@ public class Constants {
 	//TEAM TRANSFER
 	public static final int FROMBILLINGTOPOSTING=RcmTeamEnum.PAYMENT_POSTING.getId();
 	public static final int CLAIM_POSTING_STATE=1;
-	
+	public static final String From_Claim_Closing="From Claim Closing";
+	public static final String From_1_Statement="From 1st Statement";
+    public static final String From_2_Statement="From 2nd Statement";
+    public static final String Claim_upLoaded="Claim Uploaded";
 
+    
+    
 }

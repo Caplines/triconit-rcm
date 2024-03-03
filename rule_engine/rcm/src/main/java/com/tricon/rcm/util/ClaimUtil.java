@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Collections2;
+import com.tricon.rcm.db.entity.ClaimCycle;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
@@ -370,5 +371,16 @@ public class ClaimUtil {
 		
 		return companies.contains(companyId);
 		
+	}
+	
+	public static ClaimCycle createCycle(RcmClaims claims, String status, RcmTeam team,RcmUser user) {
+		
+		ClaimCycle cycle= new ClaimCycle();
+		cycle.setClaim(claims);
+		cycle.setStatus(status);
+		if (team!=null) cycle.setCurrentTeamId(team);
+		if (user != null)
+			cycle.setCreatedBy(user);
+		return cycle;
 	}
 }

@@ -5,7 +5,7 @@ import { Router } from '@angular/router';
 import {
   ClaimRcmDataModel, ClaimEditModel, ServiceLevelCodeModel, SubmissionDetailModel,
   ClaimRuleModel, ClaimRuleRemarkModel, RuleEngineValModel, ServiceLevelCodeDataModel,
-  ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem, ClaimDetailModel, ClaimSettingDataModel
+  ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem, ClaimDetailModel, ClaimSettingDataModel, ClaimStep
 } from '../models/claim-rcm-data-model';
 
 import { Title } from '@angular/platform-browser';
@@ -45,6 +45,7 @@ export class BillingClaimsComponent {
   submissionDto: SubmissionDetailModel = {};
   claimRules: Array<ClaimRuleModel> = [];
   claimRuleRemarks: Array<ClaimRuleRemarkModel> = [];
+  claimSteps: Array<ClaimStep> = [];
   reheading: string;
   inSave: boolean = false;
   ruleEngineReport: Array<RuleEngineValModel> = [];
@@ -85,6 +86,7 @@ export class BillingClaimsComponent {
   noProviderNoteCodes: Array<string> = [];
   invalidClaim = "";
   claimSettingDataModel: ClaimSettingDataModel = null;
+  displayPhaseSection: boolean = false;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -190,6 +192,7 @@ export class BillingClaimsComponent {
           console.log(res.data);
           this.sectionLevelData = res.data;
           ths.setClaimSectionRights(res);
+          ths.fetchClaimSteps(uuid);
           ths.fetchClaimsByUuid(uuid);
           this.fetchClaimLevelInfoSection();
           this.fetchAppealSection();
@@ -625,7 +628,7 @@ export class BillingClaimsComponent {
       ths.removeErrorDisplay(document.getElementById("ruleEngineRunRemark"));
 
     }
-    if (this.smilePoint && ths.isRuleEnginevalidationNeeded()) {
+    if (this.smilePoint && !this.isInternalAudit && ths.isRuleEnginevalidationNeeded()) {
       //debugger;
       let inRE: boolean = false;
       ths.ruleEngineReport.forEach(x => {
@@ -2156,6 +2159,17 @@ export class BillingClaimsComponent {
 
   closeNoteModal() {
     this.viewNotesConfig.showNotes = false;
+  }
+
+  fetchClaimSteps(uuid: string) {
+    let ths = this;
+    ths.claimService.fetchClaimSteps(uuid,
+      (res: any) => {
+        if (res.status === 200) {
+          console.log(res.data);
+          ths.claimSteps = res.data;
+        }
+      });
   }
 
 }

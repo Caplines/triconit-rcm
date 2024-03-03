@@ -256,5 +256,14 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "current_status",columnDefinition = "integer default 0")
 	private int currentStatus;//
+	
+	@Column(name = "btp")
+	private Float btp;//
+	
+	@Column(name = "adjustment")
+	private Float adjustment;//
+	
+	@Column(name = "payment_received")
+	private Float paymentReceived ;//
 
 }

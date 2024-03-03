@@ -84,4 +84,8 @@ export class ClaimService extends BaseService {
   getClaimSectionRights(callback: any) {
     this.getData({}, this.httpUrl['fetch-user-claim-section-permission'], callback);
   }
+
+  fetchClaimSteps(clamiduuid: string, callback: any) {
+    this.getData({}, this.httpUrl['fetch-claim-steps'] + "/" + clamiduuid, callback, false);
+  }
 }

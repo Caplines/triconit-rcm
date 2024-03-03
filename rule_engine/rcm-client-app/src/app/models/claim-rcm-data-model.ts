@@ -277,3 +277,9 @@ export interface TeamRight {
 	sectionData?: Array<SectonRightDataModel>;
 
 }
+
+export interface ClaimStep {
+	dt?: Date;
+	name?: string;
+	status?: string;
+}

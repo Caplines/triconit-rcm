@@ -60,6 +60,7 @@ import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimRuleRemarksDto;
+import com.tricon.rcm.dto.customquery.ClaimSteps;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.CompanyIdAndNameDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
@@ -330,6 +331,16 @@ public class RcmController extends BaseHeaderController{
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.fetchClaimRemarksOtherTeam(partialHeader.getCompany().getUuid(), claimuuid,partialHeader.getTeamId())));
+	}
+	
+	@ApiOperation(value = "Api For Fetching Claims Cycle/Step", response = ClaimSteps.class ,responseContainer = "List")
+	@GetMapping("/api/claimstep/{claimuuid}")
+	public ResponseEntity<Object> fetchClaimSteps(@PathVariable("claimuuid") String claimuuid, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.fetchClaimSteps(claimuuid)));
 	}
 	
 	@ApiOperation(value = "Api For Saving Claims Remarks", response = String.class)

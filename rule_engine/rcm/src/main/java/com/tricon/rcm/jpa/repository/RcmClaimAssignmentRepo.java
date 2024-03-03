@@ -32,9 +32,9 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	
 	RcmClaimAssignment findByCurrentTeamIdIdAndClaimsClaimUuidAndActive(int teamId,String claimUUid,boolean active);
 	
-	RcmClaimAssignment findByClaimsClaimUuidAndActive(String claimUUid,boolean active);
+	RcmClaimAssignment findByClaimsClaimUuidAndActiveAndAssignedToNotNull(String claimUUid,boolean active);
 	
-	@Query(value = "select id from rcm_claim_assignment where active =true and claim_id=:claimUuid order by created_date asc", nativeQuery = true)
+	@Query(value = "select id from rcm_claim_assignment where active =true and assigned_to is not  null and claim_id=:claimUuid order by created_date asc", nativeQuery = true)
 	List<Integer> findIssueAssingments(@Param("claimUuid") String claimUUid);
 	
 	RcmClaimAssignment findByClaimsClaimUuidAndActiveAndCurrentTeamIdId(String claimUUid,boolean active,int teamId);
@@ -58,8 +58,8 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	@Query(nativeQuery = true, value = " select "
 			 +" comment_assigned_by comment,assign.created_date cd, tm.description teamName,us.first_name fName,us.last_name lName,assign.attachment_with_remarks attchmentsWithRemarks "
 			 +" from  rcm_claim_assignment assign inner join rcm_user us on us.uuid=assign.assigned_by "
-			 +" inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
-			 +" inner join rcm_team tm on tm.id=rut.team_Id "
+			 //+" inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
+			 +" inner join rcm_team tm on tm.id=assign.current_team_id "
 			 +" where claim_id=:claim_id and comment_assigned_by<>'' order by assign.created_date asc "
 	+ "")
     List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(@Param("claim_id") String claimId);
