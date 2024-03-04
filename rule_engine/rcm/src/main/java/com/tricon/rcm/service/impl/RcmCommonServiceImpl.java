@@ -574,7 +574,7 @@ public class RcmCommonServiceImpl {
 				break;
 			case 11:
 				logger.info("Inside section 11->Service Level Information");
-				response = claimSectionimpl.saveServiceLevelInformationSection(sectionRequestBody.getServiceLevelInformationInfoModel(),
+				response = claimSectionimpl.saveServiceLevelInformationSection(sectionRequestBody.getServiceLevelInformationInfoModel().getServiceLevelTotalAmount(),
 						 claim, createdBy, team, sectionRequestBody.isFinalSubmit(),partialHeader.getClientName());
 				logger.info("response->" + response);
 				break;

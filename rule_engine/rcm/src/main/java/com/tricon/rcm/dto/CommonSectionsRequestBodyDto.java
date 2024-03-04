@@ -8,6 +8,7 @@ public class CommonSectionsRequestBodyDto {
 	private String claimUuid;
 	private ClaimLevelInformationDto claimInfoModel;
 	private AppealInformationDto appealInfoModel;
+	private PatientPaymentSectionDto patientPaymentInfoModel;
 	private EOBDto eobInfoModel;
 	private PaymentInformationSectionDto paymentInformationInfoModel;
 	private ServiceLevelInformationDto serviceLevelInformationInfoModel;

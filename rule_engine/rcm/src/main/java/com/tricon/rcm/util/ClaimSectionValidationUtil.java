@@ -216,7 +216,7 @@ public class ClaimSectionValidationUtil {
 		logger.info("ServiceLevelInformationDto->" + serviceLevelInformationInfoModel);
 
 		boolean isValid = true;
-		if (serviceLevelInformationInfoModel.getServiceLevelBody().isEmpty()) {
+		if (serviceLevelInformationInfoModel.getServiceLevelTotalAmount().getServiceLevelBody().isEmpty()) {
 			return false;
 		}
 

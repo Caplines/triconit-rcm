@@ -34,6 +34,7 @@ import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
 import com.tricon.rcm.db.entity.RcmOffice;
+import com.tricon.rcm.db.entity.RcmPatientPayment;
 import com.tricon.rcm.db.entity.RcmPatientStatementSection;
 import com.tricon.rcm.db.entity.RcmServiceLevelInformation;
 import com.tricon.rcm.db.entity.RcmTeam;
@@ -44,6 +45,7 @@ import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.EobSectionEditDto;
 import com.tricon.rcm.dto.PartialHeader;
+import com.tricon.rcm.dto.PatientPaymentSectionDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
 import com.tricon.rcm.dto.RcmPatientStatementDto;
@@ -53,6 +55,7 @@ import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.ServiceLevelInformationDto;
 import com.tricon.rcm.dto.ServiceLevelNotes;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
+import com.tricon.rcm.dto.ServiceLevelTotalAmountDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.RcmServiceNotesDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -71,6 +74,7 @@ import com.tricon.rcm.jpa.repository.RcmClientSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmPatientPaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmPatientStatementRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
@@ -121,6 +125,9 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmAppealInfoRepo appealInfoRepo;
+	
+	@Autowired
+	RcmPatientPaymentSectionRepo patientPaymentRepo;
 	
 	@Autowired
 	EOBSectionRepo eobRepo;
@@ -612,7 +619,51 @@ public class ClaimSectionImpl {
 		return null;
 	}
 
+	@Transactional(rollbackOn = Exception.class)
+	public Boolean savePatientPaymentSection(PatientPaymentSectionDto patientPaymentInfoModel,
+			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
+		RcmPatientPayment patientPaymentInformation = null;
+		if (claim != null) {
+			patientPaymentInformation = new RcmPatientPayment();
+			patientPaymentInformation.setAmountCollectedClaims(patientPaymentInfoModel.getAmountCollectedClaims());
+			patientPaymentInformation.setClaim(claim);
+			patientPaymentInformation
+					.setDateOfPayment(Constants.SDF_MYSL_DATE.parse(patientPaymentInfoModel.getDateOfPayment()));
+			patientPaymentInformation.setDueBalanceInPMS(patientPaymentInfoModel.getDueBalanceInPMS());
+			patientPaymentInformation.setModeOfPayment(patientPaymentInfoModel.getModeOfPayment());
+			patientPaymentInformation.setPostedInPMS(patientPaymentInfoModel.getPostedInPMS());
+			patientPaymentInformation.setCreatedBy(createdBy);
+			patientPaymentInformation.setFinalSubmit(finalSubmit);
+			patientPaymentInformation.setTeamId(team);
+			patientPaymentInformation = patientPaymentRepo.save(patientPaymentInformation);
+			return patientPaymentInformation != null ? true : null;
+		}
+		return null;
+	}
 	
+	
+	public PatientPaymentSectionDto fetchPatientPaymentInformation(PartialHeader partialHeader, String claimUuid,
+			boolean showWithTeam) throws Exception {
+		PatientPaymentSectionDto responseDto = null;
+		RcmPatientPayment patientPaymentlSections = null;
+		if (showWithTeam) {
+			patientPaymentlSections = patientPaymentRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(claimUuid,
+							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+		} else {
+			patientPaymentlSections = patientPaymentRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(claimUuid,
+							partialHeader.getJwtUser().getUuid());
+		}
+		if (patientPaymentlSections != null) {
+			responseDto = new PatientPaymentSectionDto();
+			responseDto.setDateOfPayment(Constants.SDF_MYSL_DATE.format((patientPaymentlSections.getDateOfPayment())));
+			BeanUtils.copyProperties(patientPaymentlSections, responseDto);
+			return responseDto;
+		}
+		return null;
+	}
+
 	@Transactional(rollbackOn = Exception.class)
 	public Object saveEOBSection(EOBDto eobInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
 			boolean finalSubmit) throws Exception {
@@ -777,7 +828,7 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveServiceLevelInformationSection(ServiceLevelInformationDto serviceLevelInformationInfoModel,
+	public Boolean saveServiceLevelInformationSection(ServiceLevelTotalAmountDto serviceLevelInformationInfoModel,
 			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) {
 		RcmServiceLevelInformation serviceLevelData = null;
 		int maxRun=serviceLevelRepo.getMaxRunFromServiceLevel(claim.getClaimUuid());
