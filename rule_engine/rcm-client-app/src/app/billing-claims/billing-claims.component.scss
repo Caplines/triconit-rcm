@@ -153,9 +153,14 @@
 
 
     .addSteps-col-1 {
-        width: 100%;
-        margin-right: 5px;
-    }
+            width: 100%;
+            margin-right: 5px;
+    
+            &.width-reduce {
+                width: calc(100% - 230px);
+            }
+        }
+
 }
 
 .steps-taken {
@@ -169,6 +174,7 @@
     position: relative;
     padding-top: 45px;
     transition: all 0.3s;
+    min-width: 210px;
 }
 
 .steps-taken ul {
@@ -331,7 +337,7 @@
         }
     }
 
-    &:last-child {
+    .last-child {
         background-color: #dc3545;
         border-color: #dc3545;
     }
@@ -468,4 +474,35 @@
 }
 .notes-modal{
     display: block !important;
+}
+
+.pdf-viewer {
+
+    border-top: 1px solid #ccc;
+    background: #eee;
+
+    .pdf-action-box {
+        background: #ddd;
+        display: flex;
+        justify-content: space-between;
+        vertical-align: middle;
+        padding-bottom: 10px;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ccc;
+        padding-top: 10px;
+
+        .pdf-search-box {
+            display: flex;
+
+            .form-control {
+                width: 300px;
+            }
+        }
+
+        .zoom-action {
+            .btn {
+                margin-right: 10px;
+            }
+        }
+    }
 }

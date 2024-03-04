@@ -571,8 +571,20 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['get-eob-info']+ "/" + uuid+"/"+true, callback,false)
   }
 
+  fetchInsuranceFollowUpSection(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-follow-up-info']+ "/" + uuid+"/"+true, callback,false)
+  }
+
   fetchServiceLevelInfoSection(uuid: any, callback: any) {
     this.getData({}, this.httpUrl['get-service_level_info']+ "/" + uuid+"/"+true, callback,false)
+  }
+
+  fetchPatientStatementSection(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-patient-statement-info']+ "/" + uuid+"/"+true, callback,false)
+  }
+
+  fetchPatientPaymentSection(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-patient-payment-info']+ "/" + uuid+"/"+true, callback,false)
   }
 
     removeEobData(param: any, callback: any) {

@@ -146,7 +146,13 @@ export class BillingClaimsComponent {
     EOB: {
       data: []
     },
-    SERVICE_LEVEL_INFORMATION: []
+    SERVICE_LEVEL_INFORMATION: [],
+    INSURANCE_FOLLOW_UP:{
+      data:[],
+      modal:{}
+    },
+    PATIENT_STATEMENT:{},
+    PATIENT_PAYMENT:{},
 
   };
   finalSaveClaimDataModel: any = {
@@ -199,6 +205,10 @@ export class BillingClaimsComponent {
           this.fetchInsurancePaymentInfoSection();
           this.fetchEobSection();
           this.fetchServiceLevelInfoSection();
+          this.fetchInsuranceFollowUpSection();
+          this.fetchPatientStatementSection();
+          this.fetchPatientPaymentSection();
+
         }
       });
 
@@ -2039,7 +2049,41 @@ export class BillingClaimsComponent {
     this.pdfUrlSrc = link;
   }
 
-  removeEobById(id: any) {
+  
+ fetchInsuranceFollowUpSection() {
+  if (this.checkForSectionAccess(this.sectionIds['INSURANCE_FOLLOW_UP'], 'view')) {
+    this.appService.fetchInsuranceFollowUpSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['INSURANCE_FOLLOW_UP'].data = res.data;
+      }
+    })
+  }
+
+}
+
+fetchPatientStatementSection() {
+  if (this.checkForSectionAccess(this.sectionIds['PATIENT_STATEMENT'], 'view')) {
+    this.appService.fetchPatientStatementSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['PATIENT_STATEMENT'] = res.data;
+      }
+    })
+  }
+
+}
+
+fetchPatientPaymentSection() {
+  if (this.checkForSectionAccess(this.sectionIds['PATIENT_PAYMENT'], 'view')) {
+    this.appService.fetchPatientPaymentSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['PATIENT_PAYMENT'] = res.data;
+      }
+    })
+  }
+
+}
+
+  removeEobById(id: any,indx:any) {
     let params: any = {
       "claimUuid": this.claimUUid,
       "ids": [id]
@@ -2047,6 +2091,7 @@ export class BillingClaimsComponent {
     this.appService.removeEobData(params, (res: any) => {
       if (res) {
         console.log(res);
+        this.claimSectionModal['EOB'].data.splice(indx,1);
       }
     }
     )
@@ -2170,6 +2215,51 @@ export class BillingClaimsComponent {
           ths.claimSteps = res.data;
         }
       });
+  }
+
+  saveInsuranceFollowUpInfo(isFinal:boolean){
+    this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['sectionId'] = this.sectionIds['INSURANCE_FOLLOW_UP'];
+    let params: any = {
+      claimUuid: this.claimUUid,
+      rcmFollowUpInsuranceInfoModel:this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']
+    };
+
+    console.log(params);
+    this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        console.log(res);
+      }
+    })
+  }
+
+  savePatientStaementInfo(isFinal:boolean){
+    this.claimSectionModal['PATIENT_STATEMENT']['sectionId'] = this.sectionIds['PATIENT_STATEMENT'];
+    let params: any = {
+      claimUuid: this.claimUUid,
+      rcmPatientStatementInfoModel:this.claimSectionModal['PATIENT_STATEMENT']
+    };
+
+    console.log(params);
+    this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        console.log(res);
+      }
+    })
+  }
+
+  savePatientPaymentInfo(isFinal:boolean){
+    this.claimSectionModal['PATIENT_PAYMENT']['sectionId'] = this.sectionIds['PATIENT_PAYMENT'];
+    let params: any = {
+      claimUuid: this.claimUUid,
+      patientPaymentInfoModel:this.claimSectionModal['PATIENT_PAYMENT']
+    };
+
+    console.log(params);
+    this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        console.log(res);
+      }
+    })
   }
 
 }

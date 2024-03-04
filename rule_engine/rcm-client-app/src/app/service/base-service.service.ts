@@ -125,7 +125,10 @@ export class BaseService {
     'remove-eob-data': "/api/remove-eob-data",
     'vieweoblink': "/api/vieweoblink",
     'get-service_level_info': "/api/get-service-level-info",
-    'fetch-claim-steps': "/api/claimstep"
+    'fetch-claim-steps': "/api/claimstep",
+    'get-follow-up-info': "/api/get-follow-up-info",
+    'get-patient-statement-info': "/api/get-patient-statement-info",
+    'get-patient-payment-info': "/api/get-patient-payment-info",
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

@@ -308,8 +308,11 @@ export class AllPendencyComponent {
       this.filteredItems = this.pendencyData.filter((item: any) => {
         return this.filteredClientName.some((checkbox: any) => {
           return checkbox.checked && item.clientName == checkbox.clientName;
-        })
-      })
+        });
+      });
+      this.clearTotalCount();
+      this.total(this.filteredItems);
+
     }
   }
 
