@@ -555,8 +555,8 @@ public class RcmCommonServiceImpl {
 				
 			case 20:
 				logger.info("Inside section 20->Patient Payment");
-//				response = claimSectionimpl.savePatientPaymentSection(sectionRequestBody.getPatientPaymentInfoModel(),
-//						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+				response = claimSectionimpl.savePatientPaymentSection(sectionRequestBody.getPatientPaymentInfoModel(),
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
 			case 12:
