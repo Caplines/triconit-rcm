@@ -920,6 +920,7 @@ public class ClaimSectionImpl {
 		}
 		return data;
 	}
+	
 	@Transactional(rollbackOn = Exception.class)
 	public Boolean saveFollowUpInsuranceSection(RcmFollowUpInsuranceDto rcmFollowUpInsuranceInfoModel, RcmClaims claim,
 			RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) throws Exception {
@@ -971,6 +972,7 @@ public class ClaimSectionImpl {
 		}
 		return responseData;
 	}
+	
 	@Transactional(rollbackOn = Exception.class)
 	public Boolean savePatientStatementSection(RcmPatientStatementDto rcmPatientStatementInfoModel, RcmClaims claim,
 			RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) throws Exception {
@@ -1026,12 +1028,14 @@ public class ClaimSectionImpl {
 		}
 		return null;
 	}
+	
 	@Transactional(rollbackOn = Exception.class)
 	public Boolean saveNextActionRequiredAndCurrentClaimStatusSection(
 			CurrentStatusAndNextActionDto nextActionReequiredInfoModel, RcmClaims claim, RcmUser createdBy,
 			RcmTeam team, boolean finalSubmit, String clientName) {
 		CurrentClaimStatusAndNextAction currentClaimStatusAndNextActionData = null;
 		RcmTeam assignToTeam=rcmTeamRepo.findById(nextActionReequiredInfoModel.getAssignToTeam());
+		if(assignToTeam==null)return null;
 		if(assignToTeam.getId()==team.getId()) return null;		
 		if (claim != null) {
 			currentClaimStatusAndNextActionData = new CurrentClaimStatusAndNextAction();
