@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.ClaimUserSectionMapping;
+import com.tricon.rcm.db.entity.CurrentClaimStatusAndNextAction;
 import com.tricon.rcm.db.entity.EOBSectionInformation;
 import com.tricon.rcm.db.entity.PaymentInformationSection;
 import com.tricon.rcm.db.entity.RcmAppealLevelInformation;
@@ -42,6 +43,7 @@ import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
+import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.EobSectionEditDto;
 import com.tricon.rcm.dto.PartialHeader;
@@ -72,6 +74,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimUserSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmClientSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
+import com.tricon.rcm.jpa.repository.RcmCurrentClaimStatusRepo;
 import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmPatientPaymentSectionRepo;
@@ -165,6 +168,8 @@ public class ClaimSectionImpl {
 	@Autowired
 	RcmPatientStatementRepo patientStatementRepo;
 	
+	@Autowired
+	RcmCurrentClaimStatusRepo currentStatusAndNextActionRepo;
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -1017,6 +1022,56 @@ public class ClaimSectionImpl {
 			responseDto.setStatementSendingDate(
 					Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
 			BeanUtils.copyProperties(patientStatement, responseDto);
+			return responseDto;
+		}
+		return null;
+	}
+	@Transactional(rollbackOn = Exception.class)
+	public Boolean saveNextActionRequiredAndCurrentClaimStatusSection(
+			CurrentStatusAndNextActionDto nextActionReequiredInfoModel, RcmClaims claim, RcmUser createdBy,
+			RcmTeam team, boolean finalSubmit, String clientName) {
+		CurrentClaimStatusAndNextAction currentClaimStatusAndNextActionData = null;
+		RcmTeam assignToTeam=rcmTeamRepo.findById(nextActionReequiredInfoModel.getAssignToTeam());
+		if(assignToTeam.getId()==team.getId()) return null;		
+		if (claim != null) {
+			currentClaimStatusAndNextActionData = new CurrentClaimStatusAndNextAction();
+			currentClaimStatusAndNextActionData
+					.setCurrentClaimStatusEs(nextActionReequiredInfoModel.getCurrentClaimStatusEs());
+			currentClaimStatusAndNextActionData
+					.setCurrentClaimStatusRcm(nextActionReequiredInfoModel.getCurrentClaimStatusEs());
+			currentClaimStatusAndNextActionData.setNextAction(nextActionReequiredInfoModel.getNextAction());
+			currentClaimStatusAndNextActionData.setRemarks(nextActionReequiredInfoModel.getRemarks());
+			currentClaimStatusAndNextActionData.setClaim(claim);
+			currentClaimStatusAndNextActionData.setCreatedBy(createdBy);
+			currentClaimStatusAndNextActionData.setFinalSubmit(finalSubmit);
+			currentClaimStatusAndNextActionData.setTeam(team);
+			currentClaimStatusAndNextActionData.setAssignToTeam(assignToTeam);
+			currentClaimStatusAndNextActionData = currentStatusAndNextActionRepo
+					.save(currentClaimStatusAndNextActionData);
+			return currentClaimStatusAndNextActionData != null ? true : null;
+		}
+		return null;
+	}
+
+	public CurrentStatusAndNextActionDto fetchCurrentStatusAndNextActionInformation(PartialHeader partialHeader,
+			String claimUuid, boolean showWithTeam) throws Exception {
+		CurrentClaimStatusAndNextAction currentStatusData = null;
+		CurrentStatusAndNextActionDto responseDto = null;
+		if (showWithTeam) {
+			currentStatusData = currentStatusAndNextActionRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdOrderByCreatedDateDesc(claimUuid,
+							partialHeader.getJwtUser().getUuid(), partialHeader.getTeamId());
+		} else {
+			currentStatusData = currentStatusAndNextActionRepo
+					.findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(claimUuid,
+							partialHeader.getJwtUser().getUuid());
+		}
+		if (currentStatusData != null) {
+			RcmTeam assignToTeam=rcmTeamRepo.findById(currentStatusData.getAssignToTeam().getId());
+			responseDto = new CurrentStatusAndNextActionDto();
+			responseDto.setAssignToTeam(assignToTeam.getId());
+			responseDto.setAssignToTeamName(assignToTeam.getDescription());	
+			BeanUtils.copyProperties(currentStatusData, responseDto);
 			return responseDto;
 		}
 		return null;

@@ -592,6 +592,12 @@ public class RcmCommonServiceImpl {
 						 claim, createdBy, team, sectionRequestBody.isFinalSubmit(),partialHeader.getClientName());
 				logger.info("response->" + response);
 				break;
+			case 26:
+				logger.info("Inside section 26->Next Action Required");
+				response = claimSectionimpl.saveNextActionRequiredAndCurrentClaimStatusSection(sectionRequestBody.getNextActionRequiredInfoModel(),
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit(),partialHeader.getClientName());
+				logger.info("response->" + response);
+				break;
 			default:
 				logger.error("section not found");
 			}
@@ -662,6 +668,13 @@ public class RcmCommonServiceImpl {
 				if (sectionRequestBody.isFinalSubmit())
 					response = claimSectionValidationUtil
 							.validationForPatientStatementSectionFields(sectionRequestBody.getRcmPatientStatementInfoModel());
+				logger.info("validation response->" + response);
+				break;
+			case 26:
+				logger.info("Inside section 26->Next Action Required");
+				if (sectionRequestBody.isFinalSubmit())
+					response = claimSectionValidationUtil
+							.validationForCurrentClaimStatusAndNextActionSectionFields(sectionRequestBody.getNextActionRequiredInfoModel());
 				logger.info("validation response->" + response);
 				break;
 			default:

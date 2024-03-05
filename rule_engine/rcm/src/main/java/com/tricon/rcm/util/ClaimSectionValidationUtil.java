@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
+import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
@@ -237,6 +238,17 @@ public class ClaimSectionValidationUtil {
 		logger.info("RcmPatientStatementDto->" + rcmPatientStatementInfoModel);
 		boolean isValid = true;
 		if (rcmPatientStatementInfoModel == null) {
+			return false;
+		}
+
+		return isValid;
+	}
+
+	public boolean validationForCurrentClaimStatusAndNextActionSectionFields(
+			CurrentStatusAndNextActionDto nextActionReequiredInfoModel) {
+		logger.info("CurrentStatusAndNextActionDto->" + nextActionReequiredInfoModel);
+		boolean isValid = true;
+		if (nextActionReequiredInfoModel == null) {
 			return false;
 		}
 
