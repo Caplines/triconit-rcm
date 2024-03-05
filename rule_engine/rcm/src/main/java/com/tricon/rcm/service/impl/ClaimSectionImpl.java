@@ -35,6 +35,7 @@ import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
 import com.tricon.rcm.db.entity.RcmOffice;
+import com.tricon.rcm.db.entity.RcmPatientCommunicationSection;
 import com.tricon.rcm.db.entity.RcmPatientPayment;
 import com.tricon.rcm.db.entity.RcmPatientStatementSection;
 import com.tricon.rcm.db.entity.RcmServiceLevelInformation;
@@ -50,6 +51,7 @@ import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PatientPaymentSectionDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
+import com.tricon.rcm.dto.RcmPatientCommunicationDto;
 import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
@@ -77,6 +79,7 @@ import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmCurrentClaimStatusRepo;
 import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
+import com.tricon.rcm.jpa.repository.RcmPatientCommunicationRepo;
 import com.tricon.rcm.jpa.repository.RcmPatientPaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmPatientStatementRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
@@ -170,6 +173,10 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmCurrentClaimStatusRepo currentStatusAndNextActionRepo;
+	
+	@Autowired
+	RcmPatientCommunicationRepo patientCommunicationRepo;
+	
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -965,7 +972,7 @@ public class ClaimSectionImpl {
 				responseDto.setFollowByUser(attachBy.getFirstName());
 				responseDto.setFollowByUserLastName(attachBy.getLastName());
 				responseDto.setFollowByTeam(team.getDescription());
-				responseDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE.format(data.getNextFollowUpDate()));
+				responseDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE_TIME.format(data.getNextFollowUpDate()));
 				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);
 			}
@@ -1080,4 +1087,49 @@ public class ClaimSectionImpl {
 		}
 		return null;
 	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public Object savePatientCommunicationSection(RcmPatientCommunicationDto patientCommunicationInfoModel,
+			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) {
+		RcmPatientCommunicationSection patientCommunicationData = null;
+		if (claim != null) {
+			patientCommunicationData = new RcmPatientCommunicationSection();
+			patientCommunicationData.setRemarks(patientCommunicationInfoModel.getRemarks());
+			patientCommunicationData.setContact(patientCommunicationInfoModel.getContact());
+			patientCommunicationData.setDesposition(patientCommunicationInfoModel.getDesposition());
+			patientCommunicationData.setModeOfFollowUp(patientCommunicationInfoModel.getModeOfFollowUp());
+			patientCommunicationData.setClaim(claim);
+			patientCommunicationData.setCreatedBy(createdBy);
+			patientCommunicationData.setFinalSubmit(finalSubmit);
+			patientCommunicationData.setTeam(team);
+			patientCommunicationData = patientCommunicationRepo.save(patientCommunicationData);
+			patientCommunicationInfoModel.setCreatedTeam(patientCommunicationData.getTeam().getDescription());
+			patientCommunicationInfoModel.setCreatedBy(patientCommunicationData.getCreatedBy().getFirstName());
+			patientCommunicationInfoModel.setDate(Constants.SDF_MYSL_DATE.format(patientCommunicationData.getCreatedDate()));
+			BeanUtils.copyProperties(patientCommunicationData, patientCommunicationInfoModel);
+		}
+		return patientCommunicationInfoModel;
+	}
+	
+	public List<RcmPatientCommunicationDto> fetchPatientCommunicationInformation(PartialHeader partialHeader,
+			String claimUuid, boolean showWithTeam) throws Exception {
+		RcmPatientCommunicationDto responseDto = null;
+		List<RcmPatientCommunicationDto> responseData = new ArrayList<>();
+		List<RcmPatientCommunicationSection> patientCommunicationInformation = patientCommunicationRepo
+				.findByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+		if (!patientCommunicationInformation.isEmpty()) {
+			for (RcmPatientCommunicationSection data : patientCommunicationInformation) {
+				RcmUser attachBy = userRepo.findByUuid(data.getCreatedBy().getUuid());
+				RcmTeam team = rcmTeamRepo.findById(data.getTeam().getId());
+				responseDto = new RcmPatientCommunicationDto();
+				responseDto.setCreatedBy(attachBy.getFirstName());
+				responseDto.setCreatedTeam(team.getDescription());
+				responseDto.setDate(Constants.SDF_MYSL_DATE_TIME.format(data.getCreatedDate()));
+				BeanUtils.copyProperties(data, responseDto);
+				responseData.add(responseDto);
+			}
+		}
+		return responseData;
+	}
+	
 }
