@@ -228,8 +228,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	
 	@GetMapping(value = "api/get-eob-info/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getEOBInfo(@PathVariable("claimUuid") String claimUuid,
-			@PathVariable("withTeam") boolean withTeam, Model model) {
+	public ResponseEntity<?> getEOBInfo(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
@@ -289,8 +288,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	}
 	@GetMapping(value = "api/get-service-level-info/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getServiceLevelInfo(@PathVariable("claimUuid") String claimUuid,
-			@PathVariable("withTeam") boolean withTeam, Model model) {
+	public ResponseEntity<?> getServiceLevelInfo(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
@@ -307,8 +305,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	}
 	@GetMapping(value = "api/get-follow-up-info/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getFollowUpInfo(@PathVariable("claimUuid") String claimUuid,
-			@PathVariable("withTeam") boolean withTeam, Model model) {
+	public ResponseEntity<?> getFollowUpInfo(@PathVariable("claimUuid") String claimUuid,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
@@ -364,8 +361,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	
 	@GetMapping(value = "api/get-patient-communication-info/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getPatientCommunicationInfo(@PathVariable("claimUuid") String claimUuid,
-			@PathVariable("withTeam") boolean withTeam, Model model) {
+	public ResponseEntity<?> getPatientCommunicationInfo(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()

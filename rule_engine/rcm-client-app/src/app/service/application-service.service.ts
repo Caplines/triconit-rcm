@@ -568,15 +568,15 @@ export class ApplicationServiceService extends BaseService {
   }
 
   fetchEobSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-eob-info']+ "/" + uuid+"/", callback,false)
+    this.getData({}, this.httpUrl['get-eob-info']+ "/" + uuid, callback,false)
   }
 
   fetchInsuranceFollowUpSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-follow-up-info']+ "/" + uuid+"/", callback,false)
+    this.getData({}, this.httpUrl['get-follow-up-info']+ "/" + uuid, callback,false)
   }
 
   fetchServiceLevelInfoSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-service_level_info']+ "/" + uuid+"/", callback,false)
+    this.getData({}, this.httpUrl['get-service_level_info']+ "/" + uuid, callback,false)
   }
 
   fetchPatientStatementSection(uuid: any, callback: any) {
