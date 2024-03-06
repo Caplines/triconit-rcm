@@ -59,7 +59,7 @@ import com.tricon.rcm.util.MessageConstants;
 @Service
 public class RcmCommonServiceImpl {
 
-	private final Logger logger = LoggerFactory.getLogger(AdminServiceImpl.class);
+	private final Logger logger = LoggerFactory.getLogger(RcmCommonServiceImpl.class);
 
 	@Autowired
 	RcmCompanyRepo rcmCompanyRepo;
@@ -107,9 +107,7 @@ public class RcmCommonServiceImpl {
 	@Autowired
 	ClaimSectionValidationUtil claimSectionValidationUtil;
 	
-	@Autowired
-	ClaimSectionImpl claimServiceImpl;
-
+	
 	public List<RcmOfficeDto> getAllOffices() {
 
 		RcmCompany company = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);
@@ -511,7 +509,7 @@ public class RcmCommonServiceImpl {
 //					return true;
 //				}
 
-				List<ClientSectionMappingDto> sectionAccessPermission = claimServiceImpl.sectionsPermissionOfUser(
+				List<ClientSectionMappingDto> sectionAccessPermission = claimSectionimpl.sectionsPermissionOfUser(
 						partialHeader.getJwtUser().getUuid(), partialHeader.getCompany().getUuid(),
 						partialHeader.getTeamId());
 				if (sectionAccessPermission.isEmpty()) {
