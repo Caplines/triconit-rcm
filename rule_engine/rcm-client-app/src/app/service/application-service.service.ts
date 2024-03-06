@@ -556,39 +556,39 @@ export class ApplicationServiceService extends BaseService {
   }
 
   fetchClaimLevelInfoSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-claim-level-info']+ "/" + uuid+"/"+true, callback,false)
+    this.getData({}, this.httpUrl['get-claim-level-info']+ "/" + uuid+"/"+false, callback,false)
   }
 
   fetchAppealSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-appeal-level-info']+ "/" + uuid+"/"+true, callback,false)
+    this.getData({}, this.httpUrl['get-appeal-level-info']+ "/" + uuid+"/"+false, callback,false)
   }
 
   fetchInsurancePaymentInfoSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-insurance-payment-info']+ "/" + uuid+"/"+true, callback,false)
+    this.getData({}, this.httpUrl['get-insurance-payment-info']+ "/" + uuid+"/"+false, callback,false)
   }
 
   fetchEobSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-eob-info']+ "/" + uuid+"/"+true, callback,false)
+    this.getData({}, this.httpUrl['get-eob-info']+ "/" + uuid+"/", callback,false)
   }
 
   fetchInsuranceFollowUpSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-follow-up-info']+ "/" + uuid+"/"+true, callback,false)
+    this.getData({}, this.httpUrl['get-follow-up-info']+ "/" + uuid+"/", callback,false)
   }
 
   fetchServiceLevelInfoSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-service_level_info']+ "/" + uuid+"/"+true, callback,false)
+    this.getData({}, this.httpUrl['get-service_level_info']+ "/" + uuid+"/", callback,false)
   }
 
   fetchPatientStatementSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-patient-statement-info']+ "/" + uuid+"/"+true, callback,false)
+    this.getData({}, this.httpUrl['get-patient-statement-info']+ "/" + uuid+"/"+false, callback,false)
   }
 
   fetchPatientPaymentSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-patient-payment-info']+ "/" + uuid+"/"+true, callback,false)
+    this.getData({}, this.httpUrl['get-patient-payment-info']+ "/" + uuid+"/"+false, callback,false)
   }
 
   fetchNextActionRequiredSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-next_action-required-info']+ "/" + uuid+"/"+true, callback,false)
+    this.getData({}, this.httpUrl['get-next_action-required-info']+ "/" + uuid+"/"+false, callback,false)
   }
 
     removeEobData(param: any, callback: any) {
