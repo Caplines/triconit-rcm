@@ -95,42 +95,42 @@ export class BillingClaimsComponent {
   sectionIds: any = {
     'SECTION_CLAIM_DETAIL': {
       sectionId:1,
-      isNewSection:true
+      isNewSection:false
     },
     'LINKS_RELATED_DOCUMENTS': {
       sectionId:2,
-      isNewSection:true
+      isNewSection:false
     },
     'REMARKS_BY_OTHER': {
       sectionId:3,
-      isNewSection:true
+      isNewSection:false
     },
     'REBILLED_CLAIM': {
       sectionId:4,
-      isNewSection:true
+      isNewSection:false
     },
     'CLAIM_LEVEL_VALIDATION_AUTO': {
       sectionId:5,
-      isNewSection:true
+      isNewSection:false
     },
     'CLAIM_LEVEL_VALIDATION_MANUAL': {
       sectionId:6,
-      isNewSection:true
+      isNewSection:false
     },
     'SERVICE_LEVEL_VALIDATION_AUTO': {
       sectionId:7,
-      isNewSection:true
+      isNewSection:false
     },
     'SERVICE_LEVEL_VALIDATION_MANUAL': {
       sectionId:8,
-      isNewSection:true
+      isNewSection:false
     },
     'RULE_ENGINE_VALIDATION': {
       sectionId:9,
-      isNewSection:true
+      isNewSection:false
     }, 'CLAIM_SUBMISSION': {
       sectionId:10,
-      isNewSection:true
+      isNewSection:false
     },
     'SERVICE_LEVEL_INFORMATION': {
       sectionId:11,
@@ -154,7 +154,7 @@ export class BillingClaimsComponent {
     },
     'ASSIGN_TO_OTHER': {
       sectionId:16,
-      isNewSection:true
+      isNewSection:false
     },
     'INSURANCE_FOLLOW_UP': {
       sectionId:17,
@@ -198,7 +198,7 @@ export class BillingClaimsComponent {
     },
     'ATTACHMENT': {
       sectionId:27,
-      isNewSection:true
+      isNewSection:false
     }
   };
 
