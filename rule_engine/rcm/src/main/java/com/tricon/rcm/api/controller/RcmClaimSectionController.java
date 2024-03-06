@@ -28,6 +28,7 @@ import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PatientPaymentSectionDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
+import com.tricon.rcm.dto.RcmPatientCommunicationDto;
 import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.service.impl.ClaimSectionImpl;
@@ -353,6 +354,25 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		CurrentStatusAndNextActionDto response = null;
 		try {
 			response = claimSection.fetchCurrentStatusAndNextActionInformation(partialHeader, claimUuid, withTeam);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@GetMapping(value = "api/get-patient-communication-info/{claimUuid}/{withTeam}")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> getPatientCommunicationInfo(@PathVariable("claimUuid") String claimUuid,
+			@PathVariable("withTeam") boolean withTeam, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		List<RcmPatientCommunicationDto> response = null;
+		try {
+			response = claimSection.fetchPatientCommunicationInformation(partialHeader, claimUuid, withTeam);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

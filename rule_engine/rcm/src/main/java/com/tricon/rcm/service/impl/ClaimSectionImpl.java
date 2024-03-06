@@ -152,6 +152,7 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmInsurancePaymentSectionRepo paymentSectionRepo;
+	
 	@Autowired
 	ServiceLevelInformationRepo serviceLevelRepo;
 	
@@ -160,8 +161,10 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmOfficeRepository officeRepo;
+	
 	@Value("${eoblink.folder}")
 	private String eobLinkFolder;
+	
 	@Autowired
 	FollowUpInsuranceRepo followUpRepo;
 	
@@ -701,7 +704,7 @@ public class ClaimSectionImpl {
 					eobInformation = eobRepo.save(eobInformation);
 					eobInfoModel
 							.setEobPathLink(serverDomainLink + "/api/vieweoblink/" + eobInformation.getEobFilePath());
-					eobInfoModel.setAttachByTeam(team.getName());
+					eobInfoModel.setAttachByTeamId(team.getId());
 					eobInfoModel.setAttachBy(createdBy.getFirstName());
 					eobInfoModel.setDate(Constants.SDF_MYSL_DATE.format((eobInformation.getCreatedDate())));
 				} else {
@@ -728,12 +731,11 @@ public class ClaimSectionImpl {
 		if (!eobSections.isEmpty()) {
 			for (EOBSectionInformation data : eobSections) {
 				RcmUser attachBy = userRepo.findByUuid(data.getCreatedBy().getUuid());
-				RcmTeam team = rcmTeamRepo.findById(data.getAttachByTeam().getId());
 				responseDto = new EOBDto();
 				responseDto.setEobPathLink(serverDomainLink + "/api/vieweoblink/" + data.getEobFilePath());
 				responseDto.setAttachBy(attachBy.getFirstName());
 				responseDto.setAttachByLastName(attachBy.getFirstName());
-				responseDto.setAttachByTeam(team.getDescription());
+				responseDto.setAttachByTeamId(data.getAttachByTeam().getId());
 				responseDto.setDate(Constants.SDF_MYSL_DATE.format((data.getCreatedDate())));
 				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);
@@ -967,11 +969,10 @@ public class ClaimSectionImpl {
 		if (!followUpInsuranceInformation.isEmpty()) {
 			for (RcmInsuranceFollowUpSection data : followUpInsuranceInformation) {
 				RcmUser attachBy=userRepo.findByUuid(data.getCreatedBy().getUuid());
-				RcmTeam team=rcmTeamRepo.findById(data.getTeam().getId());
 				responseDto = new RcmFollowUpInsuranceDto();	
 				responseDto.setFollowByUser(attachBy.getFirstName());
 				responseDto.setFollowByUserLastName(attachBy.getLastName());
-				responseDto.setFollowByTeam(team.getDescription());
+				responseDto.setFollowByTeamId(data.getTeam().getId());
 				responseDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE_TIME.format(data.getNextFollowUpDate()));
 				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);
@@ -1041,7 +1042,7 @@ public class ClaimSectionImpl {
 			CurrentStatusAndNextActionDto nextActionReequiredInfoModel, RcmClaims claim, RcmUser createdBy,
 			RcmTeam team, boolean finalSubmit, String clientName) {
 		CurrentClaimStatusAndNextAction currentClaimStatusAndNextActionData = null;
-		RcmTeam assignToTeam=rcmTeamRepo.findById(nextActionReequiredInfoModel.getAssignToTeam());
+		RcmTeam assignToTeam=rcmTeamRepo.findById(nextActionReequiredInfoModel.getAssignToTeamId());
 		if(assignToTeam==null)return null;
 		if(assignToTeam.getId()==team.getId()) return null;		
 		if (claim != null) {
@@ -1078,10 +1079,8 @@ public class ClaimSectionImpl {
 							partialHeader.getJwtUser().getUuid());
 		}
 		if (currentStatusData != null) {
-			RcmTeam assignToTeam=rcmTeamRepo.findById(currentStatusData.getAssignToTeam().getId());
 			responseDto = new CurrentStatusAndNextActionDto();
-			responseDto.setAssignToTeam(assignToTeam.getId());
-			responseDto.setAssignToTeamName(assignToTeam.getDescription());	
+			responseDto.setAssignToTeamId(currentStatusData.getAssignToTeam().getId());
 			BeanUtils.copyProperties(currentStatusData, responseDto);
 			return responseDto;
 		}
@@ -1103,7 +1102,7 @@ public class ClaimSectionImpl {
 			patientCommunicationData.setFinalSubmit(finalSubmit);
 			patientCommunicationData.setTeam(team);
 			patientCommunicationData = patientCommunicationRepo.save(patientCommunicationData);
-			patientCommunicationInfoModel.setCreatedTeam(patientCommunicationData.getTeam().getDescription());
+			patientCommunicationInfoModel.setCreatedTeamId(patientCommunicationData.getTeam().getId());
 			patientCommunicationInfoModel.setCreatedBy(patientCommunicationData.getCreatedBy().getFirstName());
 			patientCommunicationInfoModel.setDate(Constants.SDF_MYSL_DATE.format(patientCommunicationData.getCreatedDate()));
 			BeanUtils.copyProperties(patientCommunicationData, patientCommunicationInfoModel);
@@ -1120,10 +1119,9 @@ public class ClaimSectionImpl {
 		if (!patientCommunicationInformation.isEmpty()) {
 			for (RcmPatientCommunicationSection data : patientCommunicationInformation) {
 				RcmUser attachBy = userRepo.findByUuid(data.getCreatedBy().getUuid());
-				RcmTeam team = rcmTeamRepo.findById(data.getTeam().getId());
 				responseDto = new RcmPatientCommunicationDto();
 				responseDto.setCreatedBy(attachBy.getFirstName());
-				responseDto.setCreatedTeam(team.getDescription());
+				responseDto.setCreatedTeamId(data.getTeam().getId());
 				responseDto.setDate(Constants.SDF_MYSL_DATE_TIME.format(data.getCreatedDate()));
 				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);

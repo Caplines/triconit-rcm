@@ -10,7 +10,6 @@ public class CurrentStatusAndNextActionDto {
 	private String currentClaimStatusEs;
 	private String remarks;
 	private String nextAction;
-	private int assignToTeam;
-	private String assignToTeamName;
+	private int assignToTeamId;
 	private int sectionId;
 }
