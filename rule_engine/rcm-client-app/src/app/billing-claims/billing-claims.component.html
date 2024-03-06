@@ -2538,8 +2538,7 @@
                                                         [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                         [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam']"
                                                         [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeam']}">
-                                                        <option selected="true" hidden="true">Select</option>
-                                                        <option [value]="tl.teamId"*ngFor="let tl of teamsMs;">{{tl.teamName}}</option>
+                                                        <option [value]="tl.teamId" [selected]="tl.teamId == claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam']" *ngFor="let tl of teamsMs;">{{tl.teamName}}</option>
                                                     </select>
                                                 </div>
                                             </div>
