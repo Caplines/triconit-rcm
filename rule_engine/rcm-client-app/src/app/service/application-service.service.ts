@@ -591,6 +591,10 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['get-next_action-required-info']+ "/" + uuid+"/"+false, callback,false)
   }
 
+  fetchPatientCommunicationSection(uuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-patient-communication-info']+ "/" + uuid, callback,false)
+  }
+
     removeEobData(param: any, callback: any) {
     this.postData(param, this.httpUrl['remove-eob-data'], callback)
   }

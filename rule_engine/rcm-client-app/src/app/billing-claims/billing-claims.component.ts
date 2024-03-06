@@ -237,6 +237,10 @@ export class BillingClaimsComponent {
     },
     PATIENT_STATEMENT:{},
     PATIENT_PAYMENT:{},
+    PATIENT_COMMUNICATION:{
+      data:[],
+      modal:{}
+    },
     CURRENT_STATUS_AND_NEXT_ACTION:{},
 
   };
@@ -294,6 +298,7 @@ export class BillingClaimsComponent {
           this.fetchPatientStatementSection();
           this.fetchPatientPaymentSection();
           this.fetchNextActionRequiredSection();
+          this.fetchPatientCommunicationSection();
 
         }
       });
@@ -1924,6 +1929,10 @@ export class BillingClaimsComponent {
       this.claimSectionModal['PATIENT_PAYMENT']['sectionId'] = this.sectionIds['PATIENT_PAYMENT']['sectionId'];
       this.finalSaveClaimDataModel.patientPaymentInfoModel =this.savePatientPaymentInfo(true);
     }
+    else if (sectionName === 'PATIENT_COMMUNICATION') {
+      this.claimSectionModal['PATIENT_COMMUNICATION']['sectionId'] = this.sectionIds['PATIENT_COMMUNICATION']['sectionId'];
+      this.finalSaveClaimDataModel.patientCommunicationInfoModel =this.savePatientCommunicationSection(true);
+    }
     else if (sectionName === 'CURRENT_STATUS_AND_NEXT_ACTION') {
       this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'] = this.sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'];
       this.finalSaveClaimDataModel.nextActionRequiredInfoModel = this.saveNextActionRequiredSection(true);
@@ -2220,6 +2229,17 @@ fetchNextActionRequiredSection() {
 
 }
 
+fetchPatientCommunicationSection() {
+  if (this.checkForSectionAccess(this.sectionIds['PATIENT_COMMUNICATION']['sectionId'], 'view')) {
+    this.appService.fetchPatientCommunicationSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['PATIENT_COMMUNICATION'].data = res.data;
+      }
+    })
+  }
+
+}
+
   removeEobById(id: any,indx:any) {
     let params: any = {
       "claimUuid": this.claimUUid,
@@ -2433,4 +2453,23 @@ fetchNextActionRequiredSection() {
   return this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION'];
   }
 
+  savePatientCommunicationSection(isFinal:boolean){
+    this.claimSectionModal['PATIENT_COMMUNICATION']['sectionId'] = this.sectionIds['PATIENT_COMMUNICATION']['sectionId'];
+    if(!isFinal){
+      let params: any = {
+        claimUuid: this.claimUUid,
+        patientCommunicationInfoModel:this.claimSectionModal['PATIENT_COMMUNICATION']
+      };
+      this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        console.log(res);
+      }
+    })
+  }
+  return this.claimSectionModal['PATIENT_COMMUNICATION'];
+  }
+
+  selectStatementBox(buttonType:any){
+    this.claimSectionModal.PATIENT_STATEMENT['buttonType'] = buttonType;
+  }
 }
