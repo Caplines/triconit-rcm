@@ -6,8 +6,8 @@ import com.tricon.rcm.db.entity.RcmPatientStatementSection;
 
 public interface RcmPatientStatementRepo extends JpaRepository<RcmPatientStatementSection, Integer>{
 	
-	RcmPatientStatementSection findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdOrderByCreatedDateDesc(String claimUuid,String createdBy,int teamId);
-	RcmPatientStatementSection findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(String claimUuid,String createdBy);
+	RcmPatientStatementSection findFirstByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(String claimUuid,int teamId);
+	RcmPatientStatementSection findFirstByClaimClaimUuidOrderByCreatedDateDesc(String claimUuid);
 
 	
 }

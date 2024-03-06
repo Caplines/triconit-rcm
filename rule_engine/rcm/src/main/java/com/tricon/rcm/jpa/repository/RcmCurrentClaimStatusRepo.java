@@ -6,6 +6,6 @@ import com.tricon.rcm.db.entity.CurrentClaimStatusAndNextAction;
 
 public interface RcmCurrentClaimStatusRepo extends JpaRepository<CurrentClaimStatusAndNextAction, Integer> {
 
-	CurrentClaimStatusAndNextAction findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdOrderByCreatedDateDesc(String claimUuid,String createdBy,int teamId);
-	CurrentClaimStatusAndNextAction findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(String claimUuid,String createdBy);
+	CurrentClaimStatusAndNextAction findFirstByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(String claimUuid,int teamId);
+	CurrentClaimStatusAndNextAction findFirstByClaimClaimUuidOrderByCreatedDateDesc(String claimUuid);
 }
