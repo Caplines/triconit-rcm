@@ -15,6 +15,7 @@ public class CommonSectionsRequestBodyDto {
 	private RcmFollowUpInsuranceDto rcmFollowUpInsuranceInfoModel;
 	private RcmPatientStatementDto rcmPatientStatementInfoModel;
 	private CurrentStatusAndNextActionDto nextActionRequiredInfoModel;
+	private RcmPatientCommunicationDto patientCommunicationInfoModel;
 	private boolean finalSubmit;
 	private boolean moveToNextTeam;
 

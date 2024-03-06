@@ -9,7 +9,7 @@ public class EOBDto {
 	private int sectionId;
 	private String extension;
 	private String date;
-	private String attachByTeam;
+	private int attachByTeamId;
 	private String attachBy;
 	private String attachByLastName;
 	private String eobPathLink;
