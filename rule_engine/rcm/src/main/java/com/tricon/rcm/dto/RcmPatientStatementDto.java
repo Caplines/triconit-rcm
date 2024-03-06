@@ -16,5 +16,6 @@ public class RcmPatientStatementDto {
 	private String remarks;
 	private String statementNotes;
 	private String balanceSheetLink;
+	private byte buttonType;
 	private int sectionId;
 }

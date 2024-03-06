@@ -973,6 +973,12 @@ public class ClaimSectionImpl {
 	public Boolean savePatientStatementSection(RcmPatientStatementDto rcmPatientStatementInfoModel, RcmClaims claim,
 			RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) throws Exception {
 		RcmPatientStatementSection patientStatement = null;
+		if (!(rcmPatientStatementInfoModel
+				.getButtonType() == Constants.NEED_TO_HOLD_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION
+				|| rcmPatientStatementInfoModel
+						.getButtonType() == Constants.SEND_STATEMENT_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION)) {
+			return null;
+		}
 		if (claim != null) {
 			patientStatement = new RcmPatientStatementSection();
 			patientStatement.setClaim(claim);
@@ -981,6 +987,7 @@ public class ClaimSectionImpl {
 			patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
 			patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement());
 			patientStatement.setReason(rcmPatientStatementInfoModel.getReason());
+			patientStatement.setButtonType(rcmPatientStatementInfoModel.getButtonType());
 			patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
 			patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
 			patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
