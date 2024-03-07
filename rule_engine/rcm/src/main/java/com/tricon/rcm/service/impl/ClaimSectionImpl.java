@@ -1022,9 +1022,13 @@ public class ClaimSectionImpl {
 		}
 		if (patientStatement != null) {
 			responseDto = new RcmPatientStatementDto();
-			responseDto.setNextReviewDate(Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
-			responseDto.setNextStatementDate(Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
+			responseDto.setNextReviewDate(patientStatement.getNextReviewDate()==null?"":
+					Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
+			responseDto.setNextStatementDate(
+					patientStatement.getNextStatementDate()==null?"":
+					Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
 			responseDto.setStatementSendingDate(
+					patientStatement.getStatementSendingDate()==null?"":
 					Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
 			BeanUtils.copyProperties(patientStatement, responseDto);
 			return responseDto;
