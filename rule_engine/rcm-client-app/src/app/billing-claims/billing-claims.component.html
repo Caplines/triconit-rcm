@@ -1686,7 +1686,7 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending  && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
+                                    *ngIf="sectionLevelInfoTotalConfig.paidAmount>0 && displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending  && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Insurance Payment Information
@@ -2382,7 +2382,7 @@
                                     </div>
                                 </ng-container>
 
-                                <ng-container *ngIf=" checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'view')">
+                                <ng-container *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['PATIENT_PAYMENT']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="PATIENT_PAYMENT">
                                             Patient Payment
@@ -2468,115 +2468,6 @@
                                             <div class="col-md-4 mb-2">
                                                 <button class="btn btn-success" (click)="savePatientPaymentInfo(false)"
                                                     [hidden]="!checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit">Save</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    </div>
-                                </ng-container>
-                                
-                                <ng-container *ngIf=" checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
-                                        <a data-toggle="collapse" aria-expanded="false" id="CURRENT_STATUS_AND_NEXT_ACTION">
-                                            Current Status and next action required
-                                        </a>
-                                        <div class="down-icon" (click)="showHide('CURRENT_STATUS_AND_NEXT_ACTION')">
-                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}"></a>
-                                        </div>
-                                    </div>
-
-                                    <div *ngIf="loader.serviceCode" class="loader-data"></div>
-                                    <div *ngIf="!loader.serviceCode" class="form-row  collapse"
-                                        [ngClass]="{'show':!toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
-                                        <div class="container-fluid">
-                                               <div class="row">
-
-                                               <div class="col-md-4 mb-2">
-                                                <div class="custom-row text-number">
-                                                    <label for="currentClaimStatusRcm">Current Claim Status</label>
-                                                    <select id="currentClaimStatusRcm" class="form-control"
-                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm']"
-                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusRcm']}">
-                                                        <option selected="true" hidden="true">Select</option>
-                                                        <option value="pendingFporBilling">Pending For Billing</option>
-                                                        <option value="Billed">Billed</option>
-                                                        <option value="Closed">Closed</option>
-                                                        <option value="Voided">Voided</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            
-                                            <div class="col-md-4 mb-2">
-                                                <div class="custom-row text-number">
-                                                    <label for="currentClaimStatusEs">Current Claim status in ES</label>
-                                                    <input type="text" id="currentClaimStatusEs"
-                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
-                                                        class="form-control"
-                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusEs']}">
-                                                </div>
-                                            </div>
-                                            
-                                               <div class="col-md-4 mb-2">
-                                                <div class="custom-row text-number">
-                                                    <label for="nextAction">Next Action Required</label>
-                                                    <select id="nextAction" class="form-control"
-                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']"
-                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['nextAction']}">
-                                                        <option selected="true" hidden="true">Select</option>
-                                                       <option value="review"> Review</option> 
-                                                       <option value="Billing"> Billing</option> 
-                                                       <option value="Need"> Need to void</option> 
-                                                       <option value="Close"> Close the Claim</option> 
-                                                       <option value="EOB"> EOB Required</option> 
-                                                       <option value="Need to Call Insurance"> Need to Call Insurance</option> 
-                                                       <option value="Need to send Appeal"> Need to send Appeal</option> 
-                                                       <option value="Need to Follow up on Appeal"> Need to Follow up on Appeal</option> 
-                                                       <option value="Need to Review"> Need to Review</option> 
-                                                       <option value="Adjustment Approval Needed"> Adjustment Approval Needed</option> 
-                                                       <option value="Need to Post"> Need to Post</option> 
-                                                       <option value="Send Statement"> Send Statement</option> 
-                                                       <option value="Send Text"> Send Text</option> 
-                                                       <option value="No Action Needed"> No Action Needed</option> 
-                                                       <option value="Need to send to IC system">  Need to send to IC system</option> 
-                                                       <option value="Need to Void"> Need to Void</option> 
-                                                    </select>
-                                                </div>
-                                            </div>
-                                           
-                                            <div class="col-md-4 mb-2">
-                                                <div class="custom-row text-number">
-                                                    <label for="assignToTeam">Assign to Team</label>
-                                                    <select id="assignToTeam" class="form-control"
-                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam']"
-                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeam']}">
-                                                        <option [value]="tl.teamId" [selected]="tl.teamId == claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam']" *ngFor="let tl of teamsMs;">{{tl.teamName}}</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-
-                                            <div class="col-md-4 mb-2">
-                                                <div class="custom-row text-number">
-                                                    <label for="remarks">Remarks</label>
-                                                    <textarea type="date" id="remarks"
-                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['remarks']"
-                                                        class="form-control"
-                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['remarks']}">
-                                                    </textarea>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 mb-2"></div>
-                                            <div class="col-md-4 mb-2">
-                                                <button *ngIf="true" type="button" class="btn btn-success"
-                                                    (click)="checkSectionFieldValidation(true,true,true)">
-                                                    Final Submit
-                                                </button>
-                                                <!-- <button class="btn btn-success" (click)="saveNextActionRequiredSection(false)"
-                                                    [hidden]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit">Save</button> -->
                                             </div>
                                         </div>
                                     </div>
@@ -2679,6 +2570,115 @@
                                             <div class="col-md-4 mb-2">
                                                 <button class="btn btn-success" (click)="savePatientCommunicationSection(false)"
                                                     [hidden]="!checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && !this.claimRcm.allowEdit">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    </div>
+                                </ng-container>
+
+                                <ng-container *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="CURRENT_STATUS_AND_NEXT_ACTION">
+                                            Current Status and next action required
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('CURRENT_STATUS_AND_NEXT_ACTION')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}"></a>
+                                        </div>
+                                    </div>
+
+                                    <div *ngIf="loader.serviceCode" class="loader-data"></div>
+                                    <div *ngIf="!loader.serviceCode" class="form-row  collapse"
+                                        [ngClass]="{'show':!toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
+                                        <div class="container-fluid">
+                                               <div class="row">
+
+                                               <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="currentClaimStatusRcm">Current Claim Status</label>
+                                                    <select id="currentClaimStatusRcm" class="form-control"
+                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm']"
+                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusRcm']}">
+                                                        <option selected="true" hidden="true">Select</option>
+                                                        <option value="pendingFporBilling">Pending For Billing</option>
+                                                        <option value="Billed">Billed</option>
+                                                        <option value="Closed">Closed</option>
+                                                        <option value="Voided">Voided</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="currentClaimStatusEs">Current Claim status in ES</label>
+                                                    <input type="text" id="currentClaimStatusEs"
+                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
+                                                        class="form-control"
+                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusEs']}">
+                                                </div>
+                                            </div>
+                                            
+                                               <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="nextAction">Next Action Required</label>
+                                                    <select id="nextAction" class="form-control"
+                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']"
+                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['nextAction']}">
+                                                        <option selected="true" hidden="true">Select</option>
+                                                       <option value="review"> Review</option> 
+                                                       <option value="Billing"> Billing</option> 
+                                                       <option value="Need"> Need to void</option> 
+                                                       <option value="Close"> Close the Claim</option> 
+                                                       <option value="EOB"> EOB Required</option> 
+                                                       <option value="Need to Call Insurance"> Need to Call Insurance</option> 
+                                                       <option value="Need to send Appeal"> Need to send Appeal</option> 
+                                                       <option value="Need to Follow up on Appeal"> Need to Follow up on Appeal</option> 
+                                                       <option value="Need to Review"> Need to Review</option> 
+                                                       <option value="Adjustment Approval Needed"> Adjustment Approval Needed</option> 
+                                                       <option value="Need to Post"> Need to Post</option> 
+                                                       <option value="Send Statement"> Send Statement</option> 
+                                                       <option value="Send Text"> Send Text</option> 
+                                                       <option value="No Action Needed"> No Action Needed</option> 
+                                                       <option value="Need to send to IC system">  Need to send to IC system</option> 
+                                                       <option value="Need to Void"> Need to Void</option> 
+                                                    </select>
+                                                </div>
+                                            </div>
+                                           
+                                            <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="assignToTeam">Assign to Team</label>
+                                                    <select id="assignToTeam" class="form-control"
+                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam']"
+                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeam']}">
+                                                        <option [value]="tl.teamId" [selected]="tl.teamId == claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam']" *ngFor="let tl of teamsMs;">{{tl.teamName}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="remarks">Remarks</label>
+                                                    <textarea type="date" id="remarks"
+                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                        [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['remarks']"
+                                                        class="form-control"
+                                                        [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['remarks']}">
+                                                    </textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-2"></div>
+                                            <div class="col-md-4 mb-2">
+                                                <button *ngIf="true" type="button" class="btn btn-success"
+                                                    (click)="checkSectionFieldValidation(true,true,true)">
+                                                    Final Submit
+                                                </button>
+                                                <!-- <button class="btn btn-success" (click)="saveNextActionRequiredSection(false)"
+                                                    [hidden]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit">Save</button> -->
                                             </div>
                                         </div>
                                     </div>
