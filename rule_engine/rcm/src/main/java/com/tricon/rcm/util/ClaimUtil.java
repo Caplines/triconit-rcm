@@ -373,11 +373,12 @@ public class ClaimUtil {
 		
 	}
 	
-	public static ClaimCycle createCycle(RcmClaims claims, String status, RcmTeam team,RcmUser user) {
+	public static ClaimCycle createCycle(RcmClaims claims, String status,String nextAction, RcmTeam team,RcmUser user) {
 		
 		ClaimCycle cycle= new ClaimCycle();
 		cycle.setClaim(claims);
 		cycle.setStatus(status);
+		cycle.setNextAction(nextAction);
 		if (team!=null) cycle.setCurrentTeamId(team);
 		if (user != null)
 			cycle.setCreatedBy(user);

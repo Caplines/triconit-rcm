@@ -49,6 +49,4 @@ public class ClaimCycle extends BaseAuditEntity implements Serializable{
 	@Column(name = "next_action")
 	private String nextAction;
 	
-	
-	
 }

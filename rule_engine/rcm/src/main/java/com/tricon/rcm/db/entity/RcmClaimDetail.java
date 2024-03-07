@@ -77,5 +77,11 @@ public class RcmClaimDetail implements Serializable {
 
 	@Column(name = "service_code", length = 15)
 	private String serviceCode;
+	
+	@Column(name = "active",columnDefinition = "BIT default 0")
+	private boolean active;
+	
+	@Column(name = "rcm_remark", length = 255)
+	private String rcmRemark;
 
 }

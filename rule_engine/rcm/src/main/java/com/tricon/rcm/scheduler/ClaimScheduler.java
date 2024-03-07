@@ -1,7 +1,6 @@
 package com.tricon.rcm.scheduler;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -12,12 +11,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.tricon.rcm.db.entity.RcmCompany;
-import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ClaimSourceDto;
 
 import com.tricon.rcm.dto.RcmOfficeDto;
-import com.tricon.rcm.dto.RemoteLiteDataDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;

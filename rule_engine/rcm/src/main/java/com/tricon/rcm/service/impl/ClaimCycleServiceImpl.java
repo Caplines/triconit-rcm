@@ -12,6 +12,7 @@ import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.customquery.ClaimSteps;
+import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.jpa.repository.ClaimCycleRepo;
 import com.tricon.rcm.util.ClaimUtil;
 
@@ -23,23 +24,30 @@ public class ClaimCycleServiceImpl {
 	@Autowired
 	ClaimCycleRepo claimCycleRepo;
 
-	public void createNewClaimCycle(RcmClaims claim,String status, RcmTeam team,
+	public void createNewClaimCycle(RcmClaims claim,String status,String nextAction, RcmTeam team,
 			RcmUser user) {
 		
-		ClaimCycle newcycle =ClaimUtil.createCycle(claim, status, team, user);
+		ClaimCycle newcycle =ClaimUtil.createCycle(claim, status,nextAction, team, user);
 		claimCycleRepo.save(newcycle);
 	}
 
-	public ClaimCycle createNewClaimCycleWithOldStatus(RcmClaims claim, RcmTeam team, RcmUser user,String newStatus) {
+	public ClaimCycle createNewClaimCycleWithOldStatus(RcmClaims claim, RcmTeam team, RcmUser user,String newStatus,
+			String nextAction) {
 		String status = newStatus;
 		if (status==null) {
-			status="";
-			ClaimCycle cycle = claimCycleRepo.findFirstByClaimOrderByCreatedDateDesc(claim);
-			if (cycle != null) {
-				status = cycle.getStatus();
+			ClaimStatusEnum oldStatus = ClaimStatusEnum.getById(claim.getCurrentStatus());
+			if (oldStatus!=null) {
+				status=oldStatus.getType();
 			}
 		}
-		ClaimCycle newcycle =ClaimUtil.createCycle(claim, status, team, user);
+		if (nextAction==null) {
+			ClaimStatusEnum oldNextAction = ClaimStatusEnum.getById(claim.getNextAction());
+			if (oldNextAction!=null) {
+				nextAction=oldNextAction.getType();
+			}
+		}
+		
+		ClaimCycle newcycle =ClaimUtil.createCycle(claim, status,nextAction, team, user);
 		newcycle.setId(claimCycleRepo.save(newcycle).getId());
 		logger.info("new Cycle Created.. with Status:"+ status);
 		return newcycle;

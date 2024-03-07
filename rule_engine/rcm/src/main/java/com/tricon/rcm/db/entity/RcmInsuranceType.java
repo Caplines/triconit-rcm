@@ -29,6 +29,11 @@ public class RcmInsuranceType {
 	@Column(name = "code", nullable = true)
 	private String code;
 	
+	@Column(name = "next_follow_up_gap",columnDefinition = "integer default 0")
+	private int nextFollowUpGap;
+	
+	@Column(name = "days_after_claim_come_posting",columnDefinition = "integer default 0")
+	private int daysAfterClaimToComePosting;
 	
 	/*@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "team_id", referencedColumnName = "id")

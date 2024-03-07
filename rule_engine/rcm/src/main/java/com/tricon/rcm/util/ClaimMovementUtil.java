@@ -4,10 +4,15 @@ import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 
+/**
+ * Not used now
+ * @author Deepak.Dogra
+ *
+ */
 public class ClaimMovementUtil {
 
 	public static final String nextAction4 = ClaimStatusEnum.Statement.getType();
-	public static final String nextAction5 = ClaimStatusEnum.Closed.getType();
+	//public static final String nextAction5 = ClaimStatusEnum.Claim_Closed.getType();
 	public static final String nextAction6 = ClaimStatusEnum.Bill_to_Secondary.getType();
 
 	public static final String Not_settled_in_time = "Not settled in time";
@@ -21,7 +26,7 @@ public class ClaimMovementUtil {
 
 		} else if (currentClaimTeamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 			status = getInternalAuditNextStatus(currentClaimTeamId, claim, secondaryClaim, checkForPrimary);
-		} else if (currentClaimTeamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+		} else if (currentClaimTeamId == RcmTeamEnum.PAYMENT_POSTING.getId()) {
 			status = getPaymentPostingNextStatus(currentClaimTeamId, claim, secondaryClaim, checkForPrimary);
 		}
 
@@ -37,7 +42,7 @@ public class ClaimMovementUtil {
 
 		} else if (currentClaimTeamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 			nextTeam = getInternalAuditNextTeam(currentClaimTeamId, claim, secondaryClaim, checkForPrimary);
-		} else if (currentClaimTeamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+		} else if (currentClaimTeamId == RcmTeamEnum.PAYMENT_POSTING.getId()) {
 			nextTeam = getPaymentPostingNextTeam(currentClaimTeamId, claim, secondaryClaim, checkForPrimary);
 		}
 
@@ -53,7 +58,7 @@ public class ClaimMovementUtil {
 
 		} else if (currentClaimTeamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 			action = getInternalAuditNextAction(currentClaimTeamId, claim, secondaryClaim, checkForPrimary);
-		} else if (currentClaimTeamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+		} else if (currentClaimTeamId == RcmTeamEnum.PAYMENT_POSTING.getId()) {
 			action = getPaymentPostingNextAction(currentClaimTeamId, claim, secondaryClaim, checkForPrimary);
 		}
 
@@ -65,7 +70,7 @@ public class ClaimMovementUtil {
 			boolean checkForPrimary) {
 
 		if (currentClaimTeamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
-			return ClaimStatusEnum.Awaiting_Insurance_Settlement.getType();
+			return ClaimStatusEnum.Need_to_Audit.getType();
 		}
 		return null;
 	}
@@ -93,11 +98,13 @@ public class ClaimMovementUtil {
 	public static String getBillingNextStatus(int currentClaimTeamId, RcmClaims claim, RcmClaims secondaryClaim,
 			boolean checkForPrimary) throws Exception {
 
-		boolean isPrimary = claim != null ? true : false;
-		boolean isSecondaryPresent = secondaryClaim != null ? true : false;
+		//boolean isPrimary = claim != null ? true : false;
+		//boolean isSecondaryPresent = secondaryClaim != null ? true : false;
 		if (currentClaimTeamId != RcmTeamEnum.BILLING.getId()) {
 			return null;
 		}
+		return ClaimStatusEnum.Billing.getType();
+		/*
 		if (isPrimary && isSecondaryPresent) {
 
 			return ClaimStatusEnum.Primary_Closed.getType();// PC
@@ -108,7 +115,7 @@ public class ClaimMovementUtil {
 		}
 
 		return ClaimStatusEnum.Awaiting_Insurance_Settlement.getType();
-
+        */
 	}
 
 	public static int getBillingNextTeam(int currentClaimTeamId, RcmClaims claim, RcmClaims secondaryClaim,
@@ -123,7 +130,7 @@ public class ClaimMovementUtil {
 	public static ClaimStatusEnum getBillingNextAction(int currentClaimTeamId, RcmClaims claim, RcmClaims secondaryClaim,
 			boolean checkForPrimary) {
 
-		return ClaimStatusEnum.Unbilled_Billing;
+		return ClaimStatusEnum.Need_to_Bill;
 
 	}
 	// Billing- END
@@ -241,7 +248,7 @@ public class ClaimMovementUtil {
 			 * ClaimStatusEnum.Statement.getType(); } }
 			 */
 
-		return ClaimStatusEnum.Closed;
+		return ClaimStatusEnum.Close_The_claim;
 	}
 	// Payment Posting- END
 

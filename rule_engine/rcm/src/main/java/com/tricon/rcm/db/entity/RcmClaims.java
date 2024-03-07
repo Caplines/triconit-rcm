@@ -257,6 +257,9 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "current_status",columnDefinition = "integer default 0")
 	private int currentStatus;//
 	
+	@Column(name = "next_action",columnDefinition = "integer default 0")
+	private int nextAction;//
+	
 	@Column(name = "btp")
 	private Float btp;//
 	
@@ -265,5 +268,10 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "payment_received")
 	private Float paymentReceived ;//
+	
+	@Column(name = "first_posting_date", nullable = true)
+	private Date firstPostingDate;
+	
+	
 
 }

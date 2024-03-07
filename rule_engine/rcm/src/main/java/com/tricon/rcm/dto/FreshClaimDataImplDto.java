@@ -130,6 +130,9 @@ public class FreshClaimDataImplDto {
     
     RcmTeamDto nextTeam;
     int currentStatus;
+    int nextAction;
+    String currentStatusName;
+    String nextActionName;
     
     String insuranceContactNo;
 	String patientContactNo;

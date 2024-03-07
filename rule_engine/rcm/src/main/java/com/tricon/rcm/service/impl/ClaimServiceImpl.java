@@ -108,6 +108,7 @@ import com.tricon.rcm.dto.ClaimSubmissionDto;
 import com.tricon.rcm.dto.CommonSectionsRequestBodyDto;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
+import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
 import com.tricon.rcm.dto.EobLink;
 import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
@@ -304,13 +305,11 @@ public class ClaimServiceImpl {
 	RcmIssueClaimsRepo issueClaimRepo;
 	
 	@Autowired
-	 RcmClaimAttachmentRepo attachmentRepo;
+	RcmClaimAttachmentRepo attachmentRepo;
 	
 	@Autowired
 	RcmUserCompanyRepo userCompanyRepo;
 	
-	@Autowired
-	RcmClaimRepository claimRepo;
 	
 	@Autowired
 	RcmCompanyRepo companyRepo;
@@ -321,6 +320,8 @@ public class ClaimServiceImpl {
 	@Autowired
 	ClaimCycleServiceImpl claimCycleService;
 	
+	@Autowired
+	RcmClaimLogServiceImpl rcmClaimLogServiceImpl;
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -758,9 +759,9 @@ public class ClaimServiceImpl {
 								missing=false;
 								isBilling=true;
 							}
-								
+							claim.setCurrentStatus(ClaimStatusEnum.Claim_Uploaded.getId());	
 							String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
-							claimCycleService.createNewClaimCycle(claim,Constants.Claim_upLoaded, currentTeam, user);
+							claimCycleService.createNewClaimCycle(claim,ClaimStatusEnum.Claim_Uploaded.getType(),null, currentTeam, user);
 							//Save Data in rcm_claim_detail (new Enhancement)
 							if (re.getServiceCodes().size()>0) {
 								RcmClaimDetail det=null;
@@ -784,6 +785,7 @@ public class ClaimServiceImpl {
 									
 									det.setSurface("");
 									det.setTooth("");
+									det.setActive(true);
 									try {
 										 String[] ths = toothSurfaces.get(serviceCount++).split("#");
 										 det.setTooth(ths[0]);
@@ -829,7 +831,11 @@ public class ClaimServiceImpl {
 										systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
-								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Unbilled_Billing.getType(), assignedTeamBilling, user);
+								claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Billing.getId());
+								claim.setNextAction(ClaimStatusEnum.Need_to_Bill.getId());
+								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Need_to_Bill.getId(),claim.getClaimUuid());
+								
+								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(),ClaimStatusEnum.Need_to_Bill.getType(), assignedTeamBilling, user);
 							}
 							if (assignedUserInternalAudit != null && (isMedicaid  || isChip)) {
 								rcmAssigment = new RcmClaimAssignment();
@@ -839,7 +845,11 @@ public class ClaimServiceImpl {
 										systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
-								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Unbilled_Internal_Audit.getType(), assignedTeamInternalAudit, user);
+								claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Review.getId());
+								claim.setNextAction(ClaimStatusEnum.Need_to_Audit.getId());
+								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Review.getId(),ClaimStatusEnum.Need_to_Audit.getId(),claim.getClaimUuid());
+								
+								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Review.getType(),ClaimStatusEnum.Need_to_Audit.getType(), assignedTeamInternalAudit, user);
 								
 							}
 
@@ -1060,8 +1070,10 @@ public class ClaimServiceImpl {
 							}
 							
 							
+							
+							claim.setCurrentStatus(ClaimStatusEnum.Claim_Uploaded.getId());
 							String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
-							claimCycleService.createNewClaimCycle(claim,Constants.Claim_upLoaded, currentTeam, user);
+							claimCycleService.createNewClaimCycle(claim,ClaimStatusEnum.Claim_Uploaded.getType(),null, currentTeam, user);
 							//Save Data in rcm_claim_detail (new Enhancement)
 							if (re.getServiceCodes().size()>0) {
 								RcmClaimDetail det=null;
@@ -1082,6 +1094,7 @@ public class ClaimServiceImpl {
 									det.setStatus("");
 									det.setSurface("");
 									det.setTooth("");
+									det.setActive(true);
 									rcmClaimDetailRepo.save(det);
 								}
 									
@@ -1114,7 +1127,11 @@ public class ClaimServiceImpl {
 										systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
-								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Unbilled_Billing.getType(), assignedTeamBilling, user);
+								claim.setCurrentStatus(ClaimStatusEnum.Need_to_Bill.getId());
+								claim.setNextAction(ClaimStatusEnum.Pending_For_Billing.getId());
+								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Pending_For_Billing.getId(),claim.getClaimUuid());
+								
+								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(), ClaimStatusEnum.Need_to_Bill.getType(), assignedTeamBilling, user);
 								
 							}
 							if (assignedUserInternalAudit != null && ( isMedicaid || isChip)) {
@@ -1125,7 +1142,11 @@ public class ClaimServiceImpl {
 										systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
-								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Unbilled_Internal_Audit.getType(), assignedTeamInternalAudit, user);
+								claim.setCurrentStatus( ClaimStatusEnum.Pending_For_Review.getId());
+								claim.setNextAction(ClaimStatusEnum.Need_to_Audit.getId());
+								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Review.getId(),ClaimStatusEnum.Need_to_Audit.getId(),claim.getClaimUuid());
+								
+								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Review.getType(),ClaimStatusEnum.Need_to_Audit.getType(), assignedTeamInternalAudit, user);
 								
 							}
                             
@@ -1464,6 +1485,18 @@ public class ClaimServiceImpl {
 			// Fetch Data from RCM Tool Checks and Validations Sheets //141479965
 
 			BeanUtils.copyProperties(dto, implDto);
+			if (dto.getCurrentStatus()!=0) {
+				ClaimStatusEnum oldStatus = ClaimStatusEnum.getById(dto.getCurrentStatus());
+				if (oldStatus!=null) {
+					implDto.setCurrentStatusName(oldStatus.getType());
+				}
+			}
+            if (dto.getNextAction()!=0) {
+            	ClaimStatusEnum oldAction = ClaimStatusEnum.getById(dto.getNextAction());
+				if (oldAction!=null) {
+					implDto.setNextActionName(oldAction.getType());
+				}
+			}
 			if (implDto.getPatientContactNo() ==null) implDto.setPatientContactNo("");
 			if (implDto.getInsuranceContactNo() ==null) implDto.setInsuranceContactNo("");
 			
@@ -2054,6 +2087,7 @@ public class ClaimServiceImpl {
 					BeanUtils.copyProperties(cdt, rcmClaimDetail, "id");
 					rcmClaimDetail.setIdEs(cdt.getId()); 
 					rcmClaimDetail.setClaim(claim);
+					rcmClaimDetail.setActive(true);
 					rcmClaimDetailRepo.save(rcmClaimDetail);
 					cddList.add(rcmClaimDetail);
 					if (tmp==0) {
@@ -3089,19 +3123,19 @@ public class ClaimServiceImpl {
 			claim.setLastWorkTeamId(rcmTeamRepo.findById(partialHeader.getTeamId()));
 			claim.setRuleEngineRunRemark(dto.getRuleEngineRunRemark());
 			//only billing can submit.
-			if (dto.isSubmission() && partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId()) {
+			if (originalClaimPendingStatus &&  dto.isSubmission() && partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId()) {
 				//only billing can submit
-				//ClaimStatusEnum.Billing.getType();//Once claim is submited and its being reworked upon the maintain the current status.
-				message= assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
+				//ClaimStatusEnum.Billing.getType();//Once claim is submitted and its being reworked upon the maintain the current status.
+				message= rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
 						Constants.FROMBILLINGTOPOSTING,"Please work on claim",claim,assign,user,office,null,
-						originalClaimPendingStatus? ClaimStatusEnum.Billing.getType() : null);
-				
-				claim.setPending(false);
+						originalClaimPendingStatus? ClaimStatusEnum.Billed.getType() : null,originalClaimPendingStatus? ClaimStatusEnum.Need_to_Post.getType() : null);
+			    
+				/*claim.setPending(false);
 				
 				claim.setUpdatedBy(user);
 				claim.setUpdatedDate(new Date());
 				//claim.setCurrentStatus(Constants.CLAIM_POSTING_STATE);
-				rcmClaimRepository.save(claim);
+				rcmClaimRepository.save(claim);*/
 				//Check if Primary	then Find any Corresponding Secondary Claim and Mark Primar_status =2
 				String[] clT = claim.getClaimId().split("_");
 
@@ -3118,19 +3152,29 @@ public class ClaimServiceImpl {
 				message="Submitted";
 				
 				
-			}else if(dto.isAssignToOtherTeam()){
+			}else if(originalClaimPendingStatus  && dto.isAssignToOtherTeam()){
 				String createStatus =null;//&& partialHeader.getTeamId()==RcmTeamEnum.INTERNAL_AUDIT.getId()
+				String nextAction =null;
 				if (originalClaimPendingStatus) {
 					 if ( dto.getAssignToTeam()==RcmTeamEnum.BILLING.getId()) {
-						 createStatus = ClaimStatusEnum.Unbilled_Billing.getType(); 
+						 createStatus = ClaimStatusEnum.Need_to_Audit.getType(); 
+						 nextAction =ClaimStatusEnum.Need_to_Bill.getType();
 					 }
+					 // As per phase 2 this will never happen
 					 if ( dto.getAssignToTeam()==RcmTeamEnum.INTERNAL_AUDIT.getId()) {
-						 createStatus = ClaimStatusEnum.Unbilled_Internal_Audit.getType(); 
+						 createStatus = ClaimStatusEnum.Need_to_Audit.getType(); 
+						 nextAction= ClaimStatusEnum.Need_to_Audit.getType(); 
 					 }
 				}
-				message= assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
+				
+				    claim.setUpdatedBy(user);
+					claim.setUpdatedDate(new Date());
+					//claim.setCurrentStatus(Constants.CLAIM_POSTING_STATE);
+					rcmClaimRepository.save(claim);
+					
+				message= rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
 						dto.getAssignToTeam(),dto.getAssignToComment(),claim,assign,user,office,null,
-						createStatus);
+						createStatus,nextAction);
 			}/*else if(dto.isAssignToTL()){//Separate API
 				//RcmUser assignuser = userRepo.findByUuid(jwtUser.getUuid());
 				claim.setUpdatedBy(user);
@@ -3218,9 +3262,9 @@ public class ClaimServiceImpl {
 				message= "Claim Already Submitted";
 				return message;
 			} else {
-				message =assignClaimToOtherTeamWithRemarkCommon(partialHeader, dto.getClaimUuid(),
+				message =rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, dto.getClaimUuid(),
 						assignToTeamId, dto.getRemark(), claim,
-						 assign, user, office,dto.getAttachmentsWithRemarks(),null);
+						 assign, user, office,dto.getAttachmentsWithRemarks(),null,null);
 				if (message!=null && message.equals("OtherTeam")) message="done";
 				return message;
 			
@@ -3229,116 +3273,7 @@ public class ClaimServiceImpl {
 		return null;
 		
 	}
-	/**
-	 * Assign Claim To Other Team
-	 * @param partialHeader
-	 * @param dto
-	 * @param claim
-	 * @param assign
-	 * @param user
-	 * @param office
-	 * @return
-	 */
-	private String assignClaimToOtherTeamWithRemarkCommon(PartialHeader partialHeader,String claimUuid,
-			int assignToTeam,String assignToComment,RcmClaims claim,
-			RcmClaimAssignment assign,RcmUser user,RcmOffice office,String attachmentsWithRemarks,String newCycleStatus) {
-          
-		if (!claim.isPending() && claim.getCurrentStatus()==0) {
-			
-			return "Already Submitted";
-		}
-		
-		if (claim.getCurrentState() ==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
-			return "Claim is Archived";
-		}
-		
-		  RcmTeam assignTeam = rcmTeamRepo.findById(assignToTeam);
-		  RcmTeam lastTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
-		  RcmTeam oldTeam = assign.getCurrentTeamId();
-		  RcmUser oldRcmUser = assign.getAssignedTo();
-		  
-		  claim.setUpdatedBy(user);
-		  claim.setCurrentTeamId(assignTeam);
-		  claim.setLastWorkTeamId(lastTeam);
-		  //Edit Assignment Data
-		  assign.setActive(false);
-		  //assign.setCommentAssignedBy(Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+ ":"+assignTeam.getName());
-		  assign.setUpdatedBy(user);
-		  assign.setUpdatedDate(new Date());
-		  
-		  rcmClaimAssignmentRepo.save(assign);
-		  //Assignment Table
-		  UserAssignOffice assignedUser = userAssignOfficeRepo
-					.findByOfficeUuidAndTeamId(office.getUuid(), assignTeam.getId());
-		  if (assignedUser!=null) {
-			  RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
-			  //make New Entry
-			  RcmTeam assignedTeam  = rcmTeamRepo.findById(assignTeam.getId());
-			  RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
-						.findByStatus(ClaimStatusEnum.Billing.getType());
-			  
-				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-						assignedUser.getUser(), claimUuid, claim,
-						assignToComment, systemStatusBilling,assignedTeam,
-						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
-				rcmAssigment.setCurrentTeamId(oldTeam); 
-				rcmAssigment.setAssignedTo(oldRcmUser);
-				rcmAssigment.setActive(false);
-				
-				
-				// save attachment-with-remarks(yes/no)
-				if (attachmentsWithRemarks!=null && attachmentsWithRemarks.equals(Constants.ATTACH_WITH_REMARKS)){
-					int existingAttachmentCounts=attachmentRepo.attachmentCountOfUserUuid(claimUuid, user.getUuid());
-					if(existingAttachmentCounts>0) {
-					rcmAssigment.setAttachmentWithRemarks(Constants.ATTACHMENT_WITH_REMARKS);}
-				}
-				
-				rcmClaimAssignmentRepo.save(rcmAssigment);
-				
-				rcmAssigment= new RcmClaimAssignment();
-				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-						assignedUser.getUser(), claimUuid, claim,
-						"", systemStatusBilling,assignedTeam,
-						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
-
-				rcmClaimAssignmentRepo.save(rcmAssigment);
-				claimCycleService.createNewClaimCycleWithOldStatus(claim,assignedTeam,assignedUser.getUser(),newCycleStatus);
-				
-				
-		  }else {
-			  RcmTeam assignedTeam  = rcmTeamRepo.findById(assignTeam.getId());
-			  RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
-						.findByStatus(ClaimStatusEnum.Billing.getType());
-			  RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
-			  //make New Entry
-			  rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-						null, claimUuid, claim,
-						assignToComment, systemStatusBilling,assignedTeam,
-						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
-			  rcmAssigment.setCurrentTeamId(oldTeam);
-			  rcmAssigment.setAssignedTo(oldRcmUser);
-			  rcmAssigment.setActive(false);
-			  rcmClaimAssignmentRepo.save(rcmAssigment);
-				
-			rcmAssigment= new RcmClaimAssignment();
-			  
-			  
-			  
-				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-						null, claimUuid, claim,
-						"", systemStatusBilling,assignedTeam,
-						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
-				rcmClaimAssignmentRepo.save(rcmAssigment);
-				claimCycleService.createNewClaimCycleWithOldStatus(claim,assignedTeam,user,newCycleStatus);
-				
-		  }
-
-		  //claim.set
-			claim.setUpdatedDate(new Date());
-			rcmClaimRepository.save(claim);
-			return "OtherTeam";
-		
-	}
+	
 
 	/*
 	public String assignToOtherTeam(PartialHeader partialHeader, ClaimAssignDto dto) {
@@ -4239,7 +4174,7 @@ public class ClaimServiceImpl {
 	public RcmResponseMessageDto findTeamLeadExistForOtherTeams(FindTLExistDto dto, JwtUser jwtUser) throws Exception {
 		RcmResponseMessageDto responseDto = new RcmResponseMessageDto();
 		RcmUser user = userRepo.findByEmail(jwtUser.getUsername());
-		RcmClaims claim = claimRepo.findByClaimUuid(dto.getClaimUuid());
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
 		if (!claim.isPending() && claim.getCurrentStatus()==0) {
 			responseDto.setResponseStatus(false);
 			return responseDto;
@@ -4376,8 +4311,8 @@ public class ClaimServiceImpl {
 					}
 				}
 			}
-			if (response!=null && sectionRequestBody.isMoveToNextTeam() ) {
-				
+			if (response!=null && sectionRequestBody.isFinalSubmit() && sectionRequestBody.isMoveToNextTeam() ) {
+				CurrentStatusAndNextActionDto currentDto= sectionRequestBody.getNextActionRequiredInfoModel();
 				RcmOffice office = officeRepo.findByUuid(claim.getOffice().getUuid());
 				String[] clT = claim.getClaimId().split("_");
 				RcmClaims primaryCl=null;
@@ -4386,33 +4321,39 @@ public class ClaimServiceImpl {
 				if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
 					checkForPrimary =true;
 					primaryCl=claim;
-					secondaryCl= rcmClaimRepository.findByClaimIdAndOffice(clT[0]+ClaimTypeEnum.S.getSuffix(), office);
+					//secondaryCl= rcmClaimRepository.findByClaimIdAndOffice(clT[0]+ClaimTypeEnum.S.getSuffix(), office);
 					
 				}else {
 					secondaryCl=claim;
-					primaryCl=rcmClaimRepository.findByClaimIdAndOffice(clT[0]+ClaimTypeEnum.P.getSuffix(), office);
+					//primaryCl=rcmClaimRepository.findByClaimIdAndOffice(clT[0]+ClaimTypeEnum.P.getSuffix(), office);
 				}
 				
-				String newCycleStatus = ClaimMovementUtil.getNextStatus(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
-				int nextTeam = ClaimMovementUtil.getNextTeam(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
-				ClaimStatusEnum nextAction = ClaimMovementUtil.getNextAction(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
+				String newCycleStatus =currentDto.getCurrentClaimStatusRcm();//  ClaimMovementUtil.getNextStatus(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
+				int nextTeam =currentDto.getAssignToTeamId();// ClaimMovementUtil.getNextTeam(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
+				ClaimStatusEnum nextAction =ClaimStatusEnum.getByType(currentDto.getNextAction());// ClaimMovementUtil.getNextAction(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
 				
 				if (nextAction!=null) {
+					/*
 					   claim.setCurrentStatus(nextAction.getId());
 				       rcmClaimRepository.save(claim);
 				   if (checkForPrimary == false) {
 					   //Mean we need to update Primary claim Status if not closed and move to next team.
 					   primaryCl.setCurrentStatus(nextAction.getId());
 				       rcmClaimRepository.save(primaryCl);
-				   }
+				   }*/
+				   String claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, sectionRequestBody.getClaimUuid(),
+							nextTeam, currentDto.getRemarks(), claim, assign, createdBy, office, null,newCycleStatus,nextAction.getType());
+				}else {
+					logger.info("claim transfer response-> Wrong claim Status:"+currentDto.getNextAction()+" send for claim :"+claim.getClaimUuid() );
 				}
+				/*
 				if (nextTeam!= -1) {
-					String claimTransfer=assignClaimToOtherTeamWithRemarkCommon(partialHeader, sectionRequestBody.getClaimUuid(),
+					String claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, sectionRequestBody.getClaimUuid(),
 							nextTeam, "Please Work on Claim", claim, assign, createdBy, office, null,newCycleStatus);
 					logger.info("claim transfer response->" + claimTransfer);
 					 if (checkForPrimary == false) {
 						   //Mean we need to update Primary claim Status if not closed and move to next team.
-						 claimTransfer=assignClaimToOtherTeamWithRemarkCommon(partialHeader, sectionRequestBody.getClaimUuid(),
+						 claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, sectionRequestBody.getClaimUuid(),
 									nextTeam, "Please Work on Claim", primaryCl, assign, createdBy, office, null,newCycleStatus);
 						 logger.info("claim transfer response->" + claimTransfer);
 							
@@ -4420,7 +4361,7 @@ public class ClaimServiceImpl {
 					
 				}else {
 					claimCycleService.createNewClaimCycle(claim, newCycleStatus, null, createdBy);
-				}
+				}*/
 				
 			}
 		}

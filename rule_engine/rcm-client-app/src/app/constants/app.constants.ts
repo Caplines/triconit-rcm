@@ -11,64 +11,64 @@ export class AppConstants {
 
     public TEAMS_CONFIG = new Map<Number, TeamModel>([
         [1, {
-            "name": "NA", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', '/tool-update', '/tool-update/issue-claims'], "defaultpath": "/register"
+            "id": 1, "name": "NA", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', '/tool-update', '/tool-update/issue-claims'], "defaultpath": "/register"
         }],
         [2, {
-            "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client'], "defaultpath": "/register"
+            "id": 2, "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client'], "defaultpath": "/register"
         }],
         [3, {
-            "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production", "/search-claims", '/tool-update/issue-claims'], "defaultpath": "/claim-assignment"
+            "id": 3, "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production", "/search-claims", '/tool-update/issue-claims'], "defaultpath": "/claim-assignment"
         }],
         [4, {
-            "name": "LC3", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
+            "id": 4, "name": "LC3", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
         }],
         [5, {
-            "name": "Office", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
+            "id": 5, "name": "Office", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
         }],
         [6, {
-            "name": "Patient Calling", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 6, "name": "Patient Calling", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [7, {
-            "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'], "defaultpath": "/claim-assignment"
+            "id": 7, "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'], "defaultpath": "/claim-assignment"
         }],
         [8, {
-            "name": "Super Admin", "paths": AppConstants.commonPath, "defaultpath": "/claim-assignment"
+            "id": 8, "name": "Super Admin", "paths": AppConstants.commonPath, "defaultpath": "/claim-assignment"
         }],
         // [9, {
         //     "name": "Reporting", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass","/list-of-claims"], "defaultpath": "/claim-assignment"
         // }],
         [10, {
-            "name": "Ortho", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 10, "name": "Ortho", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [11, {
-            "name": "CDP", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 11, "name": "CDP", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [12, {
-            "name": "Payment Posting", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 12, "name": "Payment Posting", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [13, {
-            "name": "PPO IV", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 13, "name": "PPO IV", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [14, {
-            "name": "Medicaid IV", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 14, "name": "Medicaid IV", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [15, {
-            "name": "Need to hold", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 15, "name": "Need to hold", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [16, {
-            "name": "Quality", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 16, "name": "Quality", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [17, {
-            "name": "AR", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 17, "name": "AR", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [18, {
-            "name": "Patient Statement", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 18, "name": "Patient Statement", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [19, {
-            "name": "Credentialing", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 19, "name": "Credentialing", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [20, {
-            "name": "Aging", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
+            "id": 20, "name": "Aging", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
 
         // [9,{
@@ -198,11 +198,11 @@ export class AppConstants {
     ]
 
     //attachwithremarks
-    public static ATTACH_WITH_REMARKS:string="AttachWithRemarks";
+    public static ATTACH_WITH_REMARKS: string = "AttachWithRemarks";
 
     public static inputRequiredForTeams: any = { "Aging": false, "CDP": false, "Payment Posting": false, "Patient Statement": false }
-    
-    public claimInitialDenialReason:any = [
+
+    public claimInitialDenialReason: any = [
         { reasonName: "Service not covered" },
         { reasonName: "Benefit Maximum Met" },
         { reasonName: "Benefits assigned to member" },
@@ -253,18 +253,40 @@ export class AppConstants {
         { reasonName: "Patient Not Assigned To The Facility" },
         { reasonName: "Provider is not PCD" },
         { reasonName: "Incorrect Walkout" },
-      ];
-    
-    public claimStatusRcm: any  = [
-        { name: "Billed to insurance" },
-        { name: "Claim Settled & Under Review" },
-        { name: "Claim Settled & Closed" },
-        { name: "Claim Settled & BTP" },
-        { name: "Claim settled & to be adjusted" },
-      ];
+    ];
 
-    public claimStatusEs:any = [
-        {name:'Partial paid and Recreated'},
-        {name:'Open'},
-    ] 
+    public claimStatusRcm: any = [
+        { name: "Pending For Review" },
+        { name: "Pending For Billing" },
+        { name: "Billed" },
+        { name: "In Process" },
+        { name: "Closed" },
+        { name: "Voided" }
+    ];
+
+
+    public nextActionStatusRcm: any = [
+        { name: "Review" },
+        { name: "Billing" },
+        { name: "Need to void" },
+        { name: "Close the Claim" },
+        { name: "EOB Required" },
+        { name: "Need to Call Insurance" },
+        { name: "Need to send Appeal" },
+        { name: "Need to Follow up on Appeal" },
+        { name: "Need to Review" },
+        { name: "Adjustment Approval Needed" },
+        { name: "Need to Post" },
+        { name: "Send Statement" },
+        { name: "Send Text" },
+        { name: "No Action Needed" },
+        { name: "Need to send to IC system" },
+        { name: "Need to Void" },
+        { name: "Need to Post" },
+        { name: "Need to Bill" },
+        { name: "Need to Audit" }
+
+    ]
+
+    public claimClosedId: number = 30;
 }

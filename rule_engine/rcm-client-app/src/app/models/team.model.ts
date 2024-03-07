@@ -1,8 +1,9 @@
 
-export class  TeamModel {
+export class TeamModel {
 
-    name: string="";
-    paths: Array<string>=[];
-    defaultpath: string="";
+    name: string = "";
+    paths: Array<string> = [];
+    defaultpath: string = "";
+    id: number;
 
 }

@@ -15,12 +15,10 @@ import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.dto.customquery.ClaimXDaysDto;
 import com.tricon.rcm.dto.customquery.PendingClaimToReAssignDto;
-import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
-import com.tricon.rcm.jpa.repository.ClaimCycleRepo;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimDetailRepo;
@@ -38,12 +36,10 @@ import com.tricon.rcm.jpa.repository.RcmRemoteLiteRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
-import com.tricon.rcm.util.ClaimMovementUtil;
 import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.ConnectAndReadSheets;
 import com.tricon.rcm.util.Constants;
 import com.google.common.collect.Collections2;
-import com.tricon.rcm.db.entity.ClaimCycle;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimDetail;
 import com.tricon.rcm.db.entity.RcmClaimLog;
@@ -59,8 +55,6 @@ import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
-import com.tricon.rcm.dto.AssignOfficesToBillingUserDto;
-import com.tricon.rcm.dto.AssignUserOfficeDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAppointmentDto;
 import com.tricon.rcm.dto.ClaimDataDetails;
@@ -82,14 +76,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import javax.annotation.PostConstruct;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.env.Environment;
-import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -396,8 +386,9 @@ public class RuleEngineService {
 													rcmInsuranceType, timely.getTimelyFilingLimit(),insuranceNameTypeDto.getPreferredModeOfSubmission(), claimTypeEnum);
 											isBilling=true;
 										}
+										claim.setCurrentStatus(ClaimStatusEnum.Claim_Uploaded.getId());	
 										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
-										claimCycleService.createNewClaimCycle(claim, Constants.Claim_upLoaded, currentTeam, user);
+										claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Claim_Uploaded.getType(),null, currentTeam, user);
 										RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(
 												re.getClaimId() + claimTypeEnum.getSuffix(), off, source);
 										if (isC != null) {
@@ -413,7 +404,10 @@ public class RuleEngineService {
 													"", systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
-											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Unbilled_Billing.getType(),assignedTeamBilling, user);
+											claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Billing.getId());
+											claim.setNextAction(ClaimStatusEnum.Need_to_Bill.getId());
+											rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Need_to_Bill.getId(),claim.getClaimUuid());
+											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(),ClaimStatusEnum.Need_to_Bill.getType(),assignedTeamBilling, user);
 										
 										}
 										if (assignedUserInternalAudit != null && (isMedicaid||  isChip)) {
@@ -424,7 +418,10 @@ public class RuleEngineService {
 													"", systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
-											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Unbilled_Internal_Audit.getType(),assignedTeamInternalAudit, user);
+											claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Review.getId());
+											claim.setNextAction(ClaimStatusEnum.Need_to_Audit.getId());
+											rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Review.getId(),ClaimStatusEnum.Need_to_Audit.getId(),claim.getClaimUuid());
+											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Review.getType(),ClaimStatusEnum.Need_to_Audit.getType(),assignedTeamInternalAudit, user);
 										}
 										/*
 										 * if (re.getSecStatus().equalsIgnoreCase(Constants.secondaryClaimTypeES)) {
@@ -983,11 +980,18 @@ public class RuleEngineService {
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
 							claimUUid, claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT);
 					rcmClaimAssignmentRepo.save(rcmAssigment);
-					String status = "";
-					if (teamId == RcmTeamEnum.BILLING.getId()) status=ClaimStatusEnum.Unbilled_Billing.getType();
-					else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) status=ClaimStatusEnum.Unbilled_Internal_Audit.getType();
-							
-					claimCycleService.createNewClaimCycle(claim, status,assignedTeam, assignedBy);
+					ClaimStatusEnum status = null;
+					ClaimStatusEnum nextAction = null;
+					if (teamId == RcmTeamEnum.BILLING.getId()) {
+						status=ClaimStatusEnum.Pending_For_Billing;
+						nextAction= ClaimStatusEnum.Need_to_Bill;
+					}
+					else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+						status=ClaimStatusEnum.Pending_For_Review;
+						nextAction = ClaimStatusEnum.Need_to_Audit;
+					}
+					if (status!= null) rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), claimUUid);		
+					claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),assignedTeam, assignedBy);
 				} else {
 					logger.error("Unassigned claims(" + claimUUid + ") is already assigned to a user whose team id is: "
 							+ teamId + " ");
@@ -1161,5 +1165,5 @@ public class RuleEngineService {
 		}
 		return appointmentDate;
 	}
-		
+	
 }

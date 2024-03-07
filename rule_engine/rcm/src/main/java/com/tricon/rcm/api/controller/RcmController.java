@@ -206,7 +206,7 @@ public class RcmController extends BaseHeaderController{
 	@ApiOperation(value = "Api For Saving Remark and Asssigning Claims (Other teams)", response = String.class, responseContainer = "List")
 	@PostMapping("/api/assign-claim-with-remark")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
-	public ResponseEntity<Object> fetchFreshClaimsDetailsLead(@RequestBody ClaimAssignWithRemarkAndTeam dto,
+	public ResponseEntity<Object> fetchFreshClaimsDetailsLeadWhyThisName(@RequestBody ClaimAssignWithRemarkAndTeam dto,
 			Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
