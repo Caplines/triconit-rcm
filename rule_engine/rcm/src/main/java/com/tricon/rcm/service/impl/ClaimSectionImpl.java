@@ -918,7 +918,7 @@ public class ClaimSectionImpl {
 	}
 	
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveFollowUpInsuranceSection(RcmFollowUpInsuranceDto rcmFollowUpInsuranceInfoModel, RcmClaims claim,
+	public Object saveFollowUpInsuranceSection(RcmFollowUpInsuranceDto rcmFollowUpInsuranceInfoModel, RcmClaims claim,
 			RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) throws Exception {
 		RcmInsuranceFollowUpSection followUpInformation = null;
 		if (claim != null) {
@@ -936,9 +936,13 @@ public class ClaimSectionImpl {
 			followUpInformation.setFinalSubmit(finalSubmit);
 			followUpInformation.setTeam(team);
 			followUpInformation = followUpRepo.save(followUpInformation);
-			return followUpInformation != null ? true : null;
+			rcmFollowUpInsuranceInfoModel.setFollowByTeam(followUpInformation.getTeam().getDescription());	
+			rcmFollowUpInsuranceInfoModel.setFollowByUser(followUpInformation.getCreatedBy().getFirstName());	
+			rcmFollowUpInsuranceInfoModel.setFollowByUserLastName(followUpInformation.getCreatedBy().getLastName());
+			rcmFollowUpInsuranceInfoModel.setNextFollowUpDate(Constants.SDF_MYSL_DATE_TIME.format(followUpInformation.getCreatedDate()));
+			BeanUtils.copyProperties(followUpInformation, rcmFollowUpInsuranceInfoModel);
 		}
-		return null;
+		return rcmFollowUpInsuranceInfoModel;
 	}
 	
 	public List<RcmFollowUpInsuranceDto> fetchFollowUpInsuranceInformation(PartialHeader partialHeader,
@@ -986,13 +990,15 @@ public class ClaimSectionImpl {
 			patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
 			patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
 			patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
-			patientStatement.setStatementSendingDate(
+			patientStatement.setStatementSendingDate(!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getStatementSendingDate())?null:
 					Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
 			patientStatement
-					.setNextReviewDate(Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
-			patientStatement.setStatementSendingDate(
+					.setNextReviewDate(
+							!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate())?null:
+							Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
+			patientStatement.setStatementSendingDate(!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getStatementSendingDate())?null:
 					Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
-			patientStatement.setNextStatementDate(
+			patientStatement.setNextStatementDate(!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate())?null:
 					Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
 			patientStatement.setCreatedBy(createdBy);
 			patientStatement.setFinalSubmit(finalSubmit);
@@ -1097,7 +1103,7 @@ public class ClaimSectionImpl {
 			patientCommunicationData = patientCommunicationRepo.save(patientCommunicationData);
 			patientCommunicationInfoModel.setCreatedTeam(patientCommunicationData.getTeam().getDescription());
 			patientCommunicationInfoModel.setCreatedBy(patientCommunicationData.getCreatedBy().getFirstName());
-			patientCommunicationInfoModel.setDate(Constants.SDF_MYSL_DATE.format(patientCommunicationData.getCreatedDate()));
+			patientCommunicationInfoModel.setDate(Constants.SDF_MYSL_DATE_TIME.format(patientCommunicationData.getCreatedDate()));
 			BeanUtils.copyProperties(patientCommunicationData, patientCommunicationInfoModel);
 		}
 		return patientCommunicationInfoModel;
