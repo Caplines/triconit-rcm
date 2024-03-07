@@ -10,8 +10,9 @@ public class ClaimLevelInformationDto {
 	private String claimProcessingDate;
 	private String claimPassFirstGo;
 	private String initialDenial;
-	private String claimStatusEs;
-	private String claimStatusRcm;
+	private String noOfEstPayment;
+	private String paymentFrequency;
+	private String noOfPaymentReceived;
 	private int sectionId;
 
 }

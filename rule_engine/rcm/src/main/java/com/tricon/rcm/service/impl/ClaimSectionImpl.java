@@ -558,14 +558,17 @@ public class ClaimSectionImpl {
 			claimLevelSection.setClaimId(claimLvelInfoDto.getClaimId());
 			claimLevelSection.setNetwork(claimLvelInfoDto.getNetwork());
 			claimLevelSection.setClaimPassFirstGo(claimLvelInfoDto.getClaimPassFirstGo());
-			claimLevelSection.setClaimStatusEs(claimLvelInfoDto.getClaimStatusEs());
-			claimLevelSection.setClaimStatusRcm(claimLvelInfoDto.getClaimStatusRcm());
+			claimLevelSection.setNoOfEstPayment(claimLvelInfoDto.getNoOfEstPayment());
+			claimLevelSection.setNoOfPaymentReceived(claimLvelInfoDto.getNoOfPaymentReceived());
+			claimLevelSection.setPaymentFrequency(claimLvelInfoDto.getPaymentFrequency());
 			claimLevelSection.setInitialDenial(claimLvelInfoDto.getInitialDenial());
 			claimLevelSection.setCreatedBy(createdBy);
 			claimLevelSection.setFinalSubmit(isFinalSubmit);
 			claimLevelSection.setTeamId(team);
 			claimLevelSection
-					.setClaimProcessingDate(Constants.SDF_MYSL_DATE.parse(claimLvelInfoDto.getClaimProcessingDate()));
+					.setClaimProcessingDate(
+							!StringUtils.isNoneBlank(claimLvelInfoDto.getClaimProcessingDate())?null:
+							Constants.SDF_MYSL_DATE.parse(claimLvelInfoDto.getClaimProcessingDate()));
 			claimLevelSection = claimLevelInfoRepo.save(claimLevelSection);
 			return claimLevelSection != null ? true : null;
 		}
@@ -585,7 +588,7 @@ public class ClaimSectionImpl {
 		}
 		if (claimLevelSections != null) {
 			responseDto = new ClaimLevelInformationDto();
-			responseDto.setClaimProcessingDate(
+			responseDto.setClaimProcessingDate(claimLevelSections.getClaimProcessingDate()==null?"":
 					Constants.SDF_MYSL_DATE.format(claimLevelSections.getClaimProcessingDate()));
 			BeanUtils.copyProperties(claimLevelSections, responseDto);
 			return responseDto;
@@ -640,7 +643,9 @@ public class ClaimSectionImpl {
 			patientPaymentInformation.setAmountCollectedClaims(patientPaymentInfoModel.getAmountCollectedClaims());
 			patientPaymentInformation.setClaim(claim);
 			patientPaymentInformation
-					.setDateOfPayment(Constants.SDF_MYSL_DATE.parse(patientPaymentInfoModel.getDateOfPayment()));
+					.setDateOfPayment(
+							!StringUtils.isNoneBlank(patientPaymentInfoModel.getDateOfPayment())?null:
+							Constants.SDF_MYSL_DATE.parse(patientPaymentInfoModel.getDateOfPayment()));
 			patientPaymentInformation.setDueBalanceInPMS(patientPaymentInfoModel.getDueBalanceInPMS());
 			patientPaymentInformation.setModeOfPayment(patientPaymentInfoModel.getModeOfPayment());
 			patientPaymentInformation.setPostedInPMS(patientPaymentInfoModel.getPostedInPMS());
@@ -667,7 +672,7 @@ public class ClaimSectionImpl {
 		}
 		if (patientPaymentlSections != null) {
 			responseDto = new PatientPaymentSectionDto();
-			responseDto.setDateOfPayment(Constants.SDF_MYSL_DATE.format((patientPaymentlSections.getDateOfPayment())));
+			responseDto.setDateOfPayment(patientPaymentlSections.getDateOfPayment()==null?"":Constants.SDF_MYSL_DATE.format((patientPaymentlSections.getDateOfPayment())));
 			BeanUtils.copyProperties(patientPaymentlSections, responseDto);
 			return responseDto;
 		}
@@ -786,6 +791,7 @@ public class ClaimSectionImpl {
 				paymentInsuranceInformation.setAmountReceivedInBank(
 						paymentInformationInfoModel.getAmountReceivedInBank());
 				paymentInsuranceInformation.setCheckCashDate(
+						!StringUtils.isNoneBlank(paymentInformationInfoModel.getCheckCashDate())?null:
 						Constants.SDF_MYSL_DATE.parse(paymentInformationInfoModel.getCheckCashDate()));
 				if (paymentInformationInfoModel.getPaymentMode().equals(Constants.PAYMENT_MODE_CHECK)) {
 					paymentInsuranceInformation.setCheckDeliverTo(paymentInformationInfoModel.getCheckDeliverTo());
@@ -795,6 +801,7 @@ public class ClaimSectionImpl {
 				paymentInsuranceInformation.setPaymentMode(paymentInformationInfoModel.getPaymentMode());
 				paymentInsuranceInformation.setClaim(claim);
 				paymentInsuranceInformation.setAmountDateReceivedInBank(
+						!StringUtils.isNoneBlank(paymentInformationInfoModel.getAmountDateReceivedInBank())?null:
 						Constants.SDF_MYSL_DATE.parse(paymentInformationInfoModel.getAmountDateReceivedInBank()));
 				paymentInsuranceInformation.setCreatedBy(createdBy);
 				paymentInsuranceInformation.setFinalSubmit(finalSubmit);
@@ -820,8 +827,9 @@ public class ClaimSectionImpl {
 		if (paymentInsuranceInformation != null) {
 			responseDto = new PaymentInformationSectionDto();
 			responseDto
-					.setCheckCashDate(Constants.SDF_MYSL_DATE.format((paymentInsuranceInformation.getCheckCashDate())));
+					.setCheckCashDate(paymentInsuranceInformation.getCheckCashDate()==null?"":Constants.SDF_MYSL_DATE.format((paymentInsuranceInformation.getCheckCashDate())));
 			responseDto.setAmountDateReceivedInBank(
+					paymentInsuranceInformation.getAmountDateReceivedInBank()==null?"":
 					Constants.SDF_MYSL_DATE.format((paymentInsuranceInformation.getAmountDateReceivedInBank())));
 			BeanUtils.copyProperties(paymentInsuranceInformation, responseDto);
 			return responseDto;
@@ -895,7 +903,7 @@ public class ClaimSectionImpl {
 						notes.setNotes(serviceNotes.getNotes());
 						notes.setServiceCode(serviceNotes.getServiceCode());
 						notes.setCreatedBy(serviceNotes.getCreatedBy());
-						notes.setCreatedDate(Constants.SDF_MYSL_DATE.format(serviceNotes.getDate()));
+						notes.setCreatedDate(serviceNotes.getDate()==null?"":Constants.SDF_MYSL_DATE.format(serviceNotes.getDate()));
 						notes.setTeamName(serviceNotes.getTeamName());
 						oldNotesList.add(notes);
 					}
@@ -929,7 +937,7 @@ public class ClaimSectionImpl {
 			followUpInformation.setInsuranceRepName(rcmFollowUpInsuranceInfoModel.getInsuranceRepName());
 			followUpInformation.setModeOfFollowUp(rcmFollowUpInsuranceInfoModel.getModeOfFollowUp());
 			followUpInformation.setNextFollowUpRequired(rcmFollowUpInsuranceInfoModel.getNextFollowUpRequired());
-			followUpInformation.setNextFollowUpDate(
+			followUpInformation.setNextFollowUpDate(!StringUtils.isNoneBlank(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate())?null:
 					Constants.SDF_MYSL_DATE.parse(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate()));
 			followUpInformation.setRefNumber(rcmFollowUpInsuranceInfoModel.getRefNumber());
 			followUpInformation.setCreatedBy(createdBy);
@@ -939,7 +947,7 @@ public class ClaimSectionImpl {
 			rcmFollowUpInsuranceInfoModel.setFollowByTeam(followUpInformation.getTeam().getDescription());	
 			rcmFollowUpInsuranceInfoModel.setFollowByUser(followUpInformation.getCreatedBy().getFirstName());	
 			rcmFollowUpInsuranceInfoModel.setFollowByUserLastName(followUpInformation.getCreatedBy().getLastName());
-			rcmFollowUpInsuranceInfoModel.setNextFollowUpDate(Constants.SDF_MYSL_DATE_TIME.format(followUpInformation.getCreatedDate()));
+			rcmFollowUpInsuranceInfoModel.setNextFollowUpDate(followUpInformation.getNextFollowUpDate()==null?"":Constants.SDF_MYSL_DATE_TIME.format(followUpInformation.getNextFollowUpDate()));
 			BeanUtils.copyProperties(followUpInformation, rcmFollowUpInsuranceInfoModel);
 		}
 		return rcmFollowUpInsuranceInfoModel;
@@ -959,7 +967,7 @@ public class ClaimSectionImpl {
 				responseDto.setFollowByUser(attachBy.getFirstName());
 				responseDto.setFollowByUserLastName(attachBy.getLastName());
 				responseDto.setFollowByTeam(team.getDescription());
-				responseDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE_TIME.format(data.getNextFollowUpDate()));
+				responseDto.setNextFollowUpDate(data.getNextFollowUpDate()==null?"":Constants.SDF_MYSL_DATE_TIME.format(data.getNextFollowUpDate()));
 				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);
 			}
@@ -1126,7 +1134,7 @@ public class ClaimSectionImpl {
 				responseDto = new RcmPatientCommunicationDto();
 				responseDto.setCreatedBy(attachBy.getFirstName());
 				responseDto.setCreatedTeam(team.getDescription());
-				responseDto.setDate(Constants.SDF_MYSL_DATE_TIME.format(data.getCreatedDate()));
+				responseDto.setDate(data.getCreatedDate()==null?"":Constants.SDF_MYSL_DATE_TIME.format(data.getCreatedDate()));
 				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);
 			}

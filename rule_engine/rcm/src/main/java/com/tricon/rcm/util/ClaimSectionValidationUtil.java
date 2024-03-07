@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
+import com.tricon.rcm.dto.CollectionAgencyDto;
 import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
 import com.tricon.rcm.dto.EOBDto;
+import com.tricon.rcm.dto.NeedToCallInsuranceDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
 import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
 import com.tricon.rcm.dto.RcmPatientCommunicationDto;
@@ -47,15 +49,15 @@ public class ClaimSectionValidationUtil {
 
 		// For ClaimStatus ER
 
-		if (!StringUtils.isNoneBlank(claimInfoModel.getClaimStatusEs())) {
-			isValid = false;
-		}
-
-		// For ClaimStatus RCM
-
-		if (!StringUtils.isNoneBlank(claimInfoModel.getClaimStatusRcm())) {
-
-		}
+//		if (!StringUtils.isNoneBlank(claimInfoModel.getClaimStatusEs())) {
+//			isValid = false;
+//		}
+//
+//		// For ClaimStatus RCM
+//
+//		if (!StringUtils.isNoneBlank(claimInfoModel.getClaimStatusRcm())) {
+//
+//		}
 
 		// For InitialDenial
 
@@ -268,4 +270,21 @@ public class ClaimSectionValidationUtil {
 	}
 	
 
+	public boolean validationForNeedToCallInsuranceSectionFields(NeedToCallInsuranceDto needToCallInfoModel) {
+		logger.info("NeedToCallInsuranceDto->" + needToCallInfoModel);
+		boolean isValid = true;
+		if (needToCallInfoModel == null) {
+			return false;
+		}
+		return isValid;
+	}
+
+	public boolean validationForCollectionAgencySectionFields(CollectionAgencyDto collectionAgencyInfoModel) {
+		logger.info("CollectionAgencyDto->" + collectionAgencyInfoModel);
+		boolean isValid = true;
+		if (collectionAgencyInfoModel == null) {
+			return false;
+		}
+		return isValid;
+	}
 }

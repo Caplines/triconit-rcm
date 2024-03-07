@@ -54,11 +54,14 @@ public class RcmClaimLevelSection extends BaseAuditEntity implements java.io.Ser
 	@Column(name = "initial_denial")
 	private String initialDenial;
 	
-	@Column(name = "claim_status_es")
-	private String claimStatusEs;
+	@Column(name = "no_of_est_payment")
+	private String noOfEstPayment;
 	
-	@Column(name = "claim_status_rcm")
-	private String claimStatusRcm;
+	@Column(name = "payments_frequency")
+	private String paymentFrequency;
+	
+	@Column(name = "no_of_payment_received")
+	private String noOfPaymentReceived;
 
 	@Column(name = "final_submit")
 	private boolean finalSubmit;
