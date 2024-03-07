@@ -9,7 +9,7 @@ public class RcmPatientCommunicationDto {
 	private String desposition;
 	private String modeOfFollowUp;
 	private String contact;
-	private int createdTeamId;
+	private String createdTeam;
 	private String createdBy;
 	private String date;
 	private int sectionId;

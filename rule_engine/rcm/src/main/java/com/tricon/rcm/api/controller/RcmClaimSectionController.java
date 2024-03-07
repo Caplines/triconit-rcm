@@ -226,17 +226,16 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@GetMapping(value = "api/get-eob-info/{claimUuid}/{withTeam}")
+	@GetMapping(value = "api/get-eob-info/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getEOBInfo(@PathVariable("claimUuid") String claimUuid,
-			@PathVariable("withTeam") boolean withTeam, Model model) {
+	public ResponseEntity<?> getEOBInfo(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		List<EOBDto> response = null;
 		try {
-			response = claimSection.fetchEOBInformation(partialHeader, claimUuid, withTeam);
+			response = claimSection.fetchEOBInformation(partialHeader, claimUuid);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -287,17 +286,16 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
-	@GetMapping(value = "api/get-service-level-info/{claimUuid}/{withTeam}")
+	@GetMapping(value = "api/get-service-level-info/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getServiceLevelInfo(@PathVariable("claimUuid") String claimUuid,
-			@PathVariable("withTeam") boolean withTeam, Model model) {
+	public ResponseEntity<?> getServiceLevelInfo(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		List<ServiceLevelRequestBodyDto> response = null;
 		try {
-			response = claimSection.fetchServiceLevelInformation(partialHeader, claimUuid, withTeam);
+			response = claimSection.fetchServiceLevelInformation(partialHeader, claimUuid);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -305,17 +303,16 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
-	@GetMapping(value = "api/get-follow-up-info/{claimUuid}/{withTeam}")
+	@GetMapping(value = "api/get-follow-up-info/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getFollowUpInfo(@PathVariable("claimUuid") String claimUuid,
-			@PathVariable("withTeam") boolean withTeam, Model model) {
+	public ResponseEntity<?> getFollowUpInfo(@PathVariable("claimUuid") String claimUuid,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		List<RcmFollowUpInsuranceDto> response = null;
 		try {
-			response = claimSection.fetchFollowUpInsuranceInformation(partialHeader, claimUuid, withTeam);
+			response = claimSection.fetchFollowUpInsuranceInformation(partialHeader, claimUuid);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
@@ -362,17 +359,16 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
-	@GetMapping(value = "api/get-patient-communication-info/{claimUuid}/{withTeam}")
+	@GetMapping(value = "api/get-patient-communication-info/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> getPatientCommunicationInfo(@PathVariable("claimUuid") String claimUuid,
-			@PathVariable("withTeam") boolean withTeam, Model model) {
+	public ResponseEntity<?> getPatientCommunicationInfo(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		List<RcmPatientCommunicationDto> response = null;
 		try {
-			response = claimSection.fetchPatientCommunicationInformation(partialHeader, claimUuid, withTeam);
+			response = claimSection.fetchPatientCommunicationInformation(partialHeader, claimUuid);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

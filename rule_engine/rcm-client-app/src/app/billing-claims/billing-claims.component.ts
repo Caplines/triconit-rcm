@@ -235,8 +235,25 @@ export class BillingClaimsComponent {
       data:[],
       modal:{}
     },
-    PATIENT_STATEMENT:{},
+    PATIENT_STATEMENT:{
+      "modeOfStatement": "",
+      "reason": "",
+      "statementType": "",
+      "status": "",
+      "amountStatement": 0,
+      "nextReviewDate": "",
+      "nextStatementDate": "",
+      "statementSendingDate": "",
+      "remarks": "",
+      "statementNotes": 0,
+      "balanceSheetLink": "",
+      "buttonType":1
+    },
     PATIENT_PAYMENT:{},
+    PATIENT_COMMUNICATION:{
+      data:[],
+      modal:{}
+    },
     CURRENT_STATUS_AND_NEXT_ACTION:{},
 
   };
@@ -294,6 +311,7 @@ export class BillingClaimsComponent {
           this.fetchPatientStatementSection();
           this.fetchPatientPaymentSection();
           this.fetchNextActionRequiredSection();
+          this.fetchPatientCommunicationSection();
 
         }
       });
@@ -1924,6 +1942,10 @@ export class BillingClaimsComponent {
       this.claimSectionModal['PATIENT_PAYMENT']['sectionId'] = this.sectionIds['PATIENT_PAYMENT']['sectionId'];
       this.finalSaveClaimDataModel.patientPaymentInfoModel =this.savePatientPaymentInfo(true);
     }
+    else if (sectionName === 'PATIENT_COMMUNICATION') {
+      this.claimSectionModal['PATIENT_COMMUNICATION']['sectionId'] = this.sectionIds['PATIENT_COMMUNICATION']['sectionId'];
+      this.finalSaveClaimDataModel.patientCommunicationInfoModel =this.savePatientCommunicationSection(true);
+    }
     else if (sectionName === 'CURRENT_STATUS_AND_NEXT_ACTION') {
       this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'] = this.sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'];
       this.finalSaveClaimDataModel.nextActionRequiredInfoModel = this.saveNextActionRequiredSection(true);
@@ -2104,7 +2126,7 @@ export class BillingClaimsComponent {
 
   saveInsurancePaymentInfo(isFinalSubmit: boolean) {
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['sectionId'] = this.sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'];
-    this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['paidAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['paidAmount'] ? this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['paidAmount'] : 0;
+    this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['paidAmount'] = this.sectionLevelInfoTotalConfig.paidAmount > 0 ? +this.sectionLevelInfoTotalConfig.paidAmount : 0;
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'];  //converting into Number type using bitwise operator
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'];  //converting into Number type using bitwise operator
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'];  //converting into Number type using bitwise operator
@@ -2214,6 +2236,17 @@ fetchNextActionRequiredSection() {
     this.appService.fetchNextActionRequiredSection(this.claimUUid, (res: any) => {
       if (res && res.data) {
         this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION'] = res.data;
+      }
+    })
+  }
+
+}
+
+fetchPatientCommunicationSection() {
+  if (this.checkForSectionAccess(this.sectionIds['PATIENT_COMMUNICATION']['sectionId'], 'view')) {
+    this.appService.fetchPatientCommunicationSection(this.claimUUid, (res: any) => {
+      if (res && res.data) {
+        this.claimSectionModal['PATIENT_COMMUNICATION'].data = res.data;
       }
     })
   }
@@ -2372,6 +2405,7 @@ fetchNextActionRequiredSection() {
       console.log(params);
     this.appService.saveClaimLevelInfoSection(params, (res: any) => {
       if (res.status) {
+        this.claimSectionModal['INSURANCE_FOLLOW_UP'].data.push(res.data);
         console.log(res);
       }
     })
@@ -2387,6 +2421,8 @@ fetchNextActionRequiredSection() {
         claimUuid: this.claimUUid,
         rcmPatientStatementInfoModel:this.claimSectionModal['PATIENT_STATEMENT']
     };
+    console.log(params);
+    
     this.appService.saveClaimLevelInfoSection(params, (res: any) => {
       if (res.status) {
         console.log(res);
@@ -2433,4 +2469,42 @@ fetchNextActionRequiredSection() {
   return this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION'];
   }
 
+  savePatientCommunicationSection(isFinal:boolean){
+    this.claimSectionModal['PATIENT_COMMUNICATION']['modal']['sectionId'] = this.sectionIds['PATIENT_COMMUNICATION']['sectionId'];
+    if(!isFinal){
+      let params: any = {
+        claimUuid: this.claimUUid,
+        patientCommunicationInfoModel:this.claimSectionModal['PATIENT_COMMUNICATION']['modal']
+      };
+      this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      if (res.status) {
+        this.claimSectionModal['PATIENT_COMMUNICATION'].data.push(res.data);
+        console.log(res);
+      }
+    })
+  }
+  return this.claimSectionModal['PATIENT_COMMUNICATION'];
+  }
+
+  selectStatementBox(buttonType:any){
+    this.claimSectionModal.PATIENT_STATEMENT['buttonType'] = buttonType;
+    this.clearExisitingPatientStatmentValues(buttonType);
+  }
+
+  clearExisitingPatientStatmentValues(buttonType:any){
+    this.claimSectionModal.PATIENT_STATEMENT = {
+      "modeOfStatement": "",
+      "reason": "",
+      "statementType": "",
+      "status": "",
+      "amountStatement": 0,
+      "nextReviewDate": "",
+      "nextStatementDate": "",
+      "statementSendingDate": "",
+      "remarks": "",
+      "statementNotes": 0,
+      "balanceSheetLink": "",
+      "buttonType":buttonType
+    } 
+  }
 }

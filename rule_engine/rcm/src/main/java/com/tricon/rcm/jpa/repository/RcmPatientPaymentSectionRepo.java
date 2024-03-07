@@ -7,7 +7,7 @@ import com.tricon.rcm.db.entity.RcmPatientPayment;
 
 public interface RcmPatientPaymentSectionRepo  extends JpaRepository<RcmPatientPayment, Integer>{
 	
-	RcmPatientPayment findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdIdOrderByCreatedDateDesc(String claimUuid,String createdBy,int teamId);
-	RcmPatientPayment findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(String claimUuid,String createdBy);
+	RcmPatientPayment findFirstByClaimClaimUuidAndTeamIdIdOrderByCreatedDateDesc(String claimUuid,int teamId);
+	RcmPatientPayment findFirstByClaimClaimUuidOrderByCreatedDateDesc(String claimUuid);
 
 }

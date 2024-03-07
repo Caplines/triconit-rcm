@@ -581,7 +581,7 @@ public class RcmCommonServiceImpl {
 				logger.info("Inside section 17->Follow-up Insurance");
 				response = claimSectionimpl.saveFollowUpInsuranceSection(sectionRequestBody.getRcmFollowUpInsuranceInfoModel(),
 						 claim, createdBy, team, sectionRequestBody.isFinalSubmit(),partialHeader.getClientName());
-				logger.info("response->" + response);
+				//logger.info("response->" + response);
 				break;
 				
 			case 15:

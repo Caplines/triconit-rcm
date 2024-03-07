@@ -130,6 +130,7 @@ export class BaseService {
     'get-patient-statement-info': "/api/get-patient-statement-info",
     'get-patient-payment-info': "/api/get-patient-payment-info",
     'get-next_action-required-info': "/api/get-next_action-required-info",
+    'get-patient-communication-info': "/api/get-patient-communication-info",
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

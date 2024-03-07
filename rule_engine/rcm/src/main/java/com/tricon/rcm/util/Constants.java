@@ -155,6 +155,8 @@ public class Constants {
 	public static final String From_1_Statement="From 1st Statement";
     public static final String From_2_Statement="From 2nd Statement";
     public static final String Claim_upLoaded="Claim Uploaded";
+    public static final int SEND_STATEMENT_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION=1;
+    public static final int NEED_TO_HOLD_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION=2;
 
     
     

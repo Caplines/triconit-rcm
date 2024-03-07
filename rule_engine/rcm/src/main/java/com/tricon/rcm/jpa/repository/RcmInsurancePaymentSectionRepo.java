@@ -6,6 +6,6 @@ import com.tricon.rcm.db.entity.PaymentInformationSection;
 
 public interface RcmInsurancePaymentSectionRepo extends JpaRepository<PaymentInformationSection, Integer>{
 
-	PaymentInformationSection findFirstByClaimClaimUuidAndCreatedByUuidAndTeamIdOrderByCreatedDateDesc(String claimUuid,String createdBy,int teamId);
-	PaymentInformationSection findFirstByClaimClaimUuidAndCreatedByUuidOrderByCreatedDateDesc(String claimUuid,String createdBy);
+	PaymentInformationSection findFirstByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(String claimUuid,int teamId);
+	PaymentInformationSection findFirstByClaimClaimUuidOrderByCreatedDateDesc(String claimUuid);
 }
