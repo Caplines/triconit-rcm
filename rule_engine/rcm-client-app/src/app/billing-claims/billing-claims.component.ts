@@ -2439,10 +2439,10 @@ export class BillingClaimsComponent {
       "surface": "",
       "estPrimary": "",
       "fee": "",
-      "snum": this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].length
+      "snum": this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length
     };
 
-    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].splice(this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].length - 1, 0, model);
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.splice(this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length - 1, 0, model);
 
   }
 
