@@ -276,7 +276,7 @@ export class BillingClaimsComponent {
   pdfUrlSrc: any = "";
   sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0 };
   viewNotesConfig: any = { showNotes: false, viewNotes: [] };
-  isBtpFlagTrue:boolean=false;
+  isBtpFlagTrue: boolean = false;
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
 
 
@@ -1939,7 +1939,7 @@ export class BillingClaimsComponent {
       data = team.sectionData.filter((item: any) => item.editAccess);
     });
     for (const section of data) {
-      if (section.isNewSection && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {          //replace section.isNewSection with ===> ths.sectionIds[section.sectionName]?.isNewSection
+      if (ths.sectionIds[section.sectionName]?.isNewSection && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {          //replace section.isNewSection with ===> ths.sectionIds[section.sectionName]?.isNewSection
         const methodName: any = `validate_${section.sectionName}`
         let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
         //method names are creates using convention  validate_{sectioname}
@@ -1950,11 +1950,15 @@ export class BillingClaimsComponent {
         }
       }
     }
+    if (!ths.isSectionValidated) {
+      return;
+    }
     ths.claimEditModel = {};
     ths.claimEditModel.assignToTeam = ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam'];
     debugger;
     if (this.claimEditModel.assignToTeam == -1) {
-      this.alert('NO team Selected');
+      alert('NO team Selected');
+      return;
     }
     this.isOtherTLExist(this.finalerror, (res: any) => {
       if (res) {
@@ -2156,10 +2160,10 @@ export class BillingClaimsComponent {
     return true;
   }
   validate_CURRENT_STATUS_AND_NEXT_ACTION() {
-
+    debugger;
     let isSectionValidated = true;
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"] = {};
-    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeam) {
+    if (this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeam == -1) {
       this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"]['assignToTeam'] = true;
       isSectionValidated = false;
     }
@@ -2171,7 +2175,7 @@ export class BillingClaimsComponent {
       this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].remarks = true;
       isSectionValidated = false;
     }
-    
+
     return isSectionValidated;
   }
   validate_ATTACHMENT() {
@@ -2181,6 +2185,7 @@ export class BillingClaimsComponent {
   finalSaveSection(moveToNextTeam: boolean, showResponseStatus: boolean) {
     this.finalSaveClaimDataModel['claimUuid'] = this.claimUUid;
     this.finalSaveClaimDataModel['moveToNextTeam'] = moveToNextTeam;
+
     this.appService.saveClaimLevelInfoSection(this.finalSaveClaimDataModel, (res: any) => {
       if (res.status) {
         console.log(res);
@@ -2491,12 +2496,12 @@ export class BillingClaimsComponent {
       this.sectionLevelInfoTotalConfig.fee = this.sectionLevelInfoTotalConfig.fee + +e.fee;
       this.sectionLevelInfoTotalConfig.billToPatientAmount = this.sectionLevelInfoTotalConfig.billToPatientAmount + +e.billToPatientAmount;
     });
-    this.sectionLevelInfoTotalConfig.billToPatientAmount>0 ? this.isBtpFlagTrue = true : this.isBtpFlagTrue=false;
+    this.sectionLevelInfoTotalConfig.billToPatientAmount > 0 ? this.isBtpFlagTrue = true : this.isBtpFlagTrue = false;
     this.addDecimalInTotalServiceValue();
   }
 
-  
- clearTotalValues(){
+
+  clearTotalValues() {
     this.sectionLevelInfoTotalConfig.allowedAmount = 0;
     this.sectionLevelInfoTotalConfig.adjustmentAmount = 0;
     this.sectionLevelInfoTotalConfig.paidAmount = 0;
@@ -2504,15 +2509,15 @@ export class BillingClaimsComponent {
     this.sectionLevelInfoTotalConfig.fee = 0;
     this.sectionLevelInfoTotalConfig.billToPatientAmount = 0;
   }
-  
-addDecimalInTotalServiceValue(){
-  this.sectionLevelInfoTotalConfig.allowedAmount  =  +this.sectionLevelInfoTotalConfig.allowedAmount?.toFixed(2);
-  this.sectionLevelInfoTotalConfig.adjustmentAmount  =  +this.sectionLevelInfoTotalConfig.adjustmentAmount?.toFixed(2);
-  this.sectionLevelInfoTotalConfig.paidAmount  =  +this.sectionLevelInfoTotalConfig.paidAmount?.toFixed(2);
-  this.sectionLevelInfoTotalConfig.estPrimary  =  +this.sectionLevelInfoTotalConfig.estPrimary?.toFixed(2);
-  this.sectionLevelInfoTotalConfig.fee  =  +this.sectionLevelInfoTotalConfig.fee?.toFixed(2);
-  this.sectionLevelInfoTotalConfig.billToPatientAmount  =  +this.sectionLevelInfoTotalConfig.billToPatientAmount?.toFixed(2);
-}
+
+  addDecimalInTotalServiceValue() {
+    this.sectionLevelInfoTotalConfig.allowedAmount = +this.sectionLevelInfoTotalConfig.allowedAmount?.toFixed(2);
+    this.sectionLevelInfoTotalConfig.adjustmentAmount = +this.sectionLevelInfoTotalConfig.adjustmentAmount?.toFixed(2);
+    this.sectionLevelInfoTotalConfig.paidAmount = +this.sectionLevelInfoTotalConfig.paidAmount?.toFixed(2);
+    this.sectionLevelInfoTotalConfig.estPrimary = +this.sectionLevelInfoTotalConfig.estPrimary?.toFixed(2);
+    this.sectionLevelInfoTotalConfig.fee = +this.sectionLevelInfoTotalConfig.fee?.toFixed(2);
+    this.sectionLevelInfoTotalConfig.billToPatientAmount = +this.sectionLevelInfoTotalConfig.billToPatientAmount?.toFixed(2);
+  }
 
 
   closeNoteModal() {
@@ -2665,19 +2670,19 @@ addDecimalInTotalServiceValue(){
     return isOldSectionNeeded;
   }
 
-  updateBtpFlagValue(event:any){
+  updateBtpFlagValue(event: any) {
 
-      if(event.target.checked){
-        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
-            e.flag = true;
-            this.isBtpFlagTrue=true;
-        });
-      }else{
-        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
-          e.flag = false;
-          this.isBtpFlagTrue=false;
+    if (event.target.checked) {
+      this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+        e.flag = true;
+        this.isBtpFlagTrue = true;
       });
-      }
+    } else {
+      this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+        e.flag = false;
+        this.isBtpFlagTrue = false;
+      });
+    }
   }
 
 }
