@@ -37,6 +37,7 @@ export class BillingClaimsComponent {
   alertAssign: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertArch: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertPreferrsub: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
+  finalerror: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   claimRcm: ClaimRcmDataModel;
   claimStatus: ClaimUpdateStatusModel;
   claimARulesPullDataModel: ClaimRulesPullDataModel = {};
@@ -473,11 +474,6 @@ export class BillingClaimsComponent {
       //debugger;
       let valid = ths.validateData();
       let validSec = true;
-      if (!ths.claimRcm.pending) {//if Already submitted one Time
-        ths.checkSectionFieldValidation(false, false, false);
-        validSec = ths.isSectionValidated;
-      }
-      debugger;
       if (valid && validSec) {
 
         let prefer = this.checkForValidPreferredSbmisssion();
@@ -490,17 +486,7 @@ export class BillingClaimsComponent {
         ths.inSave = true;
         ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
           ths.inSave = false;
-          if (!ths.claimRcm.pending) {//if Already submitted one Time
-            ths.checkSectionFieldValidation(false, true, true);
-            //this.showAlertPopup(callback);
-          } else {
-            this.showAlertPopup(callback);
-          }
-
-
-
-
-
+          this.showAlertPopup(callback);
         });
       }
     }
@@ -535,10 +521,10 @@ export class BillingClaimsComponent {
       let valid = true;
       if (!this.isSuperAdmin) valid = ths.validateData();
       let validSec = true;
-      if (!ths.claimRcm.pending) {//if Already submitted one Time
+      /*if (!ths.claimRcm.pending) {//if Already submitted one Time
         ths.checkSectionFieldValidation(false, true, false);
         validSec = ths.isSectionValidated;
-      }
+      }*/
       if (ths.isInternalAudit) {
 
         ths.claimEditModel.assignToTeam = 7;//ths.teamsMs[0].teamId;
@@ -561,6 +547,62 @@ export class BillingClaimsComponent {
       ths.claimEditModel.assignTouuid = "";
 
       ths.openAssignModal('tl');
+    } else if (type === 'assign') {
+      ths.claimEditModel.assignTouuid = "";
+      ths.claimEditModel.assignToTeam = -1;
+      //debugger;
+      ths.assignModel.toOtherTeam = true;
+      let valid = true;
+      //if (!this.isSuperAdmin) valid = ths.validateData(); //no need to check for validation
+      if (ths.isInternalAudit && ths.assignType == 'reviewed') {
+        //ths.claimEditModel.assignToTeam = ths.teamsMs[0].teamId;
+      }
+
+      if (valid) {
+        ths.openAssignModal('other');
+
+        //Open Modal
+        /*
+        ths.claimEditModel.submission=false;
+        ths.claimService.saveClaimData(ths.claimEditModel,(callback: any)=>{
+          ths.inSave=false;
+          this.showAlertPopup(callback);
+        });
+       */
+      }
+    } else if (type === 'assignafterpendingnot_bill_internal') {
+      ths.claimEditModel.submission = false;
+      ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
+        ths.finalSaveSection(true, true);
+      });
+    } else if ("reviewedafterpendingbyinternalaudit") {
+      let valid = true;
+      ths.claimEditModel.submission = false;
+      if (!this.isSuperAdmin) valid = ths.validateData();
+      if (valid) {
+        ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
+          ths.finalSaveSection(true, true);
+        });
+      }
+    } else if (type === 'submitafterpending') {
+      //do From Validation
+      //debugger;
+      ths.claimEditModel.submission = true;
+      let valid = ths.validateData();
+      let validSec = true;
+      if (valid && validSec) {
+
+        let prefer = this.checkForValidPreferredSbmisssion();
+
+        if (!prefer && !this.overidePreferredSubmission) {
+          ths.openPrefferedModal();
+          return;
+        }
+        ths.claimEditModel.submission = true;
+        ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
+          ths.finalSaveSection(true, true);
+        });
+      }
     }
 
 
@@ -1231,7 +1273,7 @@ export class BillingClaimsComponent {
 
   assignToOtherTeam() {
     console.log(this.claimEditModel.assignToTeam);
-    this.isOtherTLExist((res: any) => {
+    this.isOtherTLExist(this.alert, (res: any) => {
       if (res) {
 
         let ths = this;
@@ -1737,7 +1779,7 @@ export class BillingClaimsComponent {
     return name.toLowerCase().includes("medicaid");
   }
 
-  isOtherTLExist(callback: any) {
+  isOtherTLExist(ref: any, callback: any) {
     let params: any = {
       "claimUuid": this.claimUUid,
       "assignToTeamId": +this.claimEditModel.assignToTeam
@@ -1747,11 +1789,11 @@ export class BillingClaimsComponent {
         callback(res.data.responseStatus);
       }
       else {
-        this.alert.showAlertPopup = true;
-        this.alert.alertMsg = res.data.message;
-        this.alert.isError = true;
+        ref.showAlertPopup = true;
+        ref.alertMsg = res.data.message;
+        ref.isError = true;
         setTimeout(() => {
-          this.alert = {};
+          ref = {};
         }, 6000);
       }
     })
@@ -1890,10 +1932,8 @@ export class BillingClaimsComponent {
     ths.sectionLevelData[0].teamsWithSections.forEach((team: any) => {
       data = team.sectionData.filter((item: any) => item.editAccess);
     });
-
-
     for (const section of data) {
-      if (section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {
+      if (section.isNewSection && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {
         const methodName: any = `validate_${section.sectionName}`
         let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
         //method names are creates using convention  validate_{sectioname}
@@ -1904,9 +1944,32 @@ export class BillingClaimsComponent {
         }
       }
     }
-    if (ths.isSectionValidated && save) {
-      ths.finalSaveSection(moveToNextTeam, showResponseStatus);
+    this.claimEditModel.assignToTeam = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam'];
+    if (this.claimEditModel.assignToTeam == -1) {
+      this.alert('NO team Selected');
     }
+    this.isOtherTLExist(this.finalerror, (res: any) => {
+      if (res) {
+
+        if (ths.isSectionValidated && ths.checkIfOldSectionAccessWhileFinalSave()) {
+          //First Save OLD Data Then Save New data.
+          let type = "";
+          if (ths.claimRcm.currentTeamId === this.appConstants.BILLING_TEAM) type = "submitafterpending";
+          else if (ths.claimRcm.currentTeamId === this.appConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
+          else type = "assignafterpendingnot_bill_internal";
+          ths.saveClaim(type, true);
+
+        } else {
+          if (ths.isSectionValidated && save) {
+            ths.finalSaveSection(moveToNextTeam, showResponseStatus);
+          }
+        }
+
+      }
+    });
+
+
+
 
   }
 
@@ -2529,4 +2592,22 @@ export class BillingClaimsComponent {
       "buttonType": buttonType
     }
   }
+
+  checkIfOldSectionAccessWhileFinalSave(): boolean {
+
+    let ths: any = this;
+    let isOldSectionNeeded = false;
+    let data: any = [];
+    ths.sectionLevelData[0].teamsWithSections.forEach((team: any) => {
+      data = team.sectionData.filter((item: any) => item.editAccess);
+    });
+
+    for (const section of data) {
+      if (section.isNewSection == false && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {
+        isOldSectionNeeded = true;
+      }
+    }
+    return isOldSectionNeeded;
+  }
+
 }

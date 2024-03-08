@@ -2716,6 +2716,16 @@
                                                     <!-- <button class="btn btn-success" (click)="saveNextActionRequiredSection(false)"
                                                     [hidden]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit">Save</button> -->
                                                 </div>
+                                                <div class="col-md-4 mb-2 alert fade show text-center"
+                                                    *ngIf="finalerror.showAlertPopup"
+                                                    [ngClass]="{'alert-success': !this.finalerror.isError,'alert-danger':this.finalerror.isError}"
+                                                    role="alert">
+                                                    <button type="button" (click)="finalerror.showAlertPopup=false;"
+                                                        class="close" data-dismiss="alert" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                    <strong>{{finalerror.alertMsg}}</strong>
+                                                </div>
                                             </div>
                                         </div>
 
