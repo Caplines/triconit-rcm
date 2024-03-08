@@ -207,12 +207,12 @@ export class BillingClaimsComponent {
   toggleSideBar: boolean = false;
 
   claimSectionModal: any = {
-    
- CLAIM_LEVEL_INFORMATION: {
-  noOfEstPayment:'',
-  paymentFrequency:'',
-  noOfPaymentReceived:'',
-},
+
+    CLAIM_LEVEL_INFORMATION: {
+      noOfEstPayment: '',
+      paymentFrequency: '',
+      noOfPaymentReceived: '',
+    },
     APPEAL: {
       modeOfAppeal: '',
       aiToolUsed: '',
@@ -1949,7 +1949,9 @@ export class BillingClaimsComponent {
         }
       }
     }
-    this.claimEditModel.assignToTeam = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam'];
+    ths.claimEditModel = {};
+    ths.claimEditModel.assignToTeam = ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam'];
+    debugger;
     if (this.claimEditModel.assignToTeam == -1) {
       this.alert('NO team Selected');
     }
@@ -2598,7 +2600,7 @@ export class BillingClaimsComponent {
     }
   }
 
-  clearCheckDeliverOtherThanModeCheck(){
+  clearCheckDeliverOtherThanModeCheck() {
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' ? this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = '' : '';
   }
 
@@ -2616,6 +2618,7 @@ export class BillingClaimsComponent {
         isOldSectionNeeded = true;
       }
     }
+    console.log("isOldSectionNeeded->" + isOldSectionNeeded);
     return isOldSectionNeeded;
   }
 
