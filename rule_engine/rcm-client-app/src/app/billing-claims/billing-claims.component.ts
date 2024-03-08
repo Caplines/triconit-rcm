@@ -207,7 +207,12 @@ export class BillingClaimsComponent {
   toggleSideBar: boolean = false;
 
   claimSectionModal: any = {
-    CLAIM_LEVEL_INFORMATION: {},
+    
+ CLAIM_LEVEL_INFORMATION: {
+  noOfEstPayment:'',
+  paymentFrequency:'',
+  noOfPaymentReceived:'',
+},
     APPEAL: {
       modeOfAppeal: '',
       aiToolUsed: '',
@@ -2591,6 +2596,10 @@ export class BillingClaimsComponent {
       "balanceSheetLink": "",
       "buttonType": buttonType
     }
+  }
+
+  clearCheckDeliverOtherThanModeCheck(){
+    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' ? this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = '' : '';
   }
 
   checkIfOldSectionAccessWhileFinalSave(): boolean {

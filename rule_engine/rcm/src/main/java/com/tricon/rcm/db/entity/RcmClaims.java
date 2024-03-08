@@ -272,6 +272,9 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "first_posting_date", nullable = true)
 	private Date firstPostingDate;
 	
+	@Column(name = "paid_amount")
+	private Float paidAmount;//
+	
 	
 
 }
