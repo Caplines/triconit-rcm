@@ -2380,11 +2380,13 @@ export class BillingClaimsComponent {
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'];
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalBtpAmount'] = 0;
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalAdjustmentAmount'] = 0;
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] = 0;
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['serviceLevelBody'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;
 
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
       this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalBtpAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalBtpAmount'] + +e.billToPatientAmount;
       this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalAdjustmentAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalAdjustmentAmount'] + +e.adjustmentAmount;
+      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] + +e.paidAmount;
 
     });
 
@@ -2450,6 +2452,7 @@ export class BillingClaimsComponent {
 
   removeSectionLevelRow(idx: any) {
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.splice(idx, 1);
+    this.getTotalServiceLevelInfo();
   }
 
   viewFullNotes(notes: any) {
@@ -2462,6 +2465,7 @@ export class BillingClaimsComponent {
   }
 
   getTotalServiceLevelInfo() {
+    this.clearTotalValues();
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
       this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount + +e.allowedAmount;
       this.sectionLevelInfoTotalConfig.adjustmentAmount = this.sectionLevelInfoTotalConfig.adjustmentAmount + +e.adjustmentAmount;
@@ -2469,8 +2473,29 @@ export class BillingClaimsComponent {
       this.sectionLevelInfoTotalConfig.estPrimary = this.sectionLevelInfoTotalConfig.estPrimary + +e.estPrimary;
       this.sectionLevelInfoTotalConfig.fee = this.sectionLevelInfoTotalConfig.fee + +e.fee;
       this.sectionLevelInfoTotalConfig.billToPatientAmount = this.sectionLevelInfoTotalConfig.billToPatientAmount + +e.billToPatientAmount;
-    })
+    });
+    this.addDecimalInTotalServiceValue();
   }
+
+  
+ clearTotalValues(){
+    this.sectionLevelInfoTotalConfig.allowedAmount = 0;
+    this.sectionLevelInfoTotalConfig.adjustmentAmount = 0;
+    this.sectionLevelInfoTotalConfig.paidAmount = 0;
+    this.sectionLevelInfoTotalConfig.estPrimary = 0;
+    this.sectionLevelInfoTotalConfig.fee = 0;
+    this.sectionLevelInfoTotalConfig.billToPatientAmount = 0;
+  }
+  
+addDecimalInTotalServiceValue(){
+  this.sectionLevelInfoTotalConfig.allowedAmount  =  +this.sectionLevelInfoTotalConfig.allowedAmount?.toFixed(2);
+  this.sectionLevelInfoTotalConfig.adjustmentAmount  =  +this.sectionLevelInfoTotalConfig.adjustmentAmount?.toFixed(2);
+  this.sectionLevelInfoTotalConfig.paidAmount  =  +this.sectionLevelInfoTotalConfig.paidAmount?.toFixed(2);
+  this.sectionLevelInfoTotalConfig.estPrimary  =  +this.sectionLevelInfoTotalConfig.estPrimary?.toFixed(2);
+  this.sectionLevelInfoTotalConfig.fee  =  +this.sectionLevelInfoTotalConfig.fee?.toFixed(2);
+  this.sectionLevelInfoTotalConfig.billToPatientAmount  =  +this.sectionLevelInfoTotalConfig.billToPatientAmount?.toFixed(2);
+}
+
 
   closeNoteModal() {
     this.viewNotesConfig.showNotes = false;
