@@ -206,7 +206,12 @@ export class BillingClaimsComponent {
   toggleSideBar: boolean = false;
 
   claimSectionModal: any = {
-    CLAIM_LEVEL_INFORMATION: {},
+    
+ CLAIM_LEVEL_INFORMATION: {
+  noOfEstPayment:'',
+  paymentFrequency:'',
+  noOfPaymentReceived:'',
+},
     APPEAL: {
       modeOfAppeal: '',
       aiToolUsed: '',
@@ -2131,7 +2136,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['paidAmount'] = this.sectionLevelInfoTotalConfig.paidAmount > 0 ? +this.sectionLevelInfoTotalConfig.paidAmount : 0;
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'];  //converting into Number type using bitwise operator
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'];  //converting into Number type using bitwise operator
-    this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'];  //converting into Number type using bitwise operator
+    // this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'];  //converting into Number type using bitwise operator
     if (!isFinalSubmit) {
 
       let params: any = {
@@ -2528,5 +2533,9 @@ export class BillingClaimsComponent {
       "balanceSheetLink": "",
       "buttonType": buttonType
     }
+  }
+
+  clearCheckDeliverOtherThanModeCheck(){
+    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' ? this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = '' : '';
   }
 }

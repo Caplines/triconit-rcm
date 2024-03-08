@@ -1494,7 +1494,7 @@
                                     </div>
                                 </div>
                                 <ng-container
-                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
+                                    *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Level Information
@@ -1575,12 +1575,41 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4 mb-2">
+                                            <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number" *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
+                                                    <label for="noOfEstPayment">No. of Est. Payments</label>
+                                                    <input type="text" id="noOfEstPayment"
+                                                        *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                        [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                        [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['noOfEstPayment']"
+                                                        class="form-control"
+                                                        [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['noOfEstPayment']}">
+                                                </div>
+                                            </div>
 
+                                        <div class="col-md-4 mb-2">
+                                <div class="custom-row text-number" *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
+                                                <label for="paymentFrequency">Payment Frequency</label>
+                                                <input type="text" id="paymentFrequency"
+                                                    *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['paymentFrequency']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['paymentFrequency']}">
+                                            </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
-
-                                        </div>
+                                            <div class="custom-row text-number" *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
+                                                <label for="noOfPaymentReceived">No. of Payments Received</label>
+                                                <input type="text" id="noOfPaymentReceived"
+                                                    *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                    [disabled]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['noOfPaymentReceived']"
+                                                    class="form-control"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['noOfPaymentReceived']}">
+                                            </div>
+                                        </div>  
+                                        <div class="col-md-4 mb-2"></div>
                                         <div class="col-md-4 mb-2">
                                             <button class="btn btn-success" (click)="saveClaimLevelinfo(false)"
                                                 [hidden]="!checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit">Save</button>
@@ -1673,7 +1702,7 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="sectionLevelInfoTotalConfig.paidAmount>0 && displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending  && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
+                                    *ngIf=" checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Insurance Payment Information
@@ -1702,7 +1731,7 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="paymentMode">Mode of Payment</label>
-                                                <select id="paymentMode" class="form-control"
+                                                <select id="paymentMode" class="form-control" (change)="clearCheckDeliverOtherThanModeCheck()"
                                                     [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode']"
                                                     [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentMode']}">
@@ -1739,7 +1768,7 @@
                                             <div class="custom-row text-number">
                                                 <label for="checkDeliverTo">Check Delivered To</label>
                                                 <input type="text" id="checkDeliverTo"
-                                                    [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                    [disabled]="(!checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && !this.claimRcm.allowEdit) || this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' "
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo']"
                                                     class="form-control"
                                                     [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkDeliverTo']}">
@@ -1813,7 +1842,7 @@
                                 </ng-container>
 
                                 <ng-container
-                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
+                                    *ngIf="checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['EOB']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="EOB">
                                             EOB
@@ -1875,7 +1904,7 @@
                                                 </span>
                                             </div>
 
-                                            <div class="pdf-action-box">
+                                            <div class="pdf-action-box" *ngIf="pdfUrlSrc">
                                                 <div class="pdf-search-box">
                                                     <input type="text" class="form-control mx-2 "
                                                         [(ngModel)]="stringToSearch">
@@ -1913,7 +1942,7 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
+                                    *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text"
                                         [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="SERVICE_LEVEL_INFORMATION">
@@ -2235,7 +2264,7 @@
                                 </ng-container>
 
                                 <ng-container
-                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'view')">
+                                    *ngIf=" checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['PATIENT_STATEMENT']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="PATIENT_STATEMENT">
                                             Patient Statement
@@ -2267,138 +2296,129 @@
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="modeOfStatement">Mode of Statement</label>
-                                                        <select id="modeOfStatement" class="form-control"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit) || claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['modeOfStatement']"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['modeOfStatement']}">
-                                                            <option selected="true" hidden="true">Select</option>
-                                                            <option value="Eaglesoft">Eaglesoft</option>
-                                                            <option value="Mail">Mail</option>
-                                                            <option value="Email">Email</option>
-                                                        </select>
+                                                <ng-container *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1">
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="balanceSheetLink">Link to Balance Detail Sheet</label>
+                                                            <input type="text" id="balanceSheetLink"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['balanceSheetLink']" class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['balanceSheetLink']}">
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="amountStatement">Amount of Statement</label>
-                                                        <input type="text" id="amountStatement"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)||claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['amountStatement']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['amountStatement']}">
+                                                
+                                                
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="reason">Reason</label>
+                                                            <select id="reason" class="form-control"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['reason']"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['reason']}">
+                                                                <option selected="true" hidden="true">Select</option>
+                                                                <option value="Check">Check</option>
+                                                                <option value="Eft">EFT</option>
+                                                                <option value="Vcc">VCC</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="statementType">Statement Type</label>
-                                                        <input type="text" id="statementType"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit) || claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementType']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementType']}">
+                                                
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="nextReviewDate">Next Review Date</label>
+                                                            <input type="date" id="nextReviewDate"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']" class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate']}">
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="balanceSheetLink">Link to Balance Detail
-                                                            Sheet</label>
-                                                        <input type="text" id="balanceSheetLink"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)|| claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['balanceSheetLink']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['balanceSheetLink']}">
+                                                
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="statementSendingDate">Date of sending Statement</label>
+                                                            <input type="date" id="statementSendingDate"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']" class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}">
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="status">Status</label>
-                                                        <input type="text" id="status"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)|| claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['status']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
+                                                
+                                                
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="remarks">Enter Remarks</label>
+                                                            <textarea id="remarks"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['remarks']" class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['remarks']}">
+                                                                                                            </textarea>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="reason">Reason</label>
-                                                        <select id="reason" class="form-control"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)|| claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['reason']"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['reason']}">
-                                                            <option selected="true" hidden="true">Select</option>
-                                                            <option value="Check">Check</option>
-                                                            <option value="Eft">EFT</option>
-                                                            <option value="Vcc">VCC</option>
-                                                        </select>
+                                                </ng-container>
+                                                <ng-container *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2">
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="modeOfStatement">Mode of Statement</label>
+                                                            <select id="modeOfStatement" class="form-control"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['modeOfStatement']"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['modeOfStatement']}">
+                                                                <option selected="true" hidden="true">Select</option>
+                                                                <option value="Eaglesoft">Eaglesoft</option>
+                                                                <option value="Mail">Mail</option>
+                                                                <option value="Email">Email</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="nextReviewDate">Next Review Date</label>
-                                                        <input type="date" id="nextReviewDate"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit) || claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate']}">
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="amountStatement">Amount of Statement</label>
+                                                            <input type="text" id="amountStatement"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['amountStatement']" class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['amountStatement']}">
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="statementSendingDate">Date of sending
-                                                            Statement</label>
-                                                        <input type="date" id="statementSendingDate"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)|| claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}">
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="statementType">Statement Type</label>
+                                                            <input type="text" id="statementType"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementType']" class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementType']}">
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="nextStatementDate">Next Statement Date</label>
-                                                        <input type="date" id="nextStatementDate"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit) || claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate']}">
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="status">Status</label>
+                                                            <input type="text" id="status"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['status']" class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="remarks">Enter Remarks</label>
-                                                        <textarea id="remarks"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)|| claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['remarks']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['remarks']}">
-                                                    </textarea>
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="nextStatementDate">Next Statement Date</label>
+                                                            <input type="date" id="nextStatementDate"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']" class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate']}">
+                                                        </div>
                                                     </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="statementNotes">Statement Notes</label>
-                                                        <textarea id="statementNotes"
-                                                            [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit) || claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementNotes']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementNotes']}">
-                                                    </textarea>
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="statementNotes">Statement Notes</label>
+                                                            <textarea id="statementNotes"
+                                                                [disabled]="(!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementNotes']" class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementNotes']}">
+                                                                                                                                                        </textarea>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2">
+                                                </ng-container>
+                                                <div class="col-md-4 mb-2" *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"></div>
+                                                <div class="col-md-4 mb-2" >
                                                     <button class="btn btn-success"
                                                         (click)="savePatientStaementInfo(false)"
                                                         [hidden]="!checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit">Save</button>
