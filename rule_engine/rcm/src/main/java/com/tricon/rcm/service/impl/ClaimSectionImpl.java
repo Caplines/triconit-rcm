@@ -841,17 +841,27 @@ public class ClaimSectionImpl {
 	public Boolean saveServiceLevelInformationSection(ServiceLevelTotalAmountDto serviceLevelInformationInfoModel,
 			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) {
 		RcmServiceLevelInformation serviceLevelData = null;
-		int maxRun=serviceLevelRepo.getMaxRunFromServiceLevel(claim.getClaimUuid());
+		int maxRun = serviceLevelRepo.getMaxRunFromServiceLevel(claim.getClaimUuid());
 		for (ServiceLevelRequestBodyDto data : serviceLevelInformationInfoModel.getServiceLevelBody()) {
 			serviceLevelData = new RcmServiceLevelInformation();
 			serviceLevelData.setClaim(claim);
 			serviceLevelData.setCreatedBy(createdBy);
 			serviceLevelData.setFinalSubmit(finalSubmit);
-			serviceLevelData.setTeam(team);		
-			serviceLevelData.setGroupRun(maxRun+1);	
+			serviceLevelData.setTeam(team);
+			serviceLevelData.setActive(true);
+			serviceLevelData.setGroupRun(maxRun + 1);
 			BeanUtils.copyProperties(data, serviceLevelData);
 			serviceLevelRepo.save(serviceLevelData);
 		}
+		// now we update totalPaid amount,adjustment amount and btp amount in rcm claim
+		// table
+		if (finalSubmit) {
+			RcmClaims claims = claimRepo.findByClaimUuid(claim.getClaimUuid());
+			claims.setAdjustment((float) serviceLevelInformationInfoModel.getTotalAdjustmentAmount());
+			claims.setBtp((float) serviceLevelInformationInfoModel.getTotalBtpAmount());
+			claims.setPaidAmount((float) serviceLevelInformationInfoModel.getTotalPaidAmount());
+			claimRepo.save(claims);
+       }
 		return serviceLevelData != null ? true : null;
 	}
 
@@ -873,12 +883,16 @@ public class ClaimSectionImpl {
 		if (serviceLevelData.isEmpty()) {
 			// fetch data from rcm claim_detail table and insert into
 			// rcm_service_level_information table
-			List<RcmClaimDetail> claimDetailData = claimDetailRepo.findByClaimClaimUuid(claimUuid);
+			List<RcmClaimDetail> claimDetailData = claimDetailRepo.findByClaimClaimUuidAndActiveTrue(claimUuid);
+			if(claimDetailData.isEmpty()) {
+				logger.error("No claim found in claim detail table");
+			}
 			RcmTeam team=rcmTeamRepo.findById(partialHeader.getTeamId());
 			for (RcmClaimDetail list : claimDetailData) {
 				serviceLevelDto = new RcmServiceLevelInformation();
 				BeanUtils.copyProperties(list, serviceLevelDto);
 				serviceLevelDto.setGroupRun(1);
+				serviceLevelDto.setFlag(true);		
 				serviceLevelDto.setTeam(team);
 				listOfServiceLevelDto.add(serviceLevelDto);
 			}

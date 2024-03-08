@@ -9,5 +9,6 @@ public class ServiceLevelTotalAmountDto {
 
 	private double totalAdjustmentAmount;
 	private double totalBtpAmount;
+	private double totalPaidAmount;
 	private List<ServiceLevelRequestBodyDto> serviceLevelBody;
 }

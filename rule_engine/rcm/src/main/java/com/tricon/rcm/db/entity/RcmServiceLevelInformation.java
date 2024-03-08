@@ -116,6 +116,12 @@ public class RcmServiceLevelInformation extends BaseAuditEntity implements java.
 	@Column(name = "reconciliation_pass")
 	private boolean reconciliation;
 	
+	@Column(name = "active",columnDefinition = "BIT default 1")
+	private boolean active;
+	
+	@Column(name = "flag",columnDefinition = "BIT default 1")
+	private boolean flag;
+	
 	@Column(name = "mark_as_deleted")
 	private boolean markAsDeleted;
 }
