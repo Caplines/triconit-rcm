@@ -2655,7 +2655,7 @@ addDecimalInTotalServiceValue(){
     });
 
     for (const section of data) {
-      if (section.isNewSection == false && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {
+      if (ths.sectionIds[section.sectionName]?.['isNewSection'] == false && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {
         isOldSectionNeeded = true;
       }
     }
