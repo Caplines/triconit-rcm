@@ -1494,7 +1494,7 @@
                                     </div>
                                 </div>
                                 <ng-container
-                                    *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
+                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Level Information
@@ -1702,7 +1702,7 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf=" checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
+                                    *ngIf=" sectionLevelInfoTotalConfig.paidAmount>0 && displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Insurance Payment Information
@@ -1926,7 +1926,7 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
+                                    *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text"
                                         [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="SERVICE_LEVEL_INFORMATION">
@@ -1961,7 +1961,7 @@
                                                         <th>Notes</th>
                                                         <th>View Notes</th>
                                                         <th>Reconciliation</th>
-                                                        <th>BTP Flag</th>
+                                                        <!-- <th>BTP Flag</th> -->
                                                         <ng-container *ngIf="clientName == 'Smilepoint'">
                                                             <th></th>
                                                         </ng-container>
@@ -2055,15 +2055,12 @@
                                                               
                                                                 <img src="../../assets/img/cross_incorrec.png" *ngIf="!data.reconciliation">
                                                             </td>
-                                                            <td>
+                                                            <!-- <td>
                                                                 <div class="custom-control custom-switch custom-switch-lg">
-                                                                    <input type="checkbox" [checked]="data.flag" (change)="data.flag = !data.flag" [(ngModel)]="data.flag" id="flag" class="custom-control-input" id="customSwitch1">
-                                                                    <label class="custom-control-label" for="customSwitch1"></label>
+                                                                    <input type="checkbox"  [checked]="data.flag"  [(ngModel)]="data.flag" id="flag" class="custom-control-input" id="customSwitch{{idx}}">
+                                                                    <label class="custom-control-label" for="customSwitch{{idx}}"></label>
                                                                 </div>
-                                                                <!-- <span class="form-check form-switch">
-                                                                    <input class="form-check-input" type="checkbox" [checked]="data.flag" (change)="data.flag = !data.flag" [(ngModel)]="data.flag" id="flag">
-                                                                  </span> -->
-                                                            </td>
+                                                            </td> -->
                                                             <ng-container *ngIf="clientName == 'Smilepoint'">
                                                                 <td *ngIf="!last">
                                                                     <!-- <button class="btn btn-sm btn-danger"(click)="removeSectionLevelRow(idx)">-</button> -->
@@ -2113,8 +2110,15 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit')"
-                                            class="save-btn">
+                                        <div *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending &&  checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit')"
+                                            class="save-btn col-sm-12 mb-1">
+                                            <span class="custom-control custom-switch custom-switch-lg">
+                                                <input type="checkbox"  [checked]="isBtpFlagTrue" (change)="updateBtpFlagValue($event)" value  id="flag" class="custom-control-input" id="customSwitch">
+                                                <label class="custom-control-label" for="customSwitch">BTP FLAG</label>
+                                            </span>
+                                        </div>
+                                        <div *ngIf=" displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit')"
+                                            class="save-btn col-sm-12">
                                             <button class="btn  btn-success" (click)="saveServiceLevelInfo(false)">
                                                 Save
                                             </button>

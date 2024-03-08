@@ -276,6 +276,7 @@ export class BillingClaimsComponent {
   pdfUrlSrc: any = "";
   sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0 };
   viewNotesConfig: any = { showNotes: false, viewNotes: [] };
+  isBtpFlagTrue:boolean=false;
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
 
 
@@ -2490,6 +2491,7 @@ export class BillingClaimsComponent {
       this.sectionLevelInfoTotalConfig.fee = this.sectionLevelInfoTotalConfig.fee + +e.fee;
       this.sectionLevelInfoTotalConfig.billToPatientAmount = this.sectionLevelInfoTotalConfig.billToPatientAmount + +e.billToPatientAmount;
     });
+    this.sectionLevelInfoTotalConfig.billToPatientAmount>0 ? this.isBtpFlagTrue = true : this.isBtpFlagTrue=false;
     this.addDecimalInTotalServiceValue();
   }
 
@@ -2661,6 +2663,21 @@ addDecimalInTotalServiceValue(){
     }
     console.log("isOldSectionNeeded->" + isOldSectionNeeded);
     return isOldSectionNeeded;
+  }
+
+  updateBtpFlagValue(event:any){
+
+      if(event.target.checked){
+        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+            e.flag = true;
+            this.isBtpFlagTrue=true;
+        });
+      }else{
+        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+          e.flag = false;
+          this.isBtpFlagTrue=false;
+      });
+      }
   }
 
 }
