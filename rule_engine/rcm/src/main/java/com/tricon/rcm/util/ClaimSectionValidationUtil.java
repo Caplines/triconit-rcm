@@ -270,21 +270,21 @@ public class ClaimSectionValidationUtil {
 	}
 	
 
-	public boolean validationForNeedToCallInsuranceSectionFields(NeedToCallInsuranceDto needToCallInfoModel) {
-		logger.info("NeedToCallInsuranceDto->" + needToCallInfoModel);
-		boolean isValid = true;
-		if (needToCallInfoModel == null) {
-			return false;
-		}
-		return isValid;
-	}
-
-	public boolean validationForCollectionAgencySectionFields(CollectionAgencyDto collectionAgencyInfoModel) {
-		logger.info("CollectionAgencyDto->" + collectionAgencyInfoModel);
-		boolean isValid = true;
-		if (collectionAgencyInfoModel == null) {
-			return false;
-		}
-		return isValid;
-	}
+//	public boolean validationForNeedToCallInsuranceSectionFields(NeedToCallInsuranceDto needToCallInfoModel) {
+//		logger.info("NeedToCallInsuranceDto->" + needToCallInfoModel);
+//		boolean isValid = true;
+//		if (needToCallInfoModel == null) {
+//			return false;
+//		}
+//		return isValid;
+//	}
+//
+//	public boolean validationForCollectionAgencySectionFields(CollectionAgencyDto collectionAgencyInfoModel) {
+//		logger.info("CollectionAgencyDto->" + collectionAgencyInfoModel);
+//		boolean isValid = true;
+//		if (collectionAgencyInfoModel == null) {
+//			return false;
+//		}
+//		return isValid;
+//	}
 }
