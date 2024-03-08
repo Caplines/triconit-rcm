@@ -879,7 +879,7 @@ public class ClaimSectionImpl {
 
 		int maxRun = serviceLevelRepo.getMaxRunFromServiceLevel(claimUuid);
 		List<RcmServiceLevelInformation> serviceLevelData = serviceLevelRepo
-				.findServiceLevelCodesByClaimUuid(claimUuid);
+				.findServiceLevelCodesByClaimUuid(claimUuid,maxRun);
 		if (serviceLevelData.isEmpty()) {
 			// fetch data from rcm claim_detail table and insert into
 			// rcm_service_level_information table
