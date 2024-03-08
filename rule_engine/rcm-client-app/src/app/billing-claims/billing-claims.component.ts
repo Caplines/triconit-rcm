@@ -1987,6 +1987,7 @@ export class BillingClaimsComponent {
 
 
   createSectionModal(sectionName: any) {
+    debugger;
     if (sectionName === 'CLAIM_LEVEL_INFORMATION') {
       this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'];
       this.finalSaveClaimDataModel.claimInfoModel = this.saveClaimLevelinfo(true);
@@ -2004,8 +2005,9 @@ export class BillingClaimsComponent {
       this.finalSaveClaimDataModel.eobInfoModel = this.getPdfUrlAndSaveEOB(true);
     }
     else if (sectionName === 'SERVICE_LEVEL_INFORMATION') {
-      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'];
       this.finalSaveClaimDataModel.serviceLevelInformationInfoModel = this.saveServiceLevelInfo(true);
+      this.finalSaveClaimDataModel.serviceLevelInformationInfoModel['sectionId'] = this.sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'];
+
     }
     else if (sectionName === 'INSURANCE_FOLLOW_UP') {
       this.claimSectionModal['INSURANCE_FOLLOW_UP']['sectionId'] = this.sectionIds['INSURANCE_FOLLOW_UP']['sectionId'];
@@ -2055,14 +2057,14 @@ export class BillingClaimsComponent {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].initialDenial = true;
       isSectionValidated = false;
     }
-    if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusEs) {
+    /*if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusEs) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimStatusEs = true;
       isSectionValidated = false;
     }
     if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusRcm) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimStatusRcm = true;
       isSectionValidated = false;
-    }
+    }*/
     // if(this.isSectionValidated) {
     //   this.finalSaveClaimDataModel.claimInfoModel = this.claimSectionModal['CLAIM_LEVEL_INFORMATION'];
     //   return  this.isSectionValidated;
