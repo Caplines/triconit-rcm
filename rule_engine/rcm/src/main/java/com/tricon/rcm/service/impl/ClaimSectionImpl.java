@@ -888,12 +888,14 @@ public class ClaimSectionImpl {
 				logger.error("No claim found in claim detail table");
 			}
 			RcmTeam team=rcmTeamRepo.findById(partialHeader.getTeamId());
+			RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 			for (RcmClaimDetail list : claimDetailData) {
 				serviceLevelDto = new RcmServiceLevelInformation();
 				BeanUtils.copyProperties(list, serviceLevelDto);
 				serviceLevelDto.setGroupRun(1);
 				serviceLevelDto.setFlag(true);		
 				serviceLevelDto.setTeam(team);
+				serviceLevelDto.setCreatedBy(createdBy);
 				listOfServiceLevelDto.add(serviceLevelDto);
 			}
 			listOfServiceLevelDto = serviceLevelRepo.saveAll(listOfServiceLevelDto);
