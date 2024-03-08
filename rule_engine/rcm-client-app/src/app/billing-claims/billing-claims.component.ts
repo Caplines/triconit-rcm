@@ -1938,7 +1938,7 @@ export class BillingClaimsComponent {
       data = team.sectionData.filter((item: any) => item.editAccess);
     });
     for (const section of data) {
-      if (section.isNewSection && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {
+      if (section.isNewSection && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {          //replace section.isNewSection with ===> ths.sectionIds[section.sectionName]?.isNewSection
         const methodName: any = `validate_${section.sectionName}`
         let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
         //method names are creates using convention  validate_{sectioname}
@@ -2155,7 +2155,23 @@ export class BillingClaimsComponent {
     return true;
   }
   validate_CURRENT_STATUS_AND_NEXT_ACTION() {
-    return true;
+
+    let isSectionValidated = true;
+    this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"] = {};
+    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeam) {
+      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"]['assignToTeam'] = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction) {
+      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].remarks) {
+      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].remarks = true;
+      isSectionValidated = false;
+    }
+    
+    return isSectionValidated;
   }
   validate_ATTACHMENT() {
     return true;
