@@ -841,6 +841,10 @@ public class ClaimSectionImpl {
 	public Boolean saveServiceLevelInformationSection(ServiceLevelTotalAmountDto serviceLevelInformationInfoModel,
 			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) {
 		RcmServiceLevelInformation serviceLevelData = null;
+		if (serviceLevelInformationInfoModel == null) {
+			logger.error("Empty model");
+			return null;
+		}
 		int maxRun = serviceLevelRepo.getMaxRunFromServiceLevel(claim.getClaimUuid());
 		for (ServiceLevelRequestBodyDto data : serviceLevelInformationInfoModel.getServiceLevelBody()) {
 			serviceLevelData = new RcmServiceLevelInformation();
