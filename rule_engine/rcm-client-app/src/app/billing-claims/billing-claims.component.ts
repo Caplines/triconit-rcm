@@ -2429,7 +2429,7 @@ export class BillingClaimsComponent {
         }
       });
     }
-    return this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount'];
+    return {serviceLevelTotalAmount:this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']};
   }
 
   addNewSectionLevelField() {
