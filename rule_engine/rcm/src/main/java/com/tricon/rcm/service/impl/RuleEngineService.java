@@ -1032,6 +1032,7 @@ public class RuleEngineService {
 				BeanUtils.copyProperties(cdt, rcmClaimDetail, "id");
 				rcmClaimDetail.setIdEs(cdt.getId()); 
 				rcmClaimDetail.setClaim(claim);
+				rcmClaimDetail.setActive(true);
 				rcmClaimDetailRepo.save(rcmClaimDetail);
 				cddList.add(rcmClaimDetail);
 				if (tmp==0) {

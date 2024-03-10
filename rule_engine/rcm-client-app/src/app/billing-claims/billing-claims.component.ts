@@ -87,7 +87,8 @@ export class BillingClaimsComponent {
   noProviderNoteCodes: Array<string> = [];
   invalidClaim = "";
   claimSettingDataModel: ClaimSettingDataModel = null;
-  displayPhaseSection: boolean = true;
+  displayPhaseSection: boolean = false;
+  finalsubmitcurrentstat: boolean = true;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -96,110 +97,137 @@ export class BillingClaimsComponent {
   sectionIds: any = {
     'SECTION_CLAIM_DETAIL': {
       sectionId: 1,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'LINKS_RELATED_DOCUMENTS': {
       sectionId: 2,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'REMARKS_BY_OTHER': {
       sectionId: 3,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'REBILLED_CLAIM': {
       sectionId: 4,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'CLAIM_LEVEL_VALIDATION_AUTO': {
       sectionId: 5,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'CLAIM_LEVEL_VALIDATION_MANUAL': {
       sectionId: 6,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'SERVICE_LEVEL_VALIDATION_AUTO': {
       sectionId: 7,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'SERVICE_LEVEL_VALIDATION_MANUAL': {
       sectionId: 8,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'RULE_ENGINE_VALIDATION': {
       sectionId: 9,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     }, 'CLAIM_SUBMISSION': {
       sectionId: 10,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'SERVICE_LEVEL_INFORMATION': {
       sectionId: 11,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: true
     },
     'EOB': {
       sectionId: 12,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: true
     },
     'CLAIM_LEVEL_INFORMATION': {
       sectionId: 13,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: true
     },
     'INSURANCE_PAYMENT_INFORMATION': {
       sectionId: 14,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: true
     },
     'PATIENT_STATEMENT': {
       sectionId: 15,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'ASSIGN_TO_OTHER': {
       sectionId: 16,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     },
     'INSURANCE_FOLLOW_UP': {
       sectionId: 17,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'RECREATE_CLAIM': {
       sectionId: 18,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'APPEAL': {
       sectionId: 19,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'PATIENT_PAYMENT': {
       sectionId: 20,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'PATIENT_COMMUNICATION': {
       sectionId: 21,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'COLLECTION_AGENCY': {
       sectionId: 22,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'REQUEST_REBILLING': {
       sectionId: 23,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'REBILLING': {
       sectionId: 24,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'NEED_TO_CALL_INSURANCE': {
       sectionId: 25,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: false
     },
     'CURRENT_STATUS_AND_NEXT_ACTION': {
       sectionId: 26,
-      isNewSection: true
+      isNewSection: true,
+      isWorkDone: true
     },
     'ATTACHMENT': {
       sectionId: 27,
-      isNewSection: false
+      isNewSection: false,
+      isWorkDone: true
     }
   };
 
@@ -450,7 +478,6 @@ export class BillingClaimsComponent {
     ths.claimEditModel.ruleEngineRunRemark = ths.claimRcm.ruleEngineRunRemark;
     ths.claimEditModel.claimNoteDtoList = ths.claimRcm.claimNotes;
     ths.claimEditModel.claimRemark = ths.claimRcm.claimRemarks;
-    debugger;
     ths.claimEditModel.serCVDto = ths.claimServiceLevelModel?.dto;
     ths.claimEditModel.submissionDto = ths.submissionDto;
     ths.claimEditModel.ruleRemarkDto = [];
@@ -639,7 +666,7 @@ export class BillingClaimsComponent {
   validateData(): boolean {
     let ths = this;
     let valid: boolean = true;
-    debugger;
+    //debugger;
     ths.claimRules.forEach(x => {
       //console.log(x.ruleId);
       if ((x.remark == null || x.remark.trim() === '') && x.messageType === 1 && x.ruleType == 'C'
@@ -1307,7 +1334,7 @@ export class BillingClaimsComponent {
           ths.inSave = true;
           ths.closeModal();
           console.log(ths.claimEditModel);
-          debugger;
+          //debugger;
           ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
             ths.inSave = false;
             ths.showAlertPopup(callback);
@@ -1939,7 +1966,7 @@ export class BillingClaimsComponent {
       data = team.sectionData.filter((item: any) => item.editAccess);
     });
     for (const section of data) {
-      if (ths.sectionIds[section.sectionName]?.isNewSection && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {          //replace section.isNewSection with ===> ths.sectionIds[section.sectionName]?.isNewSection
+      if (ths.sectionIds[section.sectionName]?.isWorkDone && ths.sectionIds[section.sectionName]?.isNewSection && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {          //replace section.isNewSection with ===> ths.sectionIds[section.sectionName]?.isNewSection
         const methodName: any = `validate_${section.sectionName}`
         let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
         //method names are creates using convention  validate_{sectioname}
@@ -1954,8 +1981,8 @@ export class BillingClaimsComponent {
       return;
     }
     ths.claimEditModel = {};
-    ths.claimEditModel.assignToTeam = ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam'];
-    debugger;
+    ths.claimEditModel.assignToTeam = ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'];
+    //debugger;
     if (this.claimEditModel.assignToTeam == -1) {
       alert('NO team Selected');
       return;
@@ -1969,10 +1996,12 @@ export class BillingClaimsComponent {
           if (ths.claimRcm.currentTeamId === this.appConstants.BILLING_TEAM) type = "submitafterpending";
           else if (ths.claimRcm.currentTeamId === this.appConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
           else type = "assignafterpendingnot_bill_internal";
+          ths.finalsubmitcurrentstat = false;
           ths.saveClaim(type, true);
 
         } else {
           if (ths.isSectionValidated && save) {
+            ths.finalsubmitcurrentstat = false;
             ths.finalSaveSection(moveToNextTeam, showResponseStatus);
           }
         }
@@ -1987,7 +2016,7 @@ export class BillingClaimsComponent {
 
 
   createSectionModal(sectionName: any) {
-    debugger;
+    //debugger;
     if (sectionName === 'CLAIM_LEVEL_INFORMATION') {
       this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'];
       this.finalSaveClaimDataModel.claimInfoModel = this.saveClaimLevelinfo(true);
@@ -1999,6 +2028,10 @@ export class BillingClaimsComponent {
     else if (sectionName === 'INSURANCE_PAYMENT_INFORMATION') {
       this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['sectionId'] = this.sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'];
       this.finalSaveClaimDataModel.paymentInformationInfoModel = this.saveInsurancePaymentInfo(true);
+      if (this.sectionLevelInfoTotalConfig.paidAmount == 0) {
+        this.finalSaveClaimDataModel.paymentInformationInfoModel = null;
+      }
+
     }
     else if (sectionName === 'EOB') {
       this.claimSectionModal['EOB']['sectionId'] = this.sectionIds['EOB']['sectionId'];
@@ -2033,7 +2066,6 @@ export class BillingClaimsComponent {
   }
 
   validate_CLAIM_LEVEL_INFORMATION() {
-    debugger;
     let isSectionValidated = true;
     this.emptyFields["CLAIM_LEVEL_INFORMATION"] = {};
     this.emptyFields["CLAIM_LEVEL_INFORMATION"].network = '';
@@ -2162,7 +2194,7 @@ export class BillingClaimsComponent {
     return true;
   }
   validate_CURRENT_STATUS_AND_NEXT_ACTION() {
-    debugger;
+    //debugger;
     let isSectionValidated = true;
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"] = {};
     if (this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeam == -1) {
@@ -2191,8 +2223,9 @@ export class BillingClaimsComponent {
     this.appService.saveClaimLevelInfoSection(this.finalSaveClaimDataModel, (res: any) => {
       if (res.status) {
         console.log(res);
+        this.finalsubmitcurrentstat = true;
         if (showResponseStatus) {
-
+          window.location.reload();
         }
 
       }
@@ -2328,11 +2361,10 @@ export class BillingClaimsComponent {
   }
 
   fetchNextActionRequiredSection() {
-    debugger;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = this.claimRcm.currentStatusName;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'] = this.claimRcm.statusES;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] = this.claimRcm.nextActionName;
-    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam'] = -1;//this.claimRcm.assignedToTeam;
+    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;//this.claimRcm.assignedToTeam;
 
     let team: any = this.appConstants.TEAMS_CONFIG.get(this.claimRcm.assignedToTeam);
 
@@ -2340,7 +2372,6 @@ export class BillingClaimsComponent {
     //this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam'] = {
     // "teamId": 7, "teamName": "Billing"
     // };
-    debugger;
 
 
     //if (this.checkForSectionAccess(this.sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'], 'view')) {
@@ -2429,7 +2460,7 @@ export class BillingClaimsComponent {
         }
       });
     }
-    return {serviceLevelTotalAmount:this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']};
+    return { serviceLevelTotalAmount: this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount'] };
   }
 
   addNewSectionLevelField() {
@@ -2595,6 +2626,7 @@ export class BillingClaimsComponent {
 
   saveNextActionRequiredSection(isFinal: boolean) {
     this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'] = this.sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'];
+    this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeamId'] = +this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeamId'];
     if (!isFinal) {
 
       let params: any = {

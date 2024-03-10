@@ -2060,7 +2060,7 @@ public class ClaimServiceImpl {
 		Date claimDos=null;
 		if (claim!=null) claimDos= claim.getDos();
 		if (validateClaimRight) {
-			if (claim.isPending()) {
+			if (claim.isPending() ) {
 
 			
 			String[] clT = claim.getClaimId().split("_");
@@ -2132,7 +2132,7 @@ public class ClaimServiceImpl {
 				dto.setDetails(details);
 			}else {
 				dto.setClaimFound(true);
-				cddList = rcmClaimDetailRepo.findByClaimClaimUuid(claimUuid);
+				cddList = rcmClaimDetailRepo.findByClaimClaimUuidAndActiveTrue(claimUuid);
 				/*RcmClaimDetail cd= cddList.get(0);
 				claim.setDateLastUpdatedES(cd.getDateLastUpdated());
 				claim.setDescriptionES(cd.getDescription());
@@ -2151,7 +2151,7 @@ public class ClaimServiceImpl {
 			
 			}else {
 				
-				cddList = rcmClaimDetailRepo.findByClaimClaimUuid(claimUuid);
+				cddList = rcmClaimDetailRepo.findByClaimClaimUuidAndActiveTrue(claimUuid);
 				dto.setClaimFound(true);
 				dto.setEsDate(claim.getDateLastUpdatedES());
 				cddList.forEach( det ->{
@@ -3130,12 +3130,14 @@ public class ClaimServiceImpl {
 						Constants.FROMBILLINGTOPOSTING,"Please work on claim",claim,assign,user,office,null,
 						originalClaimPendingStatus? ClaimStatusEnum.Billed.getType() : null,originalClaimPendingStatus? ClaimStatusEnum.Need_to_Post.getType() : null);
 			    
-				/*claim.setPending(false);
+				
 				
 				claim.setUpdatedBy(user);
 				claim.setUpdatedDate(new Date());
-				//claim.setCurrentStatus(Constants.CLAIM_POSTING_STATE);
-				rcmClaimRepository.save(claim);*/
+				 long millis=System.currentTimeMillis();  
+			     java.sql.Date date=new java.sql.Date(millis);  
+				claim.setFirstPostingDate(date);
+				rcmClaimRepository.save(claim);
 				//Check if Primary	then Find any Corresponding Secondary Claim and Mark Primar_status =2
 				String[] clT = claim.getClaimId().split("_");
 
@@ -3973,7 +3975,12 @@ public class ClaimServiceImpl {
 			String claimId=date.getTime()+Constants.HYPHEN+Constants.ARCHIVE_PREFIX+claim.getClaimId();
 			claim.setClaimId(claimId);
 			claim.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED);
+			RcmUser updatedBy= userRepo.findByUuid(partialHeader.getJwtUser().getUuid()) ;
+			claim.setUpdatedBy(updatedBy);
 			rcmClaimRepository.save(claim);
+			
+			claimCycleService.createNewClaimCycle(claim,ClaimStatusEnum.Claim_Archived.getType(),
+					ClaimStatusEnum.Claim_Archived.getType(),claim.getCurrentTeamId(),updatedBy);
 			
 		}else return "Wrong Client";
     	return "Claim Archived";
@@ -4013,7 +4020,11 @@ public class ClaimServiceImpl {
 			claim.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED);
 			
 			claim.setClaimId(claimId);
+			RcmUser updatedBy= userRepo.findByUuid(partialHeader.getJwtUser().getUuid()) ;
+			claim.setUpdatedBy(updatedBy);
 			rcmClaimRepository.save(claim);
+			claimCycleService.createNewClaimCycle(claim,ClaimStatusEnum.Claim_UnArchived.getType(),
+					ClaimStatusEnum.Claim_UnArchived.getType(),claim.getCurrentTeamId(),updatedBy);
 			
 		}else return "Wrong Client";
     	return "Claim UnArchived";

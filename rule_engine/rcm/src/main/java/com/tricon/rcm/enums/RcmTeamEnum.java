@@ -27,7 +27,7 @@ public enum RcmTeamEnum {
 	PAYMENT_POSTING(12,"PAYMENT_POSTING","Payment Posting",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),
 	PPO_IV(13,"PPO_IV","PPO IV",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	MEDICAID_IV(14,"MEDICAID_IV","Medicaid IV",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
-	NEED_TO_HOLD(15,"NEED_TO_HOLD","Need to hold",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),
+	NEED_TO_HOLD(15,"NEED_TO_HOLD","Need to hold",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	QUALITY(16,"QUALITY","Quality",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),
 	//AR(17,"AR","AR",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},false,false), AR NOT USED
 	PATIENT_STATEMENT(18,"PATIENT_STATEMENT","Patient Statement",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),

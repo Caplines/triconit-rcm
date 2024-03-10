@@ -2,7 +2,6 @@ package com.tricon.rcm.service.impl;
 
 import java.io.File;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -34,7 +33,6 @@ import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
-import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmPatientCommunicationSection;
 import com.tricon.rcm.db.entity.RcmPatientPayment;
 import com.tricon.rcm.db.entity.RcmPatientStatementSection;
@@ -56,7 +54,6 @@ import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
-import com.tricon.rcm.dto.ServiceLevelInformationDto;
 import com.tricon.rcm.dto.ServiceLevelNotes;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.dto.ServiceLevelTotalAmountDto;
@@ -102,11 +99,7 @@ public class ClaimSectionImpl {
 	RcmCompanyRepo rcmCompanyRepo;
 
 	@Autowired
-	RcmTeamRepo teamRepo;
-
-	@Autowired
 	RcmClaimSectionRepo sectionRepo;
-	
 	
 	@Autowired
 	MasterServiceImpl masterServiceImpl;
@@ -125,9 +118,6 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmClaimLevelInfoRepo claimLevelInfoRepo;
-	
-	@Autowired
-	RcmClaimRepository claimRepo;
 	
 	@Autowired
 	RcmAppealInfoRepo appealInfoRepo;
@@ -186,7 +176,7 @@ public class ClaimSectionImpl {
 		String msg = null;
 		RcmClientSectionMapping sectionMapping = null;
 		List<RcmCompany> listOfClients = rcmCompanyRepo.findAll();
-		List<RcmTeam> listOfTeams = teamRepo.findAll();
+		List<RcmTeam> listOfTeams = rcmTeamRepo.findAll();
 		for (ClientSectionMappingDto dto : listOfClaimSections) {
 			RcmCompany client = listOfClients.stream().filter(x -> x.getUuid().equals(dto.getClientUuid())).findAny()
 					.orElse(null);
@@ -456,7 +446,7 @@ public class ClaimSectionImpl {
 		String msg = null;
 		ClaimUserSectionMapping sectionMapping = null;
 		List<RcmCompany> listOfClients = rcmCompanyRepo.findAll();
-		List<RcmTeam> listOfTeams = teamRepo.findAll();
+		List<RcmTeam> listOfTeams = rcmTeamRepo.findAll();
 		RcmUser user = userRepo.findByUuid(userUuid);
 		if (user == null)
 			return msg = MessageConstants.USER_NOT_EXIST;
@@ -846,6 +836,15 @@ public class ClaimSectionImpl {
 			return null;
 		}
 		int maxRun = serviceLevelRepo.getMaxRunFromServiceLevel(claim.getClaimUuid());
+		List<RcmClaimDetail> claimDetailData =null;
+		List<String> oldServiceCodes =null;
+		if (finalSubmit) {
+			claimDetailData =claimDetailRepo.findByClaimClaimUuid(claim.getClaimUuid());
+			if (claimDetailData!=null) {
+			oldServiceCodes = claimDetailData.stream().map(RcmClaimDetail::getServiceCode)
+		              .collect(Collectors.toList());
+			}			
+		}
 		for (ServiceLevelRequestBodyDto data : serviceLevelInformationInfoModel.getServiceLevelBody()) {
 			serviceLevelData = new RcmServiceLevelInformation();
 			serviceLevelData.setClaim(claim);
@@ -856,16 +855,48 @@ public class ClaimSectionImpl {
 			serviceLevelData.setGroupRun(maxRun + 1);
 			BeanUtils.copyProperties(data, serviceLevelData);
 			serviceLevelRepo.save(serviceLevelData);
+			//update Original rcm_claim_detail in
+		    if (finalSubmit && claimDetailData!=null) {
+		      Optional<RcmClaimDetail> 	 oldRecord= claimDetailData.stream().filter( dt ->dt.getServiceCode().equalsIgnoreCase(data.getServiceCode())).findFirst();
+		      if (oldRecord.isPresent()) {
+		    	  //Do nothing and  add rest data latter id needed
+		    	  if (oldServiceCodes!=null) {
+		    		  oldServiceCodes.remove(data.getServiceCode());
+		    		  if (!oldRecord.get().isActive()) {
+		    			  RcmClaimDetail old =  oldRecord.get();
+		    			  old.setActive(true);
+		    			  //mark this as  active.
+		    			  claimDetailRepo.save(old); 
+		    		  }
+		    	  }
+		    	 
+		      }else if (!data.getServiceCode().equalsIgnoreCase("Undistributed")){
+		    	  //This is new Data we need to add
+		    	  RcmClaimDetail newData = new RcmClaimDetail();
+		    	  BeanUtils.copyProperties(data, newData);
+		    	  newData.setActive(true);
+		    	  newData.setClaim(claim);
+		    	  claimDetailRepo.save(newData);
+		    	 
+		      }
+		     
+		   }
 		}
 		// now we update totalPaid amount,adjustment amount and btp amount in rcm claim
 		// table
 		if (finalSubmit) {
-			RcmClaims claims = claimRepo.findByClaimUuid(claim.getClaimUuid());
+		 if (oldServiceCodes!=null && oldServiceCodes.size()>0) {
+			 //mark old record as deleted.
+			 claimDetailRepo.deActivatedRcmDetailWithClaimUUidAndCode(claim.getClaimUuid(),oldServiceCodes);
+		 }
+		RcmClaims claims = rcmClaimRepository.findByClaimUuid(claim.getClaimUuid());
 			claims.setAdjustment((float) serviceLevelInformationInfoModel.getTotalAdjustmentAmount());
 			claims.setBtp((float) serviceLevelInformationInfoModel.getTotalBtpAmount());
 			claims.setPaidAmount((float) serviceLevelInformationInfoModel.getTotalPaidAmount());
-			claimRepo.save(claims);
+			rcmClaimRepository.save(claims);
+			
        }
+		
 		return serviceLevelData != null ? true : null;
 	}
 
