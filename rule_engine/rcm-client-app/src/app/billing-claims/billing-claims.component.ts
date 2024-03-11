@@ -475,6 +475,7 @@ export class BillingClaimsComponent {
     ths.assignType = type;
     ths.claimEditModel = {};
     ths.claimEditModel.claimUuid = ths.claimRcm.uuid;
+    ths.claimEditModel.actionName = "";
     ths.claimEditModel.ruleEngineRunRemark = ths.claimRcm.ruleEngineRunRemark;
     ths.claimEditModel.claimNoteDtoList = ths.claimRcm.claimNotes;
     ths.claimEditModel.claimRemark = ths.claimRcm.claimRemarks;
@@ -505,6 +506,7 @@ export class BillingClaimsComponent {
     else if (type === 'submit') {
       //do From Validation
       //debugger;
+      ths.claimEditModel.actionName = "Submitted";
       let valid = ths.validateData();
       let validSec = true;
       if (valid && validSec) {
@@ -524,6 +526,7 @@ export class BillingClaimsComponent {
       }
     }
     else if (type === 'assign') {
+      ths.claimEditModel.actionName = "Assign To Team";
       ths.claimEditModel.assignTouuid = "";
       ths.claimEditModel.assignToTeam = -1;
       //debugger;
@@ -547,6 +550,7 @@ export class BillingClaimsComponent {
        */
       }
     } else if (type === 'reviewed') {
+      ths.claimEditModel.actionName = "Reviewed";
       ths.claimEditModel.assignTouuid = "";
       ths.claimEditModel.assignToTeam = -1;
       //debugger;
@@ -577,6 +581,7 @@ export class BillingClaimsComponent {
       }
     }
     else if (type === 'assigntl') {
+      ths.claimEditModel.actionName = "Assign To TL";
       ths.claimEditModel.assignTouuid = "";
 
       ths.openAssignModal('tl');
@@ -678,7 +683,7 @@ export class BillingClaimsComponent {
         ths.addErrorDisplay(document.getElementById("CL_P_F_" + x.ruleId));
         valid = false;
       }
-      if (x.ruleId == 300 && !ths.isProviderNotesNeeded) {
+      if (x.ruleId == 300 && !ths.isProviderNotesNeededManual) {
         if (x.messageType === 2) {
           ths.claimRcm.claimNotes.forEach(no => {
             if (no.value == null || no.value.trim() === '') {
@@ -1743,7 +1748,7 @@ export class BillingClaimsComponent {
     this.modelElement.modal.style.display = "block";
   }
 
-  isProviderNotesNeeded(): boolean {
+  isProviderNotesNeededManual(): boolean {
     //
     //this Provider Notes requirement is only for the cases that are sent to billing team and not internal audit team.
     let codedFound = false;
@@ -1751,7 +1756,7 @@ export class BillingClaimsComponent {
       return true;
     }*/
     if (this.claimRcm.firstTeamId == this.appConstants.BILLING_TEAM) {
-      return false;
+      return true;
     }
     if (this.claimServiceLevelModel == undefined) {
       return !codedFound;
@@ -1770,6 +1775,7 @@ export class BillingClaimsComponent {
       //console.log(rCode.length);
       if (rCode.length > 0) codedFound = true;
     }
+    //codedFound = true;
     //console.log(codedFound);
     return codedFound;
   }

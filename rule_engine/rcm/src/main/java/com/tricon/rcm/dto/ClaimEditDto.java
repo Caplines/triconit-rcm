@@ -22,4 +22,5 @@ public class ClaimEditDto {
 	String assignTouuid;
 	int assignToTeam;
 	boolean byPassPendingCheck;
+	String actionName;
 }

@@ -727,7 +727,7 @@
                                                     <tr
                                                         *ngFor="let rule of claimRules | generalFilter : 'manualAuto':'MANUAL';let idx=index">
                                                         <ng-container
-                                                            *ngIf="rule.ruleId==300 && isProviderNotesNeeded() && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'view')">
+                                                            *ngIf="rule.ruleId==300 && isProviderNotesNeededManual() && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'view')">
                                                             <!--only for provider Notes-->
                                                             <td>
                                                                 {{rule.srNo}}
@@ -804,7 +804,7 @@
                                                         </ng-container>
                                                     </tr>
                                                     <ng-container
-                                                        *ngIf="claimRcm.claimNotes &&  isProviderNotesNeeded() && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'view')">
+                                                        *ngIf="claimRcm.claimNotes &&  isProviderNotesNeededManual() && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'view')">
                                                         <tr clas="relatedTo_300" *ngIf="relatedTo_300">
                                                             <td></td>
                                                             <td>
@@ -1166,7 +1166,7 @@
                                             <tr>
                                                 <td colspan="5">claim Data Not Found</td>
                                             </tr>
-                                        </ng-container> -->
+                                        </ng-container> -->{{claimServiceLevelModel?.claimFound}}
                                                     <ng-container *ngIf="claimServiceLevelModel?.claimFound">
 
                                                         <tr

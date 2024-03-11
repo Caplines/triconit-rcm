@@ -116,7 +116,7 @@ export interface ClaimEditModel {
 	assignToTeam?: number;
 	assignToComment?: string;
 	byPassPendingCheck?: boolean;
-
+	actionName?: string;
 
 }
 

@@ -3128,7 +3128,7 @@ public class ClaimServiceImpl {
 				//ClaimStatusEnum.Billing.getType();//Once claim is submitted and its being reworked upon the maintain the current status.
 				message= rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
 						Constants.FROMBILLINGTOPOSTING,"Please work on claim",claim,assign,user,office,null,
-						originalClaimPendingStatus? ClaimStatusEnum.Billed.getType() : null,originalClaimPendingStatus? ClaimStatusEnum.Need_to_Post.getType() : null);
+						originalClaimPendingStatus? ClaimStatusEnum.Billed.getType() : null,originalClaimPendingStatus? ClaimStatusEnum.Need_to_Post.getType() : null,dto.getActionName());
 			    
 				
 				
@@ -3159,7 +3159,7 @@ public class ClaimServiceImpl {
 				String nextAction =null;
 				if (originalClaimPendingStatus) {
 					 if ( dto.getAssignToTeam()==RcmTeamEnum.BILLING.getId()) {
-						 createStatus = ClaimStatusEnum.Need_to_Audit.getType(); 
+						 createStatus = ClaimStatusEnum.Need_to_Bill.getType(); 
 						 nextAction =ClaimStatusEnum.Need_to_Bill.getType();
 					 }
 					 // As per phase 2 this will never happen
@@ -3176,7 +3176,7 @@ public class ClaimServiceImpl {
 					
 				message= rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
 						dto.getAssignToTeam(),dto.getAssignToComment(),claim,assign,user,office,null,
-						createStatus,nextAction);
+						createStatus,nextAction,dto.getActionName());
 			}/*else if(dto.isAssignToTL()){//Separate API
 				//RcmUser assignuser = userRepo.findByUuid(jwtUser.getUuid());
 				claim.setUpdatedBy(user);
@@ -3266,7 +3266,7 @@ public class ClaimServiceImpl {
 			} else {
 				message =rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, dto.getClaimUuid(),
 						assignToTeamId, dto.getRemark(), claim,
-						 assign, user, office,dto.getAttachmentsWithRemarks(),null,null);
+						 assign, user, office,dto.getAttachmentsWithRemarks(),null,null,null);
 				if (message!=null && message.equals("OtherTeam")) message="done";
 				return message;
 			
@@ -4352,8 +4352,9 @@ public class ClaimServiceImpl {
 					   primaryCl.setCurrentStatus(nextAction.getId());
 				       rcmClaimRepository.save(primaryCl);
 				   }*/
+				   String assignActionName="Assign To Team";////Same we have in ui if change needed update that also (billing-claims.component.ts)
 				   String claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, sectionRequestBody.getClaimUuid(),
-							nextTeam, currentDto.getRemarks(), claim, assign, createdBy, office, null,newCycleStatus,nextAction.getType());
+							nextTeam, currentDto.getRemarks(), claim, assign, createdBy, office, null,newCycleStatus,nextAction.getType(),assignActionName);
 				}else {
 					logger.info("claim transfer response-> Wrong claim Status:"+currentDto.getNextAction()+" send for claim :"+claim.getClaimUuid() );
 				}
