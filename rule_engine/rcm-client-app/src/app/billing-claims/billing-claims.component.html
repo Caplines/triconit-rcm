@@ -264,13 +264,13 @@
                                 <!-- This section is for SmilePoints Only -->
                                 <ng-container
                                     *ngIf="smilePoint && checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'],'view')">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['linksRelatedDoc']}"
-                                        *ngIf="isBilling || isInternalAudit">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['linksRelatedDoc']}">
 
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Links to Related Documents
                                             <ng-container
-                                                *ngIf="checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'],'edit')">
+                                                *ngIf="(isBilling || isInternalAudit ) &&
+                                                checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'],'edit')">
                                                 <span class="passedNum"
                                                     *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
                                                     style="cursor: pointer;" (click)="openUpdateIvPopup($event)">
