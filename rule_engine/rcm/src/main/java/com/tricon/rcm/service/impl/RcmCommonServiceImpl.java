@@ -610,7 +610,7 @@ public class RcmCommonServiceImpl {
 				
 			case 23:
 				logger.info("Inside section 23->RequestRebilling");
-				response = claimSectionimpl.saveRequestRebillingSection(sectionRequestBody.getRequestRebillingInfoModel(),
+				response = claimSectionimpl.saveRequestRebillingSection(partialHeader,sectionRequestBody.getRequestRebillingInfoModel(),
 						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
 				logger.info("response->" + response);
 				break;
