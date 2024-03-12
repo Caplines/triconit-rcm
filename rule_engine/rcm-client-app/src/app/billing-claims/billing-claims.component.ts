@@ -2747,7 +2747,7 @@ export class BillingClaimsComponent {
 
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         if (res.status) {
-          // this.claimSectionModal['REQUEST_REBILLING'].data.push(res.data);
+          location.reload();
           console.log(res);
         }
       })
