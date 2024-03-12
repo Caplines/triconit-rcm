@@ -2736,80 +2736,81 @@ export class BillingClaimsComponent {
     }
   }
 
-  saveRequestBillingInfo(isFinal:boolean){
+  saveRequestBillingInfo(isFinal: boolean) {
     this.claimSectionModal['REQUEST_REBILLING']['sectionId'] = this.sectionIds['REQUEST_REBILLING']['sectionId'];
     this.claimSectionModal['REQUEST_REBILLING']['billingUserUuid'] = this.claimRcm.billingUserUuid;
-    this.concatenateRequestBillingFieldsArray();
     if (!isFinal) {
       let params: any = {
         claimUuid: this.claimUUid,
         requestRebillingInfoModel: this.claimSectionModal['REQUEST_REBILLING']
       };
-      console.log(params);
-      
-      // this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-      //   if (res.status) {
-      //     // this.claimSectionModal['REQUEST_REBILLING'].data.push(res.data);
-      //     console.log(res);
-      //   }
-      // })
+
+      this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+        if (res.status) {
+          // this.claimSectionModal['REQUEST_REBILLING'].data.push(res.data);
+          console.log(res);
+        }
+      })
     }
     return this.claimSectionModal['REQUEST_REBILLING'];
   }
 
-  concatenateRequestBillingFieldsArray(){
-    let concatServiceCode:any;
-    let concatRequiredRequestBilling = this.claimSectionModal['REQUEST_REBILLING']['rebillingRequirements'].reduce((accumulator:any, currentValue:any) => {
-        return accumulator + ","+ currentValue.name;
+  concatenateRequiredRebilling() {
+    let concatRequiredRequestBilling: any;
+    concatRequiredRequestBilling = this.claimSectionModal['REQUEST_REBILLING']['rebillingRequirements'].reduce((accumulator: any, currentValue: any) => {
+      return accumulator + "," + currentValue.name;
     }, '');
-    if(typeof(this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes']) == 'object'){
-      concatServiceCode = this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes'].reduce((accumulator:any, currentValue:any) => {
-        return accumulator + ","+ currentValue.name;
-      }, '');
-      concatServiceCode = concatServiceCode.replace(",",'');
-      this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes'] = concatServiceCode;
-    }
-    concatRequiredRequestBilling = concatRequiredRequestBilling.replace(",",'');
+    concatRequiredRequestBilling = concatRequiredRequestBilling.replace(",", '');
     this.claimSectionModal['REQUEST_REBILLING']['rebillingRequirements'] = concatRequiredRequestBilling;
   }
 
-  concatenateRebillingServiceCode(){
-    let concatServiceCode:any = this.serviceLevelSectionMultiSelectConfig.serviceCodesList.reduce((accumulator:any, currentValue:any) => {
-      return accumulator + ","+ currentValue.name;
+  concatenateRebillingServiceCode() {
+    let concatServiceCode: any = this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes'].reduce((accumulator: any, currentValue: any) => {
+      return accumulator + "," + currentValue.name;
     }, '');
-    concatServiceCode = concatServiceCode.replace(",",'');
+    concatServiceCode = concatServiceCode.replace(",", '');
     this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes'] = concatServiceCode;
   }
 
-  selectRebillingType(type:any){
-      this.claimSectionModal.REQUEST_REBILLING['rebillingType'] = type;
-      if(type == 'fullClaim'){
-        this.serviceLevelSectionMultiSelectConfig.serviceCodesList=[];
-        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e:any)=>{
-          if(e.serviceCode.toLowerCase() !== 'undistributed'){
-            this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({name:e.serviceCode});
-          }
-      })
-        this.concatenateRebillingServiceCode();
-      }
+  concatenateAllRebillingServiceCode() {
+    let concatServiceCode: any = this.serviceLevelSectionMultiSelectConfig.serviceCodesList.reduce((accumulator: any, currentValue: any) => {
+      return accumulator + "," + currentValue.name;
+    }, '');
+    concatServiceCode = concatServiceCode.replace(",", '');
+    this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes'] = concatServiceCode;
   }
 
-  receiveChildrenEvent(event:any){
-    if(event['action'] === 'updateServiceCode')  {
+  selectRebillingType(type: any) {
+    this.claimSectionModal.REQUEST_REBILLING['rebillingType'] = type;
+    if (type == 'fullClaim') {
+      this.serviceLevelSectionMultiSelectConfig.serviceCodesList = [];
+      this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+        if (e.serviceCode.toLowerCase() !== 'undistributed') {
+          this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({ name: e.serviceCode });
+        }
+      })
+      this.concatenateAllRebillingServiceCode();
+    }
+  }
+
+  receiveChildrenEvent(event: any) {
+    if (event['action'] === 'updateServiceCode') {
       this.claimSectionModal.REQUEST_REBILLING['rebillingServiceCodes'] = event.value;
-    } else if(event['action'] === 'updateRequiredReBilling') {
+      this.concatenateRebillingServiceCode();
+    } else if (event['action'] === 'updateRequiredReBilling') {
       this.claimSectionModal.REQUEST_REBILLING['rebillingRequirements'] = event.value;
+      this.concatenateRequiredRebilling();
     }
     console.log(event.value);
-    
+
   }
-  
-  getAllServiceCodes(){
-    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e:any,idx:any)=>{
-      if(e.serviceCode.toLowerCase() !== 'undistributed'){
-        this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({name:e.serviceCode,checked:false});
+
+  getAllServiceCodes() {
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any, idx: any) => {
+      if (e.serviceCode.toLowerCase() !== 'undistributed') {
+        this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({ name: e.serviceCode, checked: false });
       }
-      this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({name: `option${idx}`,checked:false});
+      this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({ name: `option${idx}`, checked: false });
     })
   }
 

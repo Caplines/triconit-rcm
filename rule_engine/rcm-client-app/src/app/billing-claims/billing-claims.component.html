@@ -2738,7 +2738,6 @@
                                                 [ngClass]="{'close':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}"></a>
                                         </div>
                                     </div>
----
                                     <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
@@ -2850,7 +2849,7 @@
 
                                     </div>
                                 </ng-container>
-                                
+
                                 <ng-container
                                 *ngIf="!claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
