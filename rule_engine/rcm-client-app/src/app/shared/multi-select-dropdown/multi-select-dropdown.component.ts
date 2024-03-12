@@ -31,6 +31,8 @@ export class MultiSelectDropdownComponent {
   showSelectedData:any={};
   isAllSelected:any={'clients':false,'offices':false,'ageCategory':false,'claimStatus':false,'teams':false};
 
+  claimDetailPageConfig:any={'serviceCodes':[],'requiredReBilling':[]};
+
 
 constructor(private _service:ApplicationServiceService,private constants:AppConstants) {
   this.clientCheckedList=this.teamCheckedList=[];
@@ -558,6 +560,41 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
 
   else if(type === 'locInsuranceType'){
     this.emitToParent.emit({action:'filterByInsuranceType'});
+  }
+
+  else if (type === 'serviceCodes'){
+    if (status) {
+      let isExist = this.claimDetailPageConfig.serviceCodes.some((ele:any)=>ele.name.toUpperCase() == value.name.toUpperCase() && ele.checked == value.checked);
+      if(!isExist){
+        this.claimDetailPageConfig.serviceCodes.push(value);
+        this.emitToParent.emit({action:'updateServiceCode',value:this.claimDetailPageConfig.serviceCodes});
+      }
+    } else {
+      this.claimDetailPageConfig.serviceCodes.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.claimDetailPageConfig.serviceCodes.splice(idx, 1);
+          this.emitToParent.emit({action:'updateServiceCode',value:this.claimDetailPageConfig.serviceCodes});
+        }
+      });
+      
+    }
+  }
+  else if (type === 'requiredReBilling'){
+    if (status) {
+      let isExist = this.claimDetailPageConfig.requiredReBilling.some((ele:any)=>ele.name.toUpperCase() == value.name.toUpperCase() && ele.checked == value.checked);
+      if(!isExist){
+        this.claimDetailPageConfig.requiredReBilling.push(value);
+        this.emitToParent.emit({action:'updateRequiredReBilling',value:this.claimDetailPageConfig.requiredReBilling});
+      }
+    } else {
+      this.claimDetailPageConfig.requiredReBilling.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.claimDetailPageConfig.requiredReBilling.splice(idx, 1);
+          this.emitToParent.emit({action:'updateRequiredReBilling',value:this.claimDetailPageConfig.requiredReBilling});
+        }
+      });
+      
+    }
   }
 
     this.showSelectedData[filterProperty] =true;

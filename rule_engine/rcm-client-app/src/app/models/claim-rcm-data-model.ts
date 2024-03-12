@@ -88,6 +88,8 @@ export interface ClaimRcmDataModel {
 
 	currentStatusName?: String;
 	nextActionName?: String;
+	rebilledStatus?:boolean;
+	billingUserUuid?:String;
 
 }
 

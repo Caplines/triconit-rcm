@@ -289,6 +289,11 @@ export class BillingClaimsComponent {
       modal: {}
     },
     CURRENT_STATUS_AND_NEXT_ACTION: {},
+    REQUEST_REBILLING:{
+      "nextAction":"Re-billing",
+      "currentAction":"Re-billing",
+      "teamId":7,
+    }
 
   };
   finalSaveClaimDataModel: any = {
@@ -305,6 +310,7 @@ export class BillingClaimsComponent {
   sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0 };
   viewNotesConfig: any = { showNotes: false, viewNotes: [] };
   isBtpFlagTrue: boolean = false;
+  serviceLevelSectionMultiSelectConfig:any={serviceCodesList:[],rebillingRequirements:[]};
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
 
 
@@ -1924,6 +1930,7 @@ export class BillingClaimsComponent {
             this.addUndistributedSectionLevelField();
           }
           this.getTotalServiceLevelInfo();
+          this.getAllServiceCodes();
         }
       })
     }
@@ -2727,6 +2734,83 @@ export class BillingClaimsComponent {
         this.isBtpFlagTrue = false;
       });
     }
+  }
+
+  saveRequestBillingInfo(isFinal:boolean){
+    this.claimSectionModal['REQUEST_REBILLING']['sectionId'] = this.sectionIds['REQUEST_REBILLING']['sectionId'];
+    this.claimSectionModal['REQUEST_REBILLING']['billingUserUuid'] = this.claimRcm.billingUserUuid;
+    this.concatenateRequestBillingFieldsArray();
+    if (!isFinal) {
+      let params: any = {
+        claimUuid: this.claimUUid,
+        requestRebillingInfoModel: this.claimSectionModal['REQUEST_REBILLING']
+      };
+      console.log(params);
+      
+      // this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      //   if (res.status) {
+      //     // this.claimSectionModal['REQUEST_REBILLING'].data.push(res.data);
+      //     console.log(res);
+      //   }
+      // })
+    }
+    return this.claimSectionModal['REQUEST_REBILLING'];
+  }
+
+  concatenateRequestBillingFieldsArray(){
+    let concatServiceCode:any;
+    let concatRequiredRequestBilling = this.claimSectionModal['REQUEST_REBILLING']['rebillingRequirements'].reduce((accumulator:any, currentValue:any) => {
+        return accumulator + ","+ currentValue.name;
+    }, '');
+    if(typeof(this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes']) == 'object'){
+      concatServiceCode = this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes'].reduce((accumulator:any, currentValue:any) => {
+        return accumulator + ","+ currentValue.name;
+      }, '');
+      concatServiceCode = concatServiceCode.replace(",",'');
+      this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes'] = concatServiceCode;
+    }
+    concatRequiredRequestBilling = concatRequiredRequestBilling.replace(",",'');
+    this.claimSectionModal['REQUEST_REBILLING']['rebillingRequirements'] = concatRequiredRequestBilling;
+  }
+
+  concatenateRebillingServiceCode(){
+    let concatServiceCode:any = this.serviceLevelSectionMultiSelectConfig.serviceCodesList.reduce((accumulator:any, currentValue:any) => {
+      return accumulator + ","+ currentValue.name;
+    }, '');
+    concatServiceCode = concatServiceCode.replace(",",'');
+    this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes'] = concatServiceCode;
+  }
+
+  selectRebillingType(type:any){
+      this.claimSectionModal.REQUEST_REBILLING['rebillingType'] = type;
+      if(type == 'fullClaim'){
+        this.serviceLevelSectionMultiSelectConfig.serviceCodesList=[];
+        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e:any)=>{
+          if(e.serviceCode.toLowerCase() !== 'undistributed'){
+            this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({name:e.serviceCode});
+          }
+      })
+        this.concatenateRebillingServiceCode();
+      }
+  }
+
+  receiveChildrenEvent(event:any){
+    if(event['action'] === 'updateServiceCode')  {
+      this.claimSectionModal.REQUEST_REBILLING['rebillingServiceCodes'] = event.value;
+    } else if(event['action'] === 'updateRequiredReBilling') {
+      this.claimSectionModal.REQUEST_REBILLING['rebillingRequirements'] = event.value;
+    }
+    console.log(event.value);
+    
+  }
+  
+  getAllServiceCodes(){
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e:any,idx:any)=>{
+      if(e.serviceCode.toLowerCase() !== 'undistributed'){
+        this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({name:e.serviceCode,checked:false});
+      }
+      this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({name: `option${idx}`,checked:false});
+    })
   }
 
 }

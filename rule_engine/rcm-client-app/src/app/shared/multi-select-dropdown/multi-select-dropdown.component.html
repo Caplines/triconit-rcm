@@ -1,5 +1,5 @@
 <div>
-    <div (mouseleave)="showDropDown = false" *ngIf="!inputConfig?.isSearchClaims && !inputConfig?.isListOfClaims ">
+    <div (mouseleave)="showDropDown = false" *ngIf="!inputConfig?.isSearchClaims && !inputConfig?.isListOfClaims && !inputConfig?.isDetailPage ">
         <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown">
             <span *ngIf="clientCheckedList.length<=0 ||  teamCheckedList.length<=0 ">Select</span>
             <span *ngIf="clientCheckedList.length>0 && isClient">
@@ -414,4 +414,54 @@ last ?
         </div>
     </div>
 </div>
+</ng-container>
+
+<ng-container *ngIf="inputConfig?.isDetailPage">
+    <!-- Claim Detail Service Code -->
+    <div class="detail-page-service-codes" (mouseleave)="showDropDown = false"
+        *ngIf="inputConfig?.isDetailPage && inputConfig?.serviceCodes">
+        <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown;toggleSelectedItem('serviceCodes')">
+            <span *ngIf="claimDetailPageConfig.serviceCodes.length<=0">Select</span>
+            <span *ngIf="claimDetailPageConfig.serviceCodes.length>0" [ngClass]="{'hide-item':showSelectedData['serviceCodes']}">
+                <ng-container *ngFor="let item of claimDetailPageConfig.serviceCodes; let last = last"> {{ item.name
+                    }}{{last ? '': ','}}</ng-container>
+            </span>
+            <i class="fa fa-angle-down"></i>
+        </button>
+        <div class="drop-show search-claim-dropdown" *ngIf="showDropDown">
+            <!-- <label>
+                <input type="checkbox" (change)="getSelectedValue(!isAllSelected['serviceCodes'],'','selectAllAge','serviceCodes')" [checked]="isAllSelected['serviceCodes']">
+                <span>{{inputConfig.serviceCodes.length == searchClaimsConfig.serviceCodes.length ? 'Clear All' : 'Select All'}}</span>
+            </label> -->
+            <label *ngFor="let item of inputConfig.serviceCodes;let idx = index">
+                <input type="checkbox" [(ngModel)]="item.checked"
+                    (change)="getSelectedValue(item.checked,item,'serviceCodes','serviceCodes')" />
+                <span>{{item.name}}</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Claim Detail Required Rebilling  -->
+    <div class="detail-page-required-rebilling" (mouseleave)="showDropDown = false"
+        *ngIf="inputConfig?.isDetailPage && inputConfig?.requiredReBilling">
+        <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown;toggleSelectedItem('requiredReBilling')">
+            <span *ngIf="claimDetailPageConfig.requiredReBilling.length<=0">Select</span>
+            <span *ngIf="claimDetailPageConfig.requiredReBilling.length>0" [ngClass]="{'hide-item':showSelectedData['requiredReBilling']}">
+                <ng-container *ngFor="let item of claimDetailPageConfig.requiredReBilling; let last = last"> {{ item.name
+                    }}{{last ? '': ','}}</ng-container>
+            </span>
+            <i class="fa fa-angle-down"></i>
+        </button>
+        <div class="drop-show search-claim-dropdown" *ngIf="showDropDown">
+            <!-- <label>
+                <input type="checkbox" (change)="getSelectedValue(!isAllSelected['requiredReBilling'],'','selectAllAge','requiredReBilling')" [checked]="isAllSelected['requiredReBilling']">
+                <span>{{inputConfig.requiredReBilling.length == searchClaimsConfig.requiredReBilling.length ? 'Clear All' : 'Select All'}}</span>
+            </label> -->
+            <label *ngFor="let item of inputConfig.requiredReBilling;let idx = index">
+                <input type="checkbox" [(ngModel)]="item.checked"
+                    (change)="getSelectedValue(item.checked,item,'requiredReBilling','requiredReBilling')" />
+                <span>{{item.name}}</span>
+            </label>
+        </div>
+    </div>
 </ng-container>

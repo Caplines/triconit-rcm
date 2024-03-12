@@ -12,6 +12,7 @@ import { AttachFileModule } from '../shared/attach-file/attach-file.module';
 import { DatePipe } from '@angular/common';
 
 import { PdfViewerModule } from "ng2-pdf-viewer";
+import {MultiSelectDropdownModule} from "../shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module";
 
 
 
@@ -24,6 +25,7 @@ import { PdfViewerModule } from "ng2-pdf-viewer";
     PipesModule,
     AttachFileModule,
     PdfViewerModule,
+    MultiSelectDropdownModule
   ],
   providers: [ApplicationServiceService, ClaimService, DownLoadService, DatePipe],
   exports: [BillingClaimsComponent],
