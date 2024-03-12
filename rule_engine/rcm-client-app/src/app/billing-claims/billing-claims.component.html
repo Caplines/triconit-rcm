@@ -1701,7 +1701,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div *ngIf="displayPhaseSection && claimRcm.allowEdit && !claimRcm.pending &&  checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit')"
+                                        <div *ngIf="claimRcm.allowEdit && !claimRcm.pending &&  checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit')"
                                             class="save-btn col-sm-12 mb-1">
                                             <span class="custom-control custom-switch custom-switch-lg">
                                                 <input type="checkbox" [checked]="isBtpFlagTrue"
@@ -1719,6 +1719,7 @@
 
                                     </div>
                                 </ng-container>
+
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['EOB']}">
@@ -2099,6 +2100,160 @@
                                     </div>
                                 </ng-container>
                                 <!-- Payment Posting END-->
+
+                                <!--AGING Insurance Follow-Up Details START-->
+
+                                <ng-container
+                                    *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'view')">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['INSURANCE_FOLLOW_UP']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="INSURANCE_FOLLOW_UP">
+                                            Insurance Follow-Up Details
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('INSURANCE_FOLLOW_UP')">
+                                            <a href="javascript:void(0)"
+                                                [ngClass]="{'close':toggleTab['INSURANCE_FOLLOW_UP']}"></a>
+                                        </div>
+                                    </div>
+ 
+                                    <div *ngIf="loader.serviceCode" class="loader-data"></div>
+                                    <div *ngIf="!loader.serviceCode" class="form-row  collapse"
+                                        [ngClass]="{'show':!toggleTab['INSURANCE_FOLLOW_UP']}">
+                                        <div class="table-responsive">
+                                            <table class="table table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>S.No. (Descending Order of Date)</th>
+                                                        <th>Follow Up Done By (Team)</th>
+                                                        <th>Follow Up Done By (Associate Name)</th>
+                                                        <th>Date & Time</th>
+                                                        <th>Mode</th>
+                                                        <th>Call Reference #</th>
+                                                        <th>Insurance Rep. Name</th>
+                                                        <th>Claim Status</th>
+                                                        <th>Remarks</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr
+                                                        *ngFor="let data of claimSectionModal['INSURANCE_FOLLOW_UP'].data;let idx=index;">
+                                                        <td>{{idx+1}}</td>
+                                                        <td>{{data.followByTeam}}</td>
+                                                        <td>{{data.followByUser}}</td>
+                                                        <td>{{data.nextFollowUpDate|date}}</td>
+                                                        <td>{{data.modeOfFollowUp}}</td>
+                                                        <td>{{data.refNumber}}</td>
+                                                        <td>{{data.insuranceRepName}}</td>
+                                                        <td>{{data.currentClaimStatus}}</td>
+                                                        <td>{{data.followUpRemarks}}</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="container-fluid pdf-viewer-container my-3">
+                                            <span>Current Insurance Follow-Up Information</span>
+                                            <div class="row">
+ 
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-row text-number">
+                                                        <label for="modeOfFollowUp">Mode of Follow up</label>
+                                                        <select id="modeOfFollowUp" class="form-control"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['modeOfFollowUp']"
+                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['modeOfFollowUp']}">
+                                                            <option selected="true" hidden="true">Select</option>
+                                                            <option value="Call">Call</option>
+                                                            <option value="Web">Web</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-row text-number">
+                                                        <label for="refNumber">Call Ref. #</label>
+                                                        <input type="text" id="refNumber"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['refNumber']"
+                                                            class="form-control"
+                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['refNumber']}">
+                                                    </div>
+                                                </div>
+ 
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-row text-number">
+                                                        <label for="insuranceRepName">Insurance Rep. Name</label>
+                                                        <input type="text" id="insuranceRepName"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['insuranceRepName']"
+                                                            class="form-control"
+                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['insuranceRepName']}">
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-row text-number">
+                                                        <label for="currentClaimStatus">Current Claim Status</label>
+                                                        <select id="currentClaimStatus" class="form-control"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus']"
+                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus']}">
+                                                            <option selected="true" hidden="true">Select</option>
+                                                            <option value="Check">Check</option>
+                                                            <option value="Eft">EFT</option>
+                                                            <option value="Vcc">VCC</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+ 
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-row text-number">
+                                                        <label for="nextFollowUpRequired">Next Follow-up
+                                                            Required</label>
+                                                        <select id="nextFollowUpRequired" class="form-control"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpRequired']"
+                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpRequired']}">
+                                                            <option selected="true" hidden="true">Select</option>
+                                                            <option value="YES">Yes</option>
+                                                            <option value="NO">No</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+ 
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-row text-number">
+                                                        <label for="nextFollowUpDate">Date</label>
+                                                        <input type="date" id="nextFollowUpDate"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']"
+                                                            class="form-control"
+                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate']}">
+                                                    </div>
+                                                </div>
+ 
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-row text-number">
+                                                        <label for="followUpRemarks">Enter Your Follow up
+                                                            Remarks</label>
+                                                        <textarea type="date" id="followUpRemarks"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['followUpRemarks']"
+                                                            class="form-control"
+                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['followUpRemarks']}">
+                                                                                    </textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 mb-2"></div>
+                                                <div class="col-md-4 mb-2"></div>
+                                                <div class="col-md-4 mb-2">
+                                                    <button class="btn btn-success"
+                                                        (click)="saveInsuranceFollowUpInfo(false)"
+                                                        [hidden]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)">Save</button>
+                                                </div>
+                                            </div>
+                                        </div>
+ 
+                                    </div>
+                                </ng-container>
+                                <!-- Insurance Follow-Up Details END-->
+
                                 <ng-container
                                     *ngIf="displayPhaseSection && !claimRcm.pending &&  checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
@@ -2176,157 +2331,6 @@
                                         <div class="col-md-4 mb-2">
 
                                         </div>
-                                    </div>
-                                </ng-container>
-
-
-                                <ng-container
-                                    *ngIf="displayPhaseSection && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'view')">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['INSURANCE_FOLLOW_UP']}">
-                                        <a data-toggle="collapse" aria-expanded="false" id="INSURANCE_FOLLOW_UP">
-                                            Insurance Follow-Up Details
-                                        </a>
-                                        <div class="down-icon" (click)="showHide('INSURANCE_FOLLOW_UP')">
-                                            <a href="javascript:void(0)"
-                                                [ngClass]="{'close':toggleTab['INSURANCE_FOLLOW_UP']}"></a>
-                                        </div>
-                                    </div>
-
-                                    <div *ngIf="loader.serviceCode" class="loader-data"></div>
-                                    <div *ngIf="!loader.serviceCode" class="form-row  collapse"
-                                        [ngClass]="{'show':!toggleTab['INSURANCE_FOLLOW_UP']}">
-                                        <div class="table-responsive">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th>S.No. (Descending Order of Date)</th>
-                                                        <th>Follow Up Done By (Team)</th>
-                                                        <th>Follow Up Done By (Associate Name)</th>
-                                                        <th>Date & Time</th>
-                                                        <th>Mode</th>
-                                                        <th>Call Reference #</th>
-                                                        <th>Insurance Rep. Name</th>
-                                                        <th>Claim Status</th>
-                                                        <th>Remarks</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr
-                                                        *ngFor="let data of claimSectionModal['INSURANCE_FOLLOW_UP'].data;let idx=index;">
-                                                        <td>{{idx+1}}</td>
-                                                        <td>{{data.followByTeam}}</td>
-                                                        <td>{{data.followByUser}}</td>
-                                                        <td>{{data.nextFollowUpDate|date}}</td>
-                                                        <td>{{data.modeOfFollowUp}}</td>
-                                                        <td>{{data.refNumber}}</td>
-                                                        <td>{{data.insuranceRepName}}</td>
-                                                        <td>{{data.currentClaimStatus}}</td>
-                                                        <td>{{data.followUpRemarks}}</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="container-fluid pdf-viewer-container my-3">
-                                            <span>Current Insurance Follow-Up Information</span>
-                                            <div class="row">
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="modeOfFollowUp">Mode of Follow up</label>
-                                                        <select id="modeOfFollowUp" class="form-control"
-                                                            [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['modeOfFollowUp']"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['modeOfFollowUp']}">
-                                                            <option selected="true" hidden="true">Select</option>
-                                                            <option value="Call">Call</option>
-                                                            <option value="Web">Web</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="refNumber">Call Ref. #</label>
-                                                        <input type="text" id="refNumber"
-                                                            [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['refNumber']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['refNumber']}">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="insuranceRepName">Insurance Rep. Name</label>
-                                                        <input type="text" id="insuranceRepName"
-                                                            [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['insuranceRepName']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['insuranceRepName']}">
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="currentClaimStatus">Current Claim Status</label>
-                                                        <select id="currentClaimStatus" class="form-control"
-                                                            [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus']"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus']}">
-                                                            <option selected="true" hidden="true">Select</option>
-                                                            <option value="Check">Check</option>
-                                                            <option value="Eft">EFT</option>
-                                                            <option value="Vcc">VCC</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="nextFollowUpRequired">Next Follow-up
-                                                            Required</label>
-                                                        <select id="nextFollowUpRequired" class="form-control"
-                                                            [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpRequired']"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpRequired']}">
-                                                            <option selected="true" hidden="true">Select</option>
-                                                            <option value="YES">Yes</option>
-                                                            <option value="NO">No</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="nextFollowUpDate">Date</label>
-                                                        <input type="date" id="nextFollowUpDate"
-                                                            [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate']}">
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-4 mb-2">
-                                                    <div class="custom-row text-number">
-                                                        <label for="followUpRemarks">Enter Your Follow up
-                                                            Remarks</label>
-                                                        <textarea type="date" id="followUpRemarks"
-                                                            [disabled]="!checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['followUpRemarks']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['followUpRemarks']}">
-                                                    </textarea>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2">
-                                                    <button class="btn btn-success"
-                                                        (click)="saveInsuranceFollowUpInfo(false)"
-                                                        [hidden]="!checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && !this.claimRcm.allowEdit">Save</button>
-                                                </div>
-                                            </div>
-                                        </div>
-
                                     </div>
                                 </ng-container>
 
@@ -2734,7 +2738,7 @@
                                                 [ngClass]="{'close':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}"></a>
                                         </div>
                                     </div>
-
+---
                                     <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
@@ -2819,7 +2823,7 @@
                                     claimRcm.currentTeamId == 5 || claimRcm.currentTeamId == 6 ||
                                     claimRcm.currentTeamId == 7 || claimRcm.currentTeamId == 10 ||
                                     claimRcm.currentTeamId == 11 || claimRcm.currentTeamId == 13 ||
-                                    claimRcm.currentTeamId == 14 || claimRcm.currentTeamId == 12 
+                                    claimRcm.currentTeamId == 14 || claimRcm.currentTeamId == 12 || claimRcm.currentTeamId == 20 
                                                     ) && claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
                                                         type="button" class="btn btn-success"
                                                         [disabled]="!finalsubmitcurrentstat"
@@ -2846,6 +2850,139 @@
 
                                     </div>
                                 </ng-container>
+
+                                <ng-container
+                                *ngIf="displayPhaseSection && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
+                                    <a data-toggle="collapse" aria-expanded="false">
+                                        Claim Level Information
+                                    </a>
+                                    <div class="down-icon" (click)="showHide('REQUEST_REBILLING')">
+                                        <a href="javascript:void(0)"
+                                            [ngClass]="{'close':toggleTab['REQUEST_REBILLING']}"></a>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
+                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
+                                    [ngClass]="{'show':!toggleTab['claimLevelInfo']}" id="CLAIM_LEVEL_INFORMATION">
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="claim">Claim #</label>
+                                            <input type="text" id="claim"
+                                                *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimId']"
+                                                class="form-control"
+                                                [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimId']}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="claimDate">Claim Processing Date</label>
+                                            <input type="date" id="claimDate"
+                                                *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']"
+                                                class="form-control"
+                                                [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="network">Network</label>
+                                            <select id="network" class="form-control"
+                                                *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['network']"
+                                                [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['network']}">
+                                                <option selected="true" hidden="true">Select Network</option>
+                                                <option value="in">In</option>
+                                                <option value="out">Out</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="claimPassed">Claim Passed in First Go?</label>
+                                            <select id="claimPassed" class="form-control"
+                                                *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo']"
+                                                [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimPassFirstGo']}">
+                                                <option selected="true" hidden="true">Select</option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="intialDenial">Initial Denial</label>
+                                            <select id="intialDenial" class="form-control"
+                                                *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['initialDenial']"
+                                                [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['initialDenial']}">
+                                                <option selected="true" hidden="true">Select</option>
+                                                <ng-container
+                                                    *ngFor="let item of appConstants.claimInitialDenialReason">
+                                                    <option [value]="item.reasonName">{{item.reasonName}}</option>
+                                                </ng-container>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number"
+                                            *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
+                                            <label for="noOfEstPayment">No. of Est. Payments</label>
+                                            <input type="text" id="noOfEstPayment"
+                                                *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['noOfEstPayment']"
+                                                class="form-control"
+                                                [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['noOfEstPayment']}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number"
+                                            *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
+                                            <label for="paymentFrequency">Payment Frequency</label>
+                                            <input type="text" id="paymentFrequency"
+                                                *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['paymentFrequency']"
+                                                class="form-control"
+                                                [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['paymentFrequency']}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number"
+                                            *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
+                                            <label for="noOfPaymentReceived">No. of Payments Received</label>
+                                            <input type="text" id="noOfPaymentReceived"
+                                                *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['noOfPaymentReceived']"
+                                                class="form-control"
+                                                [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['noOfPaymentReceived']}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2"></div>
+                                    <div class="col-md-4 mb-2">
+                                        <button class="btn btn-success" (click)="saveClaimLevelinfo(false)"
+                                            [hidden]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)">Save</button>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <!-- <button class="btn btn-outline-primary" (click)="checkSectionFieldValidation()">Final Submit</button> -->
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+
+                                    </div>
+                                </div>
+                            </ng-container>
                             </div>
                             <!-- Modal -->
                             <div id="assigment-modal" class="modal">
