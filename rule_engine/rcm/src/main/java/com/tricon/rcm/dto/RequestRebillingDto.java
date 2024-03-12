@@ -13,6 +13,5 @@ public class RequestRebillingDto {
 	private String nextAction;
 	private String currentAction;
 	private int teamId;
-	private String billingUserUuid;
 	private int sectionId;
 }

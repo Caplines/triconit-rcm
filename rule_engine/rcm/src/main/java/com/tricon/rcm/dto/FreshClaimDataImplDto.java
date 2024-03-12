@@ -138,6 +138,5 @@ public class FreshClaimDataImplDto {
 	String patientContactNo;
 	
     boolean rebilledStatus;
-	String billingUserUuid;
 }
 

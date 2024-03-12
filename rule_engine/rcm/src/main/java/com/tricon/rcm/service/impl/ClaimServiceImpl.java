@@ -1480,13 +1480,6 @@ public class ClaimServiceImpl {
 		if (dto != null) {
 
 			implDto = new FreshClaimDataImplDto();
-			if (dto.getRebilledStatus()) {
-				UserAssignOffice assignedUserBilling = userAssignOfficeRepo
-						.findByOfficeUuidAndTeamId(dto.getOfficeUuid(), RcmTeamEnum.BILLING.getId());
-				if (assignedUserBilling != null) {
-					implDto.setBillingUserUuid(assignedUserBilling.getUser().getUuid());
-				}
-			}
 
 			//implDto.setSecInsurance("N/A");
 			// RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUuid);

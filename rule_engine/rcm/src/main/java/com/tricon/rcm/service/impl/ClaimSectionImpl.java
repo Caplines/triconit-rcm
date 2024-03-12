@@ -1296,9 +1296,8 @@ public class ClaimSectionImpl {
 
 			// update rebilled status true in rcm_claims table
 
-			RcmClaims claims = rcmClaimRepository.findByClaimUuid(claim.getClaimUuid());
-			claims.setRebilledStatus(true);
-			rcmClaimRepository.save(claims);
+			claim.setRebilledStatus(true);
+			rcmClaimRepository.save(claim);
 
 			String newCycleStatus = requestRebillingInfoModel.getCurrentAction();
 			int nextTeam = requestRebillingInfoModel.getTeamId();
@@ -1353,12 +1352,11 @@ public class ClaimSectionImpl {
 			rebillingInfoModel.setRequestedBy(rebillingSection.getRequestedBy().getFirstName());
 
 			// update rebilled status false in rcm_claims table
-			RcmClaims claims = rcmClaimRepository.findByClaimUuid(claim.getClaimUuid());
-			claims.setRebilledStatus(false);
-			if (claims.getFirstRebilledDate() == null) {
-				claims.setFirstRebilledDate(Timestamp.from(Instant.now()));
+			claim.setRebilledStatus(false);
+			if (claim.getFirstRebilledDate() == null) {
+				claim.setFirstRebilledDate(Timestamp.from(Instant.now()));
 			}
-			rcmClaimRepository.save(claims);
+			rcmClaimRepository.save(claim);
 
 			// First we update rebilled status false in service_level_section as well as
 			// rcm
