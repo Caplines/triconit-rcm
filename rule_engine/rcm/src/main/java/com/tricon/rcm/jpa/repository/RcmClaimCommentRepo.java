@@ -25,7 +25,7 @@ public interface RcmClaimCommentRepo extends JpaRepository<RcmClaimComment, Stri
  
 	RcmClaimComment findByCommentedByUuidAndClaimsClaimUuid(String commentedBy,String claimuuid);
 	
-	RcmClaimComment findByClaimsClaimUuid(String claimuuid);
+	//RcmClaimComment findByClaimsClaimUuid(String claimuuid);
 	
 	@Transactional
 	@Modifying

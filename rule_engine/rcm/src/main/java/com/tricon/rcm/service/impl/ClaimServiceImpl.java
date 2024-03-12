@@ -1732,7 +1732,7 @@ public class ClaimServiceImpl {
 				}
 				
 			}
-			RcmClaimComment comment = rcmClaimCommentRepo.findByClaimsClaimUuid(claimUuid);
+			RcmClaimComment comment = rcmClaimCommentRepo.findByCommentedByUuidAndClaimsClaimUuid(partialHeader.getJwtUser().getUuid(),claimUuid);
 			if (comment != null) {
 				implDto.setClaimRemarks(comment.getComments());
 			}
@@ -3001,7 +3001,7 @@ public class ClaimServiceImpl {
 
 	public String fetchClaimRemark(PartialHeader partialHeader, String claimuuid) {
 
-		RcmClaimComment d = rcmClaimCommentRepo.findByClaimsClaimUuid(claimuuid);
+		RcmClaimComment d = rcmClaimCommentRepo.findByCommentedByUuidAndClaimsClaimUuid(partialHeader.getJwtUser().getUuid(),claimuuid);
 		if (d != null) {
 			return d.getComments();
 		}
