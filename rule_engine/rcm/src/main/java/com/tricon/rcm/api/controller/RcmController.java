@@ -905,7 +905,7 @@ public class RcmController extends BaseHeaderController{
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
 		try {
-			response = claimServiceImpl.saveClaimSectionDatAfterSubmission(sectionRequestBody,partialHeader);
+			response = claimServiceImpl.saveClaimSectionDataAfterSubmission(sectionRequestBody,partialHeader);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

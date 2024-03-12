@@ -37,6 +37,7 @@ import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCollectionAgency;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
+import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmPatientCommunicationSection;
 import com.tricon.rcm.db.entity.RcmPatientPayment;
 import com.tricon.rcm.db.entity.RcmPatientStatementSection;
@@ -68,6 +69,7 @@ import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.dto.ServiceLevelTotalAmountDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.RcmServiceNotesDto;
+import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.EOBSectionRepo;
 import com.tricon.rcm.jpa.repository.FollowUpInsuranceRepo;
@@ -193,6 +195,9 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmRequestRebillingSectionRepo  requestRebillingSectionRepo;
+	
+	@Autowired
+	RcmClaimLogServiceImpl rcmClaimLogServiceImpl;
 	
 	
 
@@ -1268,10 +1273,19 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveRequestRebillingSection(RequestRebillingDto requestRebillingInfoModel, RcmClaims claim,
-			RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
+	public Boolean saveRequestRebillingSection(PartialHeader partialHeader,
+			RequestRebillingDto requestRebillingInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
+			boolean finalSubmit) throws Exception {
 		RcmRequestRebiilingSection requestRebillingSection = null;
-		if (claim != null) {
+		RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(
+				partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
+		if (assign == null) {
+			logger.error("claim not assigned to this user");
+			// Not assigned to user
+			return false;
+		}
+		
+		if (claim != null && requestRebillingInfoModel != null && !finalSubmit) {
 			requestRebillingSection = new RcmRequestRebiilingSection();
 			requestRebillingSection.setClaim(claim);
 			requestRebillingSection.setCreatedBy(createdBy);
@@ -1285,7 +1299,24 @@ public class ClaimSectionImpl {
 			RcmClaims claims = rcmClaimRepository.findByClaimUuid(claim.getClaimUuid());
 			claims.setRebilledStatus(true);
 			rcmClaimRepository.save(claims);
+
+			String newCycleStatus = requestRebillingInfoModel.getCurrentAction();
+			int nextTeam = requestRebillingInfoModel.getTeamId();
+			ClaimStatusEnum nextAction = ClaimStatusEnum.getByType(requestRebillingInfoModel.getNextAction());
+
+			if (nextAction != null) {
+				RcmOffice office = officeRepo.findByUuid(claim.getOffice().getUuid());
+				String assignActionName = "Assign To Team";
+				String claimTransfer = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
+						claim.getClaimUuid(), nextTeam, requestRebillingInfoModel.getRemarks(), claim, assign,
+						createdBy, office, null, newCycleStatus, nextAction.getType(), assignActionName);
+				logger.info("claim transfer response->" + claimTransfer);
+			} else {
+				logger.info("claim transfer response-> Wrong claim Status:" + requestRebillingInfoModel.getNextAction()
+						+ " send for claim :" + claim.getClaimUuid());
+			}
 			return requestRebillingSection != null ? true : null;
+
 		}
 		return null;
 	}
