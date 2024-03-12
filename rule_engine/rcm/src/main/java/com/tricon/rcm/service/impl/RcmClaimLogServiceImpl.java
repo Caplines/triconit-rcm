@@ -59,7 +59,8 @@ public class RcmClaimLogServiceImpl {
 	 */
 	public String assignClaimToOtherTeamWithRemarkCommon(PartialHeader partialHeader,String claimUuid,
 			int assignToTeam,String assignToComment,RcmClaims claim,
-			RcmClaimAssignment assign,RcmUser user,RcmOffice office,String attachmentsWithRemarks,String newCycleStatus,String nextAction) {
+			RcmClaimAssignment assign,RcmUser user,RcmOffice office,String attachmentsWithRemarks,String newCycleStatus,
+			String nextAction, String assignmentStatus) {
           
 		if (!claim.isPending() && claim.getCurrentStatus()==0) {
 			
@@ -118,7 +119,7 @@ public class RcmClaimLogServiceImpl {
 						assignedUser.getUser(), claimUuid, claim,
 						"", systemStatusBilling,assignedTeam,
 						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
-
+                if (rcmAssigment.isActive()) rcmAssigment.setActionName(assignmentStatus);
 				rcmClaimAssignmentRepo.save(rcmAssigment);
 				claimCycleService.createNewClaimCycleWithOldStatus(claim,assignedTeam,assignedUser.getUser(),newCycleStatus,nextAction);
 				
@@ -146,6 +147,7 @@ public class RcmClaimLogServiceImpl {
 						null, claimUuid, claim,
 						"", systemStatusBilling,assignedTeam,
 						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
+				if (rcmAssigment.isActive()) rcmAssigment.setActionName(assignmentStatus);
 				rcmClaimAssignmentRepo.save(rcmAssigment);
 				claimCycleService.createNewClaimCycleWithOldStatus(claim,assignedTeam,user,newCycleStatus,nextAction);
 				

@@ -39,7 +39,8 @@ public enum ClaimStatusEnum {
 	Pending_For_Review(32,"Pending For Review"),
 	Pending_For_Billing(33,"Pending For Billing"),
 	Claim_Archived(34,"Claim Archived"),
-	Claim_UnArchived(35,"Claim UnArchived");
+	Claim_UnArchived(35,"Claim UnArchived"),
+	Claim_Assign_TO_TL(35,"Claim Assigned to TL");
 	
 	
 	

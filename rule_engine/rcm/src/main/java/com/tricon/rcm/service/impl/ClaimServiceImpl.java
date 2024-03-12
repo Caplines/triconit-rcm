@@ -2819,9 +2819,12 @@ public class ClaimServiceImpl {
 			newAssign.setRcmClaimStatus(claim.getClaimStatusType());
 			newAssign.setCreatedDate(new Date());
 			newAssign.setTakenBack(false);
-
+			if (newAssign.isActive()) newAssign.setActionName(ClaimStatusEnum.Claim_Assign_TO_TL.getType());
 			rcmClaimAssignmentRepo.save(newAssign);
-			
+			String newCycleStatus =null;//  ClaimMovementUtil.getNextStatus(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
+			//int nextTeam =claim.getCurrentTeamId().getId();// ClaimMovementUtil.getNextTeam(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
+			//ClaimStatusEnum nextAction =null;// ClaimMovementUtil.getNextAction(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
+			claimCycleService.createNewClaimCycleWithOldStatus(claim,claim.getCurrentTeamId(),rcmLeadUser,newCycleStatus,null);
 			// Take back from OLd team
 			
 			
