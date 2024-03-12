@@ -2,7 +2,10 @@ package com.tricon.rcm.service.impl;
 
 import java.io.File;
 import java.net.URL;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -31,17 +34,21 @@ import com.tricon.rcm.db.entity.RcmClaimLevelSection;
 import com.tricon.rcm.db.entity.RcmClaimSection;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmClientSectionMapping;
+import com.tricon.rcm.db.entity.RcmCollectionAgency;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
 import com.tricon.rcm.db.entity.RcmPatientCommunicationSection;
 import com.tricon.rcm.db.entity.RcmPatientPayment;
 import com.tricon.rcm.db.entity.RcmPatientStatementSection;
+import com.tricon.rcm.db.entity.RcmRebillingSection;
+import com.tricon.rcm.db.entity.RcmRequestRebiilingSection;
 import com.tricon.rcm.db.entity.RcmServiceLevelInformation;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
+import com.tricon.rcm.dto.CollectionAgencyDto;
 import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.EobSectionEditDto;
@@ -54,6 +61,9 @@ import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
+import com.tricon.rcm.dto.RebillingDto;
+import com.tricon.rcm.dto.RequestRebiilingResponseDto;
+import com.tricon.rcm.dto.RequestRebillingDto;
 import com.tricon.rcm.dto.ServiceLevelNotes;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.dto.ServiceLevelTotalAmountDto;
@@ -72,6 +82,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimUserSectionMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmClientSectionMappingRepo;
+import com.tricon.rcm.jpa.repository.RcmCollectionAgencyRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmCurrentClaimStatusRepo;
 import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
@@ -79,6 +90,8 @@ import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmPatientCommunicationRepo;
 import com.tricon.rcm.jpa.repository.RcmPatientPaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmPatientStatementRepo;
+import com.tricon.rcm.jpa.repository.RcmRebillingSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmRequestRebillingSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
 import com.tricon.rcm.jpa.repository.ServiceLevelInformationRepo;
@@ -169,6 +182,19 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmPatientCommunicationRepo patientCommunicationRepo;
+	
+
+	
+	@Autowired
+	RcmCollectionAgencyRepo collectionAgencyRepo;
+	
+	@Autowired
+	RcmRebillingSectionRepo rebillingSectionRepo;
+	
+	
+	@Autowired
+	RcmRequestRebillingSectionRepo  requestRebillingSectionRepo;
+	
 	
 
 	@Transactional(rollbackOn = Exception.class)
@@ -1193,4 +1219,224 @@ public class ClaimSectionImpl {
 		return responseData;
 	}
 	
+	@Transactional(rollbackOn = Exception.class)
+	public Boolean saveCollectionAgencySection(CollectionAgencyDto collectionAgencyInfoModel, RcmClaims claim,
+			RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
+		RcmCollectionAgency collectionAgency = null;
+		if (!(collectionAgencyInfoModel.getButtonType() == Constants.BUTTON_TYPE_ONE_FOR_COLLECTION_SECTION
+				|| collectionAgencyInfoModel.getButtonType() == Constants.BUTTON_TYPE_TWO_FOR_COLLECTION_SECTION
+				|| collectionAgencyInfoModel.getButtonType() == Constants.BUTTON_TYPE_THREE_FOR_COLLECTION_SECTION)) {
+			logger.error("Wrong button type");
+			return null;
+		}
+		if (claim != null) {
+			collectionAgency = new RcmCollectionAgency();
+			collectionAgency.setClaim(claim);
+			collectionAgency.setAmountReceived(collectionAgencyInfoModel.getAmountReceived());
+			collectionAgency.setCollectionType(collectionAgencyInfoModel.getCollectionType());
+			collectionAgency.setCommisionCharged(collectionAgencyInfoModel.getCommisionCharged());
+			collectionAgency.setDebtNumber(collectionAgencyInfoModel.getDebtNumber());
+			collectionAgency.setModeOfPayment(collectionAgencyInfoModel.getModeOfPayment());
+			collectionAgency.setNetAmountReceived(collectionAgencyInfoModel.getNetAmountReceived());
+			collectionAgency.setReason(collectionAgencyInfoModel.getReason());
+			collectionAgency.setRemarks(collectionAgencyInfoModel.getRemarks());
+			collectionAgency.setCreatedBy(createdBy);
+			collectionAgency.setFinalSubmit(finalSubmit);
+			collectionAgency.setTeam(team);
+			collectionAgency.setButtonType(collectionAgencyInfoModel.getButtonType());
+			collectionAgency = collectionAgencyRepo.save(collectionAgency);
+			return collectionAgency != null ? true : null;
+		}
+		return null;
+	}
+	
+	public CollectionAgencyDto fetchCollectionAgencyInformation(PartialHeader partialHeader, String claimUuid,
+			boolean showWithTeam) throws Exception {
+		CollectionAgencyDto responseDto = null;
+		RcmCollectionAgency collectionAgency = null;
+		if (showWithTeam) {
+			collectionAgency = collectionAgencyRepo
+					.findFirstByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(claimUuid, partialHeader.getTeamId());
+		} else {
+			collectionAgency = collectionAgencyRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+		}
+		if (collectionAgency != null) {
+			responseDto = new CollectionAgencyDto();
+			BeanUtils.copyProperties(collectionAgency, responseDto);
+			return responseDto;
+		}
+		return null;
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public Boolean saveRequestRebillingSection(RequestRebillingDto requestRebillingInfoModel, RcmClaims claim,
+			RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
+		RcmRequestRebiilingSection requestRebillingSection = null;
+		if (claim != null) {
+			requestRebillingSection = new RcmRequestRebiilingSection();
+			requestRebillingSection.setClaim(claim);
+			requestRebillingSection.setCreatedBy(createdBy);
+			requestRebillingSection.setFinalSubmit(finalSubmit);
+			requestRebillingSection.setTeam(team);
+			BeanUtils.copyProperties(requestRebillingInfoModel, requestRebillingSection);
+			requestRebillingSection = requestRebillingSectionRepo.save(requestRebillingSection);
+
+			// update rebilled status true in rcm_claims table
+
+			RcmClaims claims = rcmClaimRepository.findByClaimUuid(claim.getClaimUuid());
+			claims.setRebilledStatus(true);
+			rcmClaimRepository.save(claims);
+			return requestRebillingSection != null ? true : null;
+		}
+		return null;
+	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public Object saveRebillingSection(RebillingDto rebillingInfoModel, RcmClaims claim, RcmUser createdBy,
+			RcmTeam team, boolean finalSubmit) throws Exception {
+		RcmRebillingSection rebillingSection = null;
+		if (rebillingInfoModel.isRebillingStatus()
+				&& (!StringUtils.isNoneBlank(rebillingInfoModel.getSelectedRebillingServiceCodes())
+						|| !StringUtils.isNoneBlank(rebillingInfoModel.getRebillingRequirements()))) {
+			logger.error("service code or requirements are empty!");
+			return null;
+
+		}
+
+		if (claim != null) {
+			RcmUser requestedBy = userRepo.findByUuid(rebillingInfoModel.getRequestedByUuid());
+			rebillingSection = new RcmRebillingSection();
+			rebillingSection.setClaim(claim);
+			rebillingSection.setRemarks(rebillingInfoModel.getRebillingRemarks());
+			rebillingSection.setRequestedRemarks(rebillingInfoModel.getRequestedRemarks());
+			rebillingSection.setReasonForRebilling(rebillingInfoModel.getReasonForRebilling());
+			rebillingSection.setRebillingServiceCodes(rebillingInfoModel.getSelectedRebillingServiceCodes());
+			rebillingSection.setRebilling(rebillingInfoModel.isRebillingStatus());
+			rebillingSection.setRebillingRequirements(rebillingInfoModel.getRebillingRequirements());
+			rebillingSection.setCreatedBy(createdBy);
+			rebillingSection.setRequestedBy(requestedBy);
+			rebillingSection.setFinalSubmit(finalSubmit);
+			rebillingSection.setTeam(team);
+			rebillingSection = rebillingSectionRepo.save(rebillingSection);
+			
+			rebillingInfoModel.setDateOfRebiiling(Constants.SDF_MYSL_DATE.format(rebillingSection.getCreatedDate()));
+			rebillingInfoModel.setRequestedBy(rebillingSection.getRequestedBy().getFirstName());
+
+			// update rebilled status false in rcm_claims table
+			RcmClaims claims = rcmClaimRepository.findByClaimUuid(claim.getClaimUuid());
+			claims.setRebilledStatus(false);
+			if (claims.getFirstRebilledDate() == null) {
+				claims.setFirstRebilledDate(Timestamp.from(Instant.now()));
+			}
+			rcmClaimRepository.save(claims);
+
+			// First we update rebilled status false in service_level_section as well as
+			// rcm
+			// claim_detail tables
+			if (rebillingInfoModel.isRebillingStatus()) {
+				String serviceCodesForStatusFalse[] = rebillingInfoModel.getRebillingServiceCodes().split(",");
+
+				List<RcmServiceLevelInformation> serviceCodesDataForServiceLevel = serviceLevelRepo
+						.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
+								Arrays.asList(serviceCodesForStatusFalse));
+				if (!serviceCodesDataForServiceLevel.isEmpty()) {
+					serviceCodesDataForServiceLevel.forEach(data -> {
+						data.setRebilledStatus(false);
+						serviceLevelRepo.save(data);
+					});
+				}
+
+				List<RcmClaimDetail> serviceCodesDataForClaimDetail = claimDetailRepo
+						.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
+								Arrays.asList(serviceCodesForStatusFalse));
+				if (!serviceCodesDataForClaimDetail.isEmpty()) {
+					serviceCodesDataForClaimDetail.forEach(data -> {
+						data.setRebilledStatus(false);
+						claimDetailRepo.save(data);
+					});
+				}
+
+				// Now we update rebilled status true in service_level_section as well as recm
+				// claim_detail tables
+
+				String serviceCodesForStatusTrue[] = rebillingInfoModel.getSelectedRebillingServiceCodes().split(",");
+				if (serviceCodesForStatusTrue.length > 0) {
+					List<RcmServiceLevelInformation> serviceCodesData = serviceLevelRepo
+							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
+									Arrays.asList(serviceCodesForStatusTrue));
+					if (!serviceCodesData.isEmpty()) {
+						serviceCodesData.forEach(data -> {
+							data.setRebilledStatus(true);
+							serviceLevelRepo.save(data);
+						});
+					}
+
+					List<RcmClaimDetail> serviceCodesForClaimDetail = claimDetailRepo
+							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
+									Arrays.asList(serviceCodesForStatusTrue));
+					if (!serviceCodesForClaimDetail.isEmpty()) {
+						serviceCodesForClaimDetail.forEach(data -> {
+							data.setRebilledStatus(true);
+							claimDetailRepo.save(data);
+						});
+					}
+				}
+			}
+		}
+		return rebillingInfoModel;
+	}
+
+	public RebillingDto fetchRequestRebillingServiceCodesInformation(PartialHeader partialHeader, String claimUuid)
+			throws Exception {
+		RebillingDto responseDto = null;
+		RcmRequestRebiilingSection requestRebillingData = null;
+		requestRebillingData = requestRebillingSectionRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+		if (requestRebillingData != null) {
+			responseDto = new RebillingDto();
+			if (StringUtils.isNoneBlank(requestRebillingData.getRebillingServiceCodes())) {
+
+				String serviceCodes[] = requestRebillingData.getRebillingServiceCodes().split(",");
+				responseDto.setSelectedServiceCodes(Arrays.asList(serviceCodes));
+			}
+
+			if (StringUtils.isNoneBlank(requestRebillingData.getRebillingRequirements())) {
+
+				String requirements[] = requestRebillingData.getRebillingRequirements().split(",");
+				responseDto.setSelectedRequirements(Arrays.asList(requirements));
+			}
+
+			RcmUser requestedBy = userRepo.findByUuid(requestRebillingData.getCreatedBy().getUuid());
+			responseDto.setRequestedBy(requestedBy.getFirstName());
+			responseDto.setRequestedByUuid(requestedBy.getUuid());
+			responseDto.setRequestedRemarks(requestRebillingData.getRemarks());
+			responseDto.setReasonForRebilling(requestRebillingData.getReasonForRebilling());
+			return responseDto;
+		}
+		return null;
+	}
+	
+	public List<RebillingDto> fetchRebillingInformation(PartialHeader partialHeader, String claimUuid)
+			throws Exception {
+		RebillingDto responseDto = null;
+		List<RebillingDto> responseData = new ArrayList<>();
+		List<RcmRebillingSection> rebillingInformation = rebillingSectionRepo
+				.findByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+		if (!rebillingInformation.isEmpty()) {
+			for (RcmRebillingSection data : rebillingInformation) {
+				RcmUser requestedBy = userRepo.findByUuid(data.getRequestedBy().getUuid());
+				responseDto = new RebillingDto();
+				responseDto.setRequestedBy(requestedBy.getFirstName());
+				responseDto.setRequestedByUuid(requestedBy.getUuid());
+				responseDto.setDateOfRebiiling(Constants.SDF_MYSL_DATE.format(data.getCreatedDate()));
+				responseDto.setRequestedRemarks(data.getRequestedRemarks());		
+				responseDto.setRebillingRemarks(data.getRemarks());
+				responseDto.setRebillingStatus(data.isRebilling());		
+				responseDto.setRebillingRequirements(data.getRebillingRequirements());
+				responseDto.setRebillingServiceCodes(data.getRebillingServiceCodes());
+				responseData.add(responseDto);
+			}
+		}
+		return responseData;
+	}
+
 }

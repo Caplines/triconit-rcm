@@ -84,4 +84,6 @@ public interface RcmClaimDetailDto {
 	String getInsuranceContactNo();
 	String getPatientContactNo();
 	
+	boolean getRebilledStatus();
+	
 }

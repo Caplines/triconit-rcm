@@ -30,4 +30,10 @@ public interface ServiceLevelInformationRepo extends JpaRepository<RcmServiceLev
 			+ "and s.active is true", nativeQuery = true)
 	List<RcmServiceNotesDto> findOldServiceLevelCodesByClaimUuid(@Param("claimUuid") String claimUuid,
 			@Param("maxGroupRun") int maxGroupRun);
+	
+	@Query(value = "select * from rcm_service_level_section s "
+			+ "where s.claim_id=:claimUuid and s.service_code in(:serviceCodes)" + "and s.mark_as_deleted=false "
+			+ "and s.active is true", nativeQuery = true)
+	List<RcmServiceLevelInformation> findServiceCodesByClaimUuidAndCodes(@Param("claimUuid") String claimUuid,
+			@Param("serviceCodes") List<String> serviceCodes);
 }

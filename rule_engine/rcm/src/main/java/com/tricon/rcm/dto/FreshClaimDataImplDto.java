@@ -136,5 +136,7 @@ public class FreshClaimDataImplDto {
     
     String insuranceContactNo;
 	String patientContactNo;
+	
+    boolean rebilledStatus;
 }
 

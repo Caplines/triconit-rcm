@@ -83,5 +83,8 @@ public class RcmClaimDetail implements Serializable {
 	
 	@Column(name = "rcm_remark", length = 255)
 	private String rcmRemark;
+	
+	@Column(name = "rebilled_status",columnDefinition = "BIT default 0")
+	private boolean rebilledStatus;
 
 }

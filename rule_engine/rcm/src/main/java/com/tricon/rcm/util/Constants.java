@@ -157,6 +157,9 @@ public class Constants {
     public static final int SEND_STATEMENT_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION=1;
     public static final int NEED_TO_HOLD_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION=2;
 
+	public static final int BUTTON_TYPE_ONE_FOR_COLLECTION_SECTION = 1;
+	public static final int BUTTON_TYPE_TWO_FOR_COLLECTION_SECTION = 2;
+	public static final int BUTTON_TYPE_THREE_FOR_COLLECTION_SECTION = 3;
     
     
 }

@@ -1,7 +1,9 @@
 package com.tricon.rcm.db.entity;
 
 import java.io.Serializable;
-import java.sql.Date;
+//import java.sql.Date;
+
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +14,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
@@ -275,6 +279,11 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "paid_amount")
 	private Float paidAmount;//
 	
+	@Column(name = "rebilled_status",columnDefinition = "BIT default 0")
+	private boolean rebilledStatus;
 	
+	@Temporal(TemporalType.DATE)
+	@Column(name = "first_rebilled_date")
+	private Date firstRebilledDate;
 
 }

@@ -122,6 +122,9 @@ public class RcmServiceLevelInformation extends BaseAuditEntity implements java.
 	@Column(name = "flag",columnDefinition = "BIT default 1")
 	private boolean flag;
 	
+	@Column(name = "rebilled_status",columnDefinition = "BIT default 0")
+	private boolean rebilledStatus;
+	
 	@Column(name = "mark_as_deleted")
 	private boolean markAsDeleted;
 }

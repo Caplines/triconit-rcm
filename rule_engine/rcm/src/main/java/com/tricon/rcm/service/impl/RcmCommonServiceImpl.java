@@ -601,6 +601,26 @@ public class RcmCommonServiceImpl {
 				response = claimSectionimpl.savePatientCommunicationSection(sectionRequestBody.getPatientCommunicationInfoModel(),
 						 claim, createdBy, team, sectionRequestBody.isFinalSubmit(),partialHeader.getClientName());
 				break;
+			case 22:
+				logger.info("Inside section 22->Collection Agency");
+				response = claimSectionimpl.saveCollectionAgencySection(sectionRequestBody.getCollectionAgencyInfoModel(),
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+				logger.info("response->" + response);
+				break;
+				
+			case 23:
+				logger.info("Inside section 23->RequestRebilling");
+				response = claimSectionimpl.saveRequestRebillingSection(sectionRequestBody.getRequestRebillingInfoModel(),
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+				logger.info("response->" + response);
+				break;
+				
+			case 24:
+				logger.info("Inside section 24->Rebilling");
+				response = claimSectionimpl.saveRebillingSection(sectionRequestBody.getRebillingInfoModel(),
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+				break;
+
 			default:
 				logger.error("section not found");
 			}
