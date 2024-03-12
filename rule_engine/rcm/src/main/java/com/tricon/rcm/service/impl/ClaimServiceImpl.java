@@ -3136,10 +3136,11 @@ public class ClaimServiceImpl {
 				
 				
 				claim.setUpdatedBy(user);
+				claim.setPending(false);
 				claim.setUpdatedDate(new Date());
 				 long millis=System.currentTimeMillis();  
 			     java.sql.Date date=new java.sql.Date(millis);  
-				claim.setFirstPostingDate(date);
+				if (claim.getFirstPostingDate() ==null)claim.setFirstPostingDate(date);
 				rcmClaimRepository.save(claim);
 				//Check if Primary	then Find any Corresponding Secondary Claim and Mark Primar_status =2
 				String[] clT = claim.getClaimId().split("_");
