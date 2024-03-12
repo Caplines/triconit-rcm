@@ -621,6 +621,8 @@ export class BillingClaimsComponent {
         ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
           ths.finalSaveSection(true, true);
         });
+      } else {
+        ths.finalsubmitcurrentstat = true;
       }
     } else if (type === 'submitafterpending') {
       //do From Validation
@@ -640,6 +642,8 @@ export class BillingClaimsComponent {
         ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
           ths.finalSaveSection(true, true);
         });
+      } else {
+        ths.finalsubmitcurrentstat = true;
       }
     }
 
@@ -1988,7 +1992,7 @@ export class BillingClaimsComponent {
     }
     ths.claimEditModel = {};
     ths.claimEditModel.assignToTeam = ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'];
-    //debugger;
+    debugger;
     if (this.claimEditModel.assignToTeam == -1) {
       alert('NO team Selected');
       return;
@@ -2203,8 +2207,8 @@ export class BillingClaimsComponent {
     //debugger;
     let isSectionValidated = true;
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"] = {};
-    if (this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeam == -1) {
-      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"]['assignToTeam'] = true;
+    if (this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeamId == -1) {
+      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"]['assignToTeamId'] = true;
       isSectionValidated = false;
     }
     if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction) {
@@ -2369,7 +2373,7 @@ export class BillingClaimsComponent {
   fetchNextActionRequiredSection() {
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = this.claimRcm.currentStatusName;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'] = this.claimRcm.statusES;
-    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] = this.claimRcm.nextActionName;
+    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] = "";//this.claimRcm.nextActionName;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;//this.claimRcm.assignedToTeam;
 
     let team: any = this.appConstants.TEAMS_CONFIG.get(this.claimRcm.assignedToTeam);

@@ -2778,7 +2778,7 @@
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']"
                                                             [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['nextAction']}">
-                                                            <option hidden="true">Select</option>
+                                                            <option value="">Select</option>
                                                             <ng-container
                                                                 *ngFor="let item of appConstants.nextActionStatusRcm">
                                                                 <option [value]="item.name">{{item.name}}</option>
@@ -2826,18 +2826,7 @@
                                                         (click)="checkSectionFieldValidation(true,true,true)">
                                                         Submit
                                                     </button>
-                                                    <button
-                                                        *ngIf="claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
-                                                        type="button" class="btn btn-success" [disabled]="inSave"
-                                                        (click)="openArchivedModal()">
-                                                        Archive
-                                                    </button>
-                                                    <button
-                                                        *ngIf="claimRcm.currentState==1 && claimRcm.claimCmpMatchesLoggedCmp"
-                                                        type="button" class="btn btn-success"
-                                                        (click)="openUnArchivedModal()">
-                                                        UnArchive
-                                                    </button>
+
 
                                                     <!-- <button class="btn btn-success" (click)="saveNextActionRequiredSection(false)"
                                                     [hidden]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit">Save</button> -->
@@ -3014,6 +3003,30 @@
                                     type="button" class="btn btn-success" [disabled]="inSave"
                                     (click)="openArchivedModal()">
                                     Archive
+                                </button>
+
+
+                            </div>
+                            <div class="action-buttons aftersubmission"
+                                *ngIf="!claimRcm.pending  && actionButtons  && selectedTeam== claimRcm.currentTeamId">
+
+                                <button *ngIf="claimRcm.currentState==0 && selectedTeam== claimRcm.currentTeamId"
+                                    type="button" class="btn btn-success" [disabled]="inSave"
+                                    (click)="saveClaim('assigntl',false)">
+                                    Assign to
+                                    Team Lead
+                                </button>
+
+
+                                <button *ngIf="claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
+                                    type="button" class="btn btn-success" [disabled]="inSave"
+                                    (click)="openArchivedModal()">
+                                    Archive
+                                </button>
+                                <button *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp"
+                                    type="button" class="btn btn-success" [disabled]="inSave"
+                                    (click)="openUnArchivedModal()">
+                                    UnArchive
                                 </button>
 
 
