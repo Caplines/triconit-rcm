@@ -1318,10 +1318,10 @@ public class ClaimSectionImpl {
 			if (nextAction != null) {
 				RcmOffice office = officeRepo.findByUuid(claim.getOffice().getUuid());
 				String assignActionName = "Assign To Team";
-//				String claimTransfer = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
-//						claim.getClaimUuid(), nextTeam, requestRebillingInfoModel.getRemarks(), claim, assign,
-//						createdBy, office, null, newCycleStatus, nextAction.getType(), assignActionName);
-				//logger.info("claim transfer response->" + claimTransfer);
+				String claimTransfer = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
+						claim.getClaimUuid(), nextTeam, requestRebillingInfoModel.getRemarks(), claim, assign,
+						createdBy, office, null, newCycleStatus, nextAction.getType(), assignActionName);
+				logger.info("claim transfer response->" + claimTransfer);
 			} else {
 				logger.info("claim transfer response-> Wrong claim Status:" + requestRebillingInfoModel.getNextAction()
 						+ " send for claim :" + claim.getClaimUuid());
