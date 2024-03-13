@@ -253,6 +253,7 @@ export class AppConstants {
         { reasonName: "Patient Not Assigned To The Facility" },
         { reasonName: "Provider is not PCD" },
         { reasonName: "Incorrect Walkout" },
+
     ];
 
     public claimStatusRcm: any = [
@@ -261,7 +262,10 @@ export class AppConstants {
         { name: "Billed" },
         { name: "In Process" },
         { name: "Closed" },
-        { name: "Voided" }
+        { name: "Voided" },
+        { name: "Re-billing" },
+        { name: "Reviewed" },
+        { name: "Submitted" }
     ];
 
 
