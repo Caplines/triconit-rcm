@@ -63,6 +63,7 @@ import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.RebillingDto;
+import com.tricon.rcm.dto.RebillingResponseDto;
 import com.tricon.rcm.dto.RequestRebillingDto;
 import com.tricon.rcm.dto.ServiceLevelNotes;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
@@ -1333,41 +1334,55 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public Object saveRebillingSection(RebillingDto rebillingInfoModel, RcmClaims claim, RcmUser createdBy,
-			RcmTeam team, boolean finalSubmit) throws Exception {
+	public Object saveRebillingSection(PartialHeader partialHeader, RebillingDto rebillingInfoModel, RcmClaims claim,
+			RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
 		RcmRebillingSection rebillingSection = null;
-		if (rebillingInfoModel.isRebillingStatus()
-				&& (!StringUtils.isNoneBlank(rebillingInfoModel.getSelectedRebillingServiceCodes())
-						|| !StringUtils.isNoneBlank(rebillingInfoModel.getRebillingRequirements()))) {
+		if (rebillingInfoModel.isRebillingStatus() && (rebillingInfoModel.getSelectedRebillingServiceCodes().isEmpty()
+				|| rebillingInfoModel.getSelectedRebillingRequirements().isEmpty())) {
 			logger.error("service code or requirements are empty!");
 			return null;
 
 		}
+		RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(
+				partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
+		if (assign == null) {
+			logger.error("claim not assigned to this user");
+			// Not assigned to user
+			return false;
+		}
 
 		if (claim != null) {
 			RcmUser requestedBy = userRepo.findByUuid(rebillingInfoModel.getRequestedByUuid());
-			String serviceCodesForStatusTrue[]=null;
-			String selectedCodes = null;
+			List<String> serviceCodesForStatusTrue = null;
+			String selectedServiceCodes = null;
+			String selectedRequirements = null;
 			if (!rebillingInfoModel.getSelectedRebillingServiceCodes().isEmpty()) {
-				serviceCodesForStatusTrue = Arrays
-						.stream(rebillingInfoModel.getSelectedRebillingServiceCodes().split(","))
-						.filter(x -> !x.equalsIgnoreCase("Undistributed")).distinct().toArray(String[]::new);
-				selectedCodes = String.join(",", serviceCodesForStatusTrue);
+				selectedServiceCodes = rebillingInfoModel.getSelectedRebillingServiceCodes().stream().distinct()
+						.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.joining(","));
+				logger.info("after removing duplicates service code from selectedServiceCodesData->"+selectedServiceCodes);
 			}
+			if (!rebillingInfoModel.getSelectedRebillingRequirements().isEmpty()) {
+				selectedRequirements = rebillingInfoModel.getSelectedRebillingRequirements().stream()
+						.collect(Collectors.joining(","));
+				logger.info("selectedrequirementsData->"+selectedRequirements);
+			}
+
 			rebillingSection = new RcmRebillingSection();
 			rebillingSection.setClaim(claim);
 			rebillingSection.setRemarks(rebillingInfoModel.getRebillingRemarks());
 			rebillingSection.setRequestedRemarks(rebillingInfoModel.getRequestedRemarks());
-			rebillingSection.setReasonForRebilling(rebillingInfoModel.getReasonForRebilling());
-			rebillingSection.setRebillingServiceCodes(selectedCodes);
+			if (rebillingInfoModel.isRebillingStatus()) {
+				rebillingSection.setReasonForRebilling(rebillingInfoModel.getReasonForRebilling());
+				rebillingSection.setRebillingServiceCodes(selectedServiceCodes);
+				rebillingSection.setRebillingRequirements(selectedRequirements);
+			}
 			rebillingSection.setRebilling(rebillingInfoModel.isRebillingStatus());
-			rebillingSection.setRebillingRequirements(rebillingInfoModel.getRebillingRequirements());
 			rebillingSection.setCreatedBy(createdBy);
 			rebillingSection.setRequestedBy(requestedBy);
 			rebillingSection.setFinalSubmit(finalSubmit);
 			rebillingSection.setTeam(team);
 			rebillingSection = rebillingSectionRepo.save(rebillingSection);
-			
+
 			rebillingInfoModel.setDateOfRebiiling(Constants.SDF_MYSL_DATE.format(rebillingSection.getCreatedDate()));
 			rebillingInfoModel.setRequestedBy(rebillingSection.getRequestedBy().getFirstName());
 
@@ -1382,43 +1397,46 @@ public class ClaimSectionImpl {
 			// rcm
 			// claim_detail tables
 			if (rebillingInfoModel.isRebillingStatus()) {
-				if(!rebillingInfoModel.getRebillingServiceCodes().isEmpty()) {				
-				String serviceCodesForStatusFalse[] = Arrays.stream(rebillingInfoModel.getRebillingServiceCodes().split(",")).filter(x->!x.equalsIgnoreCase("Undistributed")).distinct().toArray(String[]::new);				
-				logger.info("After removing duplicate codes from RebillingServiceCodes:"+Arrays.toString(serviceCodesForStatusFalse));				
-				//remove duplicate codes and undistributed code if present
-				if(serviceCodesForStatusFalse.length>0)	{	
-					List<RcmServiceLevelInformation> serviceCodesDataForServiceLevel = serviceLevelRepo
-						.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
-								Arrays.asList(serviceCodesForStatusFalse));
-				if (!serviceCodesDataForServiceLevel.isEmpty()) {
-					serviceCodesDataForServiceLevel.forEach(data -> {
-						data.setRebilledStatus(false);
-						serviceLevelRepo.save(data);
-					});
-				}
+				if (!rebillingInfoModel.getOriginalServiceCodes().isEmpty()) {
+					List<String> serviceCodesForStatusFalse = rebillingInfoModel.getOriginalServiceCodes().stream()
+							.distinct().filter(str -> !str.equalsIgnoreCase("Undistributed"))
+							.collect(Collectors.toList());
+					logger.info(
+							"After removing duplicate codes from originalServiceCodes:" + serviceCodesForStatusFalse);
+					// remove duplicate codes and undistributed code if present
+					if (serviceCodesForStatusFalse.size() > 0) {
+						List<RcmServiceLevelInformation> serviceCodesDataForServiceLevel = serviceLevelRepo
+								.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusFalse);
+						if (!serviceCodesDataForServiceLevel.isEmpty()) {
+							serviceCodesDataForServiceLevel.forEach(data -> {
+								data.setRebilledStatus(false);
+								serviceLevelRepo.save(data);
+							});
+						}
 
-				List<RcmClaimDetail> serviceCodesDataForClaimDetail = claimDetailRepo
-						.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
-								Arrays.asList(serviceCodesForStatusFalse));
-				if (!serviceCodesDataForClaimDetail.isEmpty()) {
-					serviceCodesDataForClaimDetail.forEach(data -> {
-						data.setRebilledStatus(false);
-						claimDetailRepo.save(data);
-					});
-				  }
-			     	}
+						List<RcmClaimDetail> serviceCodesDataForClaimDetail = claimDetailRepo
+								.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusFalse);
+						if (!serviceCodesDataForClaimDetail.isEmpty()) {
+							serviceCodesDataForClaimDetail.forEach(data -> {
+								data.setRebilledStatus(false);
+								claimDetailRepo.save(data);
+							});
+						}
+					}
 				}
 
 				// Now we update rebilled status true in service_level_section as well as rcm
 				// claim_detail tables
 
-			
-				//remove duplicate codes and undistributed code if present
-				logger.info("After removing duplicate codes from SelectedRebillingServiceCodes:"+Arrays.toString(serviceCodesForStatusTrue));				
-				if (serviceCodesForStatusTrue.length > 0) {
+				// remove duplicate codes and undistributed code if present
+
+				serviceCodesForStatusTrue = rebillingInfoModel.getSelectedRebillingServiceCodes().stream().distinct()
+						.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
+				logger.info("After removing duplicate codes from SelectedRebillingServiceCodes:"
+						+ serviceCodesForStatusTrue);
+				if (serviceCodesForStatusTrue.size() > 0) {
 					List<RcmServiceLevelInformation> serviceCodesData = serviceLevelRepo
-							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
-									Arrays.asList(serviceCodesForStatusTrue));
+							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusTrue);
 					if (!serviceCodesData.isEmpty()) {
 						serviceCodesData.forEach(data -> {
 							data.setRebilledStatus(true);
@@ -1427,8 +1445,7 @@ public class ClaimSectionImpl {
 					}
 
 					List<RcmClaimDetail> serviceCodesForClaimDetail = claimDetailRepo
-							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
-									Arrays.asList(serviceCodesForStatusTrue));
+							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusTrue);
 					if (!serviceCodesForClaimDetail.isEmpty()) {
 						serviceCodesForClaimDetail.forEach(data -> {
 							data.setRebilledStatus(true);
@@ -1436,6 +1453,25 @@ public class ClaimSectionImpl {
 						});
 					}
 				}
+
+				// claim transfer
+
+				String newCycleStatus = ClaimStatusEnum.Billed.getType();
+				int nextTeam = rebillingInfoModel.getClaimTransferNextTeamId();
+				ClaimStatusEnum nextAction = ClaimStatusEnum.Billed;
+
+				if (nextAction != null) {
+					RcmOffice office = officeRepo.findByUuid(claim.getOffice().getUuid());
+					String assignActionName = "Assign To Team";
+					String claimTransfer = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
+							claim.getClaimUuid(), nextTeam, rebillingInfoModel.getRebillingRemarks(), claim, assign,
+							createdBy, office, null, newCycleStatus, nextAction.getType(), assignActionName);
+					logger.info("claim transfer response->" + claimTransfer);
+				} else {
+					logger.info("claim transfer response-> Wrong claim Status:"
+							+ ClaimStatusEnum.Billed + " send for claim :" + claim.getClaimUuid());
+				}
+
 			}
 		}
 		return rebillingInfoModel;
@@ -1451,13 +1487,12 @@ public class ClaimSectionImpl {
 			if (StringUtils.isNoneBlank(requestRebillingData.getRebillingServiceCodes())) {
 
 				String serviceCodes[] = requestRebillingData.getRebillingServiceCodes().split(",");
-				responseDto.setSelectedServiceCodes(Arrays.asList(serviceCodes));
+				responseDto.setOriginalServiceCodes(Arrays.asList(serviceCodes));
 			}
 
 			if (StringUtils.isNoneBlank(requestRebillingData.getRebillingRequirements())) {
-
 				String requirements[] = requestRebillingData.getRebillingRequirements().split(",");
-				responseDto.setSelectedRequirements(Arrays.asList(requirements));
+				responseDto.setOriginalRequirements(Arrays.asList(requirements));		
 			}
 
 			RcmUser requestedBy = userRepo.findByUuid(requestRebillingData.getCreatedBy().getUuid());
@@ -1465,29 +1500,30 @@ public class ClaimSectionImpl {
 			responseDto.setRequestedByUuid(requestedBy.getUuid());
 			responseDto.setRequestedRemarks(requestRebillingData.getRemarks());
 			responseDto.setReasonForRebilling(requestRebillingData.getReasonForRebilling());
+			responseDto.setClaimTransferNextTeamId(requestRebillingData.getTeam().getId());
 			return responseDto;
 		}
 		return null;
 	}
 	
-	public List<RebillingDto> fetchRebillingInformation(PartialHeader partialHeader, String claimUuid)
+	public List<RebillingResponseDto> fetchRebillingInformation(PartialHeader partialHeader, String claimUuid)
 			throws Exception {
-		RebillingDto responseDto = null;
-		List<RebillingDto> responseData = new ArrayList<>();
+		RebillingResponseDto responseDto = null;
+		List<RebillingResponseDto> responseData = new ArrayList<>();
 		List<RcmRebillingSection> rebillingInformation = rebillingSectionRepo
 				.findByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
 		if (!rebillingInformation.isEmpty()) {
 			for (RcmRebillingSection data : rebillingInformation) {
 				RcmUser requestedBy = userRepo.findByUuid(data.getRequestedBy().getUuid());
-				responseDto = new RebillingDto();
+				responseDto = new RebillingResponseDto();
 				responseDto.setRequestedBy(requestedBy.getFirstName());
 				responseDto.setRequestedByUuid(requestedBy.getUuid());
 				responseDto.setDateOfRebiiling(Constants.SDF_MYSL_DATE.format(data.getCreatedDate()));
 				responseDto.setRequestedRemarks(data.getRequestedRemarks());		
 				responseDto.setRebillingRemarks(data.getRemarks());
 				responseDto.setRebillingStatus(data.isRebilling());		
+				responseDto.setRebillingRequirements(data.getRebillingServiceCodes());		
 				responseDto.setRebillingRequirements(data.getRebillingRequirements());
-				responseDto.setRebillingServiceCodes(data.getRebillingServiceCodes());
 				responseData.add(responseDto);
 			}
 		}

@@ -32,6 +32,7 @@ import com.tricon.rcm.dto.RcmFollowUpInsuranceDto;
 import com.tricon.rcm.dto.RcmPatientCommunicationDto;
 import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.RebillingDto;
+import com.tricon.rcm.dto.RebillingResponseDto;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.service.impl.ClaimSectionImpl;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
@@ -422,7 +423,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		List<RebillingDto> response = null;
+		List<RebillingResponseDto> response = null;
 		try {
 			response = claimSection.fetchRebillingInformation(partialHeader, claimUuid);
 		} catch (Exception e) {
