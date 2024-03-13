@@ -2272,7 +2272,7 @@
                                         <div class="container-fluid">
                                             <div class="row justify-content-between">
                                                 <div class="col-sm-4 mb-2">
-                                                    <div class="btn-group btn-group-toggle d-flex" style="width: 72%;"
+                                                    <div class="btn-group btn-group-toggle d-flex" style="width:85%;"
                                                         data-toggle="buttons">
                                                         <label class="btn btn-light mx-0"
                                                             [ngClass]="{'active':claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1}">
@@ -2731,7 +2731,7 @@
                                     *ngIf="!claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false">
-                                            Claim Level Information
+                                            Request Rebilling
                                         </a>
                                         <div class="down-icon" (click)="showHide('REQUEST_REBILLING')">
                                             <a href="javascript:void(0)"
@@ -3404,3 +3404,24 @@
                 </div>
             </div>
         </div>
+
+ <div class="modal notes-modal" tabindex="-1" role="dialog" *ngIf="serviceLevelSectionMultiSelectConfig.showModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header flex-row">
+                <h4 class="modal-title w-100">Request Rebilling</h4>
+                <button (click)="closeReqRebillingModal()" type="button"
+                    class="btn btn-sm btn-ligt close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <ul>
+                    <li *ngFor="let note of viewNotesConfig.viewNotes;let idx=index;">{{note.createdBy}}
+                        {{note.createdDate}} : {{note.notes}}</li>
+                </ul>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    (click)="closeReqRebillingModal()">close</button>
+            </div>
+        </div>
+    </div>

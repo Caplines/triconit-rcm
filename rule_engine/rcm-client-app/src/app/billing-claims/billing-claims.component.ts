@@ -310,7 +310,7 @@ export class BillingClaimsComponent {
   sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0 };
   viewNotesConfig: any = { showNotes: false, viewNotes: [] };
   isBtpFlagTrue: boolean = false;
-  serviceLevelSectionMultiSelectConfig:any={serviceCodesList:[],rebillingRequirements:[]};
+  serviceLevelSectionMultiSelectConfig:any={serviceCodesList:[],rebillingRequirements:[],showModal:false};
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
 
 
@@ -2812,6 +2812,10 @@ export class BillingClaimsComponent {
       }
       this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({ name: `option${idx}`, checked: false });
     })
+  }
+
+  closeReqRebillingModal(){
+      this.serviceLevelSectionMultiSelectConfig.showModal=false;
   }
 
 }
