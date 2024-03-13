@@ -177,7 +177,7 @@
                                                     <td></td>
                                                     <ng-container *ngFor="let ct of totalCount;let last;">
                                                         <ng-container *ngIf="ct.teamId != currentTeamId">
-                                                            <td class="text-count">{{ct.count | number}}</td>
+                                                            <td class="text-center">{{ct.count | number}}</td>
                                                         </ng-container>
                                                     </ng-container>
                                                     <td></td>
@@ -198,7 +198,7 @@
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData;">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
-                                                                <td class="text-count" [ngClass]="{'opac-zero':office.counts1[team.unFormatedName|uppercase] == 0 }">
+                                                                <td class="text-center" [ngClass]="{'opac-zero':office.counts1[team.unFormatedName|uppercase] == 0 }">
                                                                     {{office.counts1[team.unFormatedName|uppercase] | number}}
                                                                 </td>
                                                             </ng-container>
