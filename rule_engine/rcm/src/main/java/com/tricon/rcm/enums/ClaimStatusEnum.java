@@ -40,14 +40,9 @@ public enum ClaimStatusEnum {
 	Pending_For_Billing(33,"Pending For Billing"),
 	Claim_Archived(34,"Claim Archived"),
 	Claim_UnArchived(35,"Claim UnArchived"),
-	Claim_Assign_TO_TL(35,"Claim Assigned to TL");
-	
-	
-	
-	
-	
-	
-	
+	Claim_Assign_TO_TL(35,"Claim Assigned to TL"),
+	Reviewed(36, "Reviewed"),
+	Submitted(37,"Submitted");
 	
 	
 	final private int id;

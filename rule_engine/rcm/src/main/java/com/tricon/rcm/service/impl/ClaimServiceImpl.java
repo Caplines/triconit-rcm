@@ -1077,8 +1077,10 @@ public class ClaimServiceImpl {
 							//Save Data in rcm_claim_detail (new Enhancement)
 							if (re.getServiceCodes().size()>0) {
 								RcmClaimDetail det=null;
+								int serviceCount= 0;
 								for(String cds:re.getServiceCodes()) {
 									det =new RcmClaimDetail();
+									List<String> toothSurfaces=re.getToothAndSurfaces();
 									det.setApptId("");
 									det.setClaim(claim);
 									det.setDescription("");
@@ -1095,6 +1097,16 @@ public class ClaimServiceImpl {
 									det.setSurface("");
 									det.setTooth("");
 									det.setActive(true);
+									try {
+										 String[] ths = toothSurfaces.get(serviceCount++).split("#");
+										 det.setTooth(ths[0]);
+										 if (ths.length>1) {
+											 det.setSurface(ths[1]);
+										 }
+										 
+										}catch(Exception b ) {
+										b.printStackTrace();
+									  }
 									rcmClaimDetailRepo.save(det);
 								}
 									
@@ -1211,6 +1223,406 @@ public class ClaimServiceImpl {
 		}
       
 		return logClaimDtos;
+	}
+	
+	public List<ClaimLogDto> createSecondaryClaimDataFromRecreateSection(ClaimFromSheet re,
+			String companyuuid, String officeuuids,RcmUser user,RcmTeam currentTeam) {
+
+
+		logger.info(" In in Save Seconday Claim From Recrewad Claim section");
+		String success = "";
+		RcmClaims claim = null;
+		List<ClaimLogDto> logClaimDtos = new ArrayList<>();
+		Map<String, ClaimLogDto> mapcountNew = new HashMap<>();
+		// RcmClaimLog rcmClaimLog=null;
+		String source = ClaimSourceEnum.GOOGLESHEET.toString();
+		RcmClaimAssignment rcmAssigment = null;
+		HashMap<String, RcmClaimLog> logMap = new HashMap<>();
+		// Map<String, Object[]> mapcountNew = new HashMap<>();
+		// Map<String,String> messages= new HashMap<>();
+		// Map<String,int[]> mapcountNewP= new HashMap<>();
+		// Map<String,int[]>mapcountNewS= new HashMap<>();
+		RcmCompany company = rcmCompanyRepo.findByUuid(companyuuid);
+		List<RcmTeam> allTeams = rcmTeamRepo.findAll();
+		InsuranceNameTypeDto insuranceNameTypeDto=null;
+		RcmCompany companyIns = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);//Always
+		Map<String,List<InsuranceNameTypeDto>> insuranceTypeDtos =new HashMap();// ruleEngineService.pullInsuranceMappingFromSheet(companyIns);
+		List<TimelyFilingLimitDto> timelyFilingLimits = ruleEngineService.pullTimelyFilingLmtMappingFromSheet(company);
+		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
+		RcmClaimStatusType systemStatusReBilling = rcmClaimStatusTypeRepo
+				.findByStatus(ClaimStatusEnum.ReBilling.getType());
+
+		RcmTeam assignedTeamBilling  = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
+		RcmTeam assignedTeamInternalAudit  = rcmTeamRepo.findById(RcmTeamEnum.INTERNAL_AUDIT.getId());
+		
+		 List<InsuranceNameTypeDto> insuranceTypeDto =null;
+		// ruleEngineService.pullInsuranceMappingFromSheet(company);
+		// int logId=-1;
+		RcmMappingTable table = rcmMappingTableRepo.findByNameAndCompany(Constants.RCM_MAPPING_RCM_DATABASE, company);
+		HashMap<String, RcmCompany> companies = new HashMap<>();
+		HashMap<String, RcmInsuranceType> rcmInsuranceTypes = new HashMap<>();
+		RcmInsuranceType rcmInsuranceType = null;
+		RcmCompany clCompany = null;
+		RcmInsurance ins = null;
+		//List<String> offNames = null;
+		//List<String> offNameKeys = null;
+
+		RcmOffice rcmOffice = null;
+		//offNames = new ArrayList<>();
+		//offNameKeys = new ArrayList<>();
+		rcmOffice = officeRepo.findByNameAndCompanyUuid(officeuuids, company.getUuid());
+		// rcmOffices.stream().map(RcmOffice::getName).forEach(offNames::add);
+		//offNames.add(rcmOffice.getName());
+		//offNameKeys.add(rcmOffice.getName() + rcmOffice.getKey());
+	    try {
+			
+				int newClaimCt = 0;
+				int newClaimPCt = 0;
+				int newClaimSCt = 0;
+				int logStatus = 0;
+				
+				
+					try {
+						insuranceNameTypeDto= null;
+						System.out.println(re.getClaimId() + "--<ID");
+						ClaimTypeEnum claimTypeEnum = ClaimTypeEnum.S;
+						RcmClaimStatusType claimStatusType = null;
+
+						if (companies.get(re.getClientName()) == null) {
+							clCompany = rcmCompanyRepo.findByName(re.getClientName());
+							if (clCompany != null) {
+								companies.put(re.getClientName(), clCompany);
+								insuranceTypeDto=insuranceTypeDtos.get(re.getClientName());
+								if (insuranceTypeDto == null) {
+									insuranceTypeDtos.put(re.getClientName(), ruleEngineService.pullInsuranceMappingFromSheet(companyIns));
+									insuranceTypeDto = insuranceTypeDtos.get(re.getClientName());
+								}
+							} else {
+								ruleEngineService.saveRcmIssueClaim(re.getClaimId(), null, user,
+										"Wrong Client Name-" + re.getClientName(), source, claimTypeEnum);
+								return null;
+							}
+						}
+
+						RcmOffice off = officeRepo.findByCompanyAndName(companies.get(re.getClientName()),
+								re.getOfficeName());
+						if (off == null) {
+							ruleEngineService.saveRcmIssueClaim(re.getClaimId(), null, user,
+									"Wrong Office Name-" + re.getOfficeName() + "For " + re.getClientName(), source,
+									claimTypeEnum);
+							return null;
+						}
+
+						List<String> allCl = Arrays.asList(re.getClaimId() + claimTypeEnum.getSuffix());
+						List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
+						UserAssignOffice assignedUserBilling = userAssignOfficeRepo.findByOfficeUuidAndTeamId(off.getUuid(),
+								RcmTeamEnum.BILLING.getId());
+						UserAssignOffice assignedUserInternalAudit = userAssignOfficeRepo.findByOfficeUuidAndTeamId(off.getUuid(),
+								RcmTeamEnum.INTERNAL_AUDIT.getId());
+
+						// RcmInsuranceType rcmInsuranceType = null;
+						if (claims == null || claims.size() == 0) {
+							// List<String> buildError1=null;
+							// Fresh Claims
+
+							if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
+								// Check for Corresponding Primary Claim in Case of secondary
+								RcmClaims primaryClaim = rcmClaimRepository
+										.findByClaimIdAndOffice(re.getClaimId() + ClaimTypeEnum.P.getSuffix(), off);
+								if (primaryClaim == null) {
+									// no need to save this as primary is not present..
+									ruleEngineService.saveRcmIssueClaim(re.getClaimId(), off, user,
+											"Primary not Present", source, claimTypeEnum);
+									return null;
+
+								}
+							}
+
+							claim = new RcmClaims();
+							List<String> error = new ArrayList<>();
+							System.out.println(re.getSecondaryInsuranceCompany());
+							List<RcmInsurance> insL = insuranceRepo
+									.findByNameAndOfficeAndActive(re.getSecondaryInsuranceCompany(), off, true);
+							// In Google sheet we do not have InsuranceId so we need to generate. Prefix
+							// ==GEN_
+							if (insL.size() == 2) {
+								boolean p = false;
+								if (insL.get(0).getInsuranceId().startsWith("GEN_"))
+									p = true;
+								if (p)
+									ins = insL.get(1);
+								else
+									ins = insL.get(0);
+
+								if (ins.getInsuranceId().startsWith("GEN_")) {
+									// De-activate this
+									ins.setActive(false);
+									insuranceRepo.save(ins);
+								}
+
+							} else if (insL.size() == 1) {
+								ins = insL.get(0);
+							} else {
+								ins = new RcmInsurance();
+								ins.setActive(true);
+								ins.setAddress(re.getSecondaryInsuranceAddress());
+								ins.setInsuranceId("GEN_" + new Date().getTime());
+
+								rcmInsuranceType = rcmInsuranceTypes.get(re.getSecondaryInsuranceName());
+								if (rcmInsuranceType == null) {
+									rcmInsuranceType = rcmInsuranceTypeRepo.findByName(re.getSecondaryInsuranceName());
+									if (rcmInsuranceType == null) {
+										//rcmInsuranceType = new RcmInsuranceType();
+										//rcmInsuranceType.setName(re.getSecondaryInsuranceName());
+										//rcmInsuranceType.setId(rcmInsuranceTypeRepo.save(rcmInsuranceType).getId());
+										//rcmInsuranceTypes.put(re.getSecondaryInsuranceName(), rcmInsuranceType);
+									} else {
+										rcmInsuranceTypes.put(re.getSecondaryInsuranceName(), rcmInsuranceType);
+									}
+								}
+
+								ins.setName(re.getSecondaryInsuranceCompany());
+								ins.setOffice(off);
+								//ins.setId(insuranceRepo.save(ins).getId());
+								 if (rcmInsuranceType==null) {
+								 error.add( "Insurance Type Missing For for Name:"+re.getSecondaryInsuranceName() +" in G-Sheet");
+								 }else {
+								    ins.setInsuranceType(rcmInsuranceTypes.get(re.getSecondaryInsuranceName()));
+									ins.setId(insuranceRepo.save(ins).getId());
+								 }
+								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
+							}
+							TimelyFilingLimitDto timely = null;
+							if (ins.getInsuranceCode()==null || (ins.getInsuranceCode()!=null && ins.getInsuranceCode().trim().equals(""))) {
+							//if (ins.getInsuranceCode()==null) {
+								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
+								if (insuranceNameTypeDto!=null) {
+									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
+									insuranceRepo.save(ins);
+								}
+								
+							}else if(ins.getInsuranceCode()!=null){
+                            	insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
+								if (insuranceNameTypeDto!=null) {
+									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
+									insuranceRepo.save(ins);
+                            	timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
+                            			ins.getInsuranceCode().trim());
+								}
+                            }
+							
+							if (insuranceNameTypeDto!=null) timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
+									insuranceNameTypeDto.getInsuranceCode());
+							if (timely == null) {
+								 error.add("Timely Limit Type Missing for Secondary Ins. :"+re.getSecondaryInsuranceCompany());
+
+							}
+
+							if (systemStatusBilling.getStatus().equalsIgnoreCase(re.getClaimTypeS())) {
+								claimStatusType = systemStatusBilling;
+							}
+							if (systemStatusReBilling.getStatus().equalsIgnoreCase(re.getClaimTypeS())) {
+								claimStatusType = systemStatusReBilling;
+							}
+							if (claimStatusType == null) {
+								error.add("Wrong Claim Type :" + re.getClaimTypeS());
+							}
+							if (error.size() > 0) {
+								ruleEngineService.saveRcmIssueClaim(re.getClaimId(), off, user,
+										String.join("\n", error), source, claimTypeEnum);
+								return null;
+							}
+							newClaimCt++;
+							if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary))
+								newClaimPCt++;
+							if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary))
+								newClaimSCt++;
+							rcmInsuranceType = rcmInsuranceTypeRepo.findById(ins.getInsuranceType().getId());
+							
+							boolean isBilling= true;
+							boolean isMedicaid= false;
+							boolean isMedicare= false;
+							boolean isChip= false;
+							//For External we always have claims in Billing 
+							if (clCompany.getName().equals(Constants.COMPANY_NAME)) {
+								isBilling = ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
+								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
+								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
+								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
+							}
+							
+							//boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
+							//boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
+							//boolean isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
+							boolean missing=true;
+							if (isBilling || isMedicare) {
+							
+							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
+									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
+									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),"",
+									claimTypeEnum);
+							missing=false;
+							}
+							if (isMedicaid  || isChip) {
+								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
+										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
+										"",claimTypeEnum);
+								missing=false;
+							}
+							if(missing) {//no Billing or Medicaid
+								//put in billing 
+								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
+										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
+										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
+										"",claimTypeEnum);
+								missing=false;
+								isBilling=true;
+							}
+							
+							
+							
+							claim.setCurrentStatus(ClaimStatusEnum.Claim_Uploaded.getId());
+							String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
+							claimCycleService.createNewClaimCycle(claim,ClaimStatusEnum.Claim_Uploaded.getType(),null, currentTeam, user);
+							//Save Data in rcm_claim_detail (new Enhancement)
+							if (re.getServiceCodes().size()>0) {
+								RcmClaimDetail det=null;
+								for(String cds:re.getServiceCodes()) {
+									det =new RcmClaimDetail();
+									det.setApptId("");
+									det.setClaim(claim);
+									det.setDescription("");
+									det.setEstInsurance("-1");
+									det.setEstPrimary("-1");
+									det.setFee("-1");
+									det.setIdEs("-1");
+									det.setLineItem("-1");
+									det.setPatientPortion("-1");
+									det.setPatientPortionSec("-1");
+									det.setProviderLastName("");
+									det.setServiceCode(cds.trim());
+									det.setStatus("");
+									det.setSurface("");
+									det.setTooth("");
+									det.setActive(true);
+									rcmClaimDetailRepo.save(det);
+								}
+									
+							}
+							RcmClaimLog l = logMap.get(off.getName());
+							if (l == null) {
+								l = new RcmClaimLog();
+								l.setOffice(off);
+								l.setNewClaimsCount(1);
+								l.setNewClaimsPrimaryCount(0);
+								l.setNewClaimsSecodaryCount(1);
+								logMap.put(off.getName(), l);
+							} else {
+								l.setNewClaimsCount(1 + l.getNewClaimsCount());
+								l.setNewClaimsSecodaryCount(1 + l.getNewClaimsSecodaryCount());
+
+							}
+							RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(
+									re.getClaimId() + claimTypeEnum.getSuffix(), off, source);
+							if (isC != null) {
+								isC.setResolved(true);
+								rcmIssueClaimsRepo.save(isC);
+							}
+							/// createAssginmentData
+							if (assignedUserBilling != null && (isBilling || isMedicare)) {
+								rcmAssigment = new RcmClaimAssignment();
+								//
+								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+										assignedUserBilling.getUser(), claimUUid, claim, "",
+										systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
+
+								rcmClaimAssignmentRepo.save(rcmAssigment);
+								claim.setCurrentStatus(ClaimStatusEnum.Need_to_Bill.getId());
+								claim.setNextAction(ClaimStatusEnum.Pending_For_Billing.getId());
+								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Pending_For_Billing.getId(),claim.getClaimUuid());
+								
+								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(), ClaimStatusEnum.Need_to_Bill.getType(), assignedTeamBilling, user);
+								
+							}
+							if (assignedUserInternalAudit != null && ( isMedicaid || isChip)) {
+								rcmAssigment = new RcmClaimAssignment();
+								//
+								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+										assignedUserInternalAudit.getUser(), claimUUid, claim, "",
+										systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
+
+								rcmClaimAssignmentRepo.save(rcmAssigment);
+								claim.setCurrentStatus( ClaimStatusEnum.Pending_For_Review.getId());
+								claim.setNextAction(ClaimStatusEnum.Need_to_Audit.getId());
+								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Review.getId(),ClaimStatusEnum.Need_to_Audit.getId(),claim.getClaimUuid());
+								
+								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Review.getType(),ClaimStatusEnum.Need_to_Audit.getType(), assignedTeamInternalAudit, user);
+								
+							}
+                            
+							if (isC != null) {
+								isC.setResolved(true);
+								rcmIssueClaimsRepo.save(isC);
+							}
+						}
+
+					} catch (Exception clai) {
+						// success = n1.getMessage();
+						clai.printStackTrace();
+						success = success + "," + re.getClaimId();
+						logger.error(clai.getMessage());
+					}
+
+				
+				
+				ClaimLogDto claimLogDto = null;
+				for (Map.Entry<String, RcmClaimLog> entry : logMap.entrySet()) {
+
+					RcmClaimLog l= entry.getValue();
+					claimLogDto = new ClaimLogDto(source, l.getOffice().getUuid(), 1, newClaimCt,
+							new Date(), entry.getValue().getOffice().getName());
+					System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+					commonClaimServiceImpl.saveClaimLog(entry.getValue(), user, entry.getValue().getOffice(),
+							ClaimSourceEnum.GOOGLESHEET.toString(), 1,claimLogDto.getNewClaimsCount(),l.getNewClaimsPrimaryCount(),l.getNewClaimsSecodaryCount(),
+							success);
+					mapcountNew.put(entry.getKey(), claimLogDto);
+
+				}
+				RcmClaimLog l=null;
+				RcmOffice fName =rcmOffice;
+				 if (logMap.get(fName.getName())==null) {
+						 claimLogDto = new ClaimLogDto(source, fName.getUuid(), 1, 0,
+									new Date(), fName.getName());
+						 mapcountNew.put(fName.getName(), claimLogDto); 
+						 
+						    l = new RcmClaimLog();
+							l.setOffice(fName);
+							l.setNewClaimsCount(0);
+							l.setNewClaimsPrimaryCount(0);
+							l.setNewClaimsSecodaryCount(0);
+						 commonClaimServiceImpl.saveClaimLog(l, user, fName,
+									ClaimSourceEnum.GOOGLESHEET.toString(), 1,0,0,0,
+									success);
+					 }
+	               //}
+
+			
+
+			for (Map.Entry<String, ClaimLogDto> entry : mapcountNew.entrySet()) {
+
+				logClaimDtos.add(entry.getValue());
+
+			}
+		} catch (Exception n) {
+			n.printStackTrace();
+			logger.error("Error in Fetching Claims From Sheet.. ");
+			logger.error(n.getMessage());
+			success = n.getMessage();
+		}
+      
+		return logClaimDtos;
+	
 	}
 
 	/*
