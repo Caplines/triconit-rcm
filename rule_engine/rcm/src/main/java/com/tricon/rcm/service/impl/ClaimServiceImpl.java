@@ -1229,13 +1229,13 @@ public class ClaimServiceImpl {
 			String companyuuid, String officeuuids,RcmUser user,RcmTeam currentTeam) {
 
 
-		logger.info(" In in Save Seconday Claim From Recrewad Claim section");
+		logger.info(" In Save Secondary Claim From Recreate Claim section");
 		String success = "";
 		RcmClaims claim = null;
 		List<ClaimLogDto> logClaimDtos = new ArrayList<>();
 		Map<String, ClaimLogDto> mapcountNew = new HashMap<>();
 		// RcmClaimLog rcmClaimLog=null;
-		String source = ClaimSourceEnum.GOOGLESHEET.toString();
+		String source = ClaimSourceEnum.RECREATECLAIMSECTION.toString();
 		RcmClaimAssignment rcmAssigment = null;
 		HashMap<String, RcmClaimLog> logMap = new HashMap<>();
 		// Map<String, Object[]> mapcountNew = new HashMap<>();
@@ -1584,7 +1584,7 @@ public class ClaimServiceImpl {
 							new Date(), entry.getValue().getOffice().getName());
 					System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
 					commonClaimServiceImpl.saveClaimLog(entry.getValue(), user, entry.getValue().getOffice(),
-							ClaimSourceEnum.GOOGLESHEET.toString(), 1,claimLogDto.getNewClaimsCount(),l.getNewClaimsPrimaryCount(),l.getNewClaimsSecodaryCount(),
+							ClaimSourceEnum.RECREATECLAIMSECTION.toString(), 1,claimLogDto.getNewClaimsCount(),l.getNewClaimsPrimaryCount(),l.getNewClaimsSecodaryCount(),
 							success);
 					mapcountNew.put(entry.getKey(), claimLogDto);
 
@@ -1602,7 +1602,7 @@ public class ClaimServiceImpl {
 							l.setNewClaimsPrimaryCount(0);
 							l.setNewClaimsSecodaryCount(0);
 						 commonClaimServiceImpl.saveClaimLog(l, user, fName,
-									ClaimSourceEnum.GOOGLESHEET.toString(), 1,0,0,0,
+									ClaimSourceEnum.RECREATECLAIMSECTION.toString(), 1,0,0,0,
 									success);
 					 }
 	               //}
@@ -1616,7 +1616,7 @@ public class ClaimServiceImpl {
 			}
 		} catch (Exception n) {
 			n.printStackTrace();
-			logger.error("Error in Fetching Claims From Sheet.. ");
+			logger.error("Error in Fetching/Creating  Claims From Recreate section.. ");
 			logger.error(n.getMessage());
 			success = n.getMessage();
 		}
