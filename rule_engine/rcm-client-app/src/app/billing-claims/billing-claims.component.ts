@@ -212,7 +212,7 @@ export class BillingClaimsComponent {
     'REBILLING': {
       sectionId: 24,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'NEED_TO_CALL_INSURANCE': {
       sectionId: 25,
@@ -293,6 +293,14 @@ export class BillingClaimsComponent {
       "nextAction":"Re-billing",
       "currentAction":"Re-billing",
       "teamId":7,
+      "reasonForRebilling":'-1'
+    },
+    REBILLING:{
+      data:[],
+      modal:{
+        rebillingStatus:true
+      },
+      dataModal:{}
     }
 
   };
@@ -425,6 +433,7 @@ export class BillingClaimsComponent {
       this.fetchPatientPaymentSection();
       this.fetchNextActionRequiredSection();
       this.fetchPatientCommunicationSection();
+      this.fetchRebillingSection();
     });
   }
 
@@ -2075,6 +2084,10 @@ export class BillingClaimsComponent {
       this.claimSectionModal['PATIENT_COMMUNICATION']['sectionId'] = this.sectionIds['PATIENT_COMMUNICATION']['sectionId'];
       this.finalSaveClaimDataModel.patientCommunicationInfoModel = this.savePatientCommunicationSection(true);
     }
+    else if (sectionName === 'REBILLING') {
+      this.claimSectionModal['REBILLING']['sectionId'] = this.sectionIds['REBILLING']['sectionId'];
+      this.finalSaveClaimDataModel.rebillingInfoModel = this.saveRebillingSection(true);
+    }
     else if (sectionName === 'CURRENT_STATUS_AND_NEXT_ACTION') {
       this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'] = this.sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'];
       this.finalSaveClaimDataModel.nextActionRequiredInfoModel = this.saveNextActionRequiredSection(true);
@@ -2205,7 +2218,13 @@ export class BillingClaimsComponent {
     return true;
   }
   validate_REBILLING() {
-    return true;
+    let isSectionValidated = true;
+    this.emptyFields["REBILLING"] = {};
+    if(!this.claimSectionModal["REBILLING"]['dataModal'].rebillingRemarks){
+      this.emptyFields["REBILLING"]['rebillingRemarks']=true;
+      isSectionValidated = false;
+    }
+    return isSectionValidated;
   }
   validate_NEED_TO_CALL_INSURANCE() {
     return true;
@@ -2411,6 +2430,28 @@ export class BillingClaimsComponent {
       this.appService.fetchPatientCommunicationSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['PATIENT_COMMUNICATION'].data = res.data;
+        }
+      })
+    }
+
+  }
+
+  fetchRebillingSection() {
+    if (this.checkForSectionAccess(this.sectionIds['REBILLING']['sectionId'], 'view') && this.claimRcm.rebilledStatus) {
+      this.appService.fetchRebillingSection(this.claimUUid, (res: any) => {
+        if (res && res.data) {
+          let originalServiceCodes :any=[];
+          let originalRequirements :any=[];
+          this.claimSectionModal['REBILLING']['modal'] = res.data;
+          this.claimSectionModal['REBILLING']['modal']['rebillingStatus']  = this.claimRcm.rebilledStatus;
+          res.data.originalServiceCodes.forEach((e:any)=>{
+            originalServiceCodes.push({name:e,checked:false})
+          });
+          res.data.originalRequirements.forEach((e:any)=>{
+            originalRequirements.push({name:e,checked:false})
+          });
+          this.claimSectionModal['REBILLING']['modal'].originalServiceCodes = originalServiceCodes;
+          this.claimSectionModal['REBILLING']['modal'].originalRequirements = originalRequirements;
         }
       })
     }
@@ -2800,9 +2841,21 @@ export class BillingClaimsComponent {
     } else if (event['action'] === 'updateRequiredReBilling') {
       this.claimSectionModal.REQUEST_REBILLING['rebillingRequirements'] = event.value;
       this.concatenateRequiredRebilling();
+    } else if (event['action'] === 'updateReBillingServiceCode') {
+      this.removeObjectFromArray(event.value,'rebillingServiceCode');
+    } else if (event['action'] === 'updateReBilling') {
+      this.removeObjectFromArray(event.value,'rebillingRequirement');
     }
     console.log(event.value);
 
+  }
+
+  removeObjectFromArray(array:any,type:any){
+      if(type === 'rebillingServiceCode'){
+        this.claimSectionModal.REBILLING['dataModal']['selectedRebillingServiceCodes'] = array.map((obj:any) => obj.name);
+      }else{
+        this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'] = array.map((obj:any) => obj.name);
+      }
   }
 
   getAllServiceCodes() {
@@ -2816,6 +2869,66 @@ export class BillingClaimsComponent {
 
   closeReqRebillingModal(){
       this.serviceLevelSectionMultiSelectConfig.showModal=false;
+  }
+
+  selectRebillingStatus(rebillingStatus:boolean){
+    this.claimSectionModal.REBILLING['modal']['rebillingStatus'] = rebillingStatus;
+  }
+
+  selectRecreationRebillingClaim(status:boolean){
+    this.claimSectionModal.REBILLING['modal']['reCeationOptionChoosen'] = status;
+  }
+
+  saveRebillingSection(isFinal:boolean){
+    let reBillingModal:any = this.claimSectionModal['REBILLING'];
+    reBillingModal['dataModal']['sectionId'] = this.sectionIds['REBILLING']['sectionId'];
+    reBillingModal['dataModal']['reasonForRebilling'] = reBillingModal['modal']['reasonForRebilling'];
+    reBillingModal['dataModal']['requestedRemarks'] = reBillingModal['modal']['requestedRemarks'];
+    reBillingModal['dataModal']['rebillingRemarks'] = reBillingModal['modal']['rebillingRemarks'];
+    reBillingModal['dataModal']['rebillingStatus'] = reBillingModal['modal']['rebillingStatus'];
+    reBillingModal['dataModal']['requestedByUuid'] = reBillingModal['modal']['requestedByUuid'];
+    reBillingModal['dataModal']['originalServiceCodes'] = reBillingModal['modal']['originalServiceCodes'];
+    reBillingModal['dataModal']['originalRequirements'] = reBillingModal['modal']['originalRequirements'];
+    reBillingModal['dataModal']['claimTransferNextTeamId'] = reBillingModal['modal']['claimTransferNextTeamId'];
+    reBillingModal['dataModal']['reCeationOptionChoosen'] = reBillingModal['modal']['reCeationOptionChoosen'];
+
+    
+    if (!isFinal) {
+      if(this.checkValidationForRebilling()){
+
+      let params: any = {
+        claimUuid: this.claimUUid,
+        rebillingInfoModel: this.claimSectionModal['REBILLING']['dataModal']
+      };
+      this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+        if (res.status) {
+          location.reload();
+          console.log(res);
+        }
+      })
+    }
+
+    }
+    return this.claimSectionModal['REBILLING']['dataModal'];
+  }
+
+  checkValidationForRebilling(){
+    let isSectionValidated = true;
+    this.emptyFields["REBILLING"] = {};
+    if(!this.claimSectionModal["REBILLING"]['dataModal'].rebillingRemarks){
+      this.emptyFields["REBILLING"]['rebillingRemarks']=true;
+      isSectionValidated =false;
+    }
+    if(!this.claimSectionModal.REBILLING['dataModal']['selectedRebillingServiceCodes'] ||this.claimSectionModal.REBILLING['dataModal']['selectedRebillingServiceCodes'].length == 0){
+      this.emptyFields["REBILLING"]['selectedRebillingServiceCodes'] = true;
+      isSectionValidated =false;
+    }
+    if(!this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'] || this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'].length == 0){
+      this.emptyFields["REBILLING"]['selectedRebillingRequirements'] = true;
+      isSectionValidated =false;
+    }
+    return isSectionValidated;
+
   }
 
 }

@@ -31,7 +31,7 @@ export class MultiSelectDropdownComponent {
   showSelectedData:any={};
   isAllSelected:any={'clients':false,'offices':false,'ageCategory':false,'claimStatus':false,'teams':false};
 
-  claimDetailPageConfig:any={'serviceCodes':[],'requiredReBilling':[]};
+  claimDetailPageConfig:any={'serviceCodes':[],'requiredRequestedReBilling':[],'requiredReBilling':[],'reBillingServiceCodes':[]};
 
 
 constructor(private _service:ApplicationServiceService,private constants:AppConstants) {
@@ -579,18 +579,54 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
       
     }
   }
+
+  else if (type === 'reBillingServiceCodes'){
+    if (status) {
+      let isExist = this.claimDetailPageConfig.reBillingServiceCodes.some((ele:any)=>ele.name.toUpperCase() == value.name.toUpperCase() && ele.checked == value.checked);
+      if(!isExist){
+        this.claimDetailPageConfig.reBillingServiceCodes.push(value);
+        this.emitToParent.emit({action:'updateReBillingServiceCode',value:this.claimDetailPageConfig.reBillingServiceCodes});
+      }
+    } else {
+      this.claimDetailPageConfig.reBillingServiceCodes.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.claimDetailPageConfig.reBillingServiceCodes.splice(idx, 1);
+          this.emitToParent.emit({action:'updateReBillingServiceCode',value:this.claimDetailPageConfig.reBillingServiceCodes});
+        }
+      });
+      
+    }
+  }
+
+  else if (type === 'requiredRequestedReBilling'){
+    if (status) {
+      let isExist = this.claimDetailPageConfig.requiredRequestedReBilling.some((ele:any)=>ele.name.toUpperCase() == value.name.toUpperCase() && ele.checked == value.checked);
+      if(!isExist){
+        this.claimDetailPageConfig.requiredRequestedReBilling.push(value);
+        this.emitToParent.emit({action:'updateRequiredReBilling',value:this.claimDetailPageConfig.requiredRequestedReBilling});
+      }
+    } else {
+      this.claimDetailPageConfig.requiredRequestedReBilling.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.claimDetailPageConfig.requiredRequestedReBilling.splice(idx, 1);
+          this.emitToParent.emit({action:'updateRequiredReBilling',value:this.claimDetailPageConfig.requiredRequestedReBilling});
+        }
+      });
+      
+    }
+  }
   else if (type === 'requiredReBilling'){
     if (status) {
       let isExist = this.claimDetailPageConfig.requiredReBilling.some((ele:any)=>ele.name.toUpperCase() == value.name.toUpperCase() && ele.checked == value.checked);
       if(!isExist){
         this.claimDetailPageConfig.requiredReBilling.push(value);
-        this.emitToParent.emit({action:'updateRequiredReBilling',value:this.claimDetailPageConfig.requiredReBilling});
+        this.emitToParent.emit({action:'updateReBilling',value:this.claimDetailPageConfig.requiredReBilling});
       }
     } else {
       this.claimDetailPageConfig.requiredReBilling.forEach((e: any, idx: any) => {
         if (e.name == value.name) {
           this.claimDetailPageConfig.requiredReBilling.splice(idx, 1);
-          this.emitToParent.emit({action:'updateRequiredReBilling',value:this.claimDetailPageConfig.requiredReBilling});
+          this.emitToParent.emit({action:'updateReBilling',value:this.claimDetailPageConfig.requiredReBilling});
         }
       });
       

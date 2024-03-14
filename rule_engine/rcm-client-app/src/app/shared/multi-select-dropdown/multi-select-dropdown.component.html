@@ -417,7 +417,7 @@ last ?
 </ng-container>
 
 <ng-container *ngIf="inputConfig?.isDetailPage">
-    <!-- Claim Detail Service Code -->
+    <!-- Claim Detail Requested Service Code -->
     <div class="detail-page-service-codes" (mouseleave)="showDropDown = false"
         *ngIf="inputConfig?.isDetailPage && inputConfig?.serviceCodes">
         <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown;toggleSelectedItem('serviceCodes')">
@@ -436,6 +436,54 @@ last ?
             <label *ngFor="let item of inputConfig.serviceCodes;let idx = index">
                 <input type="checkbox" [(ngModel)]="item.checked"
                     (change)="getSelectedValue(item.checked,item,'serviceCodes','serviceCodes')" />
+                <span>{{item.name}}</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Claim Detail Service Code -->
+    <div class="detail-page-service-codes" (mouseleave)="showDropDown = false"
+        *ngIf="inputConfig?.isDetailPage && inputConfig?.reBillingServiceCodes">
+        <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown;toggleSelectedItem('reBillingServiceCodes')">
+            <span *ngIf="claimDetailPageConfig.reBillingServiceCodes.length<=0">Select</span>
+            <span *ngIf="claimDetailPageConfig.reBillingServiceCodes.length>0" [ngClass]="{'hide-item':showSelectedData['reBillingServiceCodes']}">
+                <ng-container *ngFor="let item of claimDetailPageConfig.reBillingServiceCodes; let last = last"> {{ item.name
+                    }}{{last ? '': ','}}</ng-container>
+            </span>
+            <i class="fa fa-angle-down"></i>
+        </button>
+        <div class="drop-show search-claim-dropdown" *ngIf="showDropDown">
+            <!-- <label>
+                <input type="checkbox" (change)="getSelectedValue(!isAllSelected['serviceCodes'],'','selectAllAge','serviceCodes')" [checked]="isAllSelected['serviceCodes']">
+                <span>{{inputConfig.serviceCodes.length == searchClaimsConfig.serviceCodes.length ? 'Clear All' : 'Select All'}}</span>
+            </label> -->
+            <label *ngFor="let item of inputConfig.reBillingServiceCodes;let idx = index">
+                <input type="checkbox" [(ngModel)]="item.checked"
+                    (change)="getSelectedValue(item.checked,item,'reBillingServiceCodes','reBillingServiceCodes')" />
+                <span>{{item.name}}</span>
+            </label>
+        </div>
+    </div>
+
+    <!-- Claim Detail Requested Required Rebilling  -->
+    <div class="detail-page-required-rebilling" (mouseleave)="showDropDown = false"
+        *ngIf="inputConfig?.isDetailPage && inputConfig?.requiredRequestedReBilling">
+        <button class="drop-toggle btn flat" (click)="showDropDown=!showDropDown;toggleSelectedItem('requiredRequestedReBilling')">
+            <span *ngIf="claimDetailPageConfig.requiredRequestedReBilling.length<=0">Select</span>
+            <span *ngIf="claimDetailPageConfig.requiredRequestedReBilling.length>0" [ngClass]="{'hide-item':showSelectedData['requiredRequestedReBilling']}">
+                <ng-container *ngFor="let item of claimDetailPageConfig.requiredRequestedReBilling; let last = last"> {{ item.name
+                    }}{{last ? '': ','}}</ng-container>
+            </span>
+            <i class="fa fa-angle-down"></i>
+        </button>
+        <div class="drop-show search-claim-dropdown" *ngIf="showDropDown">
+            <!-- <label>
+                <input type="checkbox" (change)="getSelectedValue(!isAllSelected['requiredReBilling'],'','selectAllAge','requiredReBilling')" [checked]="isAllSelected['requiredReBilling']">
+                <span>{{inputConfig.requiredReBilling.length == searchClaimsConfig.requiredReBilling.length ? 'Clear All' : 'Select All'}}</span>
+            </label> -->
+            <label *ngFor="let item of inputConfig.requiredRequestedReBilling;let idx = index">
+                <input type="checkbox" [(ngModel)]="item.checked"
+                    (change)="getSelectedValue(item.checked,item,'requiredRequestedReBilling','requiredRequestedReBilling')" />
                 <span>{{item.name}}</span>
             </label>
         </div>
