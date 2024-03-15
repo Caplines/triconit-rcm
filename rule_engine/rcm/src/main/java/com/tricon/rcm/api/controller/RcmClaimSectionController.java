@@ -33,6 +33,7 @@ import com.tricon.rcm.dto.RcmPatientCommunicationDto;
 import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.RebillingDto;
 import com.tricon.rcm.dto.RebillingResponseDto;
+import com.tricon.rcm.dto.RecreateResponseDto;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.dto.ValidateCreateClaimInformationDto;
 import com.tricon.rcm.dto.ValidateRecreateClaimResponseDto;
