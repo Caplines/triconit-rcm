@@ -6,5 +6,5 @@ import lombok.Data;
 public class ValidationRuleRemarksDto {
 
 	private int ruleId;
-	private String reamarks;
+	private String remarks;
 }

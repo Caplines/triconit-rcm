@@ -13,6 +13,7 @@ public class RebillingResponseDto {
 	private String requestedBy;
 	private String requestedByUuid;
 	private boolean rebillingStatus;
+	private boolean reCeationOptionChoosen;
 	private String dateOfRebiiling;
 	private int sectionId;
 }

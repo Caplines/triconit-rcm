@@ -43,6 +43,9 @@ public class RcmRecreateClaim extends BaseAuditEntity implements java.io.Seriali
 	@Column(name = "button_type")
 	private int buttonType;
 	
+	@Column(name = "new_claim_id")
+	private String newClaimId;
+	
 	@Column(name = "final_submit")
 	private boolean finalSubmit;
 }

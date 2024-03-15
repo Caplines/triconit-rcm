@@ -14,5 +14,7 @@ public class RecreateClaimRequestDto {
 	private String newClaimId;
 	private String reasonForRecreation;
 	private String recreationRemarks;
-	private ValidationRuleRemarksDto validationRuleRemarks;
+	private List<ValidationRuleRemarksDto> validationRuleRemarks;
+	private RebillingResponseDto  rebillingResponseDto;
+	private boolean reCeationOptionChoosen;
 }
