@@ -620,6 +620,12 @@ public class RcmCommonServiceImpl {
 				response = claimSectionimpl.saveRebillingSection(partialHeader,sectionRequestBody.getRebillingInfoModel(),
 						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
 				break;
+				
+			case 18:
+				logger.info("Inside section 18->Recreate the claim");
+				response = claimSectionimpl.saveRecreateClaimSection(partialHeader,sectionRequestBody.getRecreateClaimRequestInfoModel(),
+						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+				break;
 
 			default:
 				logger.error("section not found");

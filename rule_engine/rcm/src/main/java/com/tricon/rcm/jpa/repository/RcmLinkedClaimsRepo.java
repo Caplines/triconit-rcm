@@ -13,4 +13,7 @@ public interface RcmLinkedClaimsRepo extends JpaRepository<RcmLinkedClaims, Inte
 
 	@Query(nativeQuery = true, value = "select claim_id from rcm_claims where  claim_uuid in (select linked_claim_id from rcm_linked_claims where claim_id=:claimuuid )")
 	List<String> getLinkedClaims(@Param("claimuuid") String claimuuid);
+	
+	@Query(nativeQuery = true, value = "select * from rcm_linked_claims where claim_id=:claimuuid")
+	RcmLinkedClaims  getLinkedClaimsByClaimUuid(@Param("claimuuid") String claimuuid);
 }

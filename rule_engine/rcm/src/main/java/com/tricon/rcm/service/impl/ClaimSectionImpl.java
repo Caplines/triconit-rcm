@@ -42,6 +42,7 @@ import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCollectionAgency;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
+import com.tricon.rcm.db.entity.RcmLinkedClaims;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmPatientCommunicationSection;
 import com.tricon.rcm.db.entity.RcmPatientPayment;
@@ -71,6 +72,7 @@ import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.RebillingDto;
 import com.tricon.rcm.dto.RebillingResponseDto;
+import com.tricon.rcm.dto.RecreateClaimRequestDto;
 import com.tricon.rcm.dto.RecreateResponseDto;
 import com.tricon.rcm.dto.RequestRebillingDto;
 import com.tricon.rcm.dto.ServiceLevelNotes;
@@ -82,6 +84,7 @@ import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
 import com.tricon.rcm.dto.customquery.RcmServiceNotesDto;
 import com.tricon.rcm.enums.ClaimStatusEnum;
+import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.EOBSectionRepo;
 import com.tricon.rcm.jpa.repository.FollowUpInsuranceRepo;
@@ -99,11 +102,14 @@ import com.tricon.rcm.jpa.repository.RcmCollectionAgencyRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmCurrentClaimStatusRepo;
 import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmLinkedClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmPatientCommunicationRepo;
 import com.tricon.rcm.jpa.repository.RcmPatientPaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmPatientStatementRepo;
 import com.tricon.rcm.jpa.repository.RcmRebillingSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmRecreateClaimRepo;
+import com.tricon.rcm.jpa.repository.RcmRecreationValidationRepo;
 import com.tricon.rcm.jpa.repository.RcmRequestRebillingSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmRuleRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
@@ -222,6 +228,15 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmRuleRepo rcmRuleRepo;
+	
+	@Autowired
+	RcmRecreationValidationRepo rcmRecreationValidationRepo;
+	
+	@Autowired
+	RcmRecreateClaimRepo rcmRecreateClaimRepo;
+	
+	@Autowired
+	RcmLinkedClaimsRepo rcmLinkedClaimsRepo;
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -1631,4 +1646,100 @@ public class ClaimSectionImpl {
 		response.setValidationResponse(data);
 		return response;
 	}
+
+	@Transactional(rollbackOn = Exception.class)
+	public Boolean saveRecreateClaimSection(PartialHeader partialHeader,
+			RecreateClaimRequestDto recreateClaimRequestInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
+			boolean finalSubmit) {
+
+		if (!(recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_FULL_CLAIM
+				|| recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_PARTIAL_CLAIM
+				|| recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_ATTACH_SECONDARY)) {
+			logger.error("Wrong button type");
+			return null;
+		}
+
+		// check for recreate partial claim
+		if (recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_PARTIAL_CLAIM) {
+			List<String> existingServiceCodesForNewClaim = recreateClaimRequestInfoModel
+					.getExistingNewClaimServiceCodes().stream().distinct()
+					.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
+			List<String> selectedServiceCodesForExistingClaim = recreateClaimRequestInfoModel.getSelectedServiceCodes()
+					.stream().distinct().filter(str -> !str.equalsIgnoreCase("Undistributed"))
+					.collect(Collectors.toList());
+
+			if (existingServiceCodesForNewClaim.isEmpty() || selectedServiceCodesForExistingClaim.isEmpty()) {
+				logger.error("service codes are empty");
+				return null;
+			}
+
+			// active false for service level table for selected service codes for current
+			// claim
+			if (existingServiceCodesForNewClaim.containsAll(selectedServiceCodesForExistingClaim)) {
+				List<RcmServiceLevelInformation> serviceCodesData = serviceLevelRepo
+						.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
+								selectedServiceCodesForExistingClaim);
+				if (!serviceCodesData.isEmpty()) {
+					serviceCodesData.forEach(data -> {
+						data.setActive(false);
+						serviceLevelRepo.save(data);
+					});
+				}
+
+				// active false in claim_detail table for selected service codes for current
+				// claim
+				List<RcmClaimDetail> serviceCodesForClaimDetail = claimDetailRepo.findServiceCodesByClaimUuidAndCodes(
+						claim.getClaimUuid(), selectedServiceCodesForExistingClaim);
+				if (!serviceCodesForClaimDetail.isEmpty()) {
+					serviceCodesForClaimDetail.forEach(data -> {
+						data.setRebilledStatus(true);
+						claimDetailRepo.save(data);
+					});
+				}
+
+			} else {
+				logger.error("service code not match with cureent claim service codes");
+				return null;
+			}
+			return true;
+		}
+
+		// check for full claim
+
+		if (recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_FULL_CLAIM) {
+			List<RcmClaimDataDto> newClaim = rcmClaimRepository
+					.getClaimsDataByClaimId(recreateClaimRequestInfoModel.getNewClaimId());
+			RcmClaimDataDto primaryClaimForNew = newClaim.stream()
+					.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.P.getSuffix())).findAny().orElse(null);
+
+			RcmClaims newClaimData = rcmClaimRepository.findByClaimUuid(primaryClaimForNew.getClaimUuid());
+			// now we insert the claim data into linked claim table
+
+			// first we insert current claim linked_data from newClaim data
+			RcmLinkedClaims linkedClaimsForCurrent = new RcmLinkedClaims();
+			linkedClaimsForCurrent.setRcmClaims(claim);
+			linkedClaimsForCurrent.setCreatedBy(createdBy);
+			linkedClaimsForCurrent.setLinkedClaims(newClaimData);
+			rcmLinkedClaimsRepo.save(linkedClaimsForCurrent);
+
+			// second we insert new claim linked_data from current claim data
+			RcmLinkedClaims linkedClaimsForNew = new RcmLinkedClaims();
+			linkedClaimsForNew.setRcmClaims(newClaimData);
+			linkedClaimsForNew.setCreatedBy(createdBy);
+			linkedClaimsForNew.setLinkedClaims(claim);
+			rcmLinkedClaimsRepo.save(linkedClaimsForNew);
+
+			// now current claim get to archived
+
+			ClaimStatusUpdate dto = new ClaimStatusUpdate();
+			dto.setClaimUuid(claim.getClaimUuid());
+			dto.setReason(recreateClaimRequestInfoModel.getReasonForRecreation());
+			String archiveResponse=new ClaimServiceImpl().archiveActiveClaim(dto, partialHeader);
+			logger.error("Archive response:"+archiveResponse);
+			return true;
+		}
+
+		return null;
+	}
+
 }

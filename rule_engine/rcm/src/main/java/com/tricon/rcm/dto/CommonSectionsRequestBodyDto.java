@@ -19,6 +19,7 @@ public class CommonSectionsRequestBodyDto {
 	private CollectionAgencyDto collectionAgencyInfoModel;
 	private  RebillingDto rebillingInfoModel;
 	private RequestRebillingDto requestRebillingInfoModel;
+	private RecreateClaimRequestDto recreateClaimRequestInfoModel;
 	private boolean finalSubmit;
 	private boolean moveToNextTeam;
 
