@@ -2,6 +2,7 @@ package com.tricon.rcm.service.impl;
 
 import java.io.File;
 
+
 import java.net.URL;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -1577,6 +1578,7 @@ public class ClaimSectionImpl {
 		RcmRules rule327 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_327);
 		RcmRules rule328 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_328);
 		RcmRules rule329 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_329);
+	    RcmRules rule330 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_330);
 
 		List<ValidateRecreateClaimResponseDto> data = new ArrayList<>();
 		RecreateResponseDto response = new RecreateResponseDto();
@@ -1609,6 +1611,9 @@ public class ClaimSectionImpl {
 
 		RcmClaimDataDto primaryClaimForNew = newClaim.stream()
 				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.P.getSuffix())).findAny().orElse(null);
+		
+		RcmClaimDataDto claimSecondaryForNew = newClaim.stream()
+				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
 
 		if (primaryClaimForNew == null) {
 			logger.error("Primary not present for new claim");
@@ -1618,6 +1623,9 @@ public class ClaimSectionImpl {
 			return response;
 		}
 
+		List<String> serviceCodesDataForNewClaim = claimDetailRepo
+				.findServiceCodesByClaimUuid(primaryClaimForNew.getClaimUuid());
+		
 		if (dto.getButtonType() == Constants.BUTTON_TYPE_ATTACH_SECONDARY) {
 			data.addAll(ruleBookService.rule324(rule324, currentClaimSecondary));
 			response.setSecondaryValid(currentClaimSecondary==null?true:false);
@@ -1632,11 +1640,13 @@ public class ClaimSectionImpl {
 			data.addAll(ruleBookService.rule327(rule327, primaryClaimForNew, currentClaim));
 
 			data.addAll(ruleBookService.rule328(rule328, primaryClaimForNew, currentClaim));
+			
+			data.addAll(ruleBookService.rule330(rule330, primaryClaimForNew,claimSecondaryForNew));
+			
+			response.setServiceCodesNewClaim(serviceCodesDataForNewClaim);
 		}
 
 		if (dto.getButtonType() == Constants.BUTTON_TYPE_RECREATE_PARTIAL_CLAIM) {
-			List<String> serviceCodesDataForNewClaim = claimDetailRepo
-					.findServiceCodesByClaimUuid(primaryClaimForNew.getClaimUuid());
 			List<String> selectedServiceCodesForExistingClaim = dto.getSelectedServiceCodes().stream().distinct()
 					.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
 			data.addAll(ruleBookService.rule329(rule329, serviceCodesDataForNewClaim,

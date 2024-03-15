@@ -1,6 +1,7 @@
 package com.tricon.rcm.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
@@ -937,4 +938,37 @@ public class RuleBookServiceImpl {
 		logger.info(RuleConstants.rule_log_exit + rule.getName());
 		return dList;
 	}
+
+	// new claim archive status
+	public List<ValidateRecreateClaimResponseDto> rule330(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
+			RcmClaimDataDto secondaryClaimForNew) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+
+		boolean pass = true;
+		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
+		try {
+			if (primaryClaimForNew.getCurrentState() == Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
+				pass = false;
+			}
+
+			if (pass) {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule330.pass.message", new Object[] {}, locale), Constants.PASS));
+			} else {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(), messageSource
+						.getMessage("rule330.error.message", new Object[] { primaryClaimForNew.getClaimId() }, locale),
+						Constants.FAIL));
+			}
+
+		} catch (Exception n) {
+			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+	}
+
 }

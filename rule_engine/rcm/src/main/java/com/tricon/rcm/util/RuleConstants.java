@@ -23,5 +23,6 @@ public class RuleConstants {
 	public static final String RULE_ID_327="Current Claim Treating Provider vs New Claim Treating Provider";
 	public static final String RULE_ID_328="Current Claim ProviderOnClaim vs New Claim ProviderOnClaim";
 	public static final String RULE_ID_329="Current Claim Service Codes vs New Claim ServiceCodes";
+	public static final String RULE_ID_330="New Claim Archive Status";
 	
 }
