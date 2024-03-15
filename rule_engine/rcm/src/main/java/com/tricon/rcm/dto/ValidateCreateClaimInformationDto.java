@@ -9,6 +9,6 @@ public class ValidateCreateClaimInformationDto {
 
 	private String currentClaimUuid;
 	private String newClaimId;
-	private int buttonType;
-	private List<String>selectedServiceCodes;
+	private String buttonType;
+	//private List<String>selectedServiceCodes;
 }

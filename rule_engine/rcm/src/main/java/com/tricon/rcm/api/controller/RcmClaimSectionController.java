@@ -446,7 +446,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		RecreateResponseDto response = null;
-		if (!StringUtils.isNoneBlank(dto.getCurrentClaimUuid()) || !StringUtils.isNoneBlank(dto.getNewClaimId())) {
+		if (!StringUtils.isNoneBlank(dto.getCurrentClaimUuid())) {
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}

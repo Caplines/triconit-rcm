@@ -940,8 +940,7 @@ public class RuleBookServiceImpl {
 	}
 
 	// new claim archive status
-	public List<ValidateRecreateClaimResponseDto> rule330(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
-			RcmClaimDataDto secondaryClaimForNew) {
+	public List<ValidateRecreateClaimResponseDto> rule330(RcmRules rule, RcmClaimDataDto primaryClaimForNew) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 

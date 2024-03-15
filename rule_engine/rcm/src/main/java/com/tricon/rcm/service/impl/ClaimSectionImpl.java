@@ -1587,7 +1587,7 @@ public class ClaimSectionImpl {
 		RcmRules rule326 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_326);
 		RcmRules rule327 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_327);
 		RcmRules rule328 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_328);
-		RcmRules rule329 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_329);
+		//RcmRules rule329 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_329);
 		RcmRules rule330 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_330);
 
 		List<ValidateRecreateClaimResponseDto> data = new ArrayList<>();
@@ -1612,37 +1612,16 @@ public class ClaimSectionImpl {
 		}
 
 		String currentClaimId[] = currentClaim.getClaimId().split("_");
-
-		List<RcmClaimDataDto> currentClaims = rcmClaimRepository.getClaimsDataByClaimId(currentClaimId[0]);
-		List<RcmClaimDataDto> newClaim = rcmClaimRepository.getClaimsDataByClaimId(dto.getNewClaimId());
-
-		RcmClaimDataDto currentClaimSecondary = currentClaims.stream()
-				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
-
-		RcmClaimDataDto primaryClaimForNew = newClaim.stream()
-				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.P.getSuffix())).findAny().orElse(null);
-
-		RcmClaimDataDto claimSecondaryForNew = newClaim.stream()
-				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
-
-		if (primaryClaimForNew == null) {
-			logger.error("Primary not present for new claim");
-			data.add(new ValidateRecreateClaimResponseDto(0, "", "Primary is not present for new claim",
-					Constants.FAIL));
-			response.setValidationResponse(data);
-			return response;
-		}
-
-		List<String> serviceCodesDataForNewClaim = claimDetailRepo
-				.findServiceCodesByClaimUuid(primaryClaimForNew.getClaimUuid());
-
-		if (dto.getButtonType() == Constants.BUTTON_TYPE_ATTACH_SECONDARY) {
-			data.addAll(ruleBookService.rule324(rule324, currentClaimSecondary));
-			response.setSecondaryValid(currentClaimSecondary == null ? true : false);
-		}
-
-		if (dto.getButtonType() == Constants.BUTTON_TYPE_RECREATE_FULL_CLAIM) {
-
+		List<RcmClaimDataDto> currentClaims = rcmClaimRepository.getClaimsDataByClaimId(currentClaimId[0]);//rework
+	
+		List<RcmClaimDataDto> newClaim = null;
+		RcmClaimDataDto primaryClaimForNew = null;
+		if (dto.getNewClaimId()!=null ) {
+			newClaim= rcmClaimRepository.getClaimsDataByClaimId(dto.getNewClaimId());
+			primaryClaimForNew = newClaim.stream()
+					.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.P.getSuffix())).findAny().orElse(null);
+			List<String> serviceCodesDataForNewClaim = claimDetailRepo
+					.findServiceCodesByClaimUuid(primaryClaimForNew.getClaimUuid());
 			data.addAll(ruleBookService.rule325(rule325, primaryClaimForNew, currentClaim));
 
 			data.addAll(ruleBookService.rule326(rule326, primaryClaimForNew, currentClaim));
@@ -1650,19 +1629,39 @@ public class ClaimSectionImpl {
 			data.addAll(ruleBookService.rule327(rule327, primaryClaimForNew, currentClaim));
 
 			data.addAll(ruleBookService.rule328(rule328, primaryClaimForNew, currentClaim));
-
-			data.addAll(ruleBookService.rule330(rule330, primaryClaimForNew, claimSecondaryForNew));
-
+			
+			data.addAll(ruleBookService.rule330(rule330, primaryClaimForNew));
+			
+			
 			response.setServiceCodesNewClaim(serviceCodesDataForNewClaim);
 		}
 
-		if (dto.getButtonType() == Constants.BUTTON_TYPE_RECREATE_PARTIAL_CLAIM) {
-			List<String> selectedServiceCodesForExistingClaim = dto.getSelectedServiceCodes().stream().distinct()
-					.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
-			data.addAll(ruleBookService.rule329(rule329, serviceCodesDataForNewClaim,
-					selectedServiceCodesForExistingClaim));
-			response.setServiceCodesNewClaim(serviceCodesDataForNewClaim);
+		RcmClaimDataDto currentClaimSecondary = currentClaims.stream()
+				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
+
+		
+		data.addAll(ruleBookService.rule324(rule324, currentClaimSecondary));
+		response.setSecondaryValid(currentClaimSecondary == null ? true : false);
+
+//		RcmClaimDataDto claimSecondaryForNew = newClaim.stream()
+//				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
+
+		
+		if (primaryClaimForNew == null && dto.getButtonType()==null) {
+			logger.error("Primary not present for new claim");
+			data.add(new ValidateRecreateClaimResponseDto(0, "", "Primary is not present for new claim",
+					Constants.FAIL));
+			response.setValidationResponse(data);
+			return response;
 		}
+
+		
+//			List<String> selectedServiceCodesForExistingClaim = dto.getSelectedServiceCodes().stream().distinct()
+//					.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
+//			data.addAll(ruleBookService.rule329(rule329, serviceCodesDataForNewClaim,
+//					selectedServiceCodesForExistingClaim));
+//			response.setServiceCodesNewClaim(serviceCodesDataForNewClaim);
+
 		response.setValidationResponse(data);
 		return response;
 	}
