@@ -34,6 +34,8 @@ import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.RebillingDto;
 import com.tricon.rcm.dto.RebillingResponseDto;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
+import com.tricon.rcm.dto.ValidateCreateClaimInformationDto;
+import com.tricon.rcm.dto.ValidateRecreateClaimResponseDto;
 import com.tricon.rcm.service.impl.ClaimSectionImpl;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.util.MessageConstants;
@@ -426,6 +428,28 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		List<RebillingResponseDto> response = null;
 		try {
 			response = claimSection.fetchRebillingInformation(partialHeader, claimUuid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@PostMapping(value = "api/validate-recreate-claim")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> validateRecreateClaim(@RequestBody ValidateCreateClaimInformationDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		RecreateResponseDto response = null;
+		if (!StringUtils.isNoneBlank(dto.getCurrentClaimUuid()) || !StringUtils.isNoneBlank(dto.getNewClaimId())) {
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		try {
+			response = claimSection.validateRecreateClaim(partialHeader, dto);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());

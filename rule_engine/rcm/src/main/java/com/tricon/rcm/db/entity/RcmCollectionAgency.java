@@ -60,7 +60,7 @@ public class RcmCollectionAgency extends BaseAuditEntity implements java.io.Seri
 	private double netAmountReceived;
 	
 	@Column(name = "button_type")
-	private byte buttonType;
+	private int buttonType;
 	
 	@Column(name = "final_submit")
 	private boolean finalSubmit;

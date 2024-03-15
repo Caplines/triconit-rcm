@@ -17,5 +17,11 @@ public class RuleConstants {
 	public static final String RULE_ID_309="Nitrous Certification (D9230)";
 	public static final String RULE_ID_310="Sedation Certification";//Sedation Certification (D9248)
 	public static final String RULE_ID_323="DOS vs Appointment Date";
+	public static final String RULE_ID_324="Current Claim Secondary Status";
+	public static final String RULE_ID_325="Current Claim DOS vs New Claim DOS";
+	public static final String RULE_ID_326="Current Claim PatientId vs New Claim PatientId";
+	public static final String RULE_ID_327="Current Claim Treating Provider vs New Claim Treating Provider";
+	public static final String RULE_ID_328="Current Claim ProviderOnClaim vs New Claim ProviderOnClaim";
+	public static final String RULE_ID_329="Current Claim Service Codes vs New Claim ServiceCodes";
 	
 }

@@ -160,6 +160,13 @@ public class Constants {
 	public static final int BUTTON_TYPE_ONE_FOR_COLLECTION_SECTION = 1;
 	public static final int BUTTON_TYPE_TWO_FOR_COLLECTION_SECTION = 2;
 	public static final int BUTTON_TYPE_THREE_FOR_COLLECTION_SECTION = 3;
+	
+	public static final String PRIMARY_PREFIX="_P";
+	public static final String SECONDARY_PREFIX="_S";
+	
+	public static final int BUTTON_TYPE_ATTACH_SECONDARY = 1;
+	public static final int BUTTON_TYPE_RECREATE_FULL_CLAIM= 2;
+	public static final int BUTTON_TYPE_RECREATE_PARTIAL_CLAIM = 3;
     
     
 }

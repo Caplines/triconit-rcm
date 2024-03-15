@@ -13,6 +13,6 @@ public class CollectionAgencyDto {
 	private double amountReceived;
 	private double commisionCharged;
 	private double netAmountReceived;
-	private byte buttonType;
+	private int buttonType;
 	private int sectionId;
 }

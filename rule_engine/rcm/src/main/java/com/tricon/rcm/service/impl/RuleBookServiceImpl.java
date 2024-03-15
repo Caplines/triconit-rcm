@@ -19,7 +19,10 @@ import com.tricon.rcm.db.entity.RcmRules;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
 import com.tricon.rcm.dto.TPValidationResponseDto;
+import com.tricon.rcm.dto.ValidateCreateClaimInformationDto;
+import com.tricon.rcm.dto.ValidateRecreateClaimResponseDto;
 import com.tricon.rcm.dto.customquery.DataPatientRuleDto;
+import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.RuleConstants;
@@ -719,4 +722,219 @@ public class RuleBookServiceImpl {
 
 	}
 
+	// current claim is secondary or not
+	public List<ValidateRecreateClaimResponseDto> rule324(RcmRules rule, RcmClaimDataDto currentClaimSecondary) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+
+		boolean pass = true;
+
+		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
+		try {
+			if (currentClaimSecondary != null) {
+				pass = false;
+			}
+			if (pass) {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule324.pass.message", new Object[] {}, locale), Constants.PASS));
+			} else {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule324.error.message",
+								new Object[] { currentClaimSecondary.getClaimId() }, locale),
+						Constants.FAIL));
+			}
+
+		} catch (Exception n) {
+			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+
+	}
+
+	// match dos from current claim
+	public List<ValidateRecreateClaimResponseDto> rule325(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
+			RcmClaimDataDto currentClaim) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+
+		boolean pass = true;
+		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
+		try {
+			if (!Constants.SDF_MYSL_DATE
+					.format(currentClaim.getDos() == null ? "" : currentClaim.getDos())
+					.equals(Constants.SDF_MYSL_DATE.format(
+							primaryClaimForNew.getDos() == null ? "" : primaryClaimForNew.getDos()))) {
+
+				pass = false;
+			}
+
+			if (pass) {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule325.pass.message", new Object[] {}, locale), Constants.PASS));
+			} else {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule325.error.message",
+								new Object[] {Constants.SDF_MYSL_DATE.format(primaryClaimForNew.getDos()== null ? "" :primaryClaimForNew.getDos()), Constants.SDF_MYSL_DATE.format(currentClaim.getDos()==null?"":currentClaim.getDos()) }, locale),
+						Constants.FAIL));
+			}
+
+		} catch (Exception n) {
+			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+	}
+
+	// match patientId from current claim
+	public List<ValidateRecreateClaimResponseDto> rule326(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
+			RcmClaimDataDto currentClaim) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+
+		boolean pass = true;
+		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
+		try {
+			if (!currentClaim.getPatientId().equals(primaryClaimForNew.getPatientId())) {
+				pass = false;
+			}
+
+			if (pass) {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule326.pass.message", new Object[] {}, locale), Constants.PASS));
+			} else {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule326.error.message",
+								new Object[] {primaryClaimForNew.getPatientId(), currentClaim.getPatientId() }, locale),
+						Constants.FAIL));
+			}
+
+		} catch (Exception n) {
+			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+	}
+	
+	
+	// match treating provider from current claim
+	public List<ValidateRecreateClaimResponseDto> rule327(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
+			RcmClaimDataDto currentClaim) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+
+		boolean pass = true;
+		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
+		try {
+			if (!currentClaim.getTreatingProvider().equals(primaryClaimForNew.getTreatingProvider())) {
+				pass = false;
+			}
+
+			if (pass) {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule327.pass.message", new Object[] {}, locale), Constants.PASS));
+			} else {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule327.error.message",
+								new Object[] {primaryClaimForNew.getTreatingProvider(), currentClaim.getTreatingProvider() }, locale),
+						Constants.FAIL));
+			}
+
+		} catch (Exception n) {
+			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+	}
+	
+	// match provider on claim from current claim
+	public List<ValidateRecreateClaimResponseDto> rule328(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
+			RcmClaimDataDto currentClaim) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+
+		boolean pass = true;
+		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
+		try {
+			if (!currentClaim.getProviderOnClaim().equals(primaryClaimForNew.getProviderOnClaim())) {
+				pass = false;
+			}
+
+			if (pass) {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule328.pass.message", new Object[] {}, locale), Constants.PASS));
+			} else {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule328.error.message",
+								new Object[] {primaryClaimForNew.getProviderOnClaim(), currentClaim.getProviderOnClaim() }, locale),
+						Constants.FAIL));
+			}
+
+		} catch (Exception n) {
+			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+	}
+	
+	// current claim service cods vs new claim service codes
+	public List<ValidateRecreateClaimResponseDto> rule329(RcmRules rule, List<String> serviceCodesDataForNewClaim,
+			List<String> selectedServiceCodesForExistingClaim) {
+
+		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
+
+		boolean pass = true;
+		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
+		List<String> declineCodesList = new ArrayList<>();
+		String declineCodes = null;
+		try {
+			if (!serviceCodesDataForNewClaim.isEmpty() && !selectedServiceCodesForExistingClaim.isEmpty()) {
+
+				if (!serviceCodesDataForNewClaim.containsAll(selectedServiceCodesForExistingClaim)) {
+					pass = false;
+				}
+				for (String codes : selectedServiceCodesForExistingClaim) {
+
+					if (!serviceCodesDataForNewClaim.contains(codes)) {
+
+						declineCodesList.add(codes);
+					}
+				}
+				declineCodes = declineCodesList.stream().collect(Collectors.joining(","));
+			} else {
+				pass = false;
+			}
+			if (pass) {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule329.pass.message", new Object[] {}, locale), Constants.PASS));
+			} else {
+				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule329.error.message", new Object[] { declineCodes }, locale),
+						Constants.FAIL));
+			}
+
+		} catch (Exception n) {
+			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					Constants.FAIL));
+		}
+
+		logger.info(RuleConstants.rule_log_exit + rule.getName());
+		return dList;
+	}
 }

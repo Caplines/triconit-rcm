@@ -22,6 +22,7 @@ import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.util.Constants;
+import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDateDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
@@ -34,7 +35,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 	RcmClaims findByClaimIdAndOffice(String claimId, RcmOffice office);
 
-	//RcmClaims findByClaimId(String claimId);
+	RcmClaims findByClaimId(String claimId);
 
 	RcmClaims findByClaimUuid(String claimId);
 
@@ -760,4 +761,19 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 					+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
 	List<FreshClaimDataDto> fetchUnSubmittedClaimForOtherTeam(@Param("companyId") String companyId,
 			@Param("teamid") int teamid);*/
+	
+	
+	@Query(nativeQuery = true, value = ""
+			+ " select cl.claim_uuid as claimUuid,cl.claim_id as claimId,cl.dos as dos,cl.patient_id as patientId, "
+			+ "provider_on_claim as providerOnClaim,treating_provider as treatingProvider,cl.current_state as currentState "
+			+ "from rcm_claims cl  where cl.claim_uuid=:claimUuid")
+	RcmClaimDataDto getClaimsDataByClaimUuid(@Param("claimUuid") String claimUuid);
+	
+	@Query(nativeQuery = true, value = ""
+			+ " select cl.claim_uuid as claimUuid,cl.claim_id as claimId,cl.dos as dos,cl.patient_id as patientId, "
+			+ "provider_on_claim as providerOnClaim,treating_provider as treatingProvider,cl.current_state as currentState "
+			+ "from rcm_claims cl  WHERE cl.claim_id LIKE %:claimId% ")
+	List<RcmClaimDataDto> getClaimsDataByClaimId(@Param("claimId") String claimId);
+	
+	
 }

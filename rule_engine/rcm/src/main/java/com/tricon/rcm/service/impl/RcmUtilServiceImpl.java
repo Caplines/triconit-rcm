@@ -6,6 +6,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.google.common.collect.Collections2;
+import com.tricon.rcm.db.entity.RcmRules;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.ForgotPasswordDto;
@@ -131,5 +135,15 @@ public class RcmUtilServiceImpl {
 		}
 		return null;
 
+	}
+	
+	public RcmRules getRulesFromList(List<RcmRules> rules, String name) {
+		RcmRules r = null;
+		Collection<RcmRules> ruleGen = Collections2.filter(rules, rule -> rule.getShortName().equals(name));
+		for (RcmRules rule : ruleGen) {
+			r = rule;
+		}
+
+		return r;
 	}
 }

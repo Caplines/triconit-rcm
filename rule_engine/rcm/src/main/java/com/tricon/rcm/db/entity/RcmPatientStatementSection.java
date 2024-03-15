@@ -76,7 +76,7 @@ public class RcmPatientStatementSection  extends BaseAuditEntity implements java
 	private String balanceSheetLink;
 	
 	@Column(name = "button_type")
-	private byte buttonType;
+	private int buttonType;
 	
 	@Column(name = "final_submit")
 	private boolean finalSubmit;

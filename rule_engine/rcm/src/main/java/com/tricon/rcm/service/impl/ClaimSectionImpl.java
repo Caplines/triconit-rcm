@@ -1,6 +1,7 @@
 package com.tricon.rcm.service.impl;
 
 import java.io.File;
+
 import java.net.URL;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -8,7 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -21,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.ClaimUserSectionMapping;
@@ -43,11 +48,13 @@ import com.tricon.rcm.db.entity.RcmPatientPayment;
 import com.tricon.rcm.db.entity.RcmPatientStatementSection;
 import com.tricon.rcm.db.entity.RcmRebillingSection;
 import com.tricon.rcm.db.entity.RcmRequestRebiilingSection;
+import com.tricon.rcm.db.entity.RcmRules;
 import com.tricon.rcm.db.entity.RcmServiceLevelInformation;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AppealInformationDto;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
+import com.tricon.rcm.dto.ClaimStatusUpdate;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.CollectionAgencyDto;
 import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
@@ -68,7 +75,10 @@ import com.tricon.rcm.dto.RequestRebillingDto;
 import com.tricon.rcm.dto.ServiceLevelNotes;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.dto.ServiceLevelTotalAmountDto;
+import com.tricon.rcm.dto.ValidateCreateClaimInformationDto;
+import com.tricon.rcm.dto.ValidateRecreateClaimResponseDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
+import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
 import com.tricon.rcm.dto.customquery.RcmServiceNotesDto;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -94,13 +104,15 @@ import com.tricon.rcm.jpa.repository.RcmPatientPaymentSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmPatientStatementRepo;
 import com.tricon.rcm.jpa.repository.RcmRebillingSectionRepo;
 import com.tricon.rcm.jpa.repository.RcmRequestRebillingSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmRuleRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
 import com.tricon.rcm.jpa.repository.ServiceLevelInformationRepo;
 import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
-
+import com.tricon.rcm.util.RuleConstants;
+import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
 
 @Service
 public class ClaimSectionImpl {
@@ -200,7 +212,15 @@ public class ClaimSectionImpl {
 	@Autowired
 	RcmClaimLogServiceImpl rcmClaimLogServiceImpl;
 	
+	@Autowired
+	RcmUtilServiceImpl utilServiceImpl;
 	
+	
+	@Autowired
+	RuleBookServiceImpl ruleBookService;
+	
+	@Autowired
+	RcmRuleRepo rcmRuleRepo;
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -1351,7 +1371,7 @@ public class ClaimSectionImpl {
 			return false;
 		}
 
-		if (claim != null) {
+		if (claim != null && !rebillingInfoModel.isReCeationOptionChoosen()) {
 			RcmUser requestedBy = userRepo.findByUuid(rebillingInfoModel.getRequestedByUuid());
 			List<String> serviceCodesForStatusTrue = null;
 			String selectedServiceCodes = null;
@@ -1530,4 +1550,84 @@ public class ClaimSectionImpl {
 		return responseData;
 	}
 
+	public RecreateResponseDto validateRecreateClaim(PartialHeader partialHeader, ValidateCreateClaimInformationDto dto)
+			throws Exception {
+
+		List<RcmRules> rules = rcmRuleRepo
+				.findByRuleTypeInAndActive(Arrays.asList(new String[] { Constants.RULE_TYPE_RCM }), 1);
+		RcmRules rule324 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_324);
+		RcmRules rule325 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_325);
+		RcmRules rule326 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_326);
+		RcmRules rule327 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_327);
+		RcmRules rule328 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_328);
+		RcmRules rule329 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_329);
+
+		List<ValidateRecreateClaimResponseDto> data = new ArrayList<>();
+		RecreateResponseDto response = new RecreateResponseDto();
+
+		RcmClaimDataDto currentClaim = rcmClaimRepository.getClaimsDataByClaimUuid(dto.getCurrentClaimUuid());
+
+		if (currentClaim == null) {
+			logger.error("Invalid current claim");
+			data.add(new ValidateRecreateClaimResponseDto(0, "", "Invalid current claim", Constants.FAIL));
+			response.setValidationResponse(data);
+			return response;
+		}
+
+		RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(
+				partialHeader.getJwtUser().getUuid(), currentClaim.getClaimUuid(), true);
+		if (assign == null) {
+			logger.error("claim not assigned to this user");
+			data.add(new ValidateRecreateClaimResponseDto(0, "", "claim is not assigned to this user", Constants.FAIL));
+			response.setValidationResponse(data);
+			return response;
+		}
+
+		String currentClaimId[] = currentClaim.getClaimId().split("_");
+
+		List<RcmClaimDataDto> currentClaims = rcmClaimRepository.getClaimsDataByClaimId(currentClaimId[0]);
+		List<RcmClaimDataDto> newClaim = rcmClaimRepository.getClaimsDataByClaimId(dto.getNewClaimId());
+
+		RcmClaimDataDto currentClaimSecondary = currentClaims.stream()
+				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
+
+		RcmClaimDataDto primaryClaimForNew = newClaim.stream()
+				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.P.getSuffix())).findAny().orElse(null);
+
+		if (primaryClaimForNew == null) {
+			logger.error("Primary not present for new claim");
+			data.add(new ValidateRecreateClaimResponseDto(0, "", "Primary is not present for new claim",
+					Constants.FAIL));
+			response.setValidationResponse(data);
+			return response;
+		}
+
+		if (dto.getButtonType() == Constants.BUTTON_TYPE_ATTACH_SECONDARY) {
+			data.addAll(ruleBookService.rule324(rule324, currentClaimSecondary));
+			response.setSecondaryValid(currentClaimSecondary==null?true:false);
+		}
+
+		if (dto.getButtonType() == Constants.BUTTON_TYPE_RECREATE_FULL_CLAIM) {
+
+			data.addAll(ruleBookService.rule325(rule325, primaryClaimForNew, currentClaim));
+
+			data.addAll(ruleBookService.rule326(rule326, primaryClaimForNew, currentClaim));
+
+			data.addAll(ruleBookService.rule327(rule327, primaryClaimForNew, currentClaim));
+
+			data.addAll(ruleBookService.rule328(rule328, primaryClaimForNew, currentClaim));
+		}
+
+		if (dto.getButtonType() == Constants.BUTTON_TYPE_RECREATE_PARTIAL_CLAIM) {
+			List<String> serviceCodesDataForNewClaim = claimDetailRepo
+					.findServiceCodesByClaimUuid(primaryClaimForNew.getClaimUuid());
+			List<String> selectedServiceCodesForExistingClaim = dto.getSelectedServiceCodes().stream().distinct()
+					.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
+			data.addAll(ruleBookService.rule329(rule329, serviceCodesDataForNewClaim,
+					selectedServiceCodesForExistingClaim));
+			response.setServiceCodesNewClaim(serviceCodesDataForNewClaim);
+		}
+		response.setValidationResponse(data);
+		return response;
+	}
 }
