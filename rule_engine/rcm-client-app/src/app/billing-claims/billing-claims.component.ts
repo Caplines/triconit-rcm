@@ -182,7 +182,7 @@ export class BillingClaimsComponent {
     'RECREATE_CLAIM': {
       sectionId: 18,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'APPEAL': {
       sectionId: 19,
@@ -301,6 +301,42 @@ export class BillingClaimsComponent {
         rebillingStatus:true
       },
       dataModal:{}
+    },
+    RECREATE_CLAIM:{
+      validationData:[
+        // {
+        //   sno:1,
+        //   validationName:'Patient ID',
+        //   result:'Pass',
+        //   remark:'',
+        // },
+        // {
+        //   sno:2,
+        //   validationName:'Date of Service',
+        //   result:'Fail',
+        //   remark:'',
+        // },
+        // {
+        //   sno:3,
+        //   validationName:'Treating Provider',
+        //   result:'Fail',
+        //   remark:'',
+        // },
+        // {
+        //   sno:4,
+        //   validationName:'Provider on Claim',
+        //   result:'Pass',
+        //   remark:'',
+        // },
+      ],
+      modal:{
+        currentClaimUuid:'',
+        newClaimId:null,
+        buttonType:null,
+        selectedServiceCodes:[],
+        serviceCodesServiceLevel:[],
+        secondaryValid:true
+      }
     }
 
   };
@@ -2845,6 +2881,8 @@ export class BillingClaimsComponent {
       this.removeObjectFromArray(event.value,'rebillingServiceCode');
     } else if (event['action'] === 'updateReBilling') {
       this.removeObjectFromArray(event.value,'rebillingRequirement');
+    } else if (event['action'] === 'updateRecreateServiceCodes') {
+      this.removeObjectFromArray(event.value,'reCreateServiceCodes');
     }
     console.log(event.value);
 
@@ -2853,8 +2891,10 @@ export class BillingClaimsComponent {
   removeObjectFromArray(array:any,type:any){
       if(type === 'rebillingServiceCode'){
         this.claimSectionModal.REBILLING['dataModal']['selectedRebillingServiceCodes'] = array.map((obj:any) => obj.name);
-      }else{
+      }else if(type === 'rebillingRequirement'){
         this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'] = array.map((obj:any) => obj.name);
+      }else if(type === 'reCreateServiceCodes'){
+        this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes'] = array.map((obj:any) => obj.name);
       }
   }
 
@@ -2865,6 +2905,7 @@ export class BillingClaimsComponent {
       }
       this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({ name: `option${idx}`, checked: false });
     })
+    this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'] =  this.serviceLevelSectionMultiSelectConfig.serviceCodesList;   //for recreation section service codes
   }
 
   closeReqRebillingModal(){
@@ -2931,4 +2972,35 @@ export class BillingClaimsComponent {
 
   }
 
+  selectActionToPerformRecreate(action:any){
+    this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType']  = action;
+    if(action == 1){
+      this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = 'attachSecondary';
+        this.validateNewClaimId();
+    }
+
+  }
+
+  validateNewClaimId(){
+    let params:any = {
+      currentClaimUuid:this.claimUUid,
+      newClaimId:this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'],
+      buttonType: this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'],
+      // selectedServiceCodes:this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes']
+    }
+
+    this.appService.validateNewClaimId(params,(res:any)=>{
+      if(res){
+        console.log(res);
+        this.claimSectionModal.RECREATE_CLAIM['validationData']=res.data.validationResponse;
+        this.claimSectionModal.RECREATE_CLAIM['newServiceCodes']=res.data.serviceCodesNewClaim;
+        this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid']=res.data.secondaryValid;
+        
+      }
+    })
+  }
+
+  saveRecreateNewClaim(isFinal:boolean){
+
+  }
 }

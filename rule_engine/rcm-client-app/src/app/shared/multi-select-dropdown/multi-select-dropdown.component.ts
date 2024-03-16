@@ -31,7 +31,7 @@ export class MultiSelectDropdownComponent {
   showSelectedData:any={};
   isAllSelected:any={'clients':false,'offices':false,'ageCategory':false,'claimStatus':false,'teams':false};
 
-  claimDetailPageConfig:any={'serviceCodes':[],'requiredRequestedReBilling':[],'requiredReBilling':[],'reBillingServiceCodes':[]};
+  claimDetailPageConfig:any={'serviceCodes':[],'requiredRequestedReBilling':[],'requiredReBilling':[],'reBillingServiceCodes':[],recreateServiceCodes:[]};
 
 
 constructor(private _service:ApplicationServiceService,private constants:AppConstants) {
@@ -627,6 +627,24 @@ getSelectedValue(status: Boolean, value: any, type: String,filterProperty?:strin
         if (e.name == value.name) {
           this.claimDetailPageConfig.requiredReBilling.splice(idx, 1);
           this.emitToParent.emit({action:'updateReBilling',value:this.claimDetailPageConfig.requiredReBilling});
+        }
+      });
+      
+    }
+  }
+
+  else if (type === 'recreateServiceCodes'){
+    if (status) {
+      let isExist = this.claimDetailPageConfig.recreateServiceCodes.some((ele:any)=>ele.name.toUpperCase() == value.name.toUpperCase() && ele.checked == value.checked);
+      if(!isExist){
+        this.claimDetailPageConfig.recreateServiceCodes.push(value);
+        this.emitToParent.emit({action:'updateRecreateServiceCodes',value:this.claimDetailPageConfig.recreateServiceCodes});
+      }
+    } else {
+      this.claimDetailPageConfig.recreateServiceCodes.forEach((e: any, idx: any) => {
+        if (e.name == value.name) {
+          this.claimDetailPageConfig.recreateServiceCodes.splice(idx, 1);
+          this.emitToParent.emit({action:'updateRecreateServiceCodes',value:this.claimDetailPageConfig.recreateServiceCodes});
         }
       });
       

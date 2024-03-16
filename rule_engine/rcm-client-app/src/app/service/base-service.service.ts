@@ -132,6 +132,7 @@ export class BaseService {
     'get-next_action-required-info': "/api/get-next_action-required-info",
     'get-patient-communication-info': "/api/get-patient-communication-info",
     'request-rebilling-info': "/api/request-rebilling-info",
+    'validate-recreate-claim': "/api/validate-recreate-claim",
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

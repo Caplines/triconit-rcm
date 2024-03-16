@@ -2776,15 +2776,6 @@
                                                         *ngIf="serviceLevelSectionMultiSelectConfig.rebillingRequirements.length>0"><multi-select-dropdown
                                                             [inputConfig]="{'requiredRequestedReBilling':serviceLevelSectionMultiSelectConfig.rebillingRequirements,'isDetailPage':true}"
                                                             (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown></ng-container>
-                                                    <!-- <select id="rebillingRequirements" class="form-control" *ngIf="claimSectionModal?.REQUEST_REBILLING"
-                                                                                    [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                                    [(ngModel)]="this.claimSectionModal.REQUEST_REBILLING['rebillingRequirements']"
-                                                                                    [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['rebillingRequirements']}">
-                                                                                    <option selected="true" hidden="true">Select</option>
-                                                                                    <ng-container *ngFor="let item of appConstants.claimInitialDenialReason">
-                                                                                        <option [value]="item.reasonName">{{item.reasonName}}</option>
-                                                                                    </ng-container>
-                                                                                </select> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -2818,15 +2809,6 @@
                                                         *ngIf="serviceLevelSectionMultiSelectConfig.serviceCodesList.length>0"><multi-select-dropdown
                                                             [inputConfig]="{'serviceCodes':serviceLevelSectionMultiSelectConfig.serviceCodesList,'isDetailPage':true}"
                                                             (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown></ng-container>
-                                                    <!-- <select id="rebillingServiceCodes" class="form-control"
-                                                                                    *ngIf="claimSectionModal?.REQUEST_REBILLING"
-                                                                                    [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                                    [(ngModel)]="this.claimSectionModal.REQUEST_REBILLING['rebillingServiceCodes']"
-                                                                                    [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['rebillingServiceCodes']}">
-                                                                                    <option selected="true" hidden="true">Select</option>
-                                                                                    <option value="yes">Yes</option>
-                                                                                    <option value="no">No</option>
-                                                                                </select> -->
                                                 </div>
                                             </div>
                                         </ng-container>
@@ -3020,6 +3002,183 @@
 
                                 </div>
                             </ng-container>
+
+                            <!-- NEED TO CREATE REBLIING -->
+
+                            <ng-container *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view')">
+                                <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
+                                    <a data-toggle="collapse" aria-expanded="false">
+                                        Claim Recreation in PMS
+                                    </a>
+                                    <div class="down-icon" (click)="showHide('claimLevelInfo')">
+                                        <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['claimLevelInfo']}"></a>
+                                    </div>
+                                </div>
+                            
+                                <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
+                                <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse" [ngClass]="{'show':!toggleTab['claimLevelInfo']}"
+                                    id="RECREATE_CLAIM">
+                            
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="newClaimId">Enter New Claim ID</label>
+                                            <input type="text" id="newClaimId" *ngIf="claimSectionModal?.RECREATE_CLAIM"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']" class="form-control"
+                                                [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['newClaimId']}">
+                                            <button class="btn btn-sm btn-success"
+                                                [disabled]="!claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']"
+                                                (click)="validateNewClaimId()">Validate Claim</button>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="reasonRecreation">Reason for Recreation</label>
+                                            <select id="reasonRecreation" class="form-control" *ngIf="claimSectionModal?.RECREATE_CLAIM"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['reasonRecreation']"
+                                                [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['reasonRecreation']}">
+                                                <option [selected]="true" disabled>Select</option>
+                                                <option value="in">In</option>
+                                                <option value="out">Out</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-2">
+                                        <div class="custom-row text-number">
+                                            <label for="remarks">Remarks</label>
+                                            <textarea id="remarks" *ngIf="claimSectionModal?.RECREATE_CLAIM"
+                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['remarks']" class="form-control"
+                                                [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['remarks']}"></textarea>
+                                        </div>
+                                    </div>
+                            
+                                    <div class="col-sm-7 mb-3 d-flex">
+                                        <label class="custom-row text-number">Action to Perform</label>
+                                        <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
+                                            <label class="btn btn-light mx-0"
+                                                [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 1}">
+                                                <input type="radio" name="action" class="form-check-input" [value]="'1'"
+                                                    [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 1"
+                                                    (change)="selectActionToPerformRecreate('1')">Attach Secondary
+                                            </label>
+                                            <ng-container *ngIf="claimSectionModal.RECREATE_CLAIM['validationData'].length>0">
+                                                <label class="btn btn-light"
+                                                    [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2}">
+                                                    <input type="radio" name="action" [value]="'2'" class="form-check-input"
+                                                        [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2"
+                                                        (change)="selectActionToPerformRecreate('2')">Recreate Full Claim
+                                                </label>
+                                                <label class="btn btn-light"
+                                                    [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3}">
+                                                    <input type="radio" name="action" [value]="'3'" class="form-check-input"
+                                                        [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3"
+                                                        (change)="selectActionToPerformRecreate('3')">Recreate Partially
+                                                </label>
+                                            </ng-container>
+                            
+                                        </div>
+                                    </div>
+                            
+                                    <ng-container *ngIf="claimSectionModal.RECREATE_CLAIM['validationData'].length>0">
+                                        <div class="col-md-4 mb-2">
+                                            <div class="custom-row text-number">
+                                                <label for="desposition">Service Codes to Recreate</label>
+                                                <ng-container
+                                                    *ngIf="this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'].length>0">
+                                                    <span class="mutliselect"
+                                                        [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['serviceCodesServiceLevel']}">
+                                                        <multi-select-dropdown
+                                                            [inputConfig]="{'recreateServiceCodes':claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'],'isDetailPage':true}"
+                                                            (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
+                                                    </span>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </ng-container>
+                            
+                                    <div class="col-sm-5"></div>
+
+                                    <ng-container *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid']">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Secondary BIlled Amount</th>
+                                                    <th>Secondary Claim Submission Date</th>
+                                                    <th>Primary Paid </th>
+                                                    <th>Claim Type</th>
+                                                    <th>Secondary Claim Status</th>
+                                                    <th>Provider ID (Report)</th>
+                                                    <th>Secondary Est Amount</th>
+                                                    <th>Secondary Insurance Name</th>
+                                                    <th>Secondary Insurance Phone No.</th>
+                                                    <th>Secondary Insurance Type</th>
+                                                    <th>Secondary Member ID</th>
+                                                    <th>Secondary Insurance Address</th>
+                                                    <th>Secondary Group Number</th>
+                                                    <th>Secondary Policy Holder</th>
+                                                    <th>Secondary Policy Holder DOB</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </ng-container>
+                            
+                                    <ng-container *ngIf="claimSectionModal.RECREATE_CLAIM['validationData'].length>0">
+                                        <div class="col-md-12">
+                                            <div class="validation-recreate-heading"> Validations for Recreating the claim </div>
+                                        </div>
+                            
+                                        <div class="col-sm-12">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>S.No.</th>
+                                                        <th>Validation Name</th>
+                                                        <th>Result</th>
+                                                        <th>Remarks</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let item of claimSectionModal.RECREATE_CLAIM.validationData;let idx=index;">
+                                                        <td>{{idx+1}}</td>
+                                                        <td>{{item.ruleName}}</td>
+                                                        <td [innerHTML]="item.message"></td>
+                                                        <td> <textarea [(ngModel)]="item.remark"></textarea> </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </ng-container>
+                            
+                                    <div class="col-md-4 mb-2">
+                                        <button class="btn btn-success" (click)="saveRecreateNewClaim(false)"
+                                            [hidden]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)">Recreate
+                                            | Recreate and Rebill</button>
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                            <!-- END NEED TO CREATE -->
 
                                 <!-- Current Status and next action required START-->
                                 <ng-container

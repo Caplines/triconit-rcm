@@ -603,6 +603,10 @@ export class ApplicationServiceService extends BaseService {
     this.postData(param, this.httpUrl['remove-eob-data'], callback)
   }
 
+  validateNewClaimId(param: any, callback: any) {
+    this.postData(param, this.httpUrl['validate-recreate-claim'], callback)
+  }
+
     getPdfUrlEob(param: any, callback: any) {
     this.getData({}, this.httpUrl['vieweoblink']+ "/" + param, callback,false)
   }
