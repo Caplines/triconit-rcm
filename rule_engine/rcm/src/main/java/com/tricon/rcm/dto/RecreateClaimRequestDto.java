@@ -16,5 +16,6 @@ public class RecreateClaimRequestDto {
 	private String recreationRemarks;
 	private List<ValidationRuleRemarksDto> validationRuleRemarks;
 	private RebillingResponseDto  rebillingResponseDto;
+	private List<ClaimFromSheet> claimFromSheet;
 	private boolean reCeationOptionChoosen;
 }

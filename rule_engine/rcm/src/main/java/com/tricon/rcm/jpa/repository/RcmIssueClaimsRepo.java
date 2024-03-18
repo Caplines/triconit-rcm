@@ -29,4 +29,6 @@ public interface RcmIssueClaimsRepo extends JpaRepository<RcmIssueClaims, Intege
 			+ "left join office off on off.uuid=cl.office_id "
 			+ "where off.company_id=:companyId and cl.resolved is false and cl.is_archive is true", nativeQuery = true)
 	List<IssueClaimDto> fetchAllUnarchiveClaimAssociatedClient(@Param("companyId") String companyId);
+	
+	List<RcmIssueClaims> findByClaimIdAndOfficeAndIsArchiveFalseAndResolvedFalse(String claimId,RcmOffice office);
 }

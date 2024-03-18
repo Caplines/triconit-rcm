@@ -40,6 +40,7 @@ import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCollectionAgency;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
+import com.tricon.rcm.db.entity.RcmIssueClaims;
 import com.tricon.rcm.db.entity.RcmLinkedClaims;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmPatientCommunicationSection;
@@ -54,13 +55,16 @@ import com.tricon.rcm.db.entity.RcmServiceLevelInformation;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.AppealInformationDto;
+import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimLevelInformationDto;
+import com.tricon.rcm.dto.ClaimLogDto;
 import com.tricon.rcm.dto.ClaimStatusUpdate;
 import com.tricon.rcm.dto.ClientSectionMappingDto;
 import com.tricon.rcm.dto.CollectionAgencyDto;
 import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.EobSectionEditDto;
+import com.tricon.rcm.dto.IssueClaimDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PatientPaymentSectionDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
@@ -103,6 +107,7 @@ import com.tricon.rcm.jpa.repository.RcmCollectionAgencyRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmCurrentClaimStatusRepo;
 import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmIssueClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmLinkedClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
 import com.tricon.rcm.jpa.repository.RcmPatientCommunicationRepo;
@@ -241,6 +246,9 @@ public class ClaimSectionImpl {
 	@Lazy
 	@Autowired
 	ClaimServiceImpl claimServiceImpl;
+	
+	@Autowired
+	RcmIssueClaimsRepo rcmIssueClaimsRepo;
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -1687,7 +1695,7 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveRecreateClaimSection(PartialHeader partialHeader,
+	public Object saveRecreateClaimSection(PartialHeader partialHeader,
 			RecreateClaimRequestDto recreateClaimRequestInfoModel, RcmClaims currentClaim, RcmUser createdBy, RcmTeam team,
 			boolean finalSubmit) {
 		Boolean response = null;
@@ -1714,6 +1722,48 @@ public class ClaimSectionImpl {
 	        	primaryClaim = currentClaim;
 		        secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(currentClaimId[0]+ClaimTypeEnum.S.getSuffix(),office);
 	        }
+	        
+	        
+	        //check for secondary
+
+			if (recreateClaimRequestInfoModel.getNewClaimId() != null && isPrimary
+					&& recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_ATTACH_SECONDARY) {
+				if (recreateClaimRequestInfoModel.getClaimFromSheet() != null) {
+
+					for (ClaimFromSheet dtoSheet : recreateClaimRequestInfoModel.getClaimFromSheet()) {
+						List<ClaimLogDto> responseForSecondaryClaim = claimServiceImpl
+								.createSecondaryClaimDataFromRecreateSection(dtoSheet,
+										partialHeader.getCompany().getUuid(), currentClaim.getOffice().getUuid(),
+										createdBy, team);
+
+						logger.error("ResponseForSecondaryClaim->>" + responseForSecondaryClaim);
+					}
+
+					// if claim is Present in issue_claim table then get data from this table
+
+					List<RcmIssueClaims> isIssueClaim = rcmIssueClaimsRepo
+							.findByClaimIdAndOfficeAndIsArchiveFalseAndResolvedFalse(
+									recreateClaimRequestInfoModel.getNewClaimId() + ClaimTypeEnum.S.getSuffix(),
+									currentClaim.getOffice());
+
+					IssueClaimDto dto = null;
+					for (RcmIssueClaims data : isIssueClaim) {
+						dto = new IssueClaimDto();
+						dto.setOfficeName(data.getOffice().getName());
+						BeanUtils.copyProperties(data, dto);
+
+					}
+
+					if (!isIssueClaim.isEmpty()) {
+						logger.error("Issue Claim Status->>" + isIssueClaim);
+						return dto;
+					} else {
+						response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, currentClaim, createdBy,
+								team, finalSubmit);
+						return response != null ? true : null;
+					}
+				}
+			}
 			
 			// check for recreate partial claim
 			if (recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_PARTIAL_CLAIM) {
