@@ -562,7 +562,7 @@ public class ClaimServiceImpl {
 					try {
 						insuranceNameTypeDto= null;
 						System.out.println(re.getClaimId() + "--<ID");
-						ClaimTypeEnum claimTypeEnum = ClaimTypeEnum.P;
+						ClaimTypeEnum claimTypeEnum = ClaimTypeEnum.S;
 						RcmClaimStatusType claimStatusType = null;
 
 						if (companies.get(re.getClientName()) == null) {
@@ -644,19 +644,19 @@ public class ClaimServiceImpl {
 							} else {
 								ins = new RcmInsurance();
 								ins.setActive(true);
-								ins.setAddress(re.getPrimaryInsuranceAddress());
+								ins.setAddress(re.getSecondaryInsuranceAddress());
 								ins.setInsuranceId("GEN_" + new Date().getTime());
 
-								rcmInsuranceType = rcmInsuranceTypes.get(re.getInsuranceName());
+								rcmInsuranceType = rcmInsuranceTypes.get(re.getSecondaryInsuranceName());
 								if (rcmInsuranceType == null) {
-									rcmInsuranceType = rcmInsuranceTypeRepo.findByName(re.getInsuranceName());
+									rcmInsuranceType = rcmInsuranceTypeRepo.findByName(re.getSecondaryInsuranceName());
 									if (rcmInsuranceType == null) {
 										//rcmInsuranceType = new RcmInsuranceType();
 										//rcmInsuranceType.setName(re.getInsuranceName());
 										//rcmInsuranceType.setId(rcmInsuranceTypeRepo.save(rcmInsuranceType).getId());
 										//rcmInsuranceTypes.put(re.getInsuranceName(), rcmInsuranceType);
 									} else {
-										rcmInsuranceTypes.put(re.getInsuranceName(), rcmInsuranceType);
+										rcmInsuranceTypes.put(re.getSecondaryInsuranceName(), rcmInsuranceType);
 									}
 
 								}
@@ -665,17 +665,17 @@ public class ClaimServiceImpl {
 								ins.setOffice(off);
 								//ins.setId(insuranceRepo.save(ins).getId());
 								 if (rcmInsuranceType==null) {
-								 error.add( "Insurance Type Missing For Name:"+re.getInsuranceName() +" in G-Sheet");
+								 error.add( "Insurance Type Missing For Name:"+re.getSecondaryInsuranceName() +" in G-Sheet");
 								 }else {
-							     ins.setInsuranceType(rcmInsuranceTypes.get(re.getInsuranceName()));
+							     ins.setInsuranceType(rcmInsuranceTypes.get(re.getSecondaryInsuranceName()));
 								 ins.setId(insuranceRepo.save(ins).getId());
 								 }
 								 
-								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim(),re.getClientName());
+								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
 							}
 							
 							if (ins.getInsuranceCode()==null || (ins.getInsuranceCode()!=null && ins.getInsuranceCode().trim().equals(""))) {
-								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim(),re.getClientName());
+								insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
 								if (insuranceNameTypeDto!=null) {
 									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
 									insuranceRepo.save(ins);
@@ -688,7 +688,7 @@ public class ClaimServiceImpl {
 										insuranceNameTypeDto.getInsuranceCode().trim());
 								
 							}else if(ins.getInsuranceCode()!=null){
-                            	insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getPrimaryInsuranceCompany().trim(),re.getClientName());
+                            	insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
 								if (insuranceNameTypeDto!=null) {
 									ins.setInsuranceCode(insuranceNameTypeDto.getInsuranceCode());
 									insuranceRepo.save(ins);
@@ -698,7 +698,7 @@ public class ClaimServiceImpl {
 								}
                             }
 							if (timely == null) {
-								 error.add("Timely Limit Type Missing for Primary Ins. :"+re.getPrimaryInsuranceCompany());
+								 error.add("Timely Limit Type Missing for Primary Ins. :"+re.getSecondaryInsuranceCompany());
 
 							}
 
@@ -1270,7 +1270,7 @@ public class ClaimServiceImpl {
 		RcmOffice rcmOffice = null;
 		//offNames = new ArrayList<>();
 		//offNameKeys = new ArrayList<>();
-		rcmOffice = officeRepo.findByNameAndCompanyUuid(officeuuids, company.getUuid());
+		rcmOffice = officeRepo.findByNameAndCompanyUuid(re.getOfficeName(), company.getUuid());
 		// rcmOffices.stream().map(RcmOffice::getName).forEach(offNames::add);
 		//offNames.add(rcmOffice.getName());
 		//offNameKeys.add(rcmOffice.getName() + rcmOffice.getKey());

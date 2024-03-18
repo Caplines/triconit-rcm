@@ -1736,7 +1736,7 @@ public class ClaimSectionImpl {
 										partialHeader.getCompany().getUuid(), currentClaim.getOffice().getUuid(),
 										createdBy, team);
 
-						logger.error("ResponseForSecondaryClaim->>" + responseForSecondaryClaim);
+						logger.info("ResponseForSecondaryClaim->>" + responseForSecondaryClaim);
 					}
 
 					// if claim is Present in issue_claim table then get data from this table
