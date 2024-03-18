@@ -1625,7 +1625,7 @@ public class ClaimSectionImpl {
         secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);
 		}
 		
-		if (newPrimaryClaim == null && dto.getButtonType()!= null) {
+		if (newPrimaryClaim == null) {
 			logger.error("Primary not present for new claim");
 			data.addAll(ruleBookService.rule329(rule329, newPrimaryClaim, dto.getNewClaimId()));
 			response.setValidationResponse(data);
