@@ -1636,16 +1636,13 @@ public class ClaimSectionImpl {
         if (("_" + currentClaimId[1]).equals(ClaimTypeEnum.S.getSuffix())) {
         	isPrimary =false;
         }
-		/*String[] clT = implDto.getClaimId().split("_");
-		String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
-         */
         
-        //RcmClaims attachedClaim = rcmClaimRepository.findByClaimIdAndOffice(isPrimary?currentClaimId[0]+ClaimTypeEnum.S.getSuffix():
-		//	                                                currentClaimId[0]+ClaimTypeEnum.P.getSuffix(),office);
-        
-        
-        
-		//List<RcmClaimDataDto> newClaim = null;
+		//check secondary for current claim
+		if (!isPrimary) {
+			data.addAll(ruleBookService.rule324(rule324, secondaryClaim));
+			response.setSecondaryValid(secondaryClaim == null ? true : false);
+		}
+
 		if (dto.getNewClaimId()!=null ) {
 		     RcmClaims checkClaim= null;
 	        List<String> serviceCodesDataForNewClaim =null;
@@ -1675,22 +1672,7 @@ public class ClaimSectionImpl {
 			response.setServiceCodesNewClaim(serviceCodesDataForNewClaim);
 		}
 
-		data.addAll(ruleBookService.rule324(rule324, secondaryClaim));
-		response.setSecondaryValid(secondaryClaim == null ? true : false);
-
-//		RcmClaimDataDto claimSecondaryForNew = newClaim.stream()
-//				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
-
-		
-
-		
-//			List<String> selectedServiceCodesForExistingClaim = dto.getSelectedServiceCodes().stream().distinct()
-//					.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
-//			data.addAll(ruleBookService.rule329(rule329, serviceCodesDataForNewClaim,
-//					selectedServiceCodesForExistingClaim));
-//			response.setServiceCodesNewClaim(serviceCodesDataForNewClaim);
-
-		response.setValidationResponse(data);
+        response.setValidationResponse(data);
 		return response;
 	}
 
