@@ -1584,7 +1584,7 @@ public class ClaimSectionImpl {
 		RcmRules rule326 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_326);
 		RcmRules rule327 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_327);
 		RcmRules rule328 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_328);
-		//RcmRules rule329 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_329);
+		RcmRules rule329 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_329);
 		RcmRules rule330 = utilServiceImpl.getRulesFromList(rules, RuleConstants.RULE_ID_330);
 
 		List<ValidateRecreateClaimResponseDto> data = new ArrayList<>();
@@ -1616,6 +1616,14 @@ public class ClaimSectionImpl {
 		newPrimaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.P.getSuffix(),office);
         secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);
 		}
+		
+		if (newPrimaryClaim == null && dto.getButtonType() == null) {
+			logger.error("Primary not present for new claim");
+			data.addAll(ruleBookService.rule329(rule329, newPrimaryClaim, dto.getNewClaimId()));
+			response.setValidationResponse(data);
+			return response;
+		}
+		
 		boolean isPrimary =true;
         if (("_" + currentClaimId[1]).equals(ClaimTypeEnum.S.getSuffix())) {
         	isPrimary =false;
@@ -1666,13 +1674,6 @@ public class ClaimSectionImpl {
 //				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
 
 		
-		if (newPrimaryClaim == null && dto.getButtonType()==null) {
-			logger.error("Primary not present for new claim");
-			data.add(new ValidateRecreateClaimResponseDto(0, "", "Primary is not present for new claim",
-					Constants.FAIL));
-			response.setValidationResponse(data);
-			return response;
-		}
 
 		
 //			List<String> selectedServiceCodesForExistingClaim = dto.getSelectedServiceCodes().stream().distinct()

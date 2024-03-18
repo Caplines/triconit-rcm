@@ -893,31 +893,16 @@ public class RuleBookServiceImpl {
 		return dList;
 	}
 	
-	// current claim service cods vs new claim service codes
-	public List<ValidateRecreateClaimResponseDto> rule329(RcmRules rule, List<String> serviceCodesDataForNewClaim,
-			List<String> selectedServiceCodesForExistingClaim) {
+	// check primary status for new claim
+	public List<ValidateRecreateClaimResponseDto> rule329(RcmRules rule, RcmClaims primaryClaimForNew,
+			String newClaimId) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
 		boolean pass = true;
 		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
-		List<String> declineCodesList = new ArrayList<>();
-		String declineCodes = null;
 		try {
-			if (!serviceCodesDataForNewClaim.isEmpty() && !selectedServiceCodesForExistingClaim.isEmpty()) {
-
-				if (!serviceCodesDataForNewClaim.containsAll(selectedServiceCodesForExistingClaim)) {
-					pass = false;
-				}
-				for (String codes : selectedServiceCodesForExistingClaim) {
-
-					if (!serviceCodesDataForNewClaim.contains(codes)) {
-
-						declineCodesList.add(codes);
-					}
-				}
-				declineCodes = declineCodesList.stream().collect(Collectors.joining(","));
-			} else {
+			if (primaryClaimForNew == null) {
 				pass = false;
 			}
 			if (pass) {
@@ -925,7 +910,7 @@ public class RuleBookServiceImpl {
 						messageSource.getMessage("rule329.pass.message", new Object[] {}, locale), Constants.PASS));
 			} else {
 				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule329.error.message", new Object[] { declineCodes }, locale),
+						messageSource.getMessage("rule329.error.message", new Object[] {newClaimId}, locale),
 						Constants.FAIL));
 			}
 
