@@ -285,5 +285,13 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Temporal(TemporalType.DATE)
 	@Column(name = "first_rebilled_date")
 	private Date firstRebilledDate;
+	
+	@Column(name = "balance_from_es_before_posting")
+	private Float balanceFromEsBeforePosting;
 
+	@Column(name = "balance_from_es_after_posting")
+	private Float balanceFromEsAfterPosting;
+	
+	@Column(name = "reconciliation_pass")
+	private Boolean reconciliationPass;
 }

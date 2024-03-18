@@ -965,11 +965,13 @@ public class ClaimSectionImpl {
 			 //mark old record as deleted.
 			 claimDetailRepo.deActivatedRcmDetailWithClaimUUidAndCode(claim.getClaimUuid(),oldServiceCodes);
 		 }
-		RcmClaims claims = rcmClaimRepository.findByClaimUuid(claim.getClaimUuid());
-			claims.setAdjustment((float) serviceLevelInformationInfoModel.getTotalAdjustmentAmount());
-			claims.setBtp((float) serviceLevelInformationInfoModel.getTotalBtpAmount());
-			claims.setPaidAmount((float) serviceLevelInformationInfoModel.getTotalPaidAmount());
-			rcmClaimRepository.save(claims);
+		    claim.setBalanceFromEsBeforePosting((float) serviceLevelInformationInfoModel.getBalanceFromEsBeforePosting());
+			claim.setBalanceFromEsAfterPosting((float) serviceLevelInformationInfoModel.getBalanceFromEsAfterPosting());
+			
+			claim.setAdjustment((float) serviceLevelInformationInfoModel.getTotalAdjustmentAmount());
+			claim.setBtp((float) serviceLevelInformationInfoModel.getTotalBtpAmount());
+			claim.setPaidAmount((float) serviceLevelInformationInfoModel.getTotalPaidAmount());
+			rcmClaimRepository.save(claim);
 			
        }
 		

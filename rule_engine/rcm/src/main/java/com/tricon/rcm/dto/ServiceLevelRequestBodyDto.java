@@ -23,5 +23,7 @@ public class ServiceLevelRequestBodyDto {
 	private String fee;
 	private boolean flag;
 	private boolean reconciliation;
+	private double balanceFromEsBeforePosting;
+	private double balanceFromEsAfterPosting;
 	private List<ServiceLevelNotes>serviceCodeNotes;
 }

@@ -127,4 +127,10 @@ public class RcmServiceLevelInformation extends BaseAuditEntity implements java.
 	
 	@Column(name = "mark_as_deleted")
 	private boolean markAsDeleted;
+	
+	@Column(name = "balance_from_es_before_posting")
+	private double balanceFromEsBeforePosting;
+
+	@Column(name = "balance_from_es_after_posting")
+	private double balanceFromEsAfterPosting;
 }
