@@ -763,17 +763,18 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("teamid") int teamid);*/
 	
 	
-	@Query(nativeQuery = true, value = ""
+	/*@Query(nativeQuery = true, value = ""
 			+ " select cl.claim_uuid as claimUuid,cl.claim_id as claimId,cl.dos as dos,cl.patient_id as patientId, "
 			+ "provider_on_claim as providerOnClaim,treating_provider as treatingProvider,cl.current_state as currentState "
 			+ "from rcm_claims cl  where cl.claim_uuid=:claimUuid")
 	RcmClaimDataDto getClaimsDataByClaimUuid(@Param("claimUuid") String claimUuid);
-	
+	/
 	@Query(nativeQuery = true, value = ""
 			+ " select cl.claim_uuid as claimUuid,cl.claim_id as claimId,cl.dos as dos,cl.patient_id as patientId, "
 			+ "provider_on_claim as providerOnClaim,treating_provider as treatingProvider,cl.current_state as currentState "
 			+ "from rcm_claims cl  WHERE cl.claim_id LIKE %:claimId% ")
 	List<RcmClaimDataDto> getClaimsDataByClaimId(@Param("claimId") String claimId);
+	*/
 	
 	
 }

@@ -10,10 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -26,7 +23,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -124,7 +120,6 @@ import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 import com.tricon.rcm.util.RuleConstants;
-import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
 
 @Service
 public class ClaimSectionImpl {
@@ -1595,7 +1590,7 @@ public class ClaimSectionImpl {
 		List<ValidateRecreateClaimResponseDto> data = new ArrayList<>();
 		RecreateResponseDto response = new RecreateResponseDto();
 
-		RcmClaimDataDto currentClaim = rcmClaimRepository.getClaimsDataByClaimUuid(dto.getCurrentClaimUuid());
+		RcmClaims currentClaim = rcmClaimRepository.findByClaimUuid(dto.getCurrentClaimUuid());
 
 		if (currentClaim == null) {
 			logger.error("Invalid current claim");
@@ -1614,42 +1609,64 @@ public class ClaimSectionImpl {
 		}
 
 		String currentClaimId[] = currentClaim.getClaimId().split("_");
-		List<RcmClaimDataDto> currentClaims = rcmClaimRepository.getClaimsDataByClaimId(currentClaimId[0]);//rework
-	
-		List<RcmClaimDataDto> newClaim = null;
-		RcmClaimDataDto primaryClaimForNew = null;
+		RcmClaims newPrimaryClaim =null;
+		RcmClaims secondaryClaim =null;
+		RcmOffice  office=officeRepo.findById(currentClaim.getOffice().getUuid()).get();
+		if (dto.getNewClaimId()!=null) {
+		newPrimaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.P.getSuffix(),office);
+        secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);
+		}
+		boolean isPrimary =true;
+        if (("_" + currentClaimId[1]).equals(ClaimTypeEnum.S.getSuffix())) {
+        	isPrimary =false;
+        }
+		/*String[] clT = implDto.getClaimId().split("_");
+		String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
+         */
+        
+        //RcmClaims attachedClaim = rcmClaimRepository.findByClaimIdAndOffice(isPrimary?currentClaimId[0]+ClaimTypeEnum.S.getSuffix():
+		//	                                                currentClaimId[0]+ClaimTypeEnum.P.getSuffix(),office);
+        
+        
+        
+		//List<RcmClaimDataDto> newClaim = null;
 		if (dto.getNewClaimId()!=null ) {
-			newClaim= rcmClaimRepository.getClaimsDataByClaimId(dto.getNewClaimId());
-			primaryClaimForNew = newClaim.stream()
-					.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.P.getSuffix())).findAny().orElse(null);
-			List<String> serviceCodesDataForNewClaim = claimDetailRepo
-					.findServiceCodesByClaimUuid(primaryClaimForNew.getClaimUuid());
-			data.addAll(ruleBookService.rule325(rule325, primaryClaimForNew, currentClaim));
-
-			data.addAll(ruleBookService.rule326(rule326, primaryClaimForNew, currentClaim));
-
-			data.addAll(ruleBookService.rule327(rule327, primaryClaimForNew, currentClaim));
-
-			data.addAll(ruleBookService.rule328(rule328, primaryClaimForNew, currentClaim));
-			
-			data.addAll(ruleBookService.rule330(rule330, primaryClaimForNew));
+		     RcmClaims checkClaim= null;
+	        List<String> serviceCodesDataForNewClaim =null;
+	        if (!isPrimary) {
+	        	checkClaim = secondaryClaim;
+	        	serviceCodesDataForNewClaim = claimDetailRepo
+						.findServiceCodesByClaimUuid(secondaryClaim.getClaimUuid());
+	        }
+	        else {
+	        	checkClaim= newPrimaryClaim;
+	        	serviceCodesDataForNewClaim = claimDetailRepo
+						.findServiceCodesByClaimUuid(newPrimaryClaim.getClaimUuid());
+	        }
+		
+			//DOS
+			data.addAll(ruleBookService.rule325(rule325, checkClaim, currentClaim));
+            //patientId from current claim
+			data.addAll(ruleBookService.rule326(rule326, checkClaim, currentClaim));
+			//match treating provider from current claim
+			data.addAll(ruleBookService.rule327(rule327, checkClaim, currentClaim));
+            //match provider on claim from current claim
+			data.addAll(ruleBookService.rule328(rule328, checkClaim, currentClaim));
+			//new claim archive status
+			data.addAll(ruleBookService.rule330(rule330, checkClaim));
 			
 			
 			response.setServiceCodesNewClaim(serviceCodesDataForNewClaim);
 		}
 
-		RcmClaimDataDto currentClaimSecondary = currentClaims.stream()
-				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
-
-		
-		data.addAll(ruleBookService.rule324(rule324, currentClaimSecondary));
-		response.setSecondaryValid(currentClaimSecondary == null ? true : false);
+		data.addAll(ruleBookService.rule324(rule324, secondaryClaim));
+		response.setSecondaryValid(secondaryClaim == null ? true : false);
 
 //		RcmClaimDataDto claimSecondaryForNew = newClaim.stream()
 //				.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())).findAny().orElse(null);
 
 		
-		if (primaryClaimForNew == null && dto.getButtonType()==null) {
+		if (newPrimaryClaim == null && dto.getButtonType()==null) {
 			logger.error("Primary not present for new claim");
 			data.add(new ValidateRecreateClaimResponseDto(0, "", "Primary is not present for new claim",
 					Constants.FAIL));
@@ -1670,7 +1687,7 @@ public class ClaimSectionImpl {
 
 	@Transactional(rollbackOn = Exception.class)
 	public Boolean saveRecreateClaimSection(PartialHeader partialHeader,
-			RecreateClaimRequestDto recreateClaimRequestInfoModel, RcmClaims claim, RcmUser createdBy, RcmTeam team,
+			RecreateClaimRequestDto recreateClaimRequestInfoModel, RcmClaims currentClaim, RcmUser createdBy, RcmTeam team,
 			boolean finalSubmit) {
 		Boolean response = null;
 		if (!(recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_FULL_CLAIM
@@ -1680,8 +1697,23 @@ public class ClaimSectionImpl {
 			return null;
 		}
 
-		if (claim != null) {
-
+		if (currentClaim != null) {
+			RcmClaims primaryClaim =null;
+			RcmClaims secondaryClaim =null;
+			RcmOffice  office=officeRepo.findById(currentClaim.getOffice().getUuid()).get();
+			
+	        String currentClaimId[] = currentClaim.getClaimId().split("_");
+	        
+			boolean isPrimary =true;
+	        if (("_" + currentClaimId[1]).equals(ClaimTypeEnum.S.getSuffix())) {
+	        	isPrimary =false;
+	        	primaryClaim = rcmClaimRepository.findByClaimIdAndOffice(currentClaimId[0]+ClaimTypeEnum.P.getSuffix(),office);
+		        secondaryClaim = currentClaim;
+	        }else {
+	        	primaryClaim = currentClaim;
+		        secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(currentClaimId[0]+ClaimTypeEnum.S.getSuffix(),office);
+	        }
+			
 			// check for recreate partial claim
 			if (recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_PARTIAL_CLAIM) {
 				List<String> existingServiceCodesForNewClaim = recreateClaimRequestInfoModel
@@ -1700,7 +1732,7 @@ public class ClaimSectionImpl {
 				// claim
 				if (existingServiceCodesForNewClaim.containsAll(selectedServiceCodesForExistingClaim)) {
 					List<RcmServiceLevelInformation> serviceCodesData = serviceLevelRepo
-							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
+							.findServiceCodesByClaimUuidAndCodes(primaryClaim.getClaimUuid(),
 									selectedServiceCodesForExistingClaim);
 					if (!serviceCodesData.isEmpty()) {
 						serviceCodesData.forEach(data -> {
@@ -1712,7 +1744,7 @@ public class ClaimSectionImpl {
 					// active false in claim_detail table for selected service codes for current
 					// claim
 					List<RcmClaimDetail> serviceCodesForClaimDetail = claimDetailRepo
-							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(),
+							.findServiceCodesByClaimUuidAndCodes(primaryClaim.getClaimUuid(),
 									selectedServiceCodesForExistingClaim);
 					if (!serviceCodesForClaimDetail.isEmpty()) {
 						serviceCodesForClaimDetail.forEach(data -> {
@@ -1721,13 +1753,46 @@ public class ClaimSectionImpl {
 						});
 					}
 					logger.info("service code status change 1 to 0 success");
+					//DO SAME FOR OTHER SECONDARY
+					if (secondaryClaim!=null) {
+					List<RcmServiceLevelInformation> serviceCodesData1 = serviceLevelRepo
+							.findServiceCodesByClaimUuidAndCodes(secondaryClaim.getClaimUuid(),
+									selectedServiceCodesForExistingClaim);
+					if (!serviceCodesData1.isEmpty()) {
+						serviceCodesData1.forEach(data -> {
+							data.setActive(false);
+							serviceLevelRepo.save(data);
+						});
+					}
+
+					// active false in claim_detail table for selected service codes for current
+					// claim
+					List<RcmClaimDetail> serviceCodesForClaimDetail1 = claimDetailRepo
+							.findServiceCodesByClaimUuidAndCodes(secondaryClaim.getClaimUuid(),
+									selectedServiceCodesForExistingClaim);
+					if (!serviceCodesForClaimDetail1.isEmpty()) {
+						serviceCodesForClaimDetail1.forEach(data -> {
+							data.setRebilledStatus(true);
+							claimDetailRepo.save(data);
+						});
+					 }
+					}
+					
 				} else {
 					logger.error("service code not match with cureent claim service codes");
 					return null;
 				}
 
-				response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, claim, createdBy, team,
+				
+				
+				response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, primaryClaim, createdBy, team,
 						finalSubmit);
+				if (secondaryClaim!=null) {
+					this.saveRecreateClaimData(recreateClaimRequestInfoModel, secondaryClaim, createdBy, team,
+							finalSubmit);
+				}
+				
+				
 				logger.info("saveRecreateClaimData" + response);
 				return response != null ? true : null;
 
@@ -1736,39 +1801,72 @@ public class ClaimSectionImpl {
 			// check for full claim
 
 			if (recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_FULL_CLAIM) {
-				List<RcmClaimDataDto> newClaim = rcmClaimRepository
-						.getClaimsDataByClaimId(recreateClaimRequestInfoModel.getNewClaimId());
-				RcmClaimDataDto primaryClaimForNew = newClaim.stream()
-						.filter(x -> x.getClaimId().endsWith(ClaimTypeEnum.P.getSuffix())).findAny().orElse(null);
-
-				RcmClaims newClaimData = rcmClaimRepository.findByClaimUuid(primaryClaimForNew.getClaimUuid());
+				RcmClaims newPrimaryClaim =null;
+				RcmClaims newSecondaryClaim =null;
+				
+				if (("_" + currentClaimId[1]).equals(ClaimTypeEnum.S.getSuffix())) {
+		        	isPrimary =false;
+		        	newPrimaryClaim = rcmClaimRepository.findByClaimIdAndOffice(recreateClaimRequestInfoModel.getNewClaimId()+ClaimTypeEnum.P.getSuffix(),office);
+		        	newSecondaryClaim = currentClaim;
+		        }else {
+		        	newPrimaryClaim = currentClaim;
+		        	newSecondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(recreateClaimRequestInfoModel.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);
+		        }
+		        ///
+				
 				// now we insert the claim data into linked claim table
 
 				// first we insert current claim linked_data from newClaim data
 				RcmLinkedClaims linkedClaimsForCurrent = new RcmLinkedClaims();
-				linkedClaimsForCurrent.setRcmClaims(claim);
+				linkedClaimsForCurrent.setRcmClaims(primaryClaim);
 				linkedClaimsForCurrent.setCreatedBy(createdBy);
-				linkedClaimsForCurrent.setLinkedClaims(newClaimData);
+				linkedClaimsForCurrent.setLinkedClaims(newPrimaryClaim);
 				rcmLinkedClaimsRepo.save(linkedClaimsForCurrent);
 
 				// second we insert new claim linked_data from current claim data
 				RcmLinkedClaims linkedClaimsForNew = new RcmLinkedClaims();
-				linkedClaimsForNew.setRcmClaims(newClaimData);
+				linkedClaimsForNew.setRcmClaims(newPrimaryClaim);
 				linkedClaimsForNew.setCreatedBy(createdBy);
-				linkedClaimsForNew.setLinkedClaims(claim);
+				linkedClaimsForNew.setLinkedClaims(primaryClaim);
 				rcmLinkedClaimsRepo.save(linkedClaimsForNew);
+				
+				//now for Secondary
+				if (secondaryClaim!=null && newSecondaryClaim!=null) {
+					RcmLinkedClaims linkedClaimsForCurrentS = new RcmLinkedClaims();
+					linkedClaimsForCurrent.setRcmClaims(secondaryClaim);
+					linkedClaimsForCurrent.setCreatedBy(createdBy);
+					linkedClaimsForCurrent.setLinkedClaims(newSecondaryClaim);
+					rcmLinkedClaimsRepo.save(linkedClaimsForCurrentS);
+
+					// second we insert new claim linked_data from current claim data
+					RcmLinkedClaims linkedClaimsForNewS = new RcmLinkedClaims();
+					linkedClaimsForNew.setRcmClaims(newSecondaryClaim);
+					linkedClaimsForNew.setCreatedBy(createdBy);
+					linkedClaimsForNew.setLinkedClaims(secondaryClaim);
+					rcmLinkedClaimsRepo.save(linkedClaimsForNewS);
+				}
 
 				logger.info("claim linked data status->> success");
 
 				// now current claim get to archived
 
 				ClaimStatusUpdate dto = new ClaimStatusUpdate();
-				dto.setClaimUuid(claim.getClaimUuid());
+				dto.setClaimUuid(primaryClaim.getClaimUuid());
 				dto.setReason(recreateClaimRequestInfoModel.getReasonForRecreation());
 				String archiveResponse = claimServiceImpl.archiveActiveClaim(dto, partialHeader);
 				logger.info("Archive response:" + archiveResponse);
-				response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, claim, createdBy, team,
+				response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, primaryClaim, createdBy, team,
 						finalSubmit);
+				if (secondaryClaim!=null) {
+				ClaimStatusUpdate dto2 = new ClaimStatusUpdate();
+				dto2.setClaimUuid(primaryClaim.getClaimUuid());
+				dto2.setReason(recreateClaimRequestInfoModel.getReasonForRecreation());
+				String archiveResponse2 = claimServiceImpl.archiveActiveClaim(dto2, partialHeader);
+				logger.info("Archive response:" + archiveResponse2);
+				response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, secondaryClaim, createdBy, team,
+						finalSubmit);
+				}
+				
 				logger.info("saveRecreateClaimData:" + response);
 				return response != null ? true : null;
 			}
@@ -1795,7 +1893,7 @@ public class ClaimSectionImpl {
 			recreateClaim = rcmRecreateClaimRepo.save(recreateClaim);
 			response = recreateClaim != null ? true : null;
 			logger.info("Data insert into recreate claim table:" + response);
-			// if recreationOption choosen is true then we save rebilling remarks and reson
+			// if recreationOption chosen is true then we save rebilling remarks and reason
 
 			if (recreateClaim!=null && recreateClaimRequestInfoModel.isReCeationOptionChoosen()) {
 				RebillingResponseDto rebillingResponseDto = recreateClaimRequestInfoModel.getRebillingResponseDto();

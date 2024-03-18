@@ -724,7 +724,7 @@ public class RuleBookServiceImpl {
 	}
 
 	// current claim is secondary or not
-	public List<ValidateRecreateClaimResponseDto> rule324(RcmRules rule, RcmClaimDataDto currentClaimSecondary) {
+	public List<ValidateRecreateClaimResponseDto> rule324(RcmRules rule, RcmClaims currentClaimSecondary) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -757,8 +757,8 @@ public class RuleBookServiceImpl {
 	}
 
 	// match dos from current claim
-	public List<ValidateRecreateClaimResponseDto> rule325(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
-			RcmClaimDataDto currentClaim) {
+	public List<ValidateRecreateClaimResponseDto> rule325(RcmRules rule, RcmClaims primaryClaimForNew,
+			RcmClaims currentClaim) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -794,8 +794,8 @@ public class RuleBookServiceImpl {
 	}
 
 	// match patientId from current claim
-	public List<ValidateRecreateClaimResponseDto> rule326(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
-			RcmClaimDataDto currentClaim) {
+	public List<ValidateRecreateClaimResponseDto> rule326(RcmRules rule, RcmClaims primaryClaimForNew,
+			RcmClaims currentClaim) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -828,8 +828,8 @@ public class RuleBookServiceImpl {
 	
 	
 	// match treating provider from current claim
-	public List<ValidateRecreateClaimResponseDto> rule327(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
-			RcmClaimDataDto currentClaim) {
+	public List<ValidateRecreateClaimResponseDto> rule327(RcmRules rule, RcmClaims primaryClaimForNew,
+			RcmClaims currentClaim) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -861,8 +861,8 @@ public class RuleBookServiceImpl {
 	}
 	
 	// match provider on claim from current claim
-	public List<ValidateRecreateClaimResponseDto> rule328(RcmRules rule, RcmClaimDataDto primaryClaimForNew,
-			RcmClaimDataDto currentClaim) {
+	public List<ValidateRecreateClaimResponseDto> rule328(RcmRules rule, RcmClaims primaryClaimForNew,
+			RcmClaims currentClaim) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -940,7 +940,7 @@ public class RuleBookServiceImpl {
 	}
 
 	// new claim archive status
-	public List<ValidateRecreateClaimResponseDto> rule330(RcmRules rule, RcmClaimDataDto primaryClaimForNew) {
+	public List<ValidateRecreateClaimResponseDto> rule330(RcmRules rule, RcmClaims primaryClaimForNew) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
