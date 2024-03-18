@@ -3073,7 +3073,8 @@
                                                     [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']"
                                                     class="form-control"
-                                                    [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['newClaimId']}">
+                                                    [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['newClaimId']}"
+                                                    (change)="clearSelectedRadioButtons()">
                                                 <button class="btn btn-sm btn-success"
                                                     [disabled]="!claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']"
                                                     (click)="validateNewClaimId()">Validate Claim</button>
@@ -3087,7 +3088,7 @@
                                                     [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['reasonRecreation']"
                                                     [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['reasonRecreation']}">
-                                                    <option [selected]="true" disabled>Select</option>
+                                                    <option [selected]="true" [value]="null" >Select</option>
                                                     <option value="in">In</option>
                                                     <option value="out">Out</option>
                                                 </select>
@@ -3095,12 +3096,12 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="remarks">Remarks</label>
-                                                <textarea id="remarks" *ngIf="claimSectionModal?.RECREATE_CLAIM"
+                                                <label for="recreationRemarks">Remarks</label>
+                                                <textarea id="recreationRemarks" *ngIf="claimSectionModal?.RECREATE_CLAIM"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                    [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['remarks']"
+                                                    [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['recreationRemarks']"
                                                     class="form-control"
-                                                    [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['remarks']}"></textarea>
+                                                    [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['recreationRemarks']}"></textarea>
                                             </div>
                                         </div>
 
@@ -3108,14 +3109,14 @@
                                             <label class="custom-row text-number">Action to Perform</label>
                                             <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
                                                 <label class="btn btn-light mx-0"
-                                                    [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 1}">
+                                                    [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'}">
                                                     <input type="radio" name="action" class="form-check-input"
-                                                        [value]="'1'"
-                                                        [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 1"
-                                                        (change)="selectActionToPerformRecreate('1')">Attach Secondary
+                                                        [value]="'attachSecondary'"
+                                                        [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'"
+                                                        (change)="selectActionToPerformRecreate('attachSecondary')">Attach Secondary
                                                 </label>
                                                 <ng-container
-                                                    *ngIf="claimSectionModal.RECREATE_CLAIM['validationData'].length>0">
+                                                    *ngIf="this.claimSectionModal.RECREATE_CLAIM['newServiceCodes'] && this.claimSectionModal.RECREATE_CLAIM['newServiceCodes']?.length>0  ">
                                                     <label class="btn btn-light"
                                                         [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2}">
                                                         <input type="radio" name="action" [value]="'2'"
@@ -3138,7 +3139,7 @@
                                         </div>
 
                                         <ng-container
-                                            *ngIf="claimSectionModal.RECREATE_CLAIM['validationData'].length>0">
+                                            *ngIf="claimSectionModal.RECREATE_CLAIM['validationData'].length>0 && this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3">
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
                                                     <label for="desposition">Service Codes to Recreate</label>
@@ -3162,7 +3163,11 @@
                                             <table class="table">
                                                 <thead>
                                                     <tr>
-                                                        <th>Secondary BIlled Amount</th>
+                                                        <th>Client</th>
+                                                        <th>Office</th>
+                                                        <th>Office Key</th>
+                                                        <th>Claim ID</th>
+                                                        <th>Secondary Billed Amount</th>
                                                         <th>Secondary Claim Submission Date</th>
                                                         <th>Primary Paid </th>
                                                         <th>Claim Type</th>
@@ -3170,13 +3175,16 @@
                                                         <th>Provider ID (Report)</th>
                                                         <th>Secondary Est Amount</th>
                                                         <th>Secondary Insurance Name</th>
+                                                        <th>Secondary Insurance Company</th>
                                                         <th>Secondary Insurance Phone No.</th>
+                                                        <th>Primary Insurance Phone No.</th>
                                                         <th>Secondary Insurance Type</th>
                                                         <th>Secondary Member ID</th>
                                                         <th>Secondary Insurance Address</th>
                                                         <th>Secondary Group Number</th>
                                                         <th>Secondary Policy Holder</th>
                                                         <th>Secondary Policy Holder DOB</th>
+                                                        <th>Service Codes</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -3221,10 +3229,10 @@
                                                     <tbody>
                                                         <tr
                                                             *ngFor="let item of claimSectionModal.RECREATE_CLAIM.validationData;let idx=index;">
-                                                            <td>{{idx+1}}</td>
+                                                            <td>{{item.ruleId}}</td>
                                                             <td>{{item.ruleName}}</td>
                                                             <td [innerHTML]="item.message"></td>
-                                                            <td> <textarea [(ngModel)]="item.remark"></textarea> </td>
+                                                            <td> <textarea [(ngModel)]="item.remarks" class="form-control" [class.is-invalid]="item.emptyRemarks"></textarea> </td>
                                                         </tr>
                                                     </tbody>
                                                 </table>
@@ -3233,8 +3241,8 @@
 
                                         <div class="col-md-4 mb-2">
                                             <button class="btn btn-success" (click)="saveRecreateNewClaim(false)"
-                                                [hidden]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)">Recreate
-                                                | Recreate and Rebill</button>
+                                                [hidden]="(!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)) || hideRecreateButton">
+                                              {{claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen'] ? 'Recreate and Rebill' : 'Recreate'}}</button>
                                         </div>
                                     </div>
                                 </ng-container>

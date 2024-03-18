@@ -335,8 +335,10 @@ export class BillingClaimsComponent {
         buttonType: null,
         selectedServiceCodes: [],
         serviceCodesServiceLevel: [],
-        secondaryValid: true
-      }
+        secondaryValid: false,
+        reasonRecreation:null
+      },
+      dataModal:{}
     }
 
   };
@@ -355,6 +357,8 @@ export class BillingClaimsComponent {
   viewNotesConfig: any = { showNotes: false, viewNotes: [] };
   isBtpFlagTrue: boolean = false;
   serviceLevelSectionMultiSelectConfig: any = { serviceCodesList: [], rebillingRequirements: [], showModal: false };
+  hideRecreateButton:boolean=true;
+  selectedServiceCodesExist:boolean=false;
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
 
 
@@ -2988,33 +2992,133 @@ export class BillingClaimsComponent {
 
   selectActionToPerformRecreate(action: any) {
     this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = action;
-    if (action == 1) {
-      this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = 'attachSecondary';
+    this.emptyFields.RECREATE_CLAIM = {};      
+    if (action == 'attachSecondary') {
+      this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']='';
       this.validateNewClaimId();
     }
 
   }
 
   validateNewClaimId() {
+    this.claimSectionModal.RECREATE_CLAIM.validationData=[];
+    this.emptyFields.RECREATE_CLAIM = {};     
     let params: any = {
       currentClaimUuid: this.claimUUid,
       newClaimId: this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'],
-      buttonType: this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'],
-      // selectedServiceCodes:this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes']
+      buttonType: this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2 || this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3 ? null : this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'],
     }
 
     this.appService.validateNewClaimId(params, (res: any) => {
-      if (res) {
+      if (res.data) {
         console.log(res);
         this.claimSectionModal.RECREATE_CLAIM['validationData'] = res.data.validationResponse;
         this.claimSectionModal.RECREATE_CLAIM['newServiceCodes'] = res.data.serviceCodesNewClaim;
         this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid'] = res.data.secondaryValid;
+        this.showOrHideRecreateButton();
 
       }
     })
   }
 
+  showOrHideRecreateButton(){
+  this.hideRecreateButton =   !this.claimSectionModal.RECREATE_CLAIM['validationData'].some((e:any)=>((e.ruleId == 325 || e.ruleId == 326) && (e.resultType == 'PASS' || e.resultType == 'PASS')));
+  }
+
   saveRecreateNewClaim(isFinal: boolean) {
 
+    this.createModalForRecreateFullAndPartialClaim();
+
+    
+
+    if (!isFinal) {
+      if(this.checkValidationForRecreate()){
+
+
+      let params: any = {
+        claimUuid: this.claimUUid,
+        recreateClaimRequestInfoModel: this.claimSectionModal['RECREATE_CLAIM']['dataModal']
+      };
+      console.log(params);
+      
+      // this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+      //   if (res.status) {
+      //     location.reload();
+      //     console.log(res);
+      //   }
+      // })
+    }
+  }
+
+    return this.claimSectionModal['RECREATE_CLAIM'];
+  }
+
+  checkValidationForRecreate(){
+    let isSectionValidated = true;
+    this.emptyFields["RECREATE_CLAIM"] = {};
+    if(!this.claimSectionModal.RECREATE_CLAIM['dataModal']['newClaimId']){
+      this.emptyFields.RECREATE_CLAIM['newClaimId']=true;
+      isSectionValidated=false;
+    }
+    if(!this.claimSectionModal.RECREATE_CLAIM['dataModal']['reasonRecreation']){
+      this.emptyFields.RECREATE_CLAIM['reasonRecreation']=true;
+      isSectionValidated=false;
+    }
+    if(!this.claimSectionModal.RECREATE_CLAIM['dataModal']['recreationRemarks']){
+      this.emptyFields.RECREATE_CLAIM['recreationRemarks']=true;
+      isSectionValidated=false;
+    }
+    if(this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3 && this.claimSectionModal.RECREATE_CLAIM['dataModal']['selectedServiceCodes'].length == 0){
+      this.emptyFields.RECREATE_CLAIM['selectedServiceCodes']=true;
+      isSectionValidated=false;
+    }
+    if(this.claimSectionModal.RECREATE_CLAIM.validationData.length>0){
+        this.claimSectionModal.RECREATE_CLAIM.validationData.forEach((e:any)=>{
+          if(e.resultType == 'FAIL' && !e.remarks){
+              e.emptyRemarks=true;
+              isSectionValidated=false;
+          }else{
+            e.emptyRemarks=false;
+          }
+        })
+    }
+    if(this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3){
+      this.selectedServiceCodesExist = this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes'].some((serviceCodes:any)=>this.claimSectionModal.RECREATE_CLAIM['newServiceCodes'].includes(serviceCodes));
+    }
+    return isSectionValidated;
+
+  }
+
+  createModalForRecreateFullAndPartialClaim(){
+    let recreateModal :any =  this.claimSectionModal.RECREATE_CLAIM;
+    recreateModal['sectionId'] = this.sectionIds['RECREATE_CLAIM']['sectionId'];
+    recreateModal['dataModal']['actionButtonType'] = recreateModal['modal']['buttonType'];
+    recreateModal['dataModal']['existingNewClaimServiceCodes'] = recreateModal['newServiceCodes'];
+    recreateModal['dataModal']['newClaimId'] = recreateModal['modal']['newClaimId'];
+    recreateModal['dataModal']['reasonRecreation'] = recreateModal['modal']['reasonRecreation'];
+    recreateModal['dataModal']['recreationRemarks'] = recreateModal['modal']['recreationRemarks'];
+    recreateModal['dataModal']['selectedServiceCodes'] = recreateModal['modal']['selectedServiceCodes'];
+    this.getValdationFailRemark((failRemarks:any)=>recreateModal['dataModal']['validationRuleRemarks'] = failRemarks);
+    recreateModal['dataModal']['reCeationOptionChoosen'] = this.claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen'];
+    recreateModal['dataModal']['rebillingResponseDto'] = {
+      "rebillingRemarks":this.claimSectionModal['REBILLING']['modal']['rebillingRemarks'],
+      "reasonForRebilling":this.claimSectionModal['REBILLING']['modal']['reasonForRebilling'] ,
+      "requestedByUuid":this.claimSectionModal['REBILLING']['modal']['requestedByUuid'] 
+    };
+    recreateModal['dataModal']['claimFromSheet'] = {};    
+  }
+
+  getValdationFailRemark(callback:any){
+    let failRemarks:any=[];
+    this.claimSectionModal.RECREATE_CLAIM.validationData.forEach((e:any)=>{
+      if(e.resultType == "FAIL"){
+        failRemarks.push({ruleId:e.ruleId,remarks:e.remarks})
+      }
+    })
+    callback(failRemarks);
+  }
+
+  clearSelectedRadioButtons(){
+    this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = null;
   }
 }
