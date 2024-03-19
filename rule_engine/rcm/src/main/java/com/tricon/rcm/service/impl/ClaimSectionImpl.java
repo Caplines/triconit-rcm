@@ -1632,7 +1632,7 @@ public class ClaimSectionImpl {
         
 		//check secondary for current claim if button is secondary
 		if (dto.getButtonType()!=null) {
-			data.addAll(ruleBookService.rule324(rule324, currentClaimId[0]));
+			data.addAll(ruleBookService.rule324(rule324, currentClaimId[0],isPrimary));
 			response.setSecondaryValid(currentClaimId[0] == null ? true : false);
 			response.setValidationResponse(data);
 			return response;

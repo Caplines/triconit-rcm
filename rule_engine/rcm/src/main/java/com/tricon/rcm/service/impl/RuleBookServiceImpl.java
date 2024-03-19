@@ -724,7 +724,7 @@ public class RuleBookServiceImpl {
 	}
 
 	// current claim is secondary or not
-	public List<ValidateRecreateClaimResponseDto> rule324(RcmRules rule, String currentClaimSecondary) {
+	public List<ValidateRecreateClaimResponseDto> rule324(RcmRules rule, String currentClaimSecondary,boolean isPrimary) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -732,7 +732,7 @@ public class RuleBookServiceImpl {
 
 		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
 		try {
-			if (currentClaimSecondary != null) {
+			if (currentClaimSecondary != null && !isPrimary) {
 				pass = false;
 			}
 			if (pass) {
