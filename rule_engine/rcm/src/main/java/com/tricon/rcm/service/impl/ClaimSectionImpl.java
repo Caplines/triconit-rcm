@@ -914,6 +914,34 @@ public class ClaimSectionImpl {
 			logger.error("Empty model");
 			return null;
 		}
+		
+		//first we check reconcilation logic
+		//TotalBtpAmount+BalanceFromEsBeforePosting=BalanceFromEsAfterPosting
+		double totalBtpAmount=serviceLevelInformationInfoModel.getTotalBtpAmount();
+		double balanceFromEsBeforePosting= serviceLevelInformationInfoModel
+			.getBalanceFromEsBeforePosting();
+		double balanceFromEsAfterPosting=serviceLevelInformationInfoModel.getBalanceFromEsAfterPosting();
+		double totalValue=totalBtpAmount+balanceFromEsBeforePosting;
+		
+		if (totalValue != balanceFromEsAfterPosting) {
+			logger.error(
+					"(TotalBtpAmount+BalanceFromEsBeforePosting=BalanceFromEsAfterPosting),Reconcilation logic failed!");
+			// update rcm_claim table for reconciliation_pass value false
+			claim.setReconciliationPass(false);
+			rcmClaimRepository.save(claim);
+			return null;
+		}
+
+		else {
+			logger.info("Total value:"+totalValue+"="+balanceFromEsAfterPosting);	
+			logger.info(
+					"(TotalBtpAmount+BalanceFromEsBeforePosting=BalanceFromEsAfterPosting),Reconcilation logic passed!");
+			// update rcm_claim table for reconciliation_pass value true
+			claim.setReconciliationPass(true);
+			rcmClaimRepository.save(claim);
+
+		}
+		
 		int maxRun = serviceLevelRepo.getMaxRunFromServiceLevel(claim.getClaimUuid());
 		List<RcmClaimDetail> claimDetailData =null;
 		List<String> oldServiceCodes =null;
@@ -974,6 +1002,7 @@ public class ClaimSectionImpl {
 			claim.setAdjustment((float) serviceLevelInformationInfoModel.getTotalAdjustmentAmount());
 			claim.setBtp((float) serviceLevelInformationInfoModel.getTotalBtpAmount());
 			claim.setPaidAmount((float) serviceLevelInformationInfoModel.getTotalPaidAmount());
+			claim.setReconciliationPass(true);
 			rcmClaimRepository.save(claim);
 			
        }
@@ -1633,7 +1662,7 @@ public class ClaimSectionImpl {
 		//check secondary for current claim if button is secondary
 		if (dto.getButtonType()!=null) {
 			data.addAll(ruleBookService.rule324(rule324, currentClaimId[0],isPrimary));
-			response.setSecondaryValid(currentClaimId[0] == null ? true : false);
+			response.setSecondaryValid(isPrimary? true : false);
 			response.setValidationResponse(data);
 			return response;
 		}
