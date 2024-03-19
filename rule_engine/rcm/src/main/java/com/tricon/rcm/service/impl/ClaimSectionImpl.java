@@ -1625,38 +1625,40 @@ public class ClaimSectionImpl {
         secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);
 		}
 		
-		if (newPrimaryClaim == null) {
-			logger.error("Primary not present for new claim");
-			data.addAll(ruleBookService.rule329(rule329, newPrimaryClaim, dto.getNewClaimId()));
-			response.setValidationResponse(data);
-			return response;
-		}
-		
 		boolean isPrimary =true;
         if (("_" + currentClaimId[1]).equals(ClaimTypeEnum.S.getSuffix())) {
         	isPrimary =false;
         }
         
-		//check secondary for current claim
-		if (!isPrimary) {
-			data.addAll(ruleBookService.rule324(rule324, secondaryClaim));
-			response.setSecondaryValid(secondaryClaim == null ? true : false);
+		//check secondary for current claim if button is secondary
+		if (dto.getButtonType()!=null) {
+			data.addAll(ruleBookService.rule324(rule324, currentClaimId[0]));
+			response.setSecondaryValid(currentClaimId[0] == null ? true : false);
+			response.setValidationResponse(data);
+			return response;
 		}
-
+		
+		/*String[] clT = implDto.getClaimId().split("_");
+		String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
+         */
+		
 		if (dto.getNewClaimId()!=null ) {
 		     RcmClaims checkClaim= null;
 	        List<String> serviceCodesDataForNewClaim =null;
 	        if (!isPrimary) {
 	        	checkClaim = secondaryClaim;
 	        	serviceCodesDataForNewClaim = claimDetailRepo
-						.findServiceCodesByClaimUuid(secondaryClaim.getClaimUuid());
+						.findServiceCodesByClaimUuid(secondaryClaim!=null?secondaryClaim.getClaimUuid():"");
 	        }
 	        else {
 	        	checkClaim= newPrimaryClaim;
 	        	serviceCodesDataForNewClaim = claimDetailRepo
-						.findServiceCodesByClaimUuid(newPrimaryClaim.getClaimUuid());
+						.findServiceCodesByClaimUuid(newPrimaryClaim!=null?newPrimaryClaim.getClaimUuid():"");
 	        }
-		
+	        
+	        //Primary for new Claim present or not
+	        data.addAll(ruleBookService.rule329(rule329, newPrimaryClaim, dto.getNewClaimId()));
+	        
 			//DOS
 			data.addAll(ruleBookService.rule325(rule325, checkClaim, currentClaim));
             //patientId from current claim
@@ -1719,6 +1721,7 @@ public class ClaimSectionImpl {
 										createdBy, team);
 
 						logger.info("ResponseForSecondaryClaim->>" + responseForSecondaryClaim);
+						break;
 					}
 
 					// if claim is Present in issue_claim table then get data from this table

@@ -724,7 +724,7 @@ public class RuleBookServiceImpl {
 	}
 
 	// current claim is secondary or not
-	public List<ValidateRecreateClaimResponseDto> rule324(RcmRules rule, RcmClaims currentClaimSecondary) {
+	public List<ValidateRecreateClaimResponseDto> rule324(RcmRules rule, String currentClaimSecondary) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -741,7 +741,7 @@ public class RuleBookServiceImpl {
 			} else {
 				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule324.error.message",
-								new Object[] { currentClaimSecondary.getClaimId() }, locale),
+								new Object[] { currentClaimSecondary}, locale),
 						Constants.FAIL));
 			}
 
