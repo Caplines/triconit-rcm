@@ -167,7 +167,7 @@ export class BillingClaimsComponent {
     'PATIENT_STATEMENT': {
       sectionId: 15,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'ASSIGN_TO_OTHER': {
       sectionId: 16,
@@ -177,7 +177,7 @@ export class BillingClaimsComponent {
     'INSURANCE_FOLLOW_UP': {
       sectionId: 17,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'RECREATE_CLAIM': {
       sectionId: 18,
@@ -202,12 +202,12 @@ export class BillingClaimsComponent {
     'COLLECTION_AGENCY': {
       sectionId: 22,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'REQUEST_REBILLING': {
       sectionId: 23,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'REBILLING': {
       sectionId: 24,
@@ -2157,7 +2157,7 @@ export class BillingClaimsComponent {
       this.claimSectionModal['PATIENT_COMMUNICATION']['sectionId'] = this.sectionIds['PATIENT_COMMUNICATION']['sectionId'];
       this.finalSaveClaimDataModel.patientCommunicationInfoModel = this.savePatientCommunicationSection(true);
     }
-    else if (sectionName === 'REBILLING') {
+    else if (sectionName === 'REBILLING' && this.claimRcm.rebilledStatus) {
       this.claimSectionModal['REBILLING']['sectionId'] = this.sectionIds['REBILLING']['sectionId'];
       this.finalSaveClaimDataModel.rebillingInfoModel = this.saveRebillingSection(true);
     }
@@ -2304,11 +2304,13 @@ export class BillingClaimsComponent {
   }
   validate_REBILLING() {
     let isSectionValidated = true;
-    this.emptyFields["REBILLING"] = {};
-    if (!this.claimSectionModal["REBILLING"]['dataModal'].rebillingRemarks) {
-      this.emptyFields["REBILLING"]['rebillingRemarks'] = true;
-      isSectionValidated = false;
-    }
+    if(this.claimRcm.rebilledStatus){
+      this.emptyFields["REBILLING"] = {};
+      if (!this.claimSectionModal["REBILLING"]['dataModal'].rebillingRemarks) {
+        this.emptyFields["REBILLING"]['rebillingRemarks'] = true;
+        isSectionValidated = false;
+      }
+    }  
     return isSectionValidated;
   }
   validate_NEED_TO_CALL_INSURANCE() {
@@ -2328,6 +2330,15 @@ export class BillingClaimsComponent {
     }
     if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].remarks) {
       this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].remarks = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusRcm) {
+      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusRcm = true;
+      isSectionValidated = false;
+    }
+
+    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusEs) {
+      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusEs = true;
       isSectionValidated = false;
     }
 
@@ -2482,7 +2493,7 @@ export class BillingClaimsComponent {
   }
 
   fetchNextActionRequiredSection() {
-    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = this.claimRcm.currentStatusName;
+    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = ""; //this.claimRcm.currentStatusName;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'] = this.claimRcm.statusES;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] = "";//this.claimRcm.nextActionName;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;//this.claimRcm.assignedToTeam;

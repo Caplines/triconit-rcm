@@ -4669,7 +4669,13 @@ public class ClaimServiceImpl {
 			// Not assigned to user
 			return false;
 		}
-
+ 
+		if (claim.getCurrentState() == Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
+			logger.error("claim already archived");
+			// Not assigned to user
+			return false;
+		}
+		
 		List<SectionDto> sectionsData = masterService.getSections();
 
 		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
