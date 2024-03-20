@@ -2011,7 +2011,7 @@ public class ClaimSectionImpl {
 						validationRemarks.setRuleId(dto.getRuleId());
 						validationRemarks.setRemark(dto.getRemarks());
 						validationRemarks.setMessage(dto.getMessage());	
-						validationRemarks.setMessageType(dto.getMessageType());)
+						validationRemarks.setMessageType(dto.getMessageType());
 						remarksData.add(validationRemarks);
 					}
 					List<RcmRebilledClaimValidationRemark> data = rcmRecreationValidationRepo.saveAll(remarksData);
