@@ -933,10 +933,6 @@ public class ClaimSectionImpl {
 			logger.info("Total value:"+totalValue+"="+balanceFromEsAfterPosting);	
 			logger.info(
 					"(TotalBtpAmount+BalanceFromEsBeforePosting=BalanceFromEsAfterPosting),Reconcilation logic passed!");
-			// update rcm_claim table for reconciliation_pass value true
-			claim.setReconciliationPass(true);
-			rcmClaimRepository.save(claim);
-
 		}
 		
 		int maxRun = serviceLevelRepo.getMaxRunFromServiceLevel(claim.getClaimUuid());
