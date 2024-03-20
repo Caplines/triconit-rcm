@@ -927,8 +927,8 @@ public class ClaimSectionImpl {
 			logger.error(
 					"(TotalBtpAmount+BalanceFromEsBeforePosting=BalanceFromEsAfterPosting),Reconcilation logic failed!");
 			// update rcm_claim table for reconciliation_pass value false
-			claim.setReconciliationPass(false);
-			rcmClaimRepository.save(claim);
+			//claim.setReconciliationPass(false);
+			//rcmClaimRepository.save(claim);
 			return null;
 		}
 
@@ -1742,8 +1742,28 @@ public class ClaimSectionImpl {
 			if (recreateClaimRequestInfoModel.getNewClaimId() != null && isPrimary
 					&& recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_ATTACH_SECONDARY) {
 				if (recreateClaimRequestInfoModel.getClaimFromSheet() != null) {
-
+					//find current claim service codes,surface and tooth details
+					
+					List<RcmClaimDetail>claimDetails= claimDetailRepo.findByClaimClaimUuidAndActiveTrue(currentClaim.getClaimUuid());		
+					List<String>serviceCodes=claimDetails.stream().map(x->x.getServiceCode()).collect(Collectors.toList());
+					List<String>toothAndSurface=new ArrayList<>();
+					
+					for (RcmClaimDetail data : claimDetails) {
+						if (data.getTooth() != null && !data.getTooth().trim().equals("")) {
+							if (data.getSurface() != null && !data.getSurface().trim().equals("")) {
+								toothAndSurface.add(data.getTooth() + "#" + data.getSurface());
+							} else {
+								toothAndSurface.add(data.getTooth());
+							}
+						}
+					}
+					
 					for (ClaimFromSheet dtoSheet : recreateClaimRequestInfoModel.getClaimFromSheet()) {
+						dtoSheet.setClientName(office.getCompany().getName());
+						dtoSheet.setOfficeName(office.getName());
+						dtoSheet.setOfficeKey(String.valueOf(office.getKey()));
+						dtoSheet.setServiceCodes(serviceCodes);		
+						dtoSheet.setToothAndSurfaces(toothAndSurface);
 						List<ClaimLogDto> responseForSecondaryClaim = claimServiceImpl
 								.createSecondaryClaimDataFromRecreateSection(dtoSheet,
 										partialHeader.getCompany().getUuid(), currentClaim.getOffice().getUuid(),
@@ -1990,6 +2010,8 @@ public class ClaimSectionImpl {
 						validationRemarks.setTeam(team);
 						validationRemarks.setRuleId(dto.getRuleId());
 						validationRemarks.setRemark(dto.getRemarks());
+						validationRemarks.setMessage(dto.getMessage());	
+						validationRemarks.setMessageType(dto.getMessageType());)
 						remarksData.add(validationRemarks);
 					}
 					List<RcmRebilledClaimValidationRemark> data = rcmRecreationValidationRepo.saveAll(remarksData);

@@ -40,4 +40,10 @@ public class RcmRebilledClaimValidationRemark extends BaseAuditEntity implements
 	
 	@Column(name = "rule_id")
 	private int ruleId;
+	
+	@Column(name = "message", columnDefinition = "text", nullable = false)
+	String message;
+
+	@Column(name = "message_type")
+	int messageType; 
 }

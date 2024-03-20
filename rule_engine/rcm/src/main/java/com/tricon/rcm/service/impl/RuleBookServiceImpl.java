@@ -747,7 +747,7 @@ public class RuleBookServiceImpl {
 
 		} catch (Exception n) {
 			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					messageSource.getMessage("rule.not.found.message", new Object[] { n.getMessage() }, locale),
 					Constants.FAIL));
 		}
 
@@ -785,7 +785,7 @@ public class RuleBookServiceImpl {
 
 		} catch (Exception n) {
 			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					messageSource.getMessage("rule.not.found.message", new Object[] { n.getMessage() }, locale),
 					Constants.FAIL));
 		}
 
@@ -818,7 +818,7 @@ public class RuleBookServiceImpl {
 
 		} catch (Exception n) {
 			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					messageSource.getMessage("rule.not.found.message", new Object[] { n.getMessage() }, locale),
 					Constants.FAIL));
 		}
 
@@ -852,7 +852,7 @@ public class RuleBookServiceImpl {
 
 		} catch (Exception n) {
 			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					messageSource.getMessage("rule.not.found.message", new Object[] { n.getMessage() }, locale),
 					Constants.FAIL));
 		}
 
@@ -885,7 +885,7 @@ public class RuleBookServiceImpl {
 
 		} catch (Exception n) {
 			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					messageSource.getMessage("rule.not.found.message", new Object[] { n.getMessage() }, locale),
 					Constants.FAIL));
 		}
 
@@ -916,7 +916,7 @@ public class RuleBookServiceImpl {
 
 		} catch (Exception n) {
 			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					messageSource.getMessage("rule.not.found.message", new Object[] { n.getMessage() }, locale),
 					Constants.FAIL));
 		}
 
@@ -947,7 +947,7 @@ public class RuleBookServiceImpl {
 
 		} catch (Exception n) {
 			dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
+					messageSource.getMessage("rule.not.found.message", new Object[] { n.getMessage() }, locale),
 					Constants.FAIL));
 		}
 
