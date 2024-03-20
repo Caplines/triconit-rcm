@@ -338,7 +338,30 @@ export class BillingClaimsComponent {
         secondaryValid: false,
         reasonRecreation:null
       },
-      dataModal:{}
+      dataModal:{},
+      claimFromSheet:{
+        secondaryBlledAmount:'',
+        secondaryClaimSubmissionDate:'',
+        primaryPaid:'',
+        claimTypeS:'',
+        providerIdReport:'',
+        secondaryEstAmount:'',
+        secondaryInsuranceCompany:'',
+        secondaryInsuranceContactNo:'',
+        secondaryInsuranceName:'',
+        secondaryMemberId:'',
+        secondaryInsuranceAddress:'',
+        secondaryGroupNumber:'',
+        secondaryPolicyHolder:'',
+        secondaryPolicyHolderDob:'',
+        claimId:'',
+      },
+      emptyClaimFromSheet:{}
+    },
+    COLLECTION_AGENCY:{
+      buttonType:1,
+      modeOfPayment:'',
+      collectionType:''
     }
 
   };
@@ -353,7 +376,7 @@ export class BillingClaimsComponent {
   stringToSearch: any = '';
   zoom_to: any = 1.0;
   pdfUrlSrc: any = "";
-  sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0, balanceFromEsBeforePosting: 0, balanceFromEsAfterPosting: 0 };
+  sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0, balanceFromEsBeforePosting: 0, balanceFromEsAfterPosting: 0,  isCorrectTotalPaidAmt:true,isCorrectTotalAllowedAmt:true , reconcile:false };
   viewNotesConfig: any = { showNotes: false, viewNotes: [] };
   isBtpFlagTrue: boolean = false;
   serviceLevelSectionMultiSelectConfig: any = { serviceCodesList: [], rebillingRequirements: [], showModal: false };
@@ -1982,6 +2005,12 @@ export class BillingClaimsComponent {
           if (!this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.some((e: any) => e.serviceCode == 'Undistributed')) {
             this.addUndistributedSectionLevelField();
           }
+
+          this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e:any)=>{
+            this.sectionLevelInfoTotalConfig.paidAmount = this.sectionLevelInfoTotalConfig.paidAmount + e.paidAmount;
+            this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount + e.allowedAmount;
+          })
+
           this.getTotalServiceLevelInfo();
           this.getAllServiceCodes();
         }
@@ -2232,7 +2261,19 @@ export class BillingClaimsComponent {
   }
   validate_RULE_ENGINE_VALIDATION() { return true; }
   validate_CLAIM_SUBMISSION() { return true; }
-  validate_SERVICE_LEVEL_INFORMATION() { return true; }
+  validate_SERVICE_LEVEL_INFORMATION() { 
+
+    let isSectionValidated = true;
+    // this.emptyFields["SERVICE_LEVEL_INFORMATION"] = {};
+    if(!this.sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt || !this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt  ){
+      isSectionValidated=false;
+    }
+    if(!this.sectionLevelInfoTotalConfig.reconcile){
+      isSectionValidated=false;
+    }
+    return isSectionValidated; 
+
+  }
   validate_EOB() { return true; }
   validate_INSURANCE_PAYMENT_INFORMATION() {
     return true;
@@ -2548,21 +2589,24 @@ export class BillingClaimsComponent {
       this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] + +e.paidAmount;
 
     });
+    this.updatBalanceFromESBeforePosting();
 
     if (!isFinal) {
-      let params: any = {
-        claimUuid: this.claimUUid,
-        finalSubmit: isFinal,
-        serviceLevelInformationInfoModel: {
-          serviceLevelTotalAmount: this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount'],
-          sectionId: this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['sectionId'],
-        }
-      };
-      this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          console.log(res);
-        }
-      });
+      if (this.validate_SERVICE_LEVEL_INFORMATION()) {
+        let params: any = {
+          claimUuid: this.claimUUid,
+          finalSubmit: isFinal,
+          serviceLevelInformationInfoModel: {
+            serviceLevelTotalAmount: this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount'],
+            sectionId: this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['sectionId'],
+          }
+        };
+        this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+          if (res.status) {
+            console.log(res);
+          }
+        });
+      }
     }
     return { serviceLevelTotalAmount: this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount'] };
   }
@@ -2619,46 +2663,74 @@ export class BillingClaimsComponent {
     this.viewNotesConfig.viewNotes = notes;
   }
 
-  getReconcialition() {
-    return "true";
-  }
-
   updatBalanceFromESBeforePosting() {
-
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
       e.balanceFromEsBeforePosting = Number(this.sectionLevelInfoTotalConfig.balanceFromEsBeforePosting);
+      e.balanceFromEsAfterPosting = Number(this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting);
     });
-
+    this.checkReconcileLogic();
   }
 
   getTotalServiceLevelInfo() {
     this.clearTotalValues();
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
-      this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount + +e.allowedAmount;
+      // this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount + +e.allowedAmount;
       this.sectionLevelInfoTotalConfig.adjustmentAmount = this.sectionLevelInfoTotalConfig.adjustmentAmount + +e.adjustmentAmount;
-      this.sectionLevelInfoTotalConfig.paidAmount = this.sectionLevelInfoTotalConfig.paidAmount + +e.paidAmount;
+      // this.sectionLevelInfoTotalConfig.paidAmount = this.sectionLevelInfoTotalConfig.paidAmount + +e.paidAmount;
       this.sectionLevelInfoTotalConfig.estPrimary = this.sectionLevelInfoTotalConfig.estPrimary + +e.estPrimary;
       this.sectionLevelInfoTotalConfig.fee = this.sectionLevelInfoTotalConfig.fee + +e.fee;
       this.sectionLevelInfoTotalConfig.billToPatientAmount = this.sectionLevelInfoTotalConfig.billToPatientAmount + +e.billToPatientAmount;
     });
     this.sectionLevelInfoTotalConfig.billToPatientAmount > 0 ? this.isBtpFlagTrue = true : this.isBtpFlagTrue = false;
     this.addDecimalInTotalServiceValue();
+    this.getTotalPaidAmt();
+    this.getTotalAllowedAmt();
+    this.checkReconcileLogic();
+    // this.checkReconcileLogic();
+  }
+
+  getTotalPaidAmt(){
+    let totalpaid=0;
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+      totalpaid = totalpaid + e.paidAmount;
+    });
+    this.sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt =  totalpaid == this.sectionLevelInfoTotalConfig.paidAmount ? true : false;
+
+  }
+
+  getTotalAllowedAmt(){
+    let totalpaid=0;
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+      totalpaid = totalpaid + e.allowedAmount;
+    });
+    totalpaid == this.sectionLevelInfoTotalConfig.allowedAmount ? this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt=true : this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt=false;
+
+  }
+
+
+
+  checkReconcileLogic(){
+    if(this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting == (this.sectionLevelInfoTotalConfig.billToPatientAmount + this.sectionLevelInfoTotalConfig.balanceFromEsBeforePosting)){
+      this.sectionLevelInfoTotalConfig.reconcile = true;
+    } else{
+      this.sectionLevelInfoTotalConfig.reconcile = false;
+    }
   }
 
 
   clearTotalValues() {
-    this.sectionLevelInfoTotalConfig.allowedAmount = 0;
+    // this.sectionLevelInfoTotalConfig.allowedAmount = 0;
     this.sectionLevelInfoTotalConfig.adjustmentAmount = 0;
-    this.sectionLevelInfoTotalConfig.paidAmount = 0;
+    // this.sectionLevelInfoTotalConfig.paidAmount = 0;
     this.sectionLevelInfoTotalConfig.estPrimary = 0;
     this.sectionLevelInfoTotalConfig.fee = 0;
     this.sectionLevelInfoTotalConfig.billToPatientAmount = 0;
   }
 
   addDecimalInTotalServiceValue() {
-    this.sectionLevelInfoTotalConfig.allowedAmount = +this.sectionLevelInfoTotalConfig.allowedAmount?.toFixed(2);
+    // this.sectionLevelInfoTotalConfig.allowedAmount = +this.sectionLevelInfoTotalConfig.allowedAmount?.toFixed(2);
     this.sectionLevelInfoTotalConfig.adjustmentAmount = +this.sectionLevelInfoTotalConfig.adjustmentAmount?.toFixed(2);
-    this.sectionLevelInfoTotalConfig.paidAmount = +this.sectionLevelInfoTotalConfig.paidAmount?.toFixed(2);
+    // this.sectionLevelInfoTotalConfig.paidAmount = +this.sectionLevelInfoTotalConfig.paidAmount?.toFixed(2);
     this.sectionLevelInfoTotalConfig.estPrimary = +this.sectionLevelInfoTotalConfig.estPrimary?.toFixed(2);
     this.sectionLevelInfoTotalConfig.fee = +this.sectionLevelInfoTotalConfig.fee?.toFixed(2);
     this.sectionLevelInfoTotalConfig.billToPatientAmount = +this.sectionLevelInfoTotalConfig.billToPatientAmount?.toFixed(2);
@@ -3001,6 +3073,7 @@ export class BillingClaimsComponent {
   }
 
   validateNewClaimId() {
+    this.loader['validationData'] = true;
     this.claimSectionModal.RECREATE_CLAIM.validationData=[];
     this.emptyFields.RECREATE_CLAIM = {};     
     let params: any = {
@@ -3012,6 +3085,7 @@ export class BillingClaimsComponent {
     this.appService.validateNewClaimId(params, (res: any) => {
       if (res.data) {
         console.log(res);
+        this.loader['validationData']=false;
         this.claimSectionModal.RECREATE_CLAIM['validationData'] = res.data.validationResponse;
         this.claimSectionModal.RECREATE_CLAIM['newServiceCodes'] = res.data.serviceCodesNewClaim;
         this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid'] = res.data.secondaryValid;
@@ -3022,19 +3096,14 @@ export class BillingClaimsComponent {
   }
 
   showOrHideRecreateButton(){
-  this.hideRecreateButton =   !this.claimSectionModal.RECREATE_CLAIM['validationData'].some((e:any)=>((e.ruleId == 325 || e.ruleId == 326) && (e.resultType == 'PASS' || e.resultType == 'PASS')));
+  this.hideRecreateButton =   !this.claimSectionModal.RECREATE_CLAIM['validationData'].some((e:any)=>((e.ruleId == 325 || e.ruleId == 326 || e.ruleId == 324) && (e.resultType == 'PASS')));
   }
 
   saveRecreateNewClaim(isFinal: boolean) {
-
     this.createModalForRecreateFullAndPartialClaim();
-
-    
 
     if (!isFinal) {
       if(this.checkValidationForRecreate()){
-
-
       let params: any = {
         claimUuid: this.claimUUid,
         recreateClaimRequestInfoModel: this.claimSectionModal['RECREATE_CLAIM']['dataModal']
@@ -3084,6 +3153,12 @@ export class BillingClaimsComponent {
     }
     if(this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3){
       this.selectedServiceCodesExist = this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes'].some((serviceCodes:any)=>this.claimSectionModal.RECREATE_CLAIM['newServiceCodes'].includes(serviceCodes));
+      isSectionValidated = this.selectedServiceCodesExist;
+    }
+    if(this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary' && this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid']){
+      this.isSecondaryFieldsNotEmpty((secondaryFieldsValid:any)=>{
+        isSectionValidated = secondaryFieldsValid ;
+      });
     }
     return isSectionValidated;
 
@@ -3105,20 +3180,66 @@ export class BillingClaimsComponent {
       "reasonForRebilling":this.claimSectionModal['REBILLING']['modal']['reasonForRebilling'] ,
       "requestedByUuid":this.claimSectionModal['REBILLING']['modal']['requestedByUuid'] 
     };
-    recreateModal['dataModal']['claimFromSheet'] = {};    
+  
+    recreateModal['dataModal']['claimFromSheet'] = recreateModal['claimFromSheet'];    
+
+  }
+  
+  isSecondaryFieldsNotEmpty(callback:any){
+    let secondaryFieldsValid = true;
+    this.claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']={};
+    for (const key in this.claimSectionModal.RECREATE_CLAIM['claimFromSheet']) {
+      if (!this.claimSectionModal.RECREATE_CLAIM['claimFromSheet'][key]) {
+          this.claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet'][key] =  true;
+          secondaryFieldsValid = false;
+      }
+    }
+    callback(secondaryFieldsValid);
   }
 
   getValdationFailRemark(callback:any){
     let failRemarks:any=[];
     this.claimSectionModal.RECREATE_CLAIM.validationData.forEach((e:any)=>{
-      if(e.resultType == "FAIL"){
-        failRemarks.push({ruleId:e.ruleId,remarks:e.remarks})
-      }
+        failRemarks.push(
+          {
+            ruleId:e.ruleId,
+            remarks:e.remarks,
+            message:e.message,
+            messageType: e.resultType == "FAIL" ? 1 : e.resultType == "PASS" ? 2 : 3
+          }
+          )
     })
     callback(failRemarks);
   }
 
   clearSelectedRadioButtons(){
     this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = null;
+  }
+
+  selectCollectionType(type:any){
+    this.claimSectionModal.COLLECTION_AGENCY['buttonType'] = type;
+  }
+
+  calculateNetAmtReceived(){
+    this.claimSectionModal.COLLECTION_AGENCY['netAmountReceived'] =  this.claimSectionModal.COLLECTION_AGENCY['amountReceived'] - this.claimSectionModal.COLLECTION_AGENCY['commisionCharged'] ;
+  }
+
+
+
+  saveCollectionAgencyInfo(isFinal:boolean){
+    this.claimSectionModal['COLLECTION_AGENCY']['sectionId'] = this.sectionIds['COLLECTION_AGENCY']['sectionId'];
+    if (!isFinal) {
+      let params: any = {
+        claimUuid: this.claimUUid,
+        collectionAgencyInfoModel: this.claimSectionModal['COLLECTION_AGENCY']
+      };
+      this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+        if (res.status) {
+          location.reload();
+          console.log(res);
+        }
+      })
+    }
+    return this.claimSectionModal['COLLECTION_AGENCY'];
   }
 }
