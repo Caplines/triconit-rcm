@@ -136,9 +136,6 @@ public class ClaimSectionImpl {
 
 	@Autowired
 	RcmCompanyRepo rcmCompanyRepo;
-
-	@Autowired
-	RcmClaimSectionRepo sectionRepo;
 	
 	@Autowired
 	MasterServiceImpl masterServiceImpl;
@@ -306,7 +303,7 @@ public class ClaimSectionImpl {
 								sectionMapping.setEditAccess(sections.getEditAccess());
 								sectionMapping.setViewAccess(
 										sections.getEditAccess() == true ? true : sections.getViewAccess());
-								Optional<RcmClaimSection> section = sectionRepo.findById(sections.getSectionId());
+								Optional<RcmClaimSection> section = claimSectionRepo.findById(sections.getSectionId());
 								if (section.isPresent()) {
 									sectionMapping.setSection(section.get());
 								} else {
@@ -584,7 +581,7 @@ public class ClaimSectionImpl {
 										? (!(existingSectionMappingWithClient.isViewAccess()) ? false
 												: sections.getViewAccess())
 										: false);
-								Optional<RcmClaimSection> section = sectionRepo.findById(sections.getSectionId());
+								Optional<RcmClaimSection> section = claimSectionRepo.findById(sections.getSectionId());
 								if (section.isPresent()) {
 									sectionMapping.setSection(section.get());
 								} else {

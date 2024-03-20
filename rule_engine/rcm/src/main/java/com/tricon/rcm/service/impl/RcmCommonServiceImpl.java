@@ -65,9 +65,6 @@ public class RcmCommonServiceImpl {
 	RcmCompanyRepo rcmCompanyRepo;
 
 	@Autowired
-	RcmOfficeRepository rcmOfficeRepository;
-
-	@Autowired
 	RCMUserRepository userRepo;
 
 	@Autowired
@@ -112,7 +109,7 @@ public class RcmCommonServiceImpl {
 
 		RcmCompany company = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);
 
-		return rcmOfficeRepository.findByCompany(company);
+		return officeRepo.findByCompany(company);
 
 	}
 
