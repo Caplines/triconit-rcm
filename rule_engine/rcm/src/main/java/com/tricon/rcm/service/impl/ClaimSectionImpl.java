@@ -1143,34 +1143,46 @@ public class ClaimSectionImpl {
 		if (claim != null) {
 			patientStatement = new RcmPatientStatementSection();
 			patientStatement.setClaim(claim);
-			patientStatement.setStatus(rcmPatientStatementInfoModel.getStatus());	
-			patientStatement.setAmountStatement(rcmPatientStatementInfoModel.getAmountStatement());
-			patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
-			patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement());
-			patientStatement.setReason(rcmPatientStatementInfoModel.getReason());
 			patientStatement.setButtonType(rcmPatientStatementInfoModel.getButtonType());
-			patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
-			patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
-			patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
-			patientStatement.setStatementSendingDate(!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getStatementSendingDate())?null:
-					Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
-			patientStatement
-					.setNextReviewDate(
-							!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate())?null:
-							Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
-			patientStatement.setStatementSendingDate(!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getStatementSendingDate())?null:
-					Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
-			patientStatement.setNextStatementDate(!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate())?null:
-					Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
 			patientStatement.setCreatedBy(createdBy);
 			patientStatement.setFinalSubmit(finalSubmit);
 			patientStatement.setTeam(team);
-			patientStatement = patientStatementRepo.save(patientStatement);
-			return patientStatement != null ? true : null;
+			if (rcmPatientStatementInfoModel
+					.getButtonType() == Constants.NEED_TO_HOLD_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION) {
+				patientStatement.setStatus(rcmPatientStatementInfoModel.getStatus());
+				patientStatement.setAmountStatement(rcmPatientStatementInfoModel.getAmountStatement());
+
+				patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement());
+
+				patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
+				patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
+
+				patientStatement.setNextStatementDate(
+						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate()) ? null
+								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
+
+				patientStatement = patientStatementRepo.save(patientStatement);
+				return patientStatement != null ? true : null;
+			} else {
+				patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
+				patientStatement.setReason(rcmPatientStatementInfoModel.getReason());
+
+				patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
+				patientStatement.setStatementSendingDate(
+						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getStatementSendingDate()) ? null
+								: Constants.SDF_MYSL_DATE
+										.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
+				patientStatement.setNextReviewDate(
+						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate()) ? null
+								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
+				patientStatement = patientStatementRepo.save(patientStatement);
+				return patientStatement != null ? true : null;
+			}
 		}
 		return null;
+
 	}
-	
+
 	public RcmPatientStatementDto fetchPatientStatementInformation(PartialHeader partialHeader, String claimUuid,
 			boolean showWithTeam) throws Exception {
 		RcmPatientStatementSection patientStatement = null;

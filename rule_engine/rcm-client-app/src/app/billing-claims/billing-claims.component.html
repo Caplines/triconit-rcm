@@ -1993,7 +1993,7 @@
                                     </div>
                                 </ng-container>
                                 <ng-container
-                                    *ngIf="sectionLevelInfoTotalConfig.paidAmount>0 &&  !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
+                                    *ngIf="(sectionLevelInfoTotalConfig.paidAmount>0) &&  !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Insurance Payment Information
@@ -2230,7 +2230,7 @@
                                                             [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus']"
                                                             [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus']}">
-                                                            <option value="" hidden="true">Select</option>
+                                                            <option value="" >Select</option>
                                                             <option value="Check">Check</option>
                                                             <option value="Eft">EFT</option>
                                                             <option value="Vcc">VCC</option>
@@ -2246,7 +2246,7 @@
                                                             [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpRequired']"
                                                             [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpRequired']}">
-                                                            <option value="" hidden="true">Select</option>
+                                                            <option value="" >Select</option>
                                                             <option value="YES">Yes</option>
                                                             <option value="NO">No</option>
                                                         </select>
@@ -2350,7 +2350,7 @@
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['reason']"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['reason']}">
-                                                                <option selected="true" hidden="true">Select</option>
+                                                                <option value="">Select</option>
                                                                 <option value="Check">Check</option>
                                                                 <option value="Eft">EFT</option>
                                                                 <option value="Vcc">VCC</option>
@@ -2403,7 +2403,7 @@
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['modeOfStatement']"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['modeOfStatement']}">
-                                                                <option selected="true" hidden="true">Select</option>
+                                                                <option value="">Select</option>
                                                                 <option value="Eaglesoft">Eaglesoft</option>
                                                                 <option value="Mail">Mail</option>
                                                                 <option value="Email">Email</option>
@@ -3527,7 +3527,7 @@
                                     claimRcm.currentTeamId == 5 || claimRcm.currentTeamId == 6 ||
                                     claimRcm.currentTeamId == 7 || claimRcm.currentTeamId == 10 ||
                                     claimRcm.currentTeamId == 11 || claimRcm.currentTeamId == 13 ||
-                                    claimRcm.currentTeamId == 14 || claimRcm.currentTeamId == 12 || claimRcm.currentTeamId == 20 
+                                    claimRcm.currentTeamId == 14 || claimRcm.currentTeamId == 12 || claimRcm.currentTeamId == 20 ||claimRcm.currentTeamId == 18
                                                     ) && claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
                                                         type="button" class="btn btn-success"
                                                         [disabled]="!finalsubmitcurrentstat"

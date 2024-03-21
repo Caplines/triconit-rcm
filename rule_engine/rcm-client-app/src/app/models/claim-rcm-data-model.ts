@@ -90,6 +90,22 @@ export interface ClaimRcmDataModel {
 	nextActionName?: String;
 	rebilledStatus?:boolean;
 	billingUserUuid?:String;
+	 btp?: number;
+	adjustment?: number;
+
+	paymentReceived?: number;
+
+	firstPostingDate?: Date;
+
+	paidAmount?: number;
+
+	firstRebilledDate?: Date;
+
+	balanceFromEsBeforePosting?: number;
+
+	balanceFromEsAfterPosting?: number;
+
+	reconciliationPass?: boolean;
 
 }
 

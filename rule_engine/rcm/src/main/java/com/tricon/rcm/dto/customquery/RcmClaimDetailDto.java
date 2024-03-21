@@ -84,6 +84,24 @@ public interface RcmClaimDetailDto {
 	String getInsuranceContactNo();
 	String getPatientContactNo();
 	
-	boolean getRebilledStatus();
+	Boolean getRebilledStatus();
+
+	Float getBtp();
+
+	Float getAdjustment();
+
+	Float getPaymentReceived();
+
+	Date getFirstPostingDate();
+
+	Float getPaidAmount();
+
+	Date getFirstRebilledDate();
+
+	Float getBalanceFromEsBeforePosting();
+
+	Float getBalanceFromEsAfterPosting();
+
+	Boolean getReconciliationPass();
 	
 }

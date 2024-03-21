@@ -267,7 +267,7 @@ export class BillingClaimsComponent {
     },
     INSURANCE_FOLLOW_UP: {
       data: [],
-      modal: {}
+      modal: {"nextFollowUpRequired":"",'currentClaimStatus':"",'modeOfFollowUp':""}
     },
     PATIENT_STATEMENT: {
       "modeOfStatement": "",
@@ -2278,15 +2278,38 @@ export class BillingClaimsComponent {
   validate_INSURANCE_PAYMENT_INFORMATION() {
     return true;
   }
+
   validate_PATIENT_STATEMENT() {
-    return true;
+    this.emptyFields["PATIENT_STATEMENT"] = {};
+    let isSectionValidated = true;
+    if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1) {
+      if (this.claimSectionModal['PATIENT_STATEMENT']['reason'] === "") {
+        this.emptyFields['PATIENT_STATEMENT']['reason'] = true;
+        isSectionValidated = false;
+      }
+    } else {
+      if (this.claimSectionModal['PATIENT_STATEMENT']['modeOfStatement'] === "") {
+        this.emptyFields['PATIENT_STATEMENT']['modeOfStatement'] = true;
+        isSectionValidated = false;
+      }
+    }
+    return isSectionValidated; 
   }
+
   validate_ASSIGN_TO_OTHER() {
     return true;
   }
   validate_INSURANCE_FOLLOW_UP() {
-    return true;
+    this.emptyFields["INSURANCE_FOLLOW_UP"] = {};
+    let isSectionValidated = true;
+    if (this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['modeOfFollowUp'] === ""){
+       this.emptyFields['INSURANCE_FOLLOW_UP']['modeOfFollowUp'] =true;
+       isSectionValidated =false;
+    }
+   
+    return isSectionValidated; 
   }
+
   validate_RECREATE_CLAIM() {
     return true;
   }
@@ -2764,8 +2787,9 @@ export class BillingClaimsComponent {
   }
 
   saveInsuranceFollowUpInfo(isFinal: boolean) {
+    //if (this.validate_SERVICE_LEVEL_INFORMATION()) {
     this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['sectionId'] = this.sectionIds['INSURANCE_FOLLOW_UP']['sectionId'];
-    if (!isFinal) {
+    if (!isFinal && this.validate_INSURANCE_FOLLOW_UP()) {
       let params: any = {
         claimUuid: this.claimUUid,
         rcmFollowUpInsuranceInfoModel: this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']
@@ -2773,7 +2797,8 @@ export class BillingClaimsComponent {
       console.log(params);
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         if (res.status) {
-          this.claimSectionModal['INSURANCE_FOLLOW_UP'].data.push(res.data);
+          this.clearInsuranceFollowUpSection();
+          this.claimSectionModal['INSURANCE_FOLLOW_UP'].data= [res.data, ... this.claimSectionModal['INSURANCE_FOLLOW_UP'].data];
           console.log(res);
         }
       })
@@ -2784,7 +2809,7 @@ export class BillingClaimsComponent {
   savePatientStaementInfo(isFinal: boolean) {
     this.claimSectionModal['PATIENT_STATEMENT']['sectionId'] = this.sectionIds['PATIENT_STATEMENT']['sectionId'];
 
-    if (!isFinal) {
+    if (!isFinal && this.validate_PATIENT_STATEMENT()) {
       let params: any = {
         claimUuid: this.claimUUid,
         rcmPatientStatementInfoModel: this.claimSectionModal['PATIENT_STATEMENT']
@@ -2857,7 +2882,7 @@ export class BillingClaimsComponent {
 
   selectStatementBox(buttonType: any) {
     this.claimSectionModal.PATIENT_STATEMENT['buttonType'] = buttonType;
-    this.clearExisitingPatientStatmentValues(buttonType);
+    //this.clearExisitingPatientStatmentValues(buttonType);
   }
 
   clearExisitingPatientStatmentValues(buttonType: any) {
@@ -3253,4 +3278,16 @@ export class BillingClaimsComponent {
     }
     return this.claimSectionModal['COLLECTION_AGENCY'];
   }
+
+   clearInsuranceFollowUpSection(){
+
+    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpRequired']="";
+    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus']="";
+    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['modeOfFollowUp']=""; 
+    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['refNumber']="";
+    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['insuranceRepName']="";
+    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']="";
+    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['followUpRemarks']="";
+   }
+
 }

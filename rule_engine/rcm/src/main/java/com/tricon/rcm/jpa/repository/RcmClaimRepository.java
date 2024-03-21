@@ -467,7 +467,10 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" cl.claim_type claimType,Fteam.name firstTeam,Fteam.id firstTeamId, "+
 			" pins.insurance_code primaryInsCodeSheet,sins.insurance_code secondaryInsCodeSheet,cl.ssn ssn,cl.assignment_of_benefits assignmentOfBenefits, "+
 			" cl.treating_provider_from_claim_on_sheet treatingProviderFromSheet,preferred_mode_of_submission preferredModeOfSubmission,rule_engine_run_remark ruleEngineRunRemark, " +
-			" cl.insurance_contact_no insuranceContactNo, cl.patient_contact_no patientContactNo, cl.current_status currentStatus,cl.next_action nextAction,cl.rebilled_status rebilledStatus from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
+			" cl.insurance_contact_no insuranceContactNo, cl.patient_contact_no patientContactNo, cl.current_status currentStatus,cl.next_action nextAction,cl.rebilled_status rebilledStatus, "
+			+ "COALESCE(cl.btp, 0) as btp,COALESCE(cl.adjustment, 0) as adjustment,COALESCE(cl.payment_received, 0) as paymentReceived,COALESCE(cl.paid_amount, 0) as paidAmount, "
+			+ "COALESCE(cl.balance_from_es_after_posting, 0) as balanceFromEsAfterPosting,COALESCE(cl.balance_from_es_before_posting, 0) as balanceFromEsBeforePosting ,cl.first_posting_date as firstPostingDate, "
+			+ "cl.first_rebilled_date as firstRebilledDate, cl.reconciliation_pass as reconciliationPass  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+
 			"  left join rcm_team Cteam  on Cteam.id=cl.current_team_id"+

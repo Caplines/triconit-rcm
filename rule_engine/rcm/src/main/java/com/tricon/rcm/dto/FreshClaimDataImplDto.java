@@ -138,5 +138,23 @@ public class FreshClaimDataImplDto {
 	String patientContactNo;
 	
     boolean rebilledStatus;
+    
+	float btp;
+
+	float adjustment;
+
+	float paymentReceived;
+
+	Date firstPostingDate;
+
+	float paidAmount;
+
+	Date firstRebilledDate;
+
+	float balanceFromEsBeforePosting;
+
+	float balanceFromEsAfterPosting;
+
+	Boolean reconciliationPass;
 }
 
