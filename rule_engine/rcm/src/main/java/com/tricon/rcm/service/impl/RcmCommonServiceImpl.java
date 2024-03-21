@@ -598,6 +598,13 @@ public class RcmCommonServiceImpl {
 				response = claimSectionimpl.savePatientCommunicationSection(sectionRequestBody.getPatientCommunicationInfoModel(),
 						 claim, createdBy, team, sectionRequestBody.isFinalSubmit(),partialHeader.getClientName());
 				break;
+
+			case 25:
+//				logger.info("Inside section 25->Need to call insurance");
+//				response = claimSectionimpl.saveNeedToCallInsuranceSection(sectionRequestBody.getNeedToCallInfoModel(),
+//						 claim, createdBy, team, sectionRequestBody.isFinalSubmit());
+//				logger.info("response->" + response);
+//				break;
 			case 22:
 				logger.info("Inside section 22->Collection Agency");
 				response = claimSectionimpl.saveCollectionAgencySection(sectionRequestBody.getCollectionAgencyInfoModel(),

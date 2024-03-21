@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import com.tricon.rcm.db.entity.ClaimUserSectionMapping;
 import com.tricon.rcm.db.entity.CurrentClaimStatusAndNextAction;
 import com.tricon.rcm.db.entity.EOBSectionInformation;
+//import com.tricon.rcm.db.entity.NeedToCallInsurance;
 import com.tricon.rcm.db.entity.PaymentInformationSection;
 import com.tricon.rcm.db.entity.RcmAppealLevelInformation;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
@@ -65,6 +66,7 @@ import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.EobSectionEditDto;
 import com.tricon.rcm.dto.IssueClaimDto;
+import com.tricon.rcm.dto.NeedToCallInsuranceDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PatientPaymentSectionDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
@@ -93,6 +95,7 @@ import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.EOBSectionRepo;
 import com.tricon.rcm.jpa.repository.FollowUpInsuranceRepo;
+//import com.tricon.rcm.jpa.repository.NeedToCallInsuranceRepo;
 import com.tricon.rcm.jpa.repository.RCMUserRepository;
 import com.tricon.rcm.jpa.repository.RcmAppealInfoRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
@@ -246,6 +249,9 @@ public class ClaimSectionImpl {
 	
 	@Autowired
 	RcmIssueClaimsRepo rcmIssueClaimsRepo;
+	
+//	@Autowired
+//	NeedToCallInsuranceRepo needToCallRepo;
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -1151,22 +1157,15 @@ public class ClaimSectionImpl {
 					.getButtonType() == Constants.NEED_TO_HOLD_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION) {
 				patientStatement.setStatus(rcmPatientStatementInfoModel.getStatus());
 				patientStatement.setAmountStatement(rcmPatientStatementInfoModel.getAmountStatement());
-
 				patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement());
-
 				patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
 				patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
-
 				patientStatement.setNextStatementDate(
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate()) ? null
 								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
-
-				patientStatement = patientStatementRepo.save(patientStatement);
-				return patientStatement != null ? true : null;
 			} else {
 				patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
 				patientStatement.setReason(rcmPatientStatementInfoModel.getReason());
-
 				patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
 				patientStatement.setStatementSendingDate(
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getStatementSendingDate()) ? null
@@ -1175,9 +1174,9 @@ public class ClaimSectionImpl {
 				patientStatement.setNextReviewDate(
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate()) ? null
 								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
-				patientStatement = patientStatementRepo.save(patientStatement);
-				return patientStatement != null ? true : null;
 			}
+			patientStatement = patientStatementRepo.save(patientStatement);
+			return patientStatement != null ? true : null;
 		}
 		return null;
 
@@ -1321,18 +1320,22 @@ public class ClaimSectionImpl {
 		if (claim != null) {
 			collectionAgency = new RcmCollectionAgency();
 			collectionAgency.setClaim(claim);
-			collectionAgency.setAmountReceived(collectionAgencyInfoModel.getAmountReceived());
-			collectionAgency.setCollectionType(collectionAgencyInfoModel.getCollectionType());
-			collectionAgency.setCommisionCharged(collectionAgencyInfoModel.getCommisionCharged());
-			collectionAgency.setDebtNumber(collectionAgencyInfoModel.getDebtNumber());
-			collectionAgency.setModeOfPayment(collectionAgencyInfoModel.getModeOfPayment());
-			collectionAgency.setNetAmountReceived(collectionAgencyInfoModel.getNetAmountReceived());
-			collectionAgency.setReason(collectionAgencyInfoModel.getReason());
-			collectionAgency.setRemarks(collectionAgencyInfoModel.getRemarks());
 			collectionAgency.setCreatedBy(createdBy);
 			collectionAgency.setFinalSubmit(finalSubmit);
 			collectionAgency.setTeam(team);
 			collectionAgency.setButtonType(collectionAgencyInfoModel.getButtonType());
+			if (collectionAgencyInfoModel.getButtonType() == Constants.BUTTON_TYPE_ONE_FOR_COLLECTION_SECTION) {
+				collectionAgency.setCollectionType(collectionAgencyInfoModel.getCollectionType());
+				collectionAgency.setDebtNumber(collectionAgencyInfoModel.getDebtNumber());
+			} else if (collectionAgencyInfoModel.getButtonType() == Constants.BUTTON_TYPE_TWO_FOR_COLLECTION_SECTION) {
+				collectionAgency.setAmountReceived(collectionAgencyInfoModel.getAmountReceived());
+				collectionAgency.setModeOfPayment(collectionAgencyInfoModel.getModeOfPayment());
+				collectionAgency.setCommisionCharged(collectionAgencyInfoModel.getCommisionCharged());
+				collectionAgency.setNetAmountReceived(collectionAgencyInfoModel.getNetAmountReceived());
+			} else {
+				collectionAgency.setReason(collectionAgencyInfoModel.getReason());
+				collectionAgency.setRemarks(collectionAgencyInfoModel.getRemarks());
+			}
 			collectionAgency = collectionAgencyRepo.save(collectionAgency);
 			return collectionAgency != null ? true : null;
 		}
@@ -2030,4 +2033,46 @@ public class ClaimSectionImpl {
 		return null;
 	}
 
+//	@Transactional(rollbackOn = Exception.class)
+//	public Boolean saveNeedToCallInsuranceSection(NeedToCallInsuranceDto needToCallInfoModel, RcmClaims claim,
+//			RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
+//		NeedToCallInsurance needToCallInsurance = null;
+//		if (claim != null) {
+//			RcmTeam teamToCall = rcmTeamRepo.findById(needToCallInfoModel.getTeamToCall());
+//			if (teamToCall == null)
+//				return null;
+//			needToCallInsurance = new NeedToCallInsurance();
+//			needToCallInsurance.setClaim(claim);
+//			needToCallInsurance.setDateOfCalling(Constants.SDF_MYSL_DATE.parse(needToCallInfoModel.getDateOfCalling()));
+//			needToCallInsurance.setReasonOfCalling(needToCallInfoModel.getReasonOfCalling());
+//			needToCallInsurance.setRemarks(needToCallInfoModel.getRemarks());
+//			needToCallInsurance.setTeamToCall(teamToCall);
+//			needToCallInsurance.setCreatedBy(createdBy);
+//			needToCallInsurance.setFinalSubmit(finalSubmit);
+//			needToCallInsurance.setTeamId(team);
+//			needToCallInsurance = needToCallRepo.save(needToCallInsurance);
+//			return needToCallInsurance != null ? true : null;
+//		}
+//		return null;
+//	}
+//
+//	public NeedToCallInsuranceDto fetchNeedToCallInformation(PartialHeader partialHeader, String claimUuid,
+//			boolean showWithTeam) throws Exception {
+//		NeedToCallInsuranceDto responseDto = null;
+//		NeedToCallInsurance needToCallInsurance = null;
+//		if (showWithTeam) {
+//			needToCallInsurance = needToCallRepo.findFirstByClaimClaimUuidAndTeamIdIdOrderByCreatedDateDesc(claimUuid,
+//					partialHeader.getTeamId());
+//		} else {
+//			needToCallInsurance = needToCallRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+//		}
+//		if (needToCallInsurance != null) {
+//			responseDto = new NeedToCallInsuranceDto();
+//			responseDto.setTeamToCall(needToCallInsurance.getTeamToCall().getId());
+//			responseDto.setDateOfCalling(Constants.SDF_MYSL_DATE.format((needToCallInsurance.getDateOfCalling())));
+//			BeanUtils.copyProperties(needToCallInsurance, responseDto);
+//			return responseDto;
+//		}
+//		return null;
+//	}
 }

@@ -2751,7 +2751,7 @@
                                                             [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['collectionType']"
                                                             [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['collectionType']}">
-                                                            <option [selected]="true" [value]="">Select</option>
+                                                            <option value="">Select</option>
                                                             <option value="Check">Check</option>
                                                             <option value="Eft">EFT</option>
                                                             <option value="Vcc">VCC</option>
@@ -2779,7 +2779,7 @@
                                                             [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['modeOfPayment']"
                                                             [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['modeOfPayment']}">
-                                                            <option [selected]="true" [value]="" >Select</option>
+                                                            <option value="" >Select</option>
                                                             <option value="Eaglesoft">Eaglesoft</option>
                                                             <option value="Mail">Mail</option>
                                                             <option value="Email">Email</option>
@@ -2815,7 +2815,7 @@
                                                             [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['reason']"
                                                             [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['reason']}">
-                                                            <option [selected]="true" [hidden]="true">Select</option>
+                                                            <option value="">Select</option>
                                                             <option value="Eaglesoft">Eaglesoft</option>
                                                             <option value="Mail">Mail</option>
                                                             <option value="Email">Email</option>

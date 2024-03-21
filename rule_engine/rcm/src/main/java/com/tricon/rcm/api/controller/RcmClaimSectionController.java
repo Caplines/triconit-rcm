@@ -26,6 +26,7 @@ import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.EobSectionEditDto;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.NeedToCallInsuranceDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PatientPaymentSectionDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
@@ -383,6 +384,26 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
+	
+//	@GetMapping(value = "api/get-need-to-call-info/{claimUuid}/{withTeam}")
+//	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+//	public ResponseEntity<?> getNeedToCallInfo(@PathVariable("claimUuid") String claimUuid,
+//			@PathVariable("withTeam") boolean withTeam, Model model) {
+//		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+//		if (partialHeader == null)
+//			return ResponseEntity.badRequest()
+//					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+//		NeedToCallInsuranceDto response = null;
+//		try {
+//			response = claimSection.fetchNeedToCallInformation(partialHeader, claimUuid, withTeam);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			logger.error(e.getMessage());
+//			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+//		}
+//		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+//	}
+	
 	@GetMapping(value = "api/get-collection-agency-info/{claimUuid}/{withTeam}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
 	public ResponseEntity<?> getCollectionAgencyInfo(@PathVariable("claimUuid") String claimUuid,
