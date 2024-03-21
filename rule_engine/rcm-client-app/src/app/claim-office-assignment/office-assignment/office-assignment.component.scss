@@ -267,3 +267,49 @@ tbody tr.totalRow {
         text-align: right !important;
         padding-right: 35px !important;
       }
+    
+      .tooltip2 {
+        display: inline-block;
+        height:20px;
+     
+        img {
+            cursor:pointer;
+        }
+     
+        .tooltiptext {
+            visibility: hidden;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 4px;
+            padding: 5px 10px;
+            position: absolute;
+            z-index: 1;
+            top: 110%;
+            left: 0;
+            opacity: 0;
+            font-size: 14px;
+            font-family: "Lato", sans-serif;
+            transition: opacity 0.3s;
+            cursor:pointer;
+     
+            &:after {
+                content: "";
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                margin-left: -5px;
+                border-width: 5px;
+                border-style: solid;
+                border-color: transparent transparent #555 transparent;
+            }
+        }
+     
+        &:hover {
+            .tooltiptext {
+                visibility: visible;
+                opacity: 1;
+            }
+        }
+    }
+
