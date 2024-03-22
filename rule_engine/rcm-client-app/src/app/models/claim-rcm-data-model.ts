@@ -106,6 +106,7 @@ export interface ClaimRcmDataModel {
 	balanceFromEsAfterPosting?: number;
 
 	reconciliationPass?: boolean;
+	amountCollectedClaims?:number;
 
 }
 
