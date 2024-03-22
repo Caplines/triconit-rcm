@@ -1065,12 +1065,14 @@ public class ClaimSectionImpl {
 				for (RcmServiceNotesDto serviceNotes : oldServiceNotes) {
 					notes = new ServiceLevelNotes();
 					if (serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())) {
+						if(serviceNotes.getNotes()!=null) {
 						notes.setNotes(serviceNotes.getNotes());
 						notes.setServiceCode(serviceNotes.getServiceCode());
 						notes.setCreatedBy(serviceNotes.getCreatedBy());
 						notes.setCreatedDate(serviceNotes.getDate()==null?"":Constants.SDF_MYSL_DATE.format(serviceNotes.getDate()));
 						notes.setTeamName(serviceNotes.getTeamName());
 						oldNotesList.add(notes);
+						}
 					}
 				}
 			}
