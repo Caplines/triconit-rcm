@@ -39,7 +39,8 @@
                                             <div class="manage-section-row">
                                                 <ng-container *ngFor="let sec of teams.sectionData;let i=index;trackBy: trackByFn">
                                                     <div class="manage-section-col-sm-3">
-                                                        <strong> {{sec.sectionDisplayName}}</strong>
+                                                        <strong> {{sec.sectionDisplayName}} <br> <small *ngIf="sec?.sectionCategory?.category"> ({{sec?.sectionCategory?.category|titlecase}})</small> </strong>
+                                                        
                                                         <div class="manageCheckcontainer" *ngIf="!inputConfig?.isEditSection">
                                                             <div class="form-check">
                                                                 <input class="form-check-input"  [(ngModel)]="sec.viewAccess" (change)="updateSelectedData($event,data.clientUuid,teams.teamId ,sec.sectionId,sec.viewAccess,sec.editAccess,'view')" type="checkbox" value="" id="view{{index}}{{idx}}{{i}}">
