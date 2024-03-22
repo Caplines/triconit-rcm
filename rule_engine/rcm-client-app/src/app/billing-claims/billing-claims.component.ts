@@ -590,7 +590,6 @@ export class BillingClaimsComponent {
     }
     else if (type === 'submit') {
       //do From Validation
-      //debugger;
       ths.claimEditModel.actionName = "Submitted";
       let valid = ths.validateData();
       let validSec = true;
@@ -2093,7 +2092,7 @@ export class BillingClaimsComponent {
     }
     ths.claimEditModel = {};
     ths.claimEditModel.assignToTeam = ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'];
-    debugger;
+    // debugger;
     if (this.claimEditModel.assignToTeam == -1) {
       alert('NO team Selected');
       return;
@@ -2127,7 +2126,7 @@ export class BillingClaimsComponent {
 
 
   createSectionModal(sectionName: any) {
-    debugger;
+    // debugger;
     if (sectionName === 'CLAIM_LEVEL_INFORMATION') {
       this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'];
       this.finalSaveClaimDataModel.claimInfoModel = this.saveClaimLevelinfo(true);
