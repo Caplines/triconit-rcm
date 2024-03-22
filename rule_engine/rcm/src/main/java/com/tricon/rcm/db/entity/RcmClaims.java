@@ -292,6 +292,10 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "balance_from_es_after_posting")
 	private Float balanceFromEsAfterPosting;
 	
+	//for PatientPaymentSection
+	@Column(name = "amount_collected_claims")
+	private Float amountCollectedClaims;
+	
 	@Column(name = "reconciliation_pass")
 	private Boolean reconciliationPass;
 }

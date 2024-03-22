@@ -9,7 +9,7 @@ import com.tricon.rcm.db.entity.RcmClaimSection;
 
 public interface RcmClaimSectionRepo extends JpaRepository<RcmClaimSection,Integer>{
 	
-	@Query("SELECT cs FROM RcmClaimSection cs LEFT JOIN FETCH cs.sectionCategory")
+	@Query("SELECT cs FROM RcmClaimSection cs LEFT JOIN FETCH cs.sectionCategory sc order by sc.id ")
 	List<RcmClaimSection> findAllWithSectionCategory();
 
 }

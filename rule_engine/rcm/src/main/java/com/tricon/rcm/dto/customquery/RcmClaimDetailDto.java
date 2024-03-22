@@ -101,6 +101,8 @@ public interface RcmClaimDetailDto {
 	Float getBalanceFromEsBeforePosting();
 
 	Float getBalanceFromEsAfterPosting();
+	
+	Float getAmountCollectedClaims();
 
 	Boolean getReconciliationPass();
 	

@@ -725,6 +725,11 @@ public class ClaimSectionImpl {
 			patientPaymentInformation.setFinalSubmit(finalSubmit);
 			patientPaymentInformation.setTeamId(team);
 			patientPaymentInformation = patientPaymentRepo.save(patientPaymentInformation);
+			//update AmountCollectedClaims in rcm_claim tables
+			if(finalSubmit) {
+				claim.setAmountCollectedClaims((float)patientPaymentInfoModel.getAmountCollectedClaims());
+				rcmClaimRepository.save(claim);		
+			}
 			return patientPaymentInformation != null ? true : null;
 		}
 		return null;

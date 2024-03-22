@@ -154,6 +154,8 @@ public class FreshClaimDataImplDto {
 	float balanceFromEsBeforePosting;
 
 	float balanceFromEsAfterPosting;
+	
+	float amountCollectedClaims;
 
 	Boolean reconciliationPass;
 }
