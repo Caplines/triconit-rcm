@@ -133,6 +133,7 @@ export class BaseService {
     'get-patient-communication-info': "/api/get-patient-communication-info",
     'request-rebilling-info': "/api/request-rebilling-info",
     'validate-recreate-claim': "/api/validate-recreate-claim",
+    'get-collection-agency-info': "/api/get-collection-agency-info",
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

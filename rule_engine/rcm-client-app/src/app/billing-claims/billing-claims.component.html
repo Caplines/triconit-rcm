@@ -2038,7 +2038,7 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="amountReceivedInBank">Amount Received in Bank</label>
-                                                <input type="text" id="amountReceivedInBank"
+                                                <input type="number" id="amountReceivedInBank"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountReceivedInBank']"
                                                     class="form-control"
@@ -2048,7 +2048,7 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="amountPostedInEs">Amount Posted in ES</label>
-                                                <input type="text" id="amountPostedInEs"
+                                                <input type="number" id="amountPostedInEs"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountPostedInEs']"
                                                     class="form-control"
@@ -2310,14 +2310,14 @@
                                                 <div class="col-sm-4 mb-2">
                                                     <div class="btn-group btn-group-toggle d-flex" style="width:85%;"
                                                         data-toggle="buttons">
-                                                        <label class="btn btn-light mx-0"
+                                                        <label class="btn btn-light mx-0" (click)="selectStatementBox(1)"
                                                             [ngClass]="{'active':claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1}">
                                                             <input type="radio" name="statement"
                                                                 class="form-check-input" [value]="1"
                                                                 [checked]="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"
                                                                 (change)="selectStatementBox(1)">Send Statement
                                                         </label>
-                                                        <label class="btn btn-light"
+                                                        <label class="btn btn-light" (click)="selectStatementBox(2)"
                                                             [ngClass]="{'active':claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2}">
                                                             <input type="radio" name="statement" [value]="2"
                                                                 class="form-check-input"
@@ -2413,7 +2413,7 @@
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="amountStatement">Amount of Statement</label>
-                                                            <input type="text" id="amountStatement"
+                                                            <input type="number" id="amountStatement"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['amountStatement']"
                                                                 class="form-control"
@@ -2468,7 +2468,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <button class="btn btn-success"
                                                         (click)="savePatientStaementInfo(false)"
-                                                        [hidden]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)">Save</button>
+                                                        [hidden]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit && (this.claimRcm.btp != claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']))">Save</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -2478,7 +2478,7 @@
                                 <!-- Patient Statement END-->
                                 <!-- Patient Payment START-->
                                 <ng-container
-                                    *ngIf="displayPhaseSection && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'view')">
+                                    *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['PATIENT_PAYMENT']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="PATIENT_PAYMENT">
                                             Patient Payment
@@ -2510,11 +2510,11 @@
                                                     <div class="custom-row text-number">
                                                         <label for="amountCollectedClaims">Amount Collected agasinst
                                                             this claim</label>
-                                                        <input type="text" id="amountCollectedClaims"
+                                                        <input type="number" id="amountCollectedClaims"
                                                             [disabled]="!checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']"
                                                             class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['amountCollectedClaims']}">
+                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['amountCollectedClaims'],'is-valid':this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']}">
                                                     </div>
                                                 </div>
 
@@ -2525,7 +2525,7 @@
                                                             [disabled]="!checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['postedInPMS']"
                                                             [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['postedInPMS']}">
-                                                            <option selected="true" hidden="true">Select</option>
+                                                            <option value="">Select</option>
                                                             <option value="Yes">Yes</option>
                                                             <option value="No">No</option>
                                                         </select>
@@ -2552,7 +2552,7 @@
                                                             [disabled]="!checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment']"
                                                             [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['modeOfPayment']}">
-                                                            <option selected="true" hidden="true">Select</option>
+                                                            <option value="">Select</option>
                                                             <option value="Patient_Payment_Mode">Patient Payment Mode
                                                             </option>
                                                             <option value="Patient_Credit">Patient Credit</option>
@@ -2579,7 +2579,7 @@
                                 <!-- Patient Payment END-->
                                 <!-- Patient Communication START-->
                                 <ng-container
-                                    *ngIf="displayPhaseSection && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
+                                    *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
                                     <div class="bold-b-text"
                                         [ngClass]="{'collapsed':toggleTab['PATIENT_COMMUNICATION']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="PATIENT_COMMUNICATION">
@@ -2634,7 +2634,7 @@
                                                             [disabled]="!checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit')"
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['modeOfFollowUp']"
                                                             [ngClass]="{'is-invalid':emptyFields['PATIENT_COMMUNICATION'] && emptyFields['PATIENT_COMMUNICATION']['modeOfFollowUp']}">
-                                                            <option selected="true" hidden="true">Select</option>
+                                                            <option value="">Select</option>
                                                             <option value="Call">Call</option>
                                                             <option value="Web">Web</option>
                                                         </select>
@@ -2706,26 +2706,26 @@
                                             <div class="col-sm-11 mb-2">
                                                 <div class="btn-group btn-group-toggle d-flex" style="width:85%;"
                                                     data-toggle="buttons">
-                                                    <label class="btn btn-light mx-0"
+                                                    <label class="btn btn-light mx-0"  (click)="selectCollectionTypeButton(1)"
                                                         [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1}">
                                                         <input type="radio" name="statement"
                                                             class="form-check-input" [value]="1"
                                                             [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1"
-                                                            (change)="selectCollectionType(1)">Send to Collection | Edit Collection Details
+                                                           >Send to Collection | Edit Collection Details
                                                     </label>
-                                                    <label class="btn btn-light"
+                                                    <label class="btn btn-light"  (click)="selectCollectionTypeButton(2)"
                                                         [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 2}">
                                                         <input type="radio" name="statement" [value]="2"
                                                             class="form-check-input"
                                                             [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 2"
-                                                            (change)="selectCollectionType(2)">Post Amount Received Through Collection
+                                                           >Post Amount Received Through Collection
                                                     </label>
-                                                    <label class="btn btn-light"
+                                                    <label class="btn btn-light"  (click)="selectCollectionTypeButton(3)"
                                                         [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3}">
                                                         <input type="radio" name="statement" [value]="3"
                                                             class="form-check-input"
                                                             [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3"
-                                                            (change)="selectCollectionType(3)"> Withdraw From Collections
+                                                           > Withdraw From Collections
                                                     </label>
                                                 </div>
                                             </div>
@@ -2736,12 +2736,12 @@
                                                 *ngIf="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1">
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="balanceSheetLink">Debt#</label>
-                                                        <input type="text" id="balanceSheetLink"
+                                                        <label for="debtNumber">Debt#</label>
+                                                        <input type="text" id="debtNumber"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                            [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['balanceSheetLink']"
+                                                            [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['debtNumber']"
                                                             class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['balanceSheetLink']}">
+                                                            [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['debtNumber']}">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 mb-2">
@@ -2760,12 +2760,14 @@
                                                 </div>
                                                 <div class="col-md-4 mb-2"></div>
                                             </ng-container>
+                                        </div>    
+                                        <div class="row">
                                             <ng-container
                                                 *ngIf="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 2">
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
                                                         <label for="amountReceived">Amount Received</label>
-                                                        <input type="text" id="amountReceived" (blur)="calculateNetAmtReceived()"
+                                                        <input type="number" id="amountReceived" (blur)="calculateNetAmtReceived()"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['amountReceived']"
                                                             class="form-control"
@@ -2789,7 +2791,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
                                                         <label for="commisionCharged">Commision Charged</label>
-                                                        <input type="text" id="commisionCharged" (blur)="calculateNetAmtReceived()"
+                                                        <input type="number" id="commisionCharged" (blur)="calculateNetAmtReceived()"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['commisionCharged']"
                                                             class="form-control"
@@ -2799,7 +2801,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
                                                         <label for="netAmountReceived">Net Amount Received</label>
-                                                        <input type="text" id="netAmountReceived" 
+                                                        <input type="number" id="netAmountReceived" 
                                                             [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['netAmountReceived']"
                                                             class="form-control"
@@ -2807,10 +2809,12 @@
                                                     </div>
                                                 </div>
                                             </ng-container>
+                                        </div>
+                                        <div class="row">
                                             <ng-container  *ngIf="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3">
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="reason">Mode of Payment</label>
+                                                        <label for="reason">Reason</label>
                                                         <select id="reason" class="form-control"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['reason']"
@@ -2833,6 +2837,8 @@
                                                     </div>
                                                 </div>
                                             </ng-container>
+                                        </div>
+
                                             <div class="row">
                                                 <div class="col-sm-12">
                                                     <button class="btn btn-success"
@@ -2843,12 +2849,11 @@
                                         </div>
                                     </div>
 
-                                </div>
                             </ng-container>
                                 <!-- Collection Agency END-->
                                 <!-- Appeal START-->
                                 <ng-container
-                                    *ngIf="displayPhaseSection && !claimRcm.pending &&  checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'view')">
+                                    *ngIf="!claimRcm.pending &&  checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Appeal
@@ -2863,12 +2868,12 @@
                                         [ngClass]="{'show':!toggleTab['appeal']}" id="APPEAL">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="moa">Mode of Appeal</label>
-                                                <select id="moa" class="form-control"
+                                                <label for="modeOfAppeal">Mode of Appeal</label>
+                                                <select id="modeOfAppeal" class="form-control"
                                                     [disabled]="!checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                     [(ngModel)]="this.claimSectionModal.APPEAL['modeOfAppeal']"
                                                     [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['modeOfAppeal']}">
-                                                    <option selected="true" hidden="true">Select Network</option>
+                                                    <option value="">Select</option>
                                                     <option value="portal">Portal</option>
                                                     <option value="fax">Fax</option>
                                                     <option value="mail">Mail</option>
@@ -2877,12 +2882,12 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="aiTool">AI Tool Used?</label>
-                                                <select id="aiTool" class="form-control"
+                                                <label for="aiToolUsed">AI Tool Used?</label>
+                                                <select id="aiToolUsed" class="form-control"
                                                     [disabled]="!checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                     [(ngModel)]="this.claimSectionModal.APPEAL['aiToolUsed']"
                                                     [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['aiToolUsed']}">
-                                                    <option selected="true" hidden="true">Select</option>
+                                                    <option value="">Select</option>
                                                     <option value="yes">Yes</option>
                                                     <option value="no">No</option>
                                                 </select>
@@ -2929,7 +2934,7 @@
                                 <!-- Appeal END-->
                                 <!-- Request Rebilling START-->
                                 <ng-container
-                                    *ngIf="!claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
+                                    *ngIf="displayPhaseSection && !claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Request Rebilling
@@ -3030,7 +3035,7 @@
 
                                 <!-- REBILLING -->
                                 <ng-container
-                                    *ngIf="claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
+                                    *ngIf="displayPhaseSection && claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="REBILLING">
                                             Rebilling
@@ -3224,7 +3229,7 @@
                                 <!-- NEED TO CREATE REBLIING -->
 
                                 <ng-container
-                                    *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view')">
+                                    *ngIf="displayPhaseSection && !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Recreation in PMS

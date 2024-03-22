@@ -182,22 +182,22 @@ export class BillingClaimsComponent {
     'RECREATE_CLAIM': {
       sectionId: 18,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: false
     },
     'APPEAL': {
       sectionId: 19,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'PATIENT_PAYMENT': {
       sectionId: 20,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'PATIENT_COMMUNICATION': {
       sectionId: 21,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'COLLECTION_AGENCY': {
       sectionId: 22,
@@ -207,12 +207,12 @@ export class BillingClaimsComponent {
     'REQUEST_REBILLING': {
       sectionId: 23,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: false
     },
     'REBILLING': {
       sectionId: 24,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: false
     },
     'NEED_TO_CALL_INSURANCE': {
       sectionId: 25,
@@ -283,10 +283,15 @@ export class BillingClaimsComponent {
       "balanceSheetLink": "",
       "buttonType": 1
     },
-    PATIENT_PAYMENT: {},
+    PATIENT_PAYMENT: {
+      modeOfPayment:'',
+      postedInPMS:''
+    },
     PATIENT_COMMUNICATION: {
       data: [],
-      modal: {}
+      modal: {
+        modeOfFollowUp:''
+      }
     },
     CURRENT_STATUS_AND_NEXT_ACTION: {},
     REQUEST_REBILLING: {
@@ -361,7 +366,8 @@ export class BillingClaimsComponent {
     COLLECTION_AGENCY:{
       buttonType:1,
       modeOfPayment:'',
-      collectionType:''
+      collectionType:'',
+      reason:'',
     }
 
   };
@@ -497,6 +503,7 @@ export class BillingClaimsComponent {
       this.fetchNextActionRequiredSection();
       this.fetchPatientCommunicationSection();
       this.fetchRebillingSection();
+      this.fetchCollectionAgencySection();
     });
   }
 
@@ -1968,6 +1975,11 @@ export class BillingClaimsComponent {
     this.appService.fetchAppealSection(this.claimUUid, (res: any) => {
       if (res && res.data) {
         this.claimSectionModal['APPEAL'] = res.data;
+        if(!res.data.modeOfAppeal){
+          this.claimSectionModal['APPEAL']['modeOfAppeal'] = '';
+        } if(!res.data.aiToolUsed){
+          this.claimSectionModal['APPEAL']['aiToolUsed'] = '';
+        } 
 
       }
     })
@@ -2040,7 +2052,7 @@ export class BillingClaimsComponent {
   saveAppealLevelinfo(isFinalSubmit: boolean) {
     this.claimSectionModal['APPEAL']['sectionId'] = this.sectionIds['APPEAL']['sectionId'];
 
-    if (!isFinalSubmit) {
+    if (!isFinalSubmit && this.validate_APPEAL()) {
 
       let params: any = {
         claimUuid: this.claimUUid,
@@ -2115,7 +2127,7 @@ export class BillingClaimsComponent {
 
 
   createSectionModal(sectionName: any) {
-    //debugger;
+    debugger;
     if (sectionName === 'CLAIM_LEVEL_INFORMATION') {
       this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'];
       this.finalSaveClaimDataModel.claimInfoModel = this.saveClaimLevelinfo(true);
@@ -2145,7 +2157,7 @@ export class BillingClaimsComponent {
       this.claimSectionModal['INSURANCE_FOLLOW_UP']['sectionId'] = this.sectionIds['INSURANCE_FOLLOW_UP']['sectionId'];
       this.finalSaveClaimDataModel.rcmFollowUpInsuranceInfoModel = this.saveInsuranceFollowUpInfo(true);
     }
-    else if (sectionName === 'PATIENT_STATEMENT') {
+    else if (sectionName === 'PATIENT_STATEMENT' && this.claimRcm.btp != this.claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) {
       this.claimSectionModal['PATIENT_STATEMENT']['sectionId'] = this.sectionIds['PATIENT_STATEMENT']['sectionId'];
       this.finalSaveClaimDataModel.rcmPatientStatementInfoModel = this.savePatientStaementInfo(true);
     }
@@ -2160,6 +2172,10 @@ export class BillingClaimsComponent {
     else if (sectionName === 'REBILLING' && this.claimRcm.rebilledStatus) {
       this.claimSectionModal['REBILLING']['sectionId'] = this.sectionIds['REBILLING']['sectionId'];
       this.finalSaveClaimDataModel.rebillingInfoModel = this.saveRebillingSection(true);
+    }
+    else if (sectionName === 'COLLECTION_AGENCY') {
+      this.claimSectionModal['COLLECTION_AGENCY']['sectionId'] = this.sectionIds['COLLECTION_AGENCY']['sectionId'];
+      this.finalSaveClaimDataModel.collectionAgencyInfoModel = this.saveCollectionAgencyInfo(true);
     }
     else if (sectionName === 'CURRENT_STATUS_AND_NEXT_ACTION') {
       this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'] = this.sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'];
@@ -2282,18 +2298,23 @@ export class BillingClaimsComponent {
   validate_PATIENT_STATEMENT() {
     this.emptyFields["PATIENT_STATEMENT"] = {};
     let isSectionValidated = true;
-    if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1) {
-      if (this.claimSectionModal['PATIENT_STATEMENT']['reason'] === "") {
-        this.emptyFields['PATIENT_STATEMENT']['reason'] = true;
-        isSectionValidated = false;
+    //The patient statemnt cycle will stop and be highlighted in some way when the patient payment becomes equal to the BTP Amount
+    if (this.claimRcm.btp != this.claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) {   
+
+      if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1) {
+        if (this.claimSectionModal['PATIENT_STATEMENT']['reason'] === "") {
+          this.emptyFields['PATIENT_STATEMENT']['reason'] = true;
+          isSectionValidated = false;
+        }
+      } else {
+        if (this.claimSectionModal['PATIENT_STATEMENT']['modeOfStatement'] === "") {
+          this.emptyFields['PATIENT_STATEMENT']['modeOfStatement'] = true;
+          isSectionValidated = false;
+        }
       }
-    } else {
-      if (this.claimSectionModal['PATIENT_STATEMENT']['modeOfStatement'] === "") {
-        this.emptyFields['PATIENT_STATEMENT']['modeOfStatement'] = true;
-        isSectionValidated = false;
-      }
+
     }
-    return isSectionValidated; 
+    return isSectionValidated;
   }
 
   validate_ASSIGN_TO_OTHER() {
@@ -2314,13 +2335,42 @@ export class BillingClaimsComponent {
     return true;
   }
   validate_PATIENT_PAYMENT() {
-    return true;
+    this.emptyFields["PATIENT_PAYMENT"] = {};
+    let isSectionValidated = true;
+    if(!this.claimSectionModal['PATIENT_PAYMENT']['modeOfPayment']){
+      this.emptyFields["PATIENT_PAYMENT"]['modeOfPayment']=true;
+      isSectionValidated=false;
+    }
+
+    return isSectionValidated;
   }
   validate_PATIENT_COMMUNICATION() {
-    return true;
+    let isSectionValidated = true;
+    this.emptyFields["PATIENT_COMMUNICATION"] = {};
+    if(!this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].modeOfFollowUp){
+      this.emptyFields["PATIENT_COMMUNICATION"]['modeOfFollowUp'] =true;
+      isSectionValidated=false;
+    }
+    return isSectionValidated;
   }
   validate_COLLECTION_AGENCY() {
-    return true;
+
+    let isSectionValidated = true;
+    this.emptyFields["COLLECTION_AGENCY"] = {};
+    if(this.claimSectionModal["COLLECTION_AGENCY"]['buttonType'] == 1 && !this.claimSectionModal["COLLECTION_AGENCY"]['collectionType']){
+      this.emptyFields["COLLECTION_AGENCY"]['collectionType'] = true;
+      isSectionValidated=false;
+    }
+    if(this.claimSectionModal["COLLECTION_AGENCY"]['buttonType'] == 2 && !this.claimSectionModal["COLLECTION_AGENCY"]['modeOfPayment']){
+      this.emptyFields["COLLECTION_AGENCY"]['modeOfPayment'] = true;
+      isSectionValidated=false;
+    }
+    if(this.claimSectionModal["COLLECTION_AGENCY"]['buttonType'] == 3 && !this.claimSectionModal["COLLECTION_AGENCY"]['reason']){
+      this.emptyFields["COLLECTION_AGENCY"]['reason'] = true;
+      isSectionValidated=false;
+    }
+
+    return isSectionValidated;
   }
   validate_REQUEST_REBILLING() {
     return true;
@@ -2498,7 +2548,12 @@ export class BillingClaimsComponent {
       this.appService.fetchPatientStatementSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['PATIENT_STATEMENT'] = res.data;
+          if(!res.data.modeOfStatement){
+            this.claimSectionModal['PATIENT_STATEMENT']['modeOfStatement'] = '';
+          } if(!res.data.reason){
+            this.claimSectionModal['PATIENT_STATEMENT']['reason'] = '';
         }
+      }
       })
     }
 
@@ -2509,6 +2564,11 @@ export class BillingClaimsComponent {
       this.appService.fetchPatientPaymentSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['PATIENT_PAYMENT'] = res.data;
+          if(!res.data.modeOfPayment){
+            this.claimSectionModal['PATIENT_PAYMENT']['modeOfPayment'] = '';
+          } if(!res.data.postedInPMS){
+            this.claimSectionModal['PATIENT_PAYMENT']['postedInPMS'] = '';
+        }
         }
       })
     }
@@ -2549,6 +2609,9 @@ export class BillingClaimsComponent {
       this.appService.fetchPatientCommunicationSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['PATIENT_COMMUNICATION'].data = res.data;
+          if(!res.data.modeOfFollowUp){
+            this.claimSectionModal['PATIENT_COMMUNICATION']['modeOfFollowUp'] = '';
+          } 
         }
       })
     }
@@ -2575,6 +2638,25 @@ export class BillingClaimsComponent {
       })
     }
 
+  }
+
+  fetchCollectionAgencySection(){
+    if (this.checkForSectionAccess(this.sectionIds['COLLECTION_AGENCY']['sectionId'], 'view')) {
+      this.appService.fetchCollectionAgencySection(this.claimUUid, (res: any) => {
+        if (res && res.data) {
+          this.claimSectionModal['COLLECTION_AGENCY'] = res.data;
+          if(!res.data.modeOfPayment){
+            this.claimSectionModal['COLLECTION_AGENCY']['modeOfPayment'] = '';
+          } if(!res.data.collectionType){
+            this.claimSectionModal['COLLECTION_AGENCY']['collectionType'] = '';
+          } if(!res.data.reason){
+            this.claimSectionModal['COLLECTION_AGENCY']['reason'] = '';
+          }
+          console.log(res.data);
+          
+        }
+      })
+    }
   }
 
   removeEobById(id: any, indx: any) {
@@ -2828,17 +2910,17 @@ export class BillingClaimsComponent {
   savePatientPaymentInfo(isFinal: boolean) {
     this.claimSectionModal['PATIENT_PAYMENT']['sectionId'] = this.sectionIds['PATIENT_PAYMENT']['sectionId'];
 
-    if (!isFinal) {
-      let params: any = {
-        claimUuid: this.claimUUid,
-        patientPaymentInfoModel: this.claimSectionModal['PATIENT_PAYMENT']
-      };
-
-      this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          console.log(res);
-        }
-      })
+    if (!isFinal && this.validate_PATIENT_PAYMENT()) {
+        let params: any = {
+          claimUuid: this.claimUUid,
+          patientPaymentInfoModel: this.claimSectionModal['PATIENT_PAYMENT']
+        };
+        
+        this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+          if (res.status) {
+            console.log(res);
+          }
+        })
     }
     return this.claimSectionModal['PATIENT_PAYMENT'];
 
@@ -2865,7 +2947,7 @@ export class BillingClaimsComponent {
 
   savePatientCommunicationSection(isFinal: boolean) {
     this.claimSectionModal['PATIENT_COMMUNICATION']['modal']['sectionId'] = this.sectionIds['PATIENT_COMMUNICATION']['sectionId'];
-    if (!isFinal) {
+    if (!isFinal && this.validate_PATIENT_COMMUNICATION()) {
       let params: any = {
         claimUuid: this.claimUUid,
         patientCommunicationInfoModel: this.claimSectionModal['PATIENT_COMMUNICATION']['modal']
@@ -3252,7 +3334,9 @@ export class BillingClaimsComponent {
     this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = null;
   }
 
-  selectCollectionType(type:any){
+  selectCollectionTypeButton(type:any){
+    console.log(type);
+    
     this.claimSectionModal.COLLECTION_AGENCY['buttonType'] = type;
   }
 
@@ -3264,14 +3348,14 @@ export class BillingClaimsComponent {
 
   saveCollectionAgencyInfo(isFinal:boolean){
     this.claimSectionModal['COLLECTION_AGENCY']['sectionId'] = this.sectionIds['COLLECTION_AGENCY']['sectionId'];
-    if (!isFinal) {
+    if (!isFinal && this.validate_COLLECTION_AGENCY()) {
       let params: any = {
         claimUuid: this.claimUUid,
         collectionAgencyInfoModel: this.claimSectionModal['COLLECTION_AGENCY']
       };
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         if (res.status) {
-          location.reload();
+          // location.reload();
           console.log(res);
         }
       })
