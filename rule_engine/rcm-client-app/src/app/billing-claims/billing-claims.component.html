@@ -1752,7 +1752,7 @@
                                                 <label class="custom-control-label" for="customSwitch">BTP FLAG</label>
                                             </span>
                                         </div>
-                                        <div *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0"
+                                        <div *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()"
                                             class="save-btn col-sm-12">
                                             <button class="btn  btn-success" (click)="saveServiceLevelInfo(false)">
                                                 Save
@@ -1989,7 +1989,7 @@
                                         <div class="col-md-4 mb-2"></div>
                                         <div class="col-md-4 mb-2">
                                             <button class="btn btn-success" (click)="saveClaimLevelinfo(false)"
-                                                [hidden]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState ==0 )">Save</button>
+                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">Save</button>
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <!-- <button class="btn btn-outline-primary" (click)="checkSectionFieldValidation()">Final Submit</button> -->
@@ -2133,9 +2133,8 @@
                                         <div class="col-md-4 mb-2">
 
                                         </div>
-                                        <div class="col-md-4 mb-2">
-                                            <button class="btn btn-success" (click)="saveInsurancePaymentInfo(false)"
-                                                [hidden]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState ==0 )">Save</button>
+                                        <div class="col-md-4 mb-2" *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                            <button class="btn btn-success" (click)="saveInsurancePaymentInfo(false)">Save</button>
                                         </div>
                                         <div class="col-md-4 mb-2">
 
@@ -2285,10 +2284,9 @@
                                                 </div>
                                                 <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2">
-                                                    <button class="btn btn-success"
-                                                        (click)="saveInsuranceFollowUpInfo(false)"
-                                                        [hidden]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState == 0)">Save</button>
+                                                <div class="col-md-4 mb-2" *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                                    <button class="btn btn-success" 
+                                                        (click)="saveInsuranceFollowUpInfo(false)">Save</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -2473,10 +2471,9 @@
                                                 <div class="col-md-4 mb-2"
                                                     *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1">
                                                 </div>
-                                                <div class="col-md-4 mb-2">
+                                                <div class="col-md-4 mb-2" *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0 && (this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) && !allowOtherSaveWhileReqRebilling()">
                                                     <button class="btn btn-success"
-                                                        (click)="savePatientStaementInfo(false)"
-                                                        [hidden]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit && (this.claimRcm.btp != claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']))">Save</button>
+                                                        (click)="savePatientStaementInfo(false)">Save</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -2573,10 +2570,9 @@
                                                 </div>
 
                                                 <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2">
+                                                <div class="col-md-4 mb-2" *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
                                                     <button class="btn btn-success"
-                                                        (click)="savePatientPaymentInfo(false)"
-                                                        [hidden]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState == 0)">Save</button>
+                                                        (click)="savePatientPaymentInfo(false)">Save</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -2682,10 +2678,9 @@
                                                 </div>
                                                 <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2">
+                                                <div class="col-md-4 mb-2" *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
                                                     <button class="btn btn-success"
-                                                        (click)="savePatientCommunicationSection(false)"
-                                                        [hidden]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState == 0)">Save</button>
+                                                        (click)="savePatientCommunicationSection(false)">Save</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -2854,10 +2849,9 @@
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-sm-12">
+                                                <div class="col-sm-12" *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
                                                     <button class="btn btn-success"
-                                                        (click)="saveCollectionAgencyInfo(false)"
-                                                        [hidden]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState == 0)">Save</button>
+                                                        (click)="saveCollectionAgencyInfo(false)">Save</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -2936,9 +2930,8 @@
                                         <div class="col-md-4 mb-2">
 
                                         </div>
-                                        <div class="col-md-4 mb-2">
-                                            <button class="btn btn-success" (click)="saveAppealLevelinfo(false)"
-                                                [hidden]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState == 0)">Save</button>
+                                        <div class="col-md-4 mb-2" *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                            <button class="btn btn-success" (click)="saveAppealLevelinfo(false)">Save</button>
                                         </div>
                                         <div class="col-md-4 mb-2">
 
@@ -2948,7 +2941,7 @@
                                 <!-- Appeal END-->
                                 <!-- Request Rebilling START-->
                                 <ng-container
-                                    *ngIf="displayPhaseSection && !claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
+                                    *ngIf="!claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Request Rebilling
@@ -2990,26 +2983,31 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <div for="rebillingRequirements"> <label>Requirements for
-                                                        Rebilling</label>
-                                                    <ng-container
-                                                        *ngIf="serviceLevelSectionMultiSelectConfig.rebillingRequirements.length>0"><multi-select-dropdown
+                                                <label for="rebillingRequirements">Requirements for
+                                                    Rebilling</label>
+                                                <span class="mutliselect"
+                                                    [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['rebillingRequirements']}">
+                                                    <ng-container *ngIf="serviceLevelSectionMultiSelectConfig.rebillingRequirements.length>0">
+                                                        <multi-select-dropdown
                                                             [inputConfig]="{'requiredRequestedReBilling':serviceLevelSectionMultiSelectConfig.rebillingRequirements,'isDetailPage':true}"
-                                                            (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown></ng-container>
-                                                </div>
+                                                            (emitToParent)="receiveChildrenEvent($event)">
+                                                        </multi-select-dropdown>
+                                                    </ng-container>
+                                                </span>
+                                            
                                             </div>
                                         </div>
                                         <div class="col-sm-4 mb-2 d-flex">
-                                            <label class="custom-row text-number">Type of Rebilling</label>
+                                            <label class="custom-row text-number" [ngClass]="{'text-danger':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['rebillingType'] }">Type of Rebilling</label>
                                             <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
-                                                <label class="btn btn-light mx-0"
+                                                <label class="btn btn-light mx-0" (click)="selectRebillingType('fullClaim')"
                                                     [ngClass]="{'active':claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'fullClaim'}">
                                                     <input type="radio" name="statement" class="form-check-input"
                                                         [value]="'fullClaim'"
                                                         [checked]="claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'fullClaim'"
                                                         (change)="selectRebillingType('fullClaim')">Full Claim
                                                 </label>
-                                                <label class="btn btn-light"
+                                                <label class="btn btn-light" (click)="selectRebillingType('partialClaim')"
                                                     [ngClass]="{'active':claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'partialClaim'}">
                                                     <input type="radio" name="statement" [value]="'partialClaim'"
                                                         class="form-check-input"
@@ -3025,10 +3023,14 @@
                                                 <div class="custom-row text-number">
                                                     <label for="rebillingServiceCodes">Select service codes to be
                                                         rebilled</label>
-                                                    <ng-container
-                                                        *ngIf="serviceLevelSectionMultiSelectConfig.serviceCodesList.length>0"><multi-select-dropdown
-                                                            [inputConfig]="{'serviceCodes':serviceLevelSectionMultiSelectConfig.serviceCodesList,'isDetailPage':true}"
-                                                            (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown></ng-container>
+                                                        <span class="mutliselect"
+                                                            [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['rebillingServiceCodes']}">
+                                                            <ng-container *ngIf="serviceLevelSectionMultiSelectConfig.serviceCodesList.length>0">
+                                                                <multi-select-dropdown
+                                                                    [inputConfig]="{'serviceCodes':serviceLevelSectionMultiSelectConfig.serviceCodesList,'isDetailPage':true}"
+                                                                    (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
+                                                            </ng-container>
+                                                        </span>
                                                 </div>
                                             </div>
                                         </ng-container>
@@ -3037,11 +3039,9 @@
                                         <div class="col-md-4 mb-2"
                                             *ngIf="claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'fullClaim' || !claimSectionModal.REQUEST_REBILLING['rebillingType']">
                                         </div>
-                                        <div class="col-md-4 mb-2">
+                                        <div class="col-md-4 mb-2" *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && claimRcm.currentState==0">
                                             <button class="btn btn-success"
-                                                (click)="serviceLevelSectionMultiSelectConfig.showModal=true;"
-                                                [hidden]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)">Request
-                                                Rebilling</button>
+                                                (click)="checkValidationReqRebilling();">Request Rebilling</button>
                                         </div>
                                     </div>
                                 </ng-container>
@@ -3049,7 +3049,7 @@
 
                                 <!-- REBILLING -->
                                 <ng-container
-                                    *ngIf="displayPhaseSection && claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
+                                    *ngIf="claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="REBILLING">
                                             Rebilling
@@ -3139,18 +3139,18 @@
                                                 <div class="col-md-4 mb-3">
                                                     <div class="btn-group btn-group-toggle d-flex"
                                                         data-toggle="buttons">
-                                                        <label class="btn btn-light mx-0"
+                                                        <label class="btn btn-light mx-0" (click)="selectRebillingStatus(true)"
                                                             [ngClass]="{'active':claimSectionModal.REBILLING['modal']['rebillingStatus']}">
                                                             <input type="radio" name="statement"
                                                                 class="form-check-input" [value]="true"
-                                                                [checked]="claimSectionModal.REBILLING['modal']['rebillingStatus'] == true"
+                                                                [checked]="claimSectionModal.REBILLING['modal']['rebillingStatus']"
                                                                 (change)="selectRebillingStatus(true)">ReBilling
-                                                        </label>
-                                                        <label class="btn btn-light"
+                                                        </label> 
+                                                        <label class="btn btn-light" (click)="selectRebillingStatus(false)"
                                                             [ngClass]="{'active':!claimSectionModal.REBILLING['modal']['rebillingStatus']}">
                                                             <input type="radio" name="statement" [value]="false"
                                                                 class="form-check-input"
-                                                                [checked]="claimSectionModal.REBILLING['modal']['rebillingStatus'] == false"
+                                                                [checked]="!claimSectionModal.REBILLING['modal']['rebillingStatus']"
                                                                 (change)="selectRebillingStatus(false)">No Need to
                                                             Rebill
                                                         </label>
@@ -3166,14 +3166,13 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="desposition">Service Codes to Rebill
-                                                                {{claimSectionModal.REBILLING['modal'].originalServiceCodes.length>0}}</label>
+                                                            <label for="desposition">Service Codes to Rebill</label>
                                                             <ng-container
-                                                                *ngIf="claimSectionModal.REBILLING['modal'].originalServiceCodes.length>0">
+                                                                *ngIf="claimSectionModal.REBILLING['modal'].serviceCodesForMultiSelect.length>0">
                                                                 <span class="mutliselect"
                                                                     [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['selectedRebillingServiceCodes']}">
                                                                     <multi-select-dropdown
-                                                                        [inputConfig]="{'reBillingServiceCodes':claimSectionModal.REBILLING['modal'].originalServiceCodes,'isDetailPage':true}"
+                                                                        [inputConfig]="{'reBillingServiceCodes':claimSectionModal.REBILLING['modal'].serviceCodesForMultiSelect,'isDetailPage':true}"
                                                                         (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
                                                                 </span>
                                                             </ng-container>
@@ -3182,16 +3181,14 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="modeOfFollowUp">Attachments Required For
-                                                                Rebilling
-                                                                {{claimSectionModal.REBILLING['modal'].originalRequirements.length>0}}</label>
+                                                            <label for="modeOfFollowUp">Attachments Required For Rebilling</label>
 
                                                             <ng-container
-                                                                *ngIf="claimSectionModal.REBILLING['modal'].originalRequirements.length>0">
+                                                                *ngIf="claimSectionModal.REBILLING['modal'].requirementsForMultiSelect.length>0">
                                                                 <span class="mutliselect"
                                                                     [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['selectedRebillingRequirements']}">
                                                                     <multi-select-dropdown
-                                                                        [inputConfig]="{'requiredReBilling':claimSectionModal.REBILLING['modal'].originalRequirements,'isDetailPage':true}"
+                                                                        [inputConfig]="{'requiredReBilling':claimSectionModal.REBILLING['modal'].requirementsForMultiSelect,'isDetailPage':true}"
                                                                         (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
                                                                 </span>
                                                             </ng-container>
@@ -3228,11 +3225,9 @@
                                             <div class="col-md-4 mb-2" *ngIf="claimSectionModal.REBILLING['modal']['rebillingStatus']"></div>
                                             <div class="col-md-4 mb-2" *ngIf="!claimSectionModal.REBILLING['modal']['rebillingStatus']"></div> -->
                                             <div class="row">
-                                                <div class="col-md-12 mb-2">
+                                                <div class="col-md-12 mb-2" *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && claimRcm.currentState==0 && claimSectionModal.REBILLING['modal']['rebillingStatus']">
                                                     <button class="btn btn-success"
-                                                        (click)="saveRebillingSection(false)"
-                                                        [hidden]="(!checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && !this.claimRcm.allowEdit && !claimSectionModal.REBILLING['modal']['rebillingStatus']) || !claimSectionModal.REBILLING['modal']['rebillingStatus']">Mark
-                                                        as Rebilled</button>
+                                                        (click)="saveRebillingSection(false)">Mark as Rebilled</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -3243,7 +3238,7 @@
                                 <!-- NEED TO CREATE REBLIING -->
 
                                 <ng-container
-                                    *ngIf="displayPhaseSection && !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view')">
+                                    *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Recreation in PMS
