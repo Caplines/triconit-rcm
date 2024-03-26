@@ -3296,15 +3296,15 @@ export class BillingClaimsComponent {
   checkValidationForRecreate() {
     let isSectionValidated = true;
     this.emptyFields["RECREATE_CLAIM"] = {};
-    if (!this.claimSectionModal.RECREATE_CLAIM['dataModal']['newClaimId']) {
+    if (!this.claimSectionModal.RECREATE_CLAIM['dataModal']['newClaimId'] && this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != 'attachSecondary') {
       this.emptyFields.RECREATE_CLAIM['newClaimId'] = true;
       isSectionValidated = false;
     }
-    if (!this.claimSectionModal.RECREATE_CLAIM['dataModal']['reasonRecreation']) {
+    if (!this.claimSectionModal.RECREATE_CLAIM['dataModal']['reasonRecreation'] && this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != 'attachSecondary') {
       this.emptyFields.RECREATE_CLAIM['reasonRecreation'] = true;
       isSectionValidated = false;
     }
-    if (!this.claimSectionModal.RECREATE_CLAIM['dataModal']['recreationRemarks']) {
+    if (!this.claimSectionModal.RECREATE_CLAIM['dataModal']['recreationRemarks'] && this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != 'attachSecondary') {
       this.emptyFields.RECREATE_CLAIM['recreationRemarks'] = true;
       isSectionValidated = false;
     }
@@ -3337,8 +3337,8 @@ export class BillingClaimsComponent {
 
   createModalForRecreateFullAndPartialClaim() {
     let recreateModal: any = this.claimSectionModal.RECREATE_CLAIM;
-    recreateModal['sectionId'] = this.sectionIds['RECREATE_CLAIM']['sectionId'];
-    recreateModal['dataModal']['actionButtonType'] = +recreateModal['modal']['buttonType'];
+    recreateModal['dataModal']['sectionId'] = this.sectionIds['RECREATE_CLAIM']['sectionId'];
+    recreateModal['dataModal']['actionButtonType'] = recreateModal['modal']['buttonType'] == 'attachSecondary' ? 1 : +recreateModal['modal']['buttonType'];
     recreateModal['dataModal']['existingNewClaimServiceCodes'] = recreateModal['newServiceCodes'];
     recreateModal['dataModal']['newClaimId'] = recreateModal['modal']['newClaimId'];
     recreateModal['dataModal']['reasonRecreation'] = recreateModal['modal']['reasonRecreation'];
