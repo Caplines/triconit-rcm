@@ -1854,7 +1854,7 @@ public class ClaimSectionImpl {
 									selectedServiceCodesForExistingClaim);
 					if (!serviceCodesForClaimDetail.isEmpty()) {
 						serviceCodesForClaimDetail.forEach(data -> {
-							data.setRebilledStatus(true);
+							data.setActive(false);
 							claimDetailRepo.save(data);
 						});
 					}
@@ -1878,7 +1878,7 @@ public class ClaimSectionImpl {
 									selectedServiceCodesForExistingClaim);
 					if (!serviceCodesForClaimDetail1.isEmpty()) {
 						serviceCodesForClaimDetail1.forEach(data -> {
-							data.setRebilledStatus(true);
+							data.setActive(false);
 							claimDetailRepo.save(data);
 						});
 					 }
@@ -1909,14 +1909,18 @@ public class ClaimSectionImpl {
 			if (recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_FULL_CLAIM) {
 				RcmClaims newPrimaryClaim =null;
 				RcmClaims newSecondaryClaim =null;
+				RcmClaims newLinkedClaim =null;
 				
 				if (("_" + currentClaimId[1]).equals(ClaimTypeEnum.S.getSuffix())) {
 		        	isPrimary =false;
 		        	newPrimaryClaim = rcmClaimRepository.findByClaimIdAndOffice(recreateClaimRequestInfoModel.getNewClaimId()+ClaimTypeEnum.P.getSuffix(),office);
+		        	newLinkedClaim = rcmClaimRepository.findByClaimIdAndOffice(recreateClaimRequestInfoModel.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);
 		        	newSecondaryClaim = currentClaim;
 		        }else {
 		        	newPrimaryClaim = currentClaim;
 		        	newSecondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(recreateClaimRequestInfoModel.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);
+		        	newLinkedClaim = rcmClaimRepository.findByClaimIdAndOffice(recreateClaimRequestInfoModel.getNewClaimId()+ClaimTypeEnum.P.getSuffix(),office);
+		        
 		        }
 		        ///
 				
@@ -1924,7 +1928,7 @@ public class ClaimSectionImpl {
 
 				// first we insert current claim linked_data from newClaim data
 				RcmLinkedClaims linkedClaimsForCurrent = new RcmLinkedClaims();
-				linkedClaimsForCurrent.setRcmClaims(primaryClaim);
+				linkedClaimsForCurrent.setRcmClaims(newLinkedClaim);
 				linkedClaimsForCurrent.setCreatedBy(createdBy);
 				linkedClaimsForCurrent.setLinkedClaims(newPrimaryClaim);
 				rcmLinkedClaimsRepo.save(linkedClaimsForCurrent);
@@ -1933,13 +1937,13 @@ public class ClaimSectionImpl {
 				RcmLinkedClaims linkedClaimsForNew = new RcmLinkedClaims();
 				linkedClaimsForNew.setRcmClaims(newPrimaryClaim);
 				linkedClaimsForNew.setCreatedBy(createdBy);
-				linkedClaimsForNew.setLinkedClaims(primaryClaim);
+				linkedClaimsForNew.setLinkedClaims(newLinkedClaim);
 				rcmLinkedClaimsRepo.save(linkedClaimsForNew);
 				
 				//now for Secondary
 				if (secondaryClaim!=null && newSecondaryClaim!=null) {
 					RcmLinkedClaims linkedClaimsForCurrentS = new RcmLinkedClaims();
-					linkedClaimsForCurrent.setRcmClaims(secondaryClaim);
+					linkedClaimsForCurrent.setRcmClaims(newLinkedClaim);
 					linkedClaimsForCurrent.setCreatedBy(createdBy);
 					linkedClaimsForCurrent.setLinkedClaims(newSecondaryClaim);
 					rcmLinkedClaimsRepo.save(linkedClaimsForCurrentS);
@@ -1948,7 +1952,7 @@ public class ClaimSectionImpl {
 					RcmLinkedClaims linkedClaimsForNewS = new RcmLinkedClaims();
 					linkedClaimsForNew.setRcmClaims(newSecondaryClaim);
 					linkedClaimsForNew.setCreatedBy(createdBy);
-					linkedClaimsForNew.setLinkedClaims(secondaryClaim);
+					linkedClaimsForNew.setLinkedClaims(newLinkedClaim);
 					rcmLinkedClaimsRepo.save(linkedClaimsForNewS);
 				}
 
