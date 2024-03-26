@@ -3487,11 +3487,11 @@
                                             </div>
                                         </ng-container>
 
-                                        <div class="col-md-4 mb-2">
+                                        <div class="col-md-4 mb-2" *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != null">
                                             <button class="btn btn-success" (click)="saveRecreateNewClaim(false)"
                                                 [hidden]="(!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)) || hideRecreateButton">
                                                 {{claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen'] ?
-                                                'Recreate and Rebill' : 'Recreate'}}</button>
+                                                'Recreate and Rebill' : 'Recreate'}}</button> 
                                         </div>
                                     </div>
                                 </ng-container>
