@@ -1624,7 +1624,7 @@ public class ClaimSectionImpl {
 				responseDto.setRebillingRemarks(data.getRemarks());
 				responseDto.setRebillingStatus(data.isRebilling());	
 				responseDto.setReCeationOptionChoosen(data.isReCeationOptionChoosen());	
-				responseDto.setRebillingRequirements(data.getRebillingServiceCodes());		
+				responseDto.setRebillingServiceCodes(data.getRebillingServiceCodes());		
 				responseDto.setRebillingRequirements(data.getRebillingRequirements());
 				responseData.add(responseDto);
 			}
