@@ -503,7 +503,8 @@ export class BillingClaimsComponent {
       this.fetchPatientPaymentSection();
       this.fetchNextActionRequiredSection();
       this.fetchPatientCommunicationSection();
-      this.fetchRebillingSection();
+      this.fetchRebillingInfoSection();
+      this.fetchRequestRebillingSection();
       this.fetchCollectionAgencySection();
     });
   }
@@ -2649,9 +2650,9 @@ export class BillingClaimsComponent {
 
   }
 
-  fetchRebillingSection() {
-    if (this.checkForSectionAccess(this.sectionIds['REBILLING']['sectionId'], 'view') && this.claimRcm.rebilledStatus) {
-      this.appService.fetchRebillingSection(this.claimUUid, (res: any) => {
+  fetchRequestRebillingSection() {
+    if (this.checkForSectionAccess(this.sectionIds['REQUEST_REBILLING']['sectionId'], 'view')) {
+      this.appService.fetchRequestRebillingSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           let serviceCodesForMultiSelect: any = [];
           let requirementsForMultiSelect: any = [];
@@ -2669,6 +2670,16 @@ export class BillingClaimsComponent {
       })
     }
 
+  }
+
+  fetchRebillingInfoSection(){
+    if (this.checkForSectionAccess(this.sectionIds['REBILLING']['sectionId'], 'view') && this.claimRcm.rebilledStatus) {
+      this.appService.fetchRebillingInfoSection(this.claimUUid, (res: any) => {
+        if (res && res.data) {
+          this.claimSectionModal['REBILLING']['data']= res.data;
+        }
+      })
+    }
   }
 
   fetchCollectionAgencySection() {
@@ -3270,12 +3281,12 @@ export class BillingClaimsComponent {
         };
         console.log(params);
 
-        // this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        //   if (res.status) {
-        //     location.reload();
-        //     console.log(res);
-        //   }
-        // })
+        this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+          if (res.status) {
+            location.reload();
+            console.log(res);
+          }
+        })
       }
     }
 
@@ -3327,7 +3338,7 @@ export class BillingClaimsComponent {
   createModalForRecreateFullAndPartialClaim() {
     let recreateModal: any = this.claimSectionModal.RECREATE_CLAIM;
     recreateModal['sectionId'] = this.sectionIds['RECREATE_CLAIM']['sectionId'];
-    recreateModal['dataModal']['actionButtonType'] = recreateModal['modal']['buttonType'];
+    recreateModal['dataModal']['actionButtonType'] = +recreateModal['modal']['buttonType'];
     recreateModal['dataModal']['existingNewClaimServiceCodes'] = recreateModal['newServiceCodes'];
     recreateModal['dataModal']['newClaimId'] = recreateModal['modal']['newClaimId'];
     recreateModal['dataModal']['reasonRecreation'] = recreateModal['modal']['reasonRecreation'];
@@ -3341,7 +3352,7 @@ export class BillingClaimsComponent {
       "requestedByUuid": this.claimSectionModal['REBILLING']['modal']['requestedByUuid']
     };
 
-    recreateModal['dataModal']['claimFromSheet'] = recreateModal['claimFromSheet'];
+    recreateModal['dataModal']['claimFromSheet'] = [recreateModal['claimFromSheet']];
 
   }
 

@@ -134,6 +134,7 @@ export class BaseService {
     'request-rebilling-info': "/api/request-rebilling-info",
     'validate-recreate-claim': "/api/validate-recreate-claim",
     'get-collection-agency-info': "/api/get-collection-agency-info",
+    'rebiiling-info': "/api/rebiiling-info",
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

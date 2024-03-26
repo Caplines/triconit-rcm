@@ -3079,15 +3079,15 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr
-                                                        *ngFor="let data of claimSectionModal['REBILLING'].data;let idx=index;">
+                                                        *ngFor="let data of claimSectionModal['REBILLING']?.data;let idx=index;">
                                                         <td>{{idx+1}}</td>
-                                                        <td>{{data.createdBy}}</td>
-                                                        <td>{{data.createdTeam}}</td>
-                                                        <td>{{data.date|date}}</td>
-                                                        <td>{{data.modeOfFollowUp}}</td>
-                                                        <td>{{data.contact}}</td>
-                                                        <td>{{data.desposition}}</td>
-                                                        <td>{{data.remarks}}</td>
+                                                        <td>{{data.requestedBy}}</td>
+                                                        <td>{{data.requestedRemarks}}</td>
+                                                        <td>{{data.dateOfRebiiling|date}}</td>
+                                                        <td>{{data.rebillingServiceCodes}}</td>
+                                                        <td>{{data?.rebillingRequirements}}</td>
+                                                        <td>Yes</td>
+                                                        <td>{{data.rebillingRemarks}}</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -3201,14 +3201,14 @@
                                                                 Claim?</label>
                                                             <div class="btn-group btn-group-toggle d-flex"
                                                                 data-toggle="buttons">
-                                                                <label class="btn btn-light mx-0"
+                                                                <label class="btn btn-light mx-0" (click)="selectRecreationRebillingClaim(true)"
                                                                     [ngClass]="{'active':claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']}">
                                                                     <input type="radio" name="statement"
                                                                         class="form-check-input" [value]="true"
                                                                         [checked]="claimSectionModal.REBILLING['modal']['reCeationOptionChoosen'] == true"
                                                                         (change)="selectRecreationRebillingClaim(true)">Yes
                                                                 </label>
-                                                                <label class="btn btn-light"
+                                                                <label class="btn btn-light" (click)="selectRecreationRebillingClaim(false)"
                                                                     [ngClass]="{'active':!claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']}">
                                                                     <input type="radio" name="statement" [value]="false"
                                                                         class="form-check-input"
@@ -3237,8 +3237,8 @@
 
                                 <!-- NEED TO CREATE REBLIING -->
 
-                                <ng-container
-                                    *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view')">
+                                <ng-container    
+                                    *ngIf="((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Recreation in PMS
@@ -3297,7 +3297,7 @@
                                         <div class="col-sm-7 mb-3 d-flex">
                                             <label class="custom-row text-number">Action to Perform</label>
                                             <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
-                                                <label class="btn btn-light mx-0"
+                                                <label class="btn btn-light mx-0" (click)="selectActionToPerformRecreate('attachSecondary')"
                                                     [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'}">
                                                     <input type="radio" name="action" class="form-check-input"
                                                         [value]="'attachSecondary'"
@@ -3307,7 +3307,7 @@
                                                 </label>
                                                 <ng-container
                                                     *ngIf="this.claimSectionModal.RECREATE_CLAIM['newServiceCodes'] && this.claimSectionModal.RECREATE_CLAIM['newServiceCodes']?.length>0  ">
-                                                    <label class="btn btn-light"
+                                                    <label class="btn btn-light"  (click)="selectActionToPerformRecreate('2')"
                                                         [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2}">
                                                         <input type="radio" name="action" [value]="'2'"
                                                             class="form-check-input"
@@ -3315,7 +3315,7 @@
                                                             (change)="selectActionToPerformRecreate('2')">Recreate Full
                                                         Claim
                                                     </label>
-                                                    <label class="btn btn-light"
+                                                    <label class="btn btn-light"  (click)="selectActionToPerformRecreate('3')"
                                                         [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3}">
                                                         <input type="radio" name="action" [value]="'3'"
                                                             class="form-check-input"
