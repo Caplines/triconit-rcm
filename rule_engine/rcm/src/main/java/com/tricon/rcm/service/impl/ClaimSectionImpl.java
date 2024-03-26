@@ -1445,7 +1445,12 @@ public class ClaimSectionImpl {
 			return false;
 		}
 
-		if (claim != null && !rebillingInfoModel.isReCeationOptionChoosen()) {
+		if (claim != null && !rebillingInfoModel.isRebillingStatus()) {
+			// update rebilled status false in rcm_claims table
+			claim.setRebilledStatus(false);
+			rcmClaimRepository.save(claim);
+
+		} else if (claim != null && !rebillingInfoModel.isReCeationOptionChoosen()) {
 			RcmUser requestedBy = userRepo.findByUuid(rebillingInfoModel.getRequestedByUuid());
 			List<String> serviceCodesForStatusTrue = null;
 			String selectedServiceCodes = null;

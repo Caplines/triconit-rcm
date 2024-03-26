@@ -14,8 +14,8 @@ public class RebillingDto {
 	private List<String>selectedRebillingServiceCodes;		//select rebilling service from rebilling UI
 	private String requestedBy;
 	private String requestedByUuid;
-	private boolean rebillingStatus;
-	private boolean reCeationOptionChoosen;
+	private boolean rebillingStatus;// rebiiling/ no need to rebill status
+	private boolean reCeationOptionChoosen;//Are you Recreating the Claim?
 	private String dateOfRebiiling;
 	private List<String>originalServiceCodes;//select rebilling service from  requestBilling UI
 	private List<String>originalRequirements;//select rebilling requirement from  requestBilling UI
