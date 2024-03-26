@@ -1076,16 +1076,17 @@ public class ClaimSectionImpl {
 					}
 				}
 			}
-			for (RcmServiceLevelInformation list : serviceLevelData) {
+			for (RcmServiceLevelInformation serviceData : serviceLevelData) {
 				responseData = new ServiceLevelRequestBodyDto();
 				newNotesList = new ArrayList<>();
 				for (ServiceLevelNotes notesData : oldNotesList) {
-					if (notesData.getServiceCode().equals(list.getServiceCode())) {
+					if (notesData.getServiceCode().equals(serviceData.getServiceCode())) {
 						newNotesList.add(notesData);
 						responseData.setServiceCodeNotes(newNotesList);
 					}		
-				}
-				BeanUtils.copyProperties(list, responseData);
+				}			
+				BeanUtils.copyProperties(serviceData, responseData);
+				responseData.setRebilledCodeStatus(serviceData.isRebilledStatus());
 				data.add(responseData);
 			}
 		}

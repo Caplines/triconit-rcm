@@ -26,4 +26,5 @@ public class ServiceLevelRequestBodyDto {
 	private double balanceFromEsBeforePosting;
 	private double balanceFromEsAfterPosting;
 	private List<ServiceLevelNotes>serviceCodeNotes;
+	private boolean rebilledCodeStatus;
 }
