@@ -1561,7 +1561,7 @@
                                                             <ng-container class="row-grey"
                                                                 *ngIf="clientName == 'Smilepoint'">
                                                                 <td class="row-grey"> {{idx+1}}</td>
-                                                                <td class="row-grey"> {{data.serviceCode}}</td>
+                                                                <td class="row-grey" [ngClass]="{'text-danger':data.rebilledCodeStatus}" [title]="data.rebilledCodeStatus? 'Rebilled' :''"> {{data.serviceCode}}</td>
                                                                 <td class="row-grey"> {{data.tooth}}</td>
                                                                 <td class="row-grey"> {{data.fee}}</td>
                                                                 <td class="row-grey"> {{data.estPrimary}}</td>
