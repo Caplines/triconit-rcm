@@ -77,6 +77,7 @@ import com.tricon.rcm.dto.ClaimDetailDto;
 import com.tricon.rcm.dto.ClaimEditDetailDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
+import com.tricon.rcm.dto.LinkedClaimResponseDto;
 import com.tricon.rcm.dto.ListOfClaimsCountsDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PendencyDataCountDto;
@@ -117,6 +118,7 @@ import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.IVFDto;
 import com.tricon.rcm.dto.customquery.IssueClaimDto;
+import com.tricon.rcm.dto.customquery.LinkedClaimDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.RcmClaimNoteDto;
@@ -1226,7 +1228,7 @@ public class ClaimServiceImpl {
 	}
 	
 	public List<String> validSecondaryClaimDataFromRecreateSection(ClaimFromSheet re,
-			String companyuuid, String officeuuids) {
+			String companyuuid) {
 
 
 		logger.info(" In Validate Secondary Claim From Recreate Claim section");
@@ -2117,14 +2119,26 @@ public class ClaimServiceImpl {
 				implDto.setClaimCmpMatchesLoggedCmp(false);
 			}
 			implDto.setIvfId(dto.getIvId());
-			List<String> linkedClaims = rcmLinkedClaimsRepo.getLinkedClaims(dto.getUuid());
-			if (linkedClaims!=null && linkedClaims.size()==0) {
-				linkedClaims.add("N/A");
-			}else if (linkedClaims ==null) {
-				linkedClaims = new ArrayList<>();
-				linkedClaims.add("N/A");
+			//for linked claims
+			List<LinkedClaimDto> linkedClaims = rcmLinkedClaimsRepo.getLinkedClaimsByClaimUuuid(dto.getUuid());
+			List<LinkedClaimResponseDto> linkedClaimsList = new ArrayList<>();
+			if (linkedClaims != null && linkedClaims.size() > 0) {
+				linkedClaims.forEach(x -> {
+					LinkedClaimResponseDto linkedClaimdto = new LinkedClaimResponseDto();
+					if (x.getClaimId().contains(Constants.ARCHIVE_PREFIX)) {
+						String removeArchivePrefix = x.getClaimId()
+								.split(Constants.HYPHEN + Constants.ARCHIVE_PREFIX)[1];
+						linkedClaimdto.setClaimId(removeArchivePrefix);
+						linkedClaimdto.setClaimUuid(x.getClaimUuid());
+						linkedClaimsList.add(linkedClaimdto);
+					} else {
+						linkedClaimdto.setClaimId(x.getClaimId());
+						linkedClaimdto.setClaimUuid(x.getClaimUuid());
+						linkedClaimsList.add(linkedClaimdto);
+					}
+				});
 			}
-			implDto.setLinkedClaims(linkedClaims);
+			implDto.setLinkedClaims(linkedClaimsList);
 			String ivfId = "", tpId = "",ivDos="",tpDos="";
 			String[] clT = implDto.getClaimId().split("_");
 			String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter

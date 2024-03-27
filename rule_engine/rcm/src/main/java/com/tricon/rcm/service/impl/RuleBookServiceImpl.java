@@ -833,11 +833,13 @@ public class RuleBookServiceImpl {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
-		boolean pass = true;
+		boolean pass = false;
 		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
 		try {
-			if (!currentClaim.getTreatingProvider().equals(primaryClaimForNew.getTreatingProvider())) {
-				pass = false;
+			if (currentClaim.getTreatingProvider().contains(primaryClaimForNew.getTreatingProvider())
+					|| primaryClaimForNew.getTreatingProvider().contains(currentClaim.getTreatingProvider()
+					)) {
+				pass = true;
 			}
 
 			if (pass) {
@@ -846,7 +848,7 @@ public class RuleBookServiceImpl {
 			} else {
 				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule327.error.message",
-								new Object[] {primaryClaimForNew.getTreatingProvider(), currentClaim.getTreatingProvider() }, locale),
+								new Object[] {primaryClaimForNew.getTreatingProvider()!=null?primaryClaimForNew.getTreatingProvider().replaceAll(Constants.ProviderJoinCons, ","):"", currentClaim.getTreatingProvider()!=null?currentClaim.getTreatingProvider().replaceAll(Constants.ProviderJoinCons, ","):"" }, locale),
 						Constants.FAIL));
 			}
 
@@ -869,7 +871,9 @@ public class RuleBookServiceImpl {
 		boolean pass = true;
 		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
 		try {
-			if (!currentClaim.getProviderOnClaim().equals(primaryClaimForNew.getProviderOnClaim())) {
+			
+			
+			if (!currentClaim.getProviderOnClaim().equalsIgnoreCase(primaryClaimForNew.getProviderOnClaim())) {
 				pass = false;
 			}
 

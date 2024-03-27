@@ -19,7 +19,7 @@ public class FreshClaimDataImplDto {
 	float billedAmount;
 	float primTotal;
 	float secTotal;
-	List<String> linkedClaims;
+	List<LinkedClaimResponseDto> linkedClaims;
 	String ivfId;
 	String ivDos;
 	

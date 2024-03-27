@@ -1763,11 +1763,18 @@ public class ClaimSectionImpl {
 			if (recreateClaimRequestInfoModel.getNewClaimId() != null && isPrimary
 					&& recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_ATTACH_SECONDARY) {
 				if (recreateClaimRequestInfoModel.getClaimFromSheet() != null) {
+					logger.info("Inside secondary claim->>>>>>>>");
 					//find current claim service codes,surface and tooth details
 					
 					List<RcmClaimDetail>claimDetails= claimDetailRepo.findByClaimClaimUuidAndActiveTrue(currentClaim.getClaimUuid());		
 					List<String>serviceCodes=claimDetails.stream().map(x->x.getServiceCode()).collect(Collectors.toList());
 					List<String>toothAndSurface=new ArrayList<>();
+					
+					//if service code is empty then no need to create secondary claim
+					if(serviceCodes.isEmpty()) {
+						logger.info("Service code is not present in current claim->>" + serviceCodes);
+						return null;
+					}
 					
 					for (RcmClaimDetail data : claimDetails) {
 						if (data.getTooth() != null && !data.getTooth().trim().equals("")) {
@@ -1822,6 +1829,7 @@ public class ClaimSectionImpl {
 			
 			// check for recreate partial claim
 			if (recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_PARTIAL_CLAIM) {
+				logger.info("Inside partial claim->>>>>>>>");
 				List<String> existingServiceCodesForNewClaim = recreateClaimRequestInfoModel
 						.getExistingNewClaimServiceCodes().stream().distinct()
 						.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
@@ -1907,6 +1915,7 @@ public class ClaimSectionImpl {
 			// check for full claim
 
 			if (recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_FULL_CLAIM) {
+				logger.info("Inside full claim->>>>>>>>");
 				RcmClaims newPrimaryClaim =null;
 				RcmClaims newSecondaryClaim =null;
 				RcmClaims newLinkedClaim =null;

@@ -41,7 +41,7 @@ export interface ClaimRcmDataModel {
 	clientName?: string;
 	regenerated?: boolean;
 	secMemberId?: string;
-	linkedClaims?: Array<string>;
+	linkedClaims?: Array<linkedClaim>;
 	providerId?: string;
 	pulledDate?: Date;
 	timeFilLimitDay?: string;
@@ -305,4 +305,9 @@ export interface ClaimStep {
 	dt?: Date;
 	name?: string;
 	status?: string;
+}
+
+export interface linkedClaim {
+	claimId?: string;
+	claimUuid?: string;
 }

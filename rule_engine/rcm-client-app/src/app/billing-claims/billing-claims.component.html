@@ -210,7 +210,14 @@
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">Linked Claim IDs </label>
-                                            <div>{{claimRcm?.linkedClaims?.toString()}}</div>
+                                            <div>
+                                        <ng-container *ngIf="claimRcm?.linkedClaims.length==0">
+                                            N/A
+                                        </ng-container>
+                                        <ng-container *ngFor="let item of claimRcm?.linkedClaims">
+                                            <div><a href="/billing-claims/{{item.claimUuid}}" target="_blank">{{item.claimId | claimIdPipe}}</a></div>
+                                        </ng-container>
+                                    </div>
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">Provider Type</label>
