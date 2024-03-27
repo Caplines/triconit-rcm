@@ -1792,6 +1792,7 @@ public class ClaimSectionImpl {
 						dtoSheet.setOfficeKey(String.valueOf(office.getKey()));
 						dtoSheet.setServiceCodes(serviceCodes);		
 						dtoSheet.setToothAndSurfaces(toothAndSurface);
+						dtoSheet.setClaimId(currentClaimId[0]);
 						List<ClaimLogDto> responseForSecondaryClaim = claimServiceImpl
 								.createSecondaryClaimDataFromRecreateSection(dtoSheet,
 										partialHeader.getCompany().getUuid(), currentClaim.getOffice().getUuid(),
@@ -1974,6 +1975,9 @@ public class ClaimSectionImpl {
 				dto.setReason(recreateClaimRequestInfoModel.getReasonForRecreation());
 				String archiveResponse = claimServiceImpl.archiveActiveClaim(dto, partialHeader);
 				logger.info("Archive response:" + archiveResponse);
+				//reset rebilled_satatus false
+				primaryClaim.setRebilledStatus(false);
+				rcmClaimRepository.save(primaryClaim);
 				response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, primaryClaim, createdBy, team,
 						finalSubmit);
 				if (secondaryClaim!=null) {
@@ -1982,6 +1986,9 @@ public class ClaimSectionImpl {
 				dto2.setReason(recreateClaimRequestInfoModel.getReasonForRecreation());
 				String archiveResponse2 = claimServiceImpl.archiveActiveClaim(dto2, partialHeader);
 				logger.info("Archive response:" + archiveResponse2);
+				//reset rebilled_satatus false
+				primaryClaim.setRebilledStatus(false);
+				rcmClaimRepository.save(primaryClaim);
 				response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, secondaryClaim, createdBy, team,
 						finalSubmit);
 				}
