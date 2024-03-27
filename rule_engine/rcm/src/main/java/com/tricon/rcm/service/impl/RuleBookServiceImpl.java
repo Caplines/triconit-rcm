@@ -724,7 +724,7 @@ public class RuleBookServiceImpl {
 	}
 
 	// current claim is secondary or not
-	public List<ValidateRecreateClaimResponseDto> rule324(RcmRules rule, String currentClaimSecondary,boolean isPrimary) {
+	public List<ValidateRecreateClaimResponseDto> rule324(RcmRules rule, RcmClaims currentClaimSecondary) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
 
@@ -732,7 +732,8 @@ public class RuleBookServiceImpl {
 
 		List<ValidateRecreateClaimResponseDto> dList = new ArrayList<>();
 		try {
-			if (currentClaimSecondary != null && !isPrimary) {
+			if (currentClaimSecondary != null && currentClaimSecondary.getCurrentState()==Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED && 
+					currentClaimSecondary.getClaimId().contains(ClaimTypeEnum.S.getSuffix())) {
 				pass = false;
 			}
 			if (pass) {
@@ -741,7 +742,7 @@ public class RuleBookServiceImpl {
 			} else {
 				dList.add(new ValidateRecreateClaimResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule324.error.message",
-								new Object[] { currentClaimSecondary}, locale),
+								new Object[] { currentClaimSecondary.getClaimId()}, locale),
 						Constants.FAIL));
 			}
 

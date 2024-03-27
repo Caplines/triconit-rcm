@@ -934,7 +934,7 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	@ApiOperation(value = "Api for validate secondary claim for recreation of claim", response = String.class, responseContainer = "List")
-	@PostMapping(value = "api/validate-secondary-claim-creation/{claimUuid}")
+	@PostMapping(value = "/api/validate-secondary-claim-creation/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
 	public ResponseEntity<?> validateSecondaryClaim(@PathVariable("claimUuid")String claimUuid, @RequestBody ClaimFromSheet dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

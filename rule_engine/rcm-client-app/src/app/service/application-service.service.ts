@@ -556,58 +556,58 @@ export class ApplicationServiceService extends BaseService {
   }
 
   fetchClaimLevelInfoSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-claim-level-info']+ "/" + uuid+"/"+false, callback,false)
+    this.getData({}, this.httpUrl['get-claim-level-info'] + "/" + uuid + "/" + false, callback, false)
   }
 
   fetchAppealSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-appeal-level-info']+ "/" + uuid+"/"+false, callback,false)
+    this.getData({}, this.httpUrl['get-appeal-level-info'] + "/" + uuid + "/" + false, callback, false)
   }
 
   fetchInsurancePaymentInfoSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-insurance-payment-info']+ "/" + uuid+"/"+false, callback,false)
+    this.getData({}, this.httpUrl['get-insurance-payment-info'] + "/" + uuid + "/" + false, callback, false)
   }
 
   fetchEobSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-eob-info']+ "/" + uuid, callback,false)
+    this.getData({}, this.httpUrl['get-eob-info'] + "/" + uuid, callback, false)
   }
 
   fetchInsuranceFollowUpSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-follow-up-info']+ "/" + uuid, callback,false)
+    this.getData({}, this.httpUrl['get-follow-up-info'] + "/" + uuid, callback, false)
   }
 
   fetchServiceLevelInfoSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-service_level_info']+ "/" + uuid, callback,false)
+    this.getData({}, this.httpUrl['get-service_level_info'] + "/" + uuid, callback, false)
   }
 
   fetchPatientStatementSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-patient-statement-info']+ "/" + uuid+"/"+false, callback,false)
+    this.getData({}, this.httpUrl['get-patient-statement-info'] + "/" + uuid + "/" + false, callback, false)
   }
 
   fetchPatientPaymentSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-patient-payment-info']+ "/" + uuid+"/"+false, callback,false)
+    this.getData({}, this.httpUrl['get-patient-payment-info'] + "/" + uuid + "/" + false, callback, false)
   }
 
   fetchNextActionRequiredSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-next_action-required-info']+ "/" + uuid+"/"+false, callback,false)
+    this.getData({}, this.httpUrl['get-next_action-required-info'] + "/" + uuid + "/" + false, callback, false)
   }
 
   fetchPatientCommunicationSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-patient-communication-info']+ "/" + uuid, callback,false)
+    this.getData({}, this.httpUrl['get-patient-communication-info'] + "/" + uuid, callback, false)
   }
 
   fetchRequestRebillingSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['request-rebilling-info']+ "/" + uuid, callback,false)
+    this.getData({}, this.httpUrl['request-rebilling-info'] + "/" + uuid, callback, false)
   }
 
   fetchRebillingInfoSection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['rebiiling-info']+ "/" + uuid, callback,false)
+    this.getData({}, this.httpUrl['rebiiling-info'] + "/" + uuid, callback, false)
   }
 
   fetchCollectionAgencySection(uuid: any, callback: any) {
-    this.getData({}, this.httpUrl['get-collection-agency-info']+ "/" + uuid+"/"+false, callback,false)
+    this.getData({}, this.httpUrl['get-collection-agency-info'] + "/" + uuid + "/" + false, callback, false)
   }
 
-    removeEobData(param: any, callback: any) {
+  removeEobData(param: any, callback: any) {
     this.postData(param, this.httpUrl['remove-eob-data'], callback)
   }
 
@@ -615,9 +615,12 @@ export class ApplicationServiceService extends BaseService {
     this.postData(param, this.httpUrl['validate-recreate-claim'], callback)
   }
 
-    getPdfUrlEob(param: any, callback: any) {
-    this.getData({}, this.httpUrl['vieweoblink']+ "/" + param, callback,false)
+  getPdfUrlEob(param: any, callback: any) {
+    this.getData({}, this.httpUrl['vieweoblink'] + "/" + param, callback, false)
   }
 
+  validateSecondaryClaimData(claimUuid: any, params: any, callback: any) {
+    this.postData(params, this.httpUrl['validate-secondary-claim-creation'] + "/" + claimUuid, callback)
+  }
 
 }

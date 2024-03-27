@@ -1670,6 +1670,9 @@ public class ClaimSectionImpl {
 		RcmClaims newPrimaryClaim =null;
 		RcmClaims secondaryClaim =null;
 		RcmOffice  office=officeRepo.findById(currentClaim.getOffice().getUuid()).get();
+		if (dto.getNewClaimId()!=null && dto.getNewClaimId().trim().equals("")) {
+			dto.setNewClaimId(null);
+		}
 		if (dto.getNewClaimId()!=null) {
 		newPrimaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.P.getSuffix(),office);
         secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);
@@ -1682,8 +1685,9 @@ public class ClaimSectionImpl {
         
 		//check secondary for current claim if button is secondary
 		if (dto.getButtonType()!=null) {
-			data.addAll(ruleBookService.rule324(rule324, currentClaimId[0],isPrimary));
-			response.setSecondaryValid(isPrimary? true : false);
+			secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(currentClaimId[0]+ClaimTypeEnum.S.getSuffix(),office);
+			data.addAll(ruleBookService.rule324(rule324, secondaryClaim));
+			response.setSecondaryValid(secondaryClaim==null ? true : false);
 			response.setValidationResponse(data);
 			return response;
 		}
