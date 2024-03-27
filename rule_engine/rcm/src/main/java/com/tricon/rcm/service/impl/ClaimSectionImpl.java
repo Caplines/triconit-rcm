@@ -1236,7 +1236,7 @@ public class ClaimSectionImpl {
 			currentClaimStatusAndNextActionData
 					.setCurrentClaimStatusEs(nextActionReequiredInfoModel.getCurrentClaimStatusEs());
 			currentClaimStatusAndNextActionData
-					.setCurrentClaimStatusRcm(nextActionReequiredInfoModel.getCurrentClaimStatusEs());
+					.setCurrentClaimStatusRcm(nextActionReequiredInfoModel.getCurrentClaimStatusRcm());
 			currentClaimStatusAndNextActionData.setNextAction(nextActionReequiredInfoModel.getNextAction());
 			currentClaimStatusAndNextActionData.setRemarks(nextActionReequiredInfoModel.getRemarks());
 			currentClaimStatusAndNextActionData.setClaim(claim);
@@ -1246,6 +1246,10 @@ public class ClaimSectionImpl {
 			currentClaimStatusAndNextActionData.setAssignToTeam(assignToTeam);
 			currentClaimStatusAndNextActionData = currentStatusAndNextActionRepo
 					.save(currentClaimStatusAndNextActionData);
+			
+			//update es_satus in claim table
+			claim.setStatusESUpdated(nextActionReequiredInfoModel.getCurrentClaimStatusEs());
+			rcmClaimRepository.save(claim);
 			return currentClaimStatusAndNextActionData != null ? true : null;
 		}
 		return null;
@@ -1797,11 +1801,16 @@ public class ClaimSectionImpl {
 						dtoSheet.setServiceCodes(serviceCodes);		
 						dtoSheet.setToothAndSurfaces(toothAndSurface);
 						dtoSheet.setClaimId(currentClaimId[0]);
+						dtoSheet.setDos(Constants.SDF_MYSL_DATE.format(currentClaim.getDos()!=null?currentClaim.getDos():""));
+						dtoSheet.setPaitentDob(Constants.SDF_MYSL_DATE.format(currentClaim.getPatientBirthDate()!=null?currentClaim.getPatientBirthDate():""));
+						dtoSheet.setPatientName(currentClaim.getPatientName());	
+						dtoSheet.setPatientContactNo(currentClaim.getPatientContactNo());
+						dtoSheet.setTreatingProviderName(currentClaim.getTreatingProvider());
+						dtoSheet.setAccountId(currentClaim.getPatientId());
 						List<ClaimLogDto> responseForSecondaryClaim = claimServiceImpl
 								.createSecondaryClaimDataFromRecreateSection(dtoSheet,
 										partialHeader.getCompany().getUuid(), currentClaim.getOffice().getUuid(),
-										createdBy, team);
-
+										createdBy, team,currentClaim.getStatusES());
 						logger.info("ResponseForSecondaryClaim->>" + responseForSecondaryClaim);
 						break;
 					}

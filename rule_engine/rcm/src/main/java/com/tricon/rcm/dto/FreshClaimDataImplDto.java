@@ -158,5 +158,7 @@ public class FreshClaimDataImplDto {
 	float amountCollectedClaims;
 
 	Boolean reconciliationPass;
+	
+    String statusESUpdated;
 }
 

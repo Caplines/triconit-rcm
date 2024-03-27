@@ -107,6 +107,7 @@ export interface ClaimRcmDataModel {
 
 	reconciliationPass?: boolean;
 	amountCollectedClaims?:number;
+	statusESUpdated?:string;
 
 }
 

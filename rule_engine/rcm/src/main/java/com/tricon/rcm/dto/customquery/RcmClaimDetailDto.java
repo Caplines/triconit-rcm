@@ -106,4 +106,5 @@ public interface RcmClaimDetailDto {
 
 	Boolean getReconciliationPass();
 	
+	String getEsStatusUpdated();
 }

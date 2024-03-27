@@ -298,4 +298,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "reconciliation_pass")
 	private Boolean reconciliationPass;
+	
+	@Column(name = "status_es_updated")
+	private String statusESUpdated;
 }

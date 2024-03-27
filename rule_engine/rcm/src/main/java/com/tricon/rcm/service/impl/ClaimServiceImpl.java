@@ -1431,7 +1431,7 @@ public class ClaimServiceImpl {
 	}
 	
 	public List<ClaimLogDto> createSecondaryClaimDataFromRecreateSection(ClaimFromSheet re,
-			String companyuuid, String officeuuids,RcmUser user,RcmTeam currentTeam) {
+			String companyuuid, String officeuuids,RcmUser user,RcmTeam currentTeam,String currentClaimStatusEs) {
 
 
 		logger.info(" In Save Secondary Claim From Recreate Claim section");
@@ -1688,13 +1688,16 @@ public class ClaimServiceImpl {
 							
 							
 							claim.setCurrentStatus(ClaimStatusEnum.Claim_Uploaded.getId());
+							claim.setStatusES(currentClaimStatusEs);
 							String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
 							claimCycleService.createNewClaimCycle(claim,ClaimStatusEnum.Claim_Uploaded.getType(),null, currentTeam, user);
 							//Save Data in rcm_claim_detail (new Enhancement)
+							int serviceCount=0;
 							if (re.getServiceCodes().size()>0) {
 								RcmClaimDetail det=null;
 								for(String cds:re.getServiceCodes()) {
 									det =new RcmClaimDetail();
+									List<String> toothSurfaces=re.getToothAndSurfaces();
 									det.setApptId("");
 									det.setClaim(claim);
 									det.setDescription("");
@@ -1707,11 +1710,22 @@ public class ClaimServiceImpl {
 									det.setPatientPortionSec("-1");
 									det.setProviderLastName("");
 									det.setServiceCode(cds.trim());
-									det.setStatus("");
+									det.setStatus(currentClaimStatusEs);
 									det.setSurface("");
 									det.setTooth("");
 									det.setActive(true);
+									try {
+										String[] ths = toothSurfaces.get(serviceCount++).split("#");
+										det.setTooth(ths[0]);
+										if (ths.length > 1) {
+											det.setSurface(ths[1]);
+
+										}
+									} catch (Exception b) {
+										b.printStackTrace();
+									}
 									rcmClaimDetailRepo.save(det);
+									
 								}
 									
 							}
@@ -2103,6 +2117,14 @@ public class ClaimServiceImpl {
 			// Fetch Data from RCM Tool Checks and Validations Sheets //141479965
 
 			BeanUtils.copyProperties(dto, implDto);
+			//set es_status updated
+			
+			if (dto.getEsStatusUpdated() == null) {
+				implDto.setStatusESUpdated(dto.getStatusES());
+			} else {
+				implDto.setStatusESUpdated(dto.getEsStatusUpdated());
+			}
+			
 			if (dto.getCurrentStatus()!=0) {
 				ClaimStatusEnum oldStatus = ClaimStatusEnum.getById(dto.getCurrentStatus());
 				if (oldStatus!=null) {
