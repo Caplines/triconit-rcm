@@ -1,5 +1,7 @@
+import { AppConstants } from '../constants/app.constants';
 export default class Utils {
 
+   constructor(public appConstants: AppConstants) { }
    /**
     * Get roles from Authorities
     * @param auth
@@ -241,11 +243,15 @@ export default class Utils {
    }
 
    static isBilling(): boolean {
-      return (Number(localStorage.getItem('selected_teamId')) == 7);
+      return (Number(localStorage.getItem('selected_teamId')) == AppConstants.BILLING_TEAM);
    }
 
    static isInternalAudit(): boolean {
-      return (Number(localStorage.getItem('selected_teamId')) == 3);
+      return (Number(localStorage.getItem('selected_teamId')) == AppConstants.INTERNAL_AUDIT_TEAM);
+   }
+
+   static isCDP(): boolean {
+      return (Number(localStorage.getItem('selected_teamId')) == AppConstants.CDP_TEAM);
    }
 
 

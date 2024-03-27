@@ -19,25 +19,25 @@ export class SearchClaimsPaginationComponent {
   switchBox: any = { 'billing': true, 'reBilling': false };
   isSorted: any = {};
   loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
-  showFilteredDropdown: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket' : false };
+  showFilteredDropdown: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket': false };
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
   date: any;
 
-  isFilterAllSelected: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket' : false };
+  isFilterAllSelected: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket': false };
 
-  filteredColumnData:any={insuranceName:[],insuranceType:[],actionRequired:[],lastTeamWorked:[],ageBracket:[],claimType:[]};
+  filteredColumnData: any = { insuranceName: [], insuranceType: [], actionRequired: [], lastTeamWorked: [], ageBracket: [], claimType: [] };
   clientName: string = '';
   isFilterValueExist: boolean = false;
   isLastTeam: boolean = false;
   fliterName: string = '';
   tabSwitch: any = { 'Fresh': true, 'sendBack': false, 'MyClaims': false };
-  tabValue:any;
-  accessToListOfClaims:any;
-  currentTeamId:number;
+  tabValue: any;
+  accessToListOfClaims: any;
+  currentTeamId: number;
 
-  @Input() searchInputConfig:any;
+  @Input() searchInputConfig: any;
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
       setTimeout(() => {
@@ -46,7 +46,7 @@ export class SearchClaimsPaginationComponent {
     }
   }
 
-  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants,private downloadService:DownLoadService) {
+  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private downloadService: DownLoadService) {
     this.selectedBtype = this.appConstants.BILLING_ID;
   }
 
@@ -57,15 +57,17 @@ export class SearchClaimsPaginationComponent {
     this.currentTeamId = Utils.selectedTeam();
   }
 
-   fetchOfficeByUuid() {
-    let filteredOffices=[];
-    filteredOffices =  this.searchInputConfig.selectedOffices.map((data:any)=>{return{
-      'name':data.name,
-      'officeName':data.name,
-      'checked':true
-    }});
+  fetchOfficeByUuid() {
+    let filteredOffices = [];
+    filteredOffices = this.searchInputConfig.selectedOffices.map((data: any) => {
+      return {
+        'name': data.name,
+        'officeName': data.name,
+        'checked': true
+      }
+    });
 
-    filteredOffices = filteredOffices.sort((a:any,b:any)=>a.name.localeCompare(b.name));
+    filteredOffices = filteredOffices.sort((a: any, b: any) => a.name.localeCompare(b.name));
     this.showFilterOptionOfficeName(filteredOffices);
 
   }
@@ -73,25 +75,25 @@ export class SearchClaimsPaginationComponent {
 
 
   fetchClaims(subType: string) {
-      this.claimDetail = this.searchInputConfig.listOfClaimsData;
-      let data: any = this.claimDetail.map((e: any) => {
-        if (e.claimId.endsWith("_P")) {
-          e['EstAmount'] = e.primeSecSubmittedTotal;
-        } else {
-          e['EstAmount'] = e.secTotal;
-        }
-        return e;
-      })
-      this.claimDetail = data;
-        this.filterOfficeName();
-        this.fetchOfficeByUuid();
-        this.filterOptionClaimType(subType);
-        this.filterOptionActionRequired(subType);
-        this.filterOptionInsuranceName(subType);
-        this.filterOptionInsuranceType(subType);
-        this.filterOptionLastTeamWorked();
-        this.filterOptionAgeBracket(subType);
-        this.showAgeBracket_WithColor_AndClaimIdDigits();
+    this.claimDetail = this.searchInputConfig.listOfClaimsData;
+    let data: any = this.claimDetail.map((e: any) => {
+      if (e.claimId.endsWith("_P")) {
+        e['EstAmount'] = e.primeSecSubmittedTotal;
+      } else {
+        e['EstAmount'] = e.secTotal;
+      }
+      return e;
+    })
+    this.claimDetail = data;
+    this.filterOfficeName();
+    this.fetchOfficeByUuid();
+    this.filterOptionClaimType(subType);
+    this.filterOptionActionRequired(subType);
+    this.filterOptionInsuranceName(subType);
+    this.filterOptionInsuranceType(subType);
+    this.filterOptionLastTeamWorked();
+    this.filterOptionAgeBracket(subType);
+    this.showAgeBracket_WithColor_AndClaimIdDigits();
 
   }
 
@@ -111,7 +113,7 @@ export class SearchClaimsPaginationComponent {
       this.filteredColumnData.ageBracket = [];
     }
     if (subType == 'Fresh') {
-      this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
+      this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' }, { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
       this.isFilterValueExist = true;
     }
     this.isFilterAllSelected.ageBracket = true;
@@ -122,12 +124,12 @@ export class SearchClaimsPaginationComponent {
       this.filteredColumnData.actionRequired = [];
     }
     if (subType == 'Fresh') {
-      if(this.currentTeamId==3){
+      if (this.currentTeamId == 3) {
         this.filteredColumnData.actionRequired.push({ 'checked': true, 'actionRequired': "Auditing", "statusType": 1 });
-      }else{
+      } else {
         this.filteredColumnData.actionRequired.push({ 'checked': true, 'actionRequired': "Billing", "statusType": 1 }, { 'checked': true, 'actionRequired': "Re-Billing", "statusType": 2 });
       }
-   
+
       this.isFilterValueExist = true;
     }
     this.isFilterAllSelected.actionRequired = true;
@@ -165,11 +167,11 @@ export class SearchClaimsPaginationComponent {
     if (subType == 'Fresh') {
       this.filteredItems.forEach((e: any) => {
         if (e.claimId.includes("_P") && e.prName) {
-            this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.prName });
-            e['insuranceType'] = e.prName;
+          this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.prName });
+          e['insuranceType'] = e.prName;
         } else if (e.claimId.includes("_S") && e.secName) {
-            this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.secName });
-            e['insuranceType'] = e.secName;
+          this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.secName });
+          e['insuranceType'] = e.secName;
         }
       })
       this.filteredColumnData.insuranceType = Array.from(new Set(this.filteredColumnData.insuranceType.map((a: any) => a.insuranceType)))
@@ -285,7 +287,7 @@ export class SearchClaimsPaginationComponent {
         return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
       });
     });
-  
+
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredColumnData.claimType.some((checkbox: any) => {
         return checkbox.checked && checkbox['claimType'] === item['claimType'];
@@ -405,7 +407,7 @@ export class SearchClaimsPaginationComponent {
     this.addOrRemoveFilterClaimType();
 
     console.log(43);
-    
+
   }
 
   filterAgeBracket(filterProperty: any) {
@@ -496,7 +498,7 @@ export class SearchClaimsPaginationComponent {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Clients","Office", "Claim Id", "Patient ID","Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type","Insurance Name", "Insurance Type", "Est. Amount"]
+      headers: ["Clients", "Office", "Claim Id", "Patient ID", "Patient Name", 'DOS', "Claim Age", "TFL", "Claim Type", "Insurance Name", "Insurance Type", "Est. Amount"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -508,16 +510,16 @@ export class SearchClaimsPaginationComponent {
       else {
         e = { ...e, dos: '' };
       }
-      if(this.currentTeamId==3){
+      if (this.currentTeamId == AppConstants.INTERNAL_AUDIT_TEAM) {
         e = { ...e, ['actionRequired']: "Auditing" };
       }
-       else{
+      else {
         if (e.statusType == this.appConstants.BILLING_ID) {
           e = { ...e, ['actionRequired']: "BILLING" };
         } else {
           e = { ...e, ['actionRequired']: "RE-BILLING" };
         }
-      }     
+      }
       if (e.claimId.endsWith("_P")) {
         e = { ...e, ['claimType']: "Primary" };
       } else {
@@ -537,25 +539,25 @@ export class SearchClaimsPaginationComponent {
     })      //method add value as "-" or "0", if its empty or null.
 
 
-      excelData = excelData.map((e: any) => {
-        return {
-          "Clients":e.clientName,
-          "Office Name": e.officeName,
-          "Claim Id":e.newClaimId,
-          "Patient ID": e.patientId,
-          "Patient Name": e.patientName,
-          'DOS': e.dos,
-          "Claim Age": e.claimAge,
-          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
-          "Claim Type": e.claimType,
-          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
-          "Insurance Type": e.prName ? e.prName : e.secName,
-          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
-          "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
-        }
-      })
-      excelData = excelData.map(
-        ({ claimId, opdos, opdt, secTotal, uuid, statusType, billedAmount, EstAmount,ageBracket,pendingSince,actionRequired, ...newClaimData }: any) => newClaimData);
+    excelData = excelData.map((e: any) => {
+      return {
+        "Clients": e.clientName,
+        "Office Name": e.officeName,
+        "Claim Id": e.newClaimId,
+        "Patient ID": e.patientId,
+        "Patient Name": e.patientName,
+        'DOS': e.dos,
+        "Claim Age": e.claimAge,
+        "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+        "Claim Type": e.claimType,
+        "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+        "Insurance Type": e.prName ? e.prName : e.secName,
+        "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+        "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
+      }
+    })
+    excelData = excelData.map(
+      ({ claimId, opdos, opdt, secTotal, uuid, statusType, billedAmount, EstAmount, ageBracket, pendingSince, actionRequired, ...newClaimData }: any) => newClaimData);
 
 
     this.date = new Date();
@@ -719,7 +721,7 @@ export class SearchClaimsPaginationComponent {
           this.date = new Date();
           this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
           console.log(res.body);
-          this.downloadService.saveBolbData(res.body,  `${localStorage.getItem("selected_clientName")}_Search_Claims_${this.date}.pdf`);
+          this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_Search_Claims_${this.date}.pdf`);
           this.loader.exportPDFLoader = false;
         } else {
           console.log("something went wrong");
@@ -728,28 +730,28 @@ export class SearchClaimsPaginationComponent {
       })
     }
   }
-  
-  showAgeBracket_WithColor_AndClaimIdDigits(){
-    let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
-    this.filteredItems.forEach((e:any) => {
-      if(e.dos){
-           let dos:any = new Date(e.dos);
-           const diffTime = Math.abs(currentDate - dos);
-           let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-           e.ageBracket = (diffDays <= 30) ? `0-30`  : (diffDays > 30 && diffDays <= 60) ?  `31-60` : (diffDays > 60 && diffDays <= 90) ? `61-90` : (diffDays > 90) ? `90+` : '';
+
+  showAgeBracket_WithColor_AndClaimIdDigits() {
+    let currentDate: any = new Date().setHours(0, 0, 0, 0); // To set the time equal
+    this.filteredItems.forEach((e: any) => {
+      if (e.dos) {
+        let dos: any = new Date(e.dos);
+        const diffTime = Math.abs(currentDate - dos);
+        let diffDays: any = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        e.ageBracket = (diffDays <= 30) ? `0-30` : (diffDays > 30 && diffDays <= 60) ? `31-60` : (diffDays > 60 && diffDays <= 90) ? `61-90` : (diffDays > 90) ? `90+` : '';
       }
-      if(e.claimId){
-        e.newClaimId = e.claimId.replace('_P',"").replace('_S',"")
+      if (e.claimId) {
+        e.newClaimId = e.claimId.replace('_P', "").replace('_S', "")
       }
-     if(e.claimAge && e.timelyFilingLimitData){
-       if(Number(e.timelyFilingLimitData) - e.claimAge < 30){
-       e.colorChange = true;
+      if (e.claimAge && e.timelyFilingLimitData) {
+        if (Number(e.timelyFilingLimitData) - e.claimAge < 30) {
+          e.colorChange = true;
+        }
+        else {
+          e.colorChange = false;
+        }
       }
-      else{
-        e.colorChange = false;
-      }
-     }
     });
-  }  
+  }
 
 }

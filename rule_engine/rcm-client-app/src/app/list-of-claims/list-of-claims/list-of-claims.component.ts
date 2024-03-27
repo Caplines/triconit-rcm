@@ -22,23 +22,23 @@ export class ListOfClaimsComponent implements OnInit {
   switchBox: any = { 'billing': true, 'reBilling': false };
   isSorted: any = {};
   loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
-  showFilteredDropdown: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket' : false };
+  showFilteredDropdown: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket': false };
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
   date: any;
 
-  isFilterAllSelected: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket' : false };
+  isFilterAllSelected: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket': false };
 
-  filteredColumnData:any={insuranceName:[],insuranceType:[],actionRequired:[],lastTeamWorked:[],ageBracket:[],claimType:[]};
+  filteredColumnData: any = { insuranceName: [], insuranceType: [], actionRequired: [], lastTeamWorked: [], ageBracket: [], claimType: [] };
   clientName: string = '';
   isFilterValueExist: boolean = false;
   isLastTeam: boolean = false;
   fliterName: string = '';
   tabSwitch: any = { 'Fresh': true, 'sendBack': false, 'MyClaims': false };
-  tabValue:any;
-  accessToListOfClaims:any;
-  currentTeamId:number;
+  tabValue: any;
+  accessToListOfClaims: any;
+  currentTeamId: number;
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
       setTimeout(() => {
@@ -47,7 +47,7 @@ export class ListOfClaimsComponent implements OnInit {
     }
   }
 
-  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title,private downloadService:DownLoadService) {
+  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title, private downloadService: DownLoadService) {
     this.selectedBtype = this.appConstants.BILLING_ID;
     title.setTitle(Utils.defaultTitle + "List Of Claims");
   }
@@ -59,14 +59,14 @@ export class ListOfClaimsComponent implements OnInit {
     this.currentTeamId = Utils.selectedTeam();
   }
 
-  isAccessToListOfClaims(){
-    if(Utils.selectedTeam() == 7 || Utils.selectedTeam() == 3){
+  isAccessToListOfClaims() {
+    if (Utils.selectedTeam() == 7 || Utils.selectedTeam() == 3) {
       this.accessToListOfClaims = true;
       this.fetchClaims(this.selectedSubtype);
-    } else{
-      this.accessToListOfClaims=false;
+    } else {
+      this.accessToListOfClaims = false;
     }
-    
+
   }
 
   fetchOfficeByUuid() {
@@ -146,11 +146,11 @@ export class ListOfClaimsComponent implements OnInit {
       this.filteredColumnData.ageBracket = [];
     }
     if (subType == 'Fresh') {
-      this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
+      this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' }, { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
       this.isFilterValueExist = true;
     }
     if (subType == 'sendBack') {
-      this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' } , { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
+      this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' }, { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
       this.isFilterValueExist = true;
     }
     this.isFilterAllSelected.ageBracket = true;
@@ -161,12 +161,12 @@ export class ListOfClaimsComponent implements OnInit {
       this.filteredColumnData.actionRequired = [];
     }
     if (subType == 'Fresh') {
-      if(this.currentTeamId==3){
+      if (this.currentTeamId == 3) {
         this.filteredColumnData.actionRequired.push({ 'checked': true, 'actionRequired': "Auditing", "statusType": 1 });
-      }else{
+      } else {
         this.filteredColumnData.actionRequired.push({ 'checked': true, 'actionRequired': "Billing", "statusType": 1 }, { 'checked': true, 'actionRequired': "Re-Billing", "statusType": 2 });
       }
-   
+
       this.isFilterValueExist = true;
     }
     this.isFilterAllSelected.actionRequired = true;
@@ -221,11 +221,11 @@ export class ListOfClaimsComponent implements OnInit {
     if (subType == 'Fresh') {
       this.filteredItems.forEach((e: any) => {
         if (e.claimId.includes("_P") && e.prName) {
-            this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.prName });
-            e['insuranceType'] = e.prName;
+          this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.prName });
+          e['insuranceType'] = e.prName;
         } else if (e.claimId.includes("_S") && e.secName) {
-            this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.secName });
-            e['insuranceType'] = e.secName;
+          this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.secName });
+          e['insuranceType'] = e.secName;
         }
       })
       this.filteredColumnData.insuranceType = Array.from(new Set(this.filteredColumnData.insuranceType.map((a: any) => a.insuranceType)))
@@ -618,7 +618,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Claim Id", "Patient ID","Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Assigned By" : ""]
+      headers: ["Office", "Claim Id", "Patient ID", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Assigned By" : ""]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -630,16 +630,16 @@ export class ListOfClaimsComponent implements OnInit {
       else {
         e = { ...e, dos: '' };
       }
-      if(this.currentTeamId==3){
+      if (this.currentTeamId == 3) {
         e = { ...e, ['actionRequired']: "Auditing" };
       }
-       else{
+      else {
         if (e.statusType == this.appConstants.BILLING_ID) {
           e = { ...e, ['actionRequired']: "BILLING" };
         } else {
           e = { ...e, ['actionRequired']: "RE-BILLING" };
         }
-      }     
+      }
       if (e.claimId.endsWith("_P")) {
         e = { ...e, ['claimType']: "Primary" };
       } else {
@@ -665,14 +665,14 @@ export class ListOfClaimsComponent implements OnInit {
       excelData = excelData.map((e: any) => {
         return {
           "Office Name": e.officeName,
-          "Claim Id":e.newClaimId,
+          "Claim Id": e.newClaimId,
           "Patient ID": e.patientId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
           "Claim Age": e.claimAge,
           "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
-          "Pending Since Date":e.pendingSince,
-          "Age Bracket":e.ageBracket,
+          "Pending Since Date": e.pendingSince,
+          "Age Bracket": e.ageBracket,
           "Claim Type": e.claimType,
           "Action Required": e.actionRequired,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
@@ -688,14 +688,14 @@ export class ListOfClaimsComponent implements OnInit {
       excelData = excelData.map((e: any) => {
         return {
           "Office Name": e.officeName,
-          "Claim Id":e.newClaimId,
+          "Claim Id": e.newClaimId,
           "Patient ID": e.patientId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
           "Claim Age": e.claimAge,
           "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
-          "Pending Since Date":e.pendingSince,
-          "Age Bracket":e.ageBracket,
+          "Pending Since Date": e.pendingSince,
+          "Age Bracket": e.ageBracket,
           "Claim Type": e.claimType,
           "Action Required": e.actionRequired,
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
@@ -757,7 +757,7 @@ export class ListOfClaimsComponent implements OnInit {
         }
       });
       this.filterInsuranceName("insuranceName");
-      
+
       // event.target.checked ? '' : this.multiselectInsuranceChild.clearAll('locInsuranceName','filterByInsuranceName');
       // this.multiselectInsuranceChild.clearAll('locInsuranceName','filterByInsuranceName');
 
@@ -869,21 +869,21 @@ export class ListOfClaimsComponent implements OnInit {
   switchTab(tab: any) {
     if (!this.claimDetail) return;
     if (tab == 'Fresh') {
-      this.tabValue='Fresh';
+      this.tabValue = 'Fresh';
       this.tabSwitch.Fresh = true;
       this.tabSwitch.sendBack = false;
       this.tabSwitch.MyClaims = false;
       this.fetchClaims('Fresh');
     }
     else if (tab == 'sendBack') {
-      this.tabValue='sendBack';
+      this.tabValue = 'sendBack';
       this.tabSwitch.Fresh = false;
       this.tabSwitch.sendBack = true;
       this.tabSwitch.MyClaims = false;
       this.fetchClaims('sendBack');
     }
     else if (tab == 'MyClaims') {
-      this.tabValue='MyClaims';
+      this.tabValue = 'MyClaims';
       this.tabSwitch.Fresh = false;
       this.tabSwitch.sendBack = false;
       this.tabSwitch.MyClaims = true;
@@ -897,46 +897,46 @@ export class ListOfClaimsComponent implements OnInit {
     // this.selectAll(event, 'officeName');
   }
 
-  downloadPdf(){
+  downloadPdf() {
     this.loader.exportPDFLoader = true;
-    if(this.filteredItems.length!=0){
-    let data = {"fileName":"List_Of_Claims","data": this.filteredItems,"clientName": this.clientName,"tabSwitch":this.tabValue,"currentTeamId":this.currentTeamId};
-    this. appService.lisOfClaimsPdfDownload(data,"pdf",(res: any) => {
-      if (res.status === 200){
-        this.date = new Date();
-        this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-        console.log(res.body);
-        this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}.pdf`);
-        this.loader.exportPDFLoader = false;
-      }else{
-        console.log("something went wrong");
-        this.loader.exportPDFLoader = false;
-      }
-    })
+    if (this.filteredItems.length != 0) {
+      let data = { "fileName": "List_Of_Claims", "data": this.filteredItems, "clientName": this.clientName, "tabSwitch": this.tabValue, "currentTeamId": this.currentTeamId };
+      this.appService.lisOfClaimsPdfDownload(data, "pdf", (res: any) => {
+        if (res.status === 200) {
+          this.date = new Date();
+          this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+          console.log(res.body);
+          this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}.pdf`);
+          this.loader.exportPDFLoader = false;
+        } else {
+          console.log("something went wrong");
+          this.loader.exportPDFLoader = false;
+        }
+      })
+    }
   }
-  }
-  
-  showAgeBracket_WithColor_AndClaimIdDigits(){
-    let currentDate:any = new Date().setHours(0,0,0,0); // To set the time equal
-    this.filteredItems.forEach((e:any) => {
-      if(e.dos){
-           let dos:any = new Date(e.dos);
-           const diffTime = Math.abs(currentDate - dos);
-           let diffDays:any = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-           e.ageBracket = (diffDays <= 30) ? `0-30`  : (diffDays > 30 && diffDays <= 60) ?  `31-60` : (diffDays > 60 && diffDays <= 90) ? `61-90` : (diffDays > 90) ? `90+` : '';
+
+  showAgeBracket_WithColor_AndClaimIdDigits() {
+    let currentDate: any = new Date().setHours(0, 0, 0, 0); // To set the time equal
+    this.filteredItems.forEach((e: any) => {
+      if (e.dos) {
+        let dos: any = new Date(e.dos);
+        const diffTime = Math.abs(currentDate - dos);
+        let diffDays: any = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        e.ageBracket = (diffDays <= 30) ? `0-30` : (diffDays > 30 && diffDays <= 60) ? `31-60` : (diffDays > 60 && diffDays <= 90) ? `61-90` : (diffDays > 90) ? `90+` : '';
       }
-      if(e.claimId){
-        e.newClaimId = e.claimId.replace('_P',"").replace('_S',"")
+      if (e.claimId) {
+        e.newClaimId = e.claimId.replace('_P', "").replace('_S', "")
       }
-     if(e.claimAge && e.timelyFilingLimitData){
-       if(Number(e.timelyFilingLimitData) - e.claimAge < 30){
-       e.colorChange = true;
+      if (e.claimAge && e.timelyFilingLimitData) {
+        if (Number(e.timelyFilingLimitData) - e.claimAge < 30) {
+          e.colorChange = true;
+        }
+        else {
+          e.colorChange = false;
+        }
       }
-      else{
-        e.colorChange = false;
-      }
-     }
     });
-  }  
+  }
 
 }

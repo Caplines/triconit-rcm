@@ -79,8 +79,9 @@ export class AppConstants {
 
     public BILLING_ID = 1;
     public RE_BILLING_ID = 2;
-    public INTERNAL_AUDIT_TEAM = 3;
-    public BILLING_TEAM = 7;
+    public static INTERNAL_AUDIT_TEAM = 3;
+    public static BILLING_TEAM = 7;
+    public static CDP_TEAM = 11;
     public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
 
 
@@ -269,13 +270,14 @@ export class AppConstants {
     ];
 
 
+    public Need_to_call_Insurance: string = "Need to Call Insurance";
     public nextActionStatusRcm: any = [
         { name: "Review" },
         { name: "Billing" },
         { name: "Need to void" },
         { name: "Close the Claim" },
         { name: "EOB Required" },
-        { name: "Need to Call Insurance" },
+        { name: this.Need_to_call_Insurance },
         { name: "Need to send Appeal" },
         { name: "Need to Follow up on Appeal" },
         { name: "Need to Review" },

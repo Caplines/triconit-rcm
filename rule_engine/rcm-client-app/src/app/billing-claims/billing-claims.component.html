@@ -1507,6 +1507,10 @@
                                         [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="SERVICE_LEVEL_INFORMATION">
                                             Sevice Level Information
+                                            <ng-container *ngIf="activeServiceCodeCount === 0">
+                                                - <span [ngClass]="{'text-danger':true}"> No Service Codes
+                                                    Present</span>
+                                            </ng-container>
                                         </a>
                                         <div class="down-icon" (click)="showHide('SERVICE_LEVEL_INFORMATION')">
                                             <a href="javascript:void(0)"
@@ -1763,7 +1767,7 @@
                                                 <label class="custom-control-label" for="customSwitch">BTP FLAG</label>
                                             </span>
                                         </div>
-                                        <div *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()"
+                                        <div *ngIf="activeServiceCodeCount > 0 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()"
                                             class="save-btn col-sm-12">
                                             <button class="btn  btn-success" (click)="saveServiceLevelInfo(false)">
                                                 Save
@@ -2965,6 +2969,12 @@
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Request Rebilling
+                                            <ng-container
+                                                *ngIf="activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)">
+                                                - <span [ngClass]="{'text-danger':true}"> No Service Codes left to be
+                                                    Rebilled.</span>
+                                            </ng-container>
+
                                         </a>
                                         <div class="down-icon" (click)="showHide('REQUEST_REBILLING')">
                                             <a href="javascript:void(0)"
@@ -2973,8 +2983,9 @@
                                     </div>
 
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
-                                    <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
-                                        [ngClass]="{'show':!toggleTab['REQUEST_REBILLING']}" id="REQUEST_REBILLING">
+                                    <div *ngIf="!loader.linkToRelatedDoc && !(activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount))"
+                                        class="form-row collapse" [ngClass]="{'show':!toggleTab['REQUEST_REBILLING']}"
+                                        id="REQUEST_REBILLING">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="reasonForRebilling">Reason for rebilling</label>
@@ -3573,6 +3584,7 @@
                                 <!-- END NEED TO CREATE -->
 
                                 <!-- Current Status and next action required START-->
+
                                 <ng-container
                                     *ngIf="( !claimRcm.rebilledStatus || !claimSectionModal.REBILLING['modal']['rebillingStatus']) && !claimRcm.pending &&  claimRcm.allowEdit && claimRcm.currentStatus!=appConstants.claimClosedId && checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
                                     <div class="bold-b-text"
@@ -3626,6 +3638,7 @@
                                                     <div class="custom-row text-number">
                                                         <label for="nextAction">Next Action Required</label>
                                                         <select id="nextAction" class="form-control"
+                                                            (change)="nextActionRequire($event)"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']"
                                                             [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['nextAction']}">

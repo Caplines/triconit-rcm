@@ -1038,9 +1038,9 @@ public class ClaimSectionImpl {
 			}
 			RcmTeam team=rcmTeamRepo.findById(partialHeader.getTeamId());
 			RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
-			for (RcmClaimDetail list : claimDetailData) {
+			for (RcmClaimDetail rcmClaimDetail : claimDetailData) {
 				serviceLevelDto = new RcmServiceLevelInformation();
-				BeanUtils.copyProperties(list, serviceLevelDto);
+				BeanUtils.copyProperties(rcmClaimDetail, serviceLevelDto);
 				serviceLevelDto.setGroupRun(1);
 				serviceLevelDto.setFlag(true);		
 				serviceLevelDto.setTeam(team);
@@ -1227,9 +1227,15 @@ public class ClaimSectionImpl {
 			logger.error("Invalid team");
 			return null;
 		}
-		if(assignToTeam.getId()==team.getId()) {
-			logger.error("Team not assign to logged user team");
-			return null;		
+		if(assignToTeam.getId()==team.getId() ) {
+			if (assignToTeam.getId()==RcmTeamEnum.CDP.getId() && nextActionReequiredInfoModel.getNextAction().equalsIgnoreCase(ClaimStatusEnum.Need_to_call_Insurance.getType())) {
+				logger.info("Team cabe assign to logged user team in case of CDP and Need  to call Insurance");
+			}else {
+				logger.error("Team not assign to logged user team");
+				return null;	
+			}
+			
+				
 		}
 		if (claim != null) {
 			currentClaimStatusAndNextActionData = new CurrentClaimStatusAndNextAction();

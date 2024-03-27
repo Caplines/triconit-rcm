@@ -90,6 +90,8 @@ export class BillingClaimsComponent {
   claimSettingDataModel: ClaimSettingDataModel = null;
   displayPhaseSection: boolean = false;
   finalsubmitcurrentstat: boolean = true;
+  activeServiceCodeCount: number = 0;
+  rebilledServiceCodeCount: number = 0;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -1562,6 +1564,10 @@ export class BillingClaimsComponent {
     return Utils.isInternalAudit();
   }
 
+  get isCDP(): boolean {
+    return Utils.isCDP();
+  }
+
   get timeZone(): string {
     return Utils.getTimeZone();
   }
@@ -1821,7 +1827,7 @@ export class BillingClaimsComponent {
     /*if (this.claimRcm.firstTeamId == this.appConstants.INTERNAL_AUDIT_TEAM) {
       return true;
     }*/
-    if (this.claimRcm.firstTeamId == this.appConstants.BILLING_TEAM) {
+    if (this.claimRcm.firstTeamId == AppConstants.BILLING_TEAM) {
       return true;
     }
     if (this.claimServiceLevelModel == undefined) {
@@ -1996,6 +2002,12 @@ export class BillingClaimsComponent {
           }
 
           this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+            if (e.serviceCode != 'Undistributed') {
+              this.activeServiceCodeCount++;
+              if (e.rebilledCodeStatus) {
+                this.rebilledServiceCodeCount++;
+              }
+            }
             this.sectionLevelInfoTotalConfig.paidAmount = this.sectionLevelInfoTotalConfig.paidAmount + e.paidAmount;
             this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount + e.allowedAmount;
           })
@@ -2054,6 +2066,7 @@ export class BillingClaimsComponent {
       data = team.sectionData.filter((item: any) => item.editAccess);
     });
     for (const section of data) {
+      if (section.sectionName === 'REQUEST_REBILLING') continue; //no need to add Request Rebilling in Final save
       if (ths.sectionIds[section.sectionName]?.isWorkDone && ths.sectionIds[section.sectionName]?.isNewSection && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {          //replace section.isNewSection with ===> ths.sectionIds[section.sectionName]?.isNewSection
         const methodName: any = `validate_${section.sectionName}`
         let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
@@ -2082,8 +2095,8 @@ export class BillingClaimsComponent {
         if (ths.isSectionValidated && ths.checkIfOldSectionAccessWhileFinalSave()) {
           //First Save OLD Data Then Save New data.
           let type = "";
-          if (ths.claimRcm.currentTeamId === this.appConstants.BILLING_TEAM) type = "submitafterpending";
-          else if (ths.claimRcm.currentTeamId === this.appConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
+          if (ths.claimRcm.currentTeamId === AppConstants.BILLING_TEAM) type = "submitafterpending";
+          else if (ths.claimRcm.currentTeamId === AppConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
           else type = "assignafterpendingnot_bill_internal";
           ths.finalsubmitcurrentstat = false;
           ths.saveClaim(type, true);
@@ -3436,5 +3449,24 @@ export class BillingClaimsComponent {
   allowOtherSaveWhileReqRebilling() {
     return this.claimRcm.rebilledStatus;
   }
+
+  nextActionRequire(e: any) {
+    console.log(e.target.value);
+    if (this.isCDP) {
+      if (e.target.value === this.appConstants.Need_to_call_Insurance) {
+        //check if Current Logged i team is CDP then add CDP to Assign to team 
+        if (this.teamsMs.filter(x => { x.teamName === 'CDP' }).length == 0) {
+          let m: TeamsM = {};
+          m.teamId = AppConstants.CDP_TEAM;
+          m.teamName = 'CDP';
+          this.teamsMs.push(m);
+        }
+      }
+      else {
+        this.teamsMs = this.teamsMs.filter(obj => { return obj.teamId !== AppConstants.CDP_TEAM });
+      }
+    }
+  }
+
 
 }
