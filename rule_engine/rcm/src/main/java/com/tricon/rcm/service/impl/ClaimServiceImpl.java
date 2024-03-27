@@ -1228,16 +1228,20 @@ public class ClaimServiceImpl {
 	}
 	
 	public List<String> validSecondaryClaimDataFromRecreateSection(ClaimFromSheet re,
-			String companyuuid) {
+			String companyuuid,String claimUuid) {
 
 
 		logger.info(" In Validate Secondary Claim From Recreate Claim section");
+		RcmClaims currentClaim = rcmClaimRepository.findByClaimUuid(claimUuid);
+		String claim[]=currentClaim.getClaimId().split(ClaimTypeEnum.P.getSuffix());
+		re.setClaimId(claim[0]);
 		List<String> error = new ArrayList<>();
 		// Map<String, Object[]> mapcountNew = new HashMap<>();
 		// Map<String,String> messages= new HashMap<>();
 		// Map<String,int[]> mapcountNewP= new HashMap<>();
 		// Map<String,int[]>mapcountNewS= new HashMap<>();
 		RcmCompany company = rcmCompanyRepo.findByUuid(companyuuid);
+		re.setClientName(company.getName());
 		List<RcmTeam> allTeams = rcmTeamRepo.findAll();
 		InsuranceNameTypeDto insuranceNameTypeDto=null;
 		RcmCompany companyIns = rcmCompanyRepo.findByName(Constants.COMPANY_NAME);//Always
@@ -1261,7 +1265,8 @@ public class ClaimServiceImpl {
 
 		//offNames = new ArrayList<>();
 		//offNameKeys = new ArrayList<>();
-		RcmOffice  rcmOffice = officeRepo.findByNameAndCompanyUuid(re.getOfficeName(), company.getUuid());
+		RcmOffice  rcmOffice = officeRepo.findByUuid(currentClaim.getOffice().getUuid());
+		re.setOfficeName(rcmOffice.getName());
 		// rcmOffices.stream().map(RcmOffice::getName).forEach(offNames::add);
 		//offNames.add(rcmOffice.getName());
 		//offNameKeys.add(rcmOffice.getName() + rcmOffice.getKey());

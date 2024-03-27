@@ -934,9 +934,9 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	@ApiOperation(value = "Api for validate secondary claim for recreation of claim", response = String.class, responseContainer = "List")
-	@PostMapping(value = "api/validate-secondary-claim-creation")
+	@PostMapping(value = "api/validate-secondary-claim-creation/{claimUuid}")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> validateSecondaryClaim(@RequestBody ClaimFromSheet dto, Model model) {
+	public ResponseEntity<?> validateSecondaryClaim(@PathVariable("claimUuid")String claimUuid, @RequestBody ClaimFromSheet dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
@@ -944,7 +944,7 @@ public class RcmController extends BaseHeaderController{
 		List<String> response = null;
 		try {
 			response = claimServiceImpl.validSecondaryClaimDataFromRecreateSection(dto,
-					partialHeader.getCompany().getUuid());
+					partialHeader.getCompany().getUuid(),claimUuid);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
