@@ -527,3 +527,11 @@
     height: 38px;
     margin-left: 5px;
 }
+.multi-action span{
+    display:inline-block;
+    margin-right: 3px;
+}
+
+.multi-action span:last-child{
+    display:none;
+}

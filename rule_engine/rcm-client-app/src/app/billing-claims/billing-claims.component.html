@@ -210,13 +210,13 @@
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">Linked Claim IDs </label>
-                                            <div>
+                                            <div class="multi-action">
                                                 <ng-container *ngIf="claimRcm?.linkedClaims?.length==0">
                                                     N/A
                                                 </ng-container>
-                                                <ng-container *ngFor="let item of claimRcm?.linkedClaims">
-                                                    <div><a href="/billing-claims/{{item.claimUuid}}"
-                                                            target="_blank">{{item.claimId | claimIdPipe}}</a></div>
+                                                <ng-container  *ngFor="let item of claimRcm?.linkedClaims">
+                                                   <a href="/billing-claims/{{item.claimUuid}}"
+                                                            target="_blank">{{item.claimId | claimIdPipe}}</a><span>,</span>
                                                 </ng-container>
                                             </div>
                                         </div>
@@ -2177,7 +2177,7 @@
                                     <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['INSURANCE_FOLLOW_UP']}">
-                                        <div class="table-responsive">
+                                        <div class="table-responsive" style="max-height: 508px;">
                                             <table class="table table-striped">
                                                 <thead>
                                                     <tr>
@@ -2618,7 +2618,7 @@
                                     <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['PATIENT_COMMUNICATION']}">
-                                        <div class="table-responsive">
+                                        <div class="table-responsive" style="max-height: 508px;">
                                             <table class="table table-striped">
                                                 <thead>
                                                     <tr>
@@ -3101,7 +3101,7 @@
                                     <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['REBILLING']}">
-                                        <div class="table-responsive">
+                                        <div class="table-responsive" style="max-height: 508px;">
                                             <table class="table table-striped">
                                                 <thead>
                                                     <tr>
