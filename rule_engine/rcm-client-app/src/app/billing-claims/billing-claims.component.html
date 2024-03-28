@@ -3283,7 +3283,7 @@
 
                                 <ng-container
                                     *ngIf="((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo'] || activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Recreation in PMS
                                             <ng-container
