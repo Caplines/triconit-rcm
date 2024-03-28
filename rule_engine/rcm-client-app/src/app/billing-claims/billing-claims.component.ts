@@ -2991,7 +2991,7 @@ export class BillingClaimsComponent {
         }
       })
     }
-    return this.claimSectionModal['PATIENT_COMMUNICATION'];
+    return this.claimSectionModal['PATIENT_COMMUNICATION']['modal'];
   }
 
   selectStatementBox(buttonType: any) {

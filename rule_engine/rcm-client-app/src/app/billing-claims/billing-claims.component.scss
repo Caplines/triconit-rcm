@@ -337,10 +337,11 @@
         }
     }
 
-    .last-child {
+   &.closed {
         background-color: #dc3545;
         border-color: #dc3545;
     }
+
 }
 
 .steps-taken li.waiting {
@@ -534,4 +535,8 @@
 
 .multi-action span:last-child{
     display:none;
+}
+
+.attach-secondary-width{
+    min-width: 148px;
 }
