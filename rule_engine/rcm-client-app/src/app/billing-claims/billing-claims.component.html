@@ -3286,6 +3286,12 @@
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Recreation in PMS
+                                            <ng-container
+                                            *ngIf="activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)">
+                                            - <span [ngClass]="{'text-danger':true}"> No Service Codes left to be
+                                                Rebilled.</span>
+                                        </ng-container>
+
                                         </a>
                                         <div class="down-icon" (click)="showHide('claimLevelInfo')">
                                             <a href="javascript:void(0)"
@@ -3294,7 +3300,7 @@
                                     </div>
 
                                     <div *ngIf="loader['RECREATE_CLAIM']" class="loader-data"></div>
-                                    <div *ngIf="!loader['RECREATE_CLAIM']" class="form-row collapse"
+                                    <div *ngIf="!loader['RECREATE_CLAIM'] && !(activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount))" class="form-row collapse"
                                         [ngClass]="{'show':!toggleTab['claimLevelInfo']}" id="RECREATE_CLAIM">
 
                                         <div class="col-md-4 mb-2">
@@ -3535,7 +3541,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{item.ruleName}}</td>
                                                             <td [innerHTML]="item.message"></td>
-                                                            <td> <textarea [(ngModel)]="item.remarks"
+                                                            <td> <textarea [readonly]="item.resultType == 'FAIL' && item.ruleId == 324"  [(ngModel)]="item.remarks"
                                                                     class="form-control"
                                                                     [class.is-invalid]="item.emptyRemarks"></textarea>
                                                             </td>
@@ -3563,7 +3569,7 @@
                                                         <tr
                                                             *ngFor="let item of claimSectionModal.RECREATE_CLAIM.attachSecondaryCreationValidationData;let idx=index;">
                                                             <td>{{idx+1}}</td>
-                                                            <td>{{item}}</td>
+                                                            <td class="text-danger">{{item}}</td>
 
                                                         </tr>
                                                     </tbody>
@@ -3572,9 +3578,8 @@
                                         </ng-container>
 
                                         <div class="col-md-4 mb-2"
-                                            *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != null">
-                                            <button class="btn btn-success" (click)="saveRecreateNewClaim(false)"
-                                                [hidden]="(!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)) || hideRecreateButton">
+                                            *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != null && ((checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit) && !hideRecreateButton)">
+                                            <button class="btn btn-success" (click)="saveRecreateNewClaim(false)">
                                                 {{claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen'] ?
                                                 'Recreate and Rebill' : 'Recreate'}}</button>
                                         </div>

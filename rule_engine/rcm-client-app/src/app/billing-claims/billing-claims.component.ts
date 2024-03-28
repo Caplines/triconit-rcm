@@ -3124,6 +3124,12 @@ export class BillingClaimsComponent {
   receiveChildrenEvent(event: any) {
     if (event['action'] === 'updateServiceCode') {
       this.claimSectionModal.REQUEST_REBILLING['rebillingServiceCodes'] = event.value;
+      if(event.value.length == this.serviceLevelSectionMultiSelectConfig.serviceCodesList.length){
+        this.claimSectionModal.REQUEST_REBILLING['rebillingType'] = 'fullClaim';
+        this.serviceLevelSectionMultiSelectConfig.serviceCodesList.forEach((e:any)=>e.checked=false);
+      } else{
+        this.claimSectionModal.REQUEST_REBILLING['rebillingType'] = 'partialClaim';
+      }
       this.concatenateRebillingServiceCode();
     } else if (event['action'] === 'updateRequiredReBilling') {
       this.claimSectionModal.REQUEST_REBILLING['rebillingRequirements'] = event.value;
@@ -3259,7 +3265,7 @@ export class BillingClaimsComponent {
   }
 
   showOrHideRecreateButton() {
-    this.hideRecreateButton = !this.claimSectionModal.RECREATE_CLAIM['validationData'].some((e: any) => ((e.ruleId == 325 || e.ruleId == 326 || e.ruleId == 324) && (e.resultType == 'PASS')));
+    this.hideRecreateButton = !this.claimSectionModal.RECREATE_CLAIM['validationData'].some((e: any) => ((e.ruleId == 325 || e.ruleId == 326 || e.ruleId == 324 || e.ruleId == 330) && (e.resultType == 'PASS')));
   }
 
   saveRecreateNewClaim(isFinal: boolean) {
