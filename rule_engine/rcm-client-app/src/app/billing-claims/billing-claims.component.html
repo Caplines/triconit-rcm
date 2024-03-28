@@ -2965,7 +2965,7 @@
                                 <!-- Appeal END-->
                                 <!-- Request Rebilling START-->
                                 <ng-container
-                                    *ngIf="displayPhaseSection && !claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
+                                    *ngIf="!claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Request Rebilling
@@ -3087,7 +3087,7 @@
 
                                 <!-- REBILLING START-->
                                 <ng-container
-                                    *ngIf="displayPhaseSection && claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
+                                    *ngIf="claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="REBILLING">
                                             Rebilling
@@ -3282,7 +3282,7 @@
                                 <!-- NEED TO CREATE REBLIING START-->
 
                                 <ng-container
-                                    *ngIf="displayPhaseSection && ((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
+                                    *ngIf="((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Recreation in PMS

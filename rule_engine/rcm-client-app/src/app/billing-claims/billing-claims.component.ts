@@ -210,12 +210,12 @@ export class BillingClaimsComponent {
     'REQUEST_REBILLING': {
       sectionId: 23,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'REBILLING': {
       sectionId: 24,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: true
     },
     'NEED_TO_CALL_INSURANCE': {
       sectionId: 25,
