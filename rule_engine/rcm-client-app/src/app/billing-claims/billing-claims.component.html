@@ -214,9 +214,9 @@
                                                 <ng-container *ngIf="claimRcm?.linkedClaims?.length==0">
                                                     N/A
                                                 </ng-container>
-                                                <ng-container  *ngFor="let item of claimRcm?.linkedClaims">
-                                                   <a href="/billing-claims/{{item.claimUuid}}"
-                                                            target="_blank">{{item.claimId | claimIdPipe}}</a><span>,</span>
+                                                <ng-container *ngFor="let item of claimRcm?.linkedClaims">
+                                                    <a href="/billing-claims/{{item.claimUuid}}"
+                                                        target="_blank">{{item.claimId | claimIdPipe}}</a><span>,</span>
                                                 </ng-container>
                                             </div>
                                         </div>
@@ -2965,7 +2965,7 @@
                                 <!-- Appeal END-->
                                 <!-- Request Rebilling START-->
                                 <ng-container
-                                    *ngIf="!claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
+                                    *ngIf="displayPhaseSection && !claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Request Rebilling
@@ -3085,9 +3085,9 @@
                                 </ng-container>
                                 <!-- Request Rebilling END-->
 
-                                <!-- REBILLING -->
+                                <!-- REBILLING START-->
                                 <ng-container
-                                    *ngIf="claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
+                                    *ngIf="displayPhaseSection && claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REBILLING']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="REBILLING">
                                             Rebilling
@@ -3279,10 +3279,10 @@
                                     </div>
                                 </ng-container>
 
-                                <!-- NEED TO CREATE REBLIING -->
+                                <!-- NEED TO CREATE REBLIING START-->
 
                                 <ng-container
-                                    *ngIf="((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
+                                    *ngIf="displayPhaseSection && ((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Recreation in PMS

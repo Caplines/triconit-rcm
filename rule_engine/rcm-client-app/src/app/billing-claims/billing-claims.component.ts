@@ -210,12 +210,12 @@ export class BillingClaimsComponent {
     'REQUEST_REBILLING': {
       sectionId: 23,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: false
     },
     'REBILLING': {
       sectionId: 24,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: false
     },
     'NEED_TO_CALL_INSURANCE': {
       sectionId: 25,
@@ -3265,7 +3265,7 @@ export class BillingClaimsComponent {
   saveRecreateNewClaim(isFinal: boolean) {
     this.createModalForRecreateFullAndPartialClaim();
 
-    debugger;
+    //debugger;
     if (!isFinal) {
       if (this.checkValidationForRecreate()) {
         let params: any = {
@@ -3273,7 +3273,7 @@ export class BillingClaimsComponent {
           recreateClaimRequestInfoModel: this.claimSectionModal['RECREATE_CLAIM']['dataModal']
         };
         console.log(params);
-        debugger;
+        //debugger;
         let recreateModal: any = this.claimSectionModal.RECREATE_CLAIM;
         this.loader['attachSecondaryCreationValidationData'] = true;
         this.claimSectionModal.RECREATE_CLAIM.attachSecondaryCreationValidationData = [];
