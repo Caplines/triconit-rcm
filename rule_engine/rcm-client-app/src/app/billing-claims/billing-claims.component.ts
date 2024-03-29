@@ -365,7 +365,7 @@ export class BillingClaimsComponent {
   viewNotesConfig: any = { showNotes: false, viewNotes: [] };
   isBtpFlagTrue: boolean = false;
   serviceLevelSectionMultiSelectConfig: any = { serviceCodesList: [], rebillingRequirements: [], showModal: false };
-  hideRecreateButton: boolean = true;
+  hideRecreateButton: boolean = false;
   selectedServiceCodesExist: boolean = false;
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
 
@@ -3265,13 +3265,12 @@ export class BillingClaimsComponent {
   }
 
   showOrHideRecreateButton() {
+    this.hideRecreateButton=false;
     this.claimSectionModal.RECREATE_CLAIM['validationData'].forEach((e:any)=>{
         if((e.ruleId == 325 || e.ruleId == 326) && e.resultType == 'FAIL'){
           this.hideRecreateButton = true;
         } else if((e.ruleId == 324 || e.ruleId == 330 || e.ruleId == 329)  && e.resultType == 'FAIL'){
           this.hideRecreateButton = true;
-        } else{
-          this.hideRecreateButton= false;
         }
     })
   }
