@@ -2725,10 +2725,10 @@
                                     <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['COLLECTION_AGENCY']}">
-                                        <div class="container-fluid">
-                                            <div class="row justify-content-between">
-                                                <div class="col-sm-11 mb-2">
-                                                    <div class="btn-group btn-group-toggle d-flex" style="width:85%;"
+                                        <div>
+                                            <div class="">
+                                                <div class="mb-2">
+                                                    <div class="btn-group btn-group-toggle d-flex"
                                                         data-toggle="buttons">
                                                         <label class="btn btn-light mx-0"
                                                             (click)="selectCollectionTypeButton(1)"
@@ -3030,7 +3030,7 @@
                                             </div>
                                         </div>
                                         <div class="col-sm-4 mb-2 d-flex">
-                                            <label class="custom-row text-number"
+                                            <label class="custom-row text-number" style="min-width: 160px;"
                                                 [ngClass]="{'text-danger':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['rebillingType'] }">Type
                                                 of Rebilling</label>
                                             <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
@@ -3345,7 +3345,7 @@
                                         </div>
 
                                         <div class="col-sm-7 mb-3 d-flex">
-                                            <label class="custom-row text-number">Action to Perform</label>
+                                            <label class="custom-row text-number" style="min-width: 160px;">Action to Perform</label>
                                             <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
                                                 <label class="btn btn-light mx-0"
                                                     (click)="selectActionToPerformRecreate('attachSecondary')"
