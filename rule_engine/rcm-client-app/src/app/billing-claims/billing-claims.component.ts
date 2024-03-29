@@ -3265,7 +3265,15 @@ export class BillingClaimsComponent {
   }
 
   showOrHideRecreateButton() {
-    this.hideRecreateButton = !this.claimSectionModal.RECREATE_CLAIM['validationData'].some((e: any) => ((e.ruleId == 325 || e.ruleId == 326 || e.ruleId == 324 || e.ruleId == 330) && (e.resultType == 'PASS')));
+    this.claimSectionModal.RECREATE_CLAIM['validationData'].forEach((e:any)=>{
+        if((e.ruleId == 325 || e.ruleId == 326) && e.resultType == 'FAIL'){
+          this.hideRecreateButton = true;
+        } else if((e.ruleId == 324 || e.ruleId == 330 || e.ruleId == 329)  && e.resultType == 'FAIL'){
+          this.hideRecreateButton = true;
+        } else{
+          this.hideRecreateButton= false;
+        }
+    })
   }
 
   saveRecreateNewClaim(isFinal: boolean) {
