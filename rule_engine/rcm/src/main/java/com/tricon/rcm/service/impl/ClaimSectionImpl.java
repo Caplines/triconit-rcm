@@ -1710,9 +1710,16 @@ public class ClaimSectionImpl {
 		     RcmClaims checkClaim= null;
 	        List<String> serviceCodesDataForNewClaim =null;
 	        if (!isPrimary) {
-	        	checkClaim = secondaryClaim;
-	        	serviceCodesDataForNewClaim = claimDetailRepo
-						.findServiceCodesByClaimUuid(secondaryClaim!=null?secondaryClaim.getClaimUuid():"");
+	        	if(secondaryClaim==null) {
+	        		checkClaim = newPrimaryClaim;
+		        	serviceCodesDataForNewClaim = claimDetailRepo
+							.findServiceCodesByClaimUuid(newPrimaryClaim!=null?newPrimaryClaim.getClaimUuid():"");
+	        	}else {
+	        		checkClaim = secondaryClaim;
+		        	serviceCodesDataForNewClaim = claimDetailRepo
+							.findServiceCodesByClaimUuid(secondaryClaim!=null?secondaryClaim.getClaimUuid():"");
+	        		
+	        	}
 	        }
 	        else {
 	        	checkClaim= newPrimaryClaim;

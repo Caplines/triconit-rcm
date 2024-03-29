@@ -1174,7 +1174,7 @@
                                             <tr>
                                                 <td colspan="5">claim Data Not Found</td>
                                             </tr>
-                                        </ng-container> -->{{claimServiceLevelModel?.claimFound}}
+                                        </ng-container> -->
                                                     <ng-container *ngIf="claimServiceLevelModel?.claimFound">
 
                                                         <tr
@@ -1194,7 +1194,7 @@
 
 
                                                                 <div *ngIf="d.messageType == 1" class="failed">
-                                                                    s=
+                                                                   
                                                                     <img
                                                                         src="../../assets/img/cross_incorrec.png" /><span></span>
                                                                 </div>
@@ -1731,14 +1731,14 @@
                                                         </td>
                                                         <td colspan="9"></td>
                                                     <tr>
-                                                        <td>Balance From ES After Posting</td>
-                                                        <td> <input type="number" class="attach-secondary-width form-control"
+                                                        <td colspan="3">Balance From ES After Posting</td>
+                                                        <td colspan="3"> <input type="number" class="attach-secondary-width form-control"
                                                                 (change)="checkReconcileLogic()"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="sectionLevelInfoTotalConfig.balanceFromEsAfterPosting">
                                                         </td>
                                                         <td></td>
-                                                        <td colspan="10"></td>
+                                                        <td colspan="4"></td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="3">Reconcile :
@@ -1759,7 +1759,7 @@
                                             </table>
                                         </div>
                                         <div *ngIf="claimRcm.allowEdit && !claimRcm.pending &&  checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit')"
-                                            class="save-btn col-sm-12 mb-1">
+                                            class="save-btn col-sm-12 mb-1 my-1">
                                             <span class="custom-control custom-switch custom-switch-lg">
                                                 <input type="checkbox" [checked]="isBtpFlagTrue"
                                                     (change)="updateBtpFlagValue($event)" value id="flag"
@@ -1768,7 +1768,7 @@
                                             </span>
                                         </div>
                                         <div *ngIf="activeServiceCodeCount > 0 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()"
-                                            class="save-btn col-sm-12">
+                                            class="save-btn col-sm-12 my-2">
                                             <button class="btn  btn-success" (click)="saveServiceLevelInfo(false)">
                                                 Save
                                             </button>
@@ -2208,8 +2208,8 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="container-fluid pdf-viewer-container my-3">
-                                            <span>Current Insurance Follow-Up Information</span>
+                                        <div class="pdf-viewer-container my-3">
+                                            <div class="my-1"><strong>Current Insurance Follow-Up Information</strong></div>
                                             <div class="row">
 
                                                 <div class="col-md-4 mb-2">
@@ -2328,7 +2328,7 @@
                                     <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['PATIENT_STATEMENT']}">
-                                        <div class="container-fluid">
+                                        <div class="">
                                             <div class="row justify-content-between">
                                                 <div class="col-sm-4 mb-2">
                                                     <div class="btn-group btn-group-toggle d-flex" style="width:85%;"
@@ -2516,7 +2516,7 @@
                                     <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['PATIENT_PAYMENT']}">
-                                        <div class="container-fluid">
+                                        <div class="">
                                             <div class="row">
 
                                                 <div class="col-md-4 mb-2">
@@ -2647,8 +2647,8 @@
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="container-fluid pdf-viewer-container my-3">
-                                            <span>Current Patient Communication Information</span>
+                                        <div class="pdf-viewer-container my-3">
+                                           <div class="my-1"><strong>Patient Communication Information</strong></div>
                                             <div class="row">
 
                                                 <div class="col-md-4 mb-2">
@@ -2756,7 +2756,7 @@
                                                         </label>
                                                     </div>
                                                 </div>
-                                                <div class="col-sm-1"></div>
+                                                
                                             </div>
                                             <div class="row">
                                                 <ng-container
@@ -3401,7 +3401,7 @@
 
                                         <div class="col-sm-5"></div>
 
-                                        <div *ngIf="true"
+                                        <div *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid']"
                                             class="table-responsive mb-3">
                                             <table class="table">
                                                 <thead>
@@ -3606,7 +3606,7 @@
                                     <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                     <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                         [ngClass]="{'show':!toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
-                                        <div class="container-fluid">
+                                        <div class="">
                                             <div class="row">
 
                                                 <div class="col-md-4 mb-2">
