@@ -2604,7 +2604,7 @@
 
                                                 <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                                    *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
                                                     <button class="btn btn-success"
                                                         (click)="savePatientPaymentInfo(false)">Save</button>
                                                 </div>

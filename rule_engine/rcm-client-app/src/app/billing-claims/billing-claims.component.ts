@@ -3496,9 +3496,15 @@ export class BillingClaimsComponent {
   }
 
   isPrimaryClaimClosed() {
-    if (!this.claimRcm.primary && this.claimRcm.assoicatedClaimCurrentStatus === this.appConstants.CLOSED_CLAIM_STATUS)
-      return true;
-    else return false;
+    if(this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS ){
+      return false;
+    }
+    if(!this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS ){
+      return false;
+    }
+    if (!this.claimRcm.primary && this.claimRcm.assoicatedClaimCurrentStatus != this.appConstants.CLOSED_CLAIM_STATUS)
+      return false;
+    else return true;
   }
 
 
