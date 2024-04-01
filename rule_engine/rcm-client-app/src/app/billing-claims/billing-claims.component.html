@@ -1767,7 +1767,7 @@
                                                 <label class="custom-control-label" for="customSwitch">BTP FLAG</label>
                                             </span>
                                         </div>
-                                        <div *ngIf="activeServiceCodeCount > 0 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()"
+                                        <div *ngIf="activeServiceCodeCount > 0 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()"
                                             class="save-btn col-sm-12 my-2">
                                             <button class="btn  btn-success" (click)="saveServiceLevelInfo(false)">
                                                 Save
@@ -1835,7 +1835,7 @@
                                                         *ngIf="claimSectionModal['EOB']"
                                                         [(ngModel)]="claimSectionModal['EOB']['pdfLink']">
                                                     <button class="btn btn-primary btn-sm"
-                                                        *ngIf="claimRcm.currentState==0"
+                                                        *ngIf="claimRcm.currentState==0 && isPrimaryClaimClosed()"
                                                         [disabled]="!claimSectionModal['EOB']['pdfLink']"
                                                         (click)="getPdfUrlAndSaveEOB(false)">Save</button>
                                                 </span>
@@ -2004,7 +2004,7 @@
                                         <div class="col-md-4 mb-2"></div>
                                         <div class="col-md-4 mb-2">
                                             <button class="btn btn-success" (click)="saveClaimLevelinfo(false)"
-                                                *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">Save</button>
+                                                *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">Save</button>
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <!-- <button class="btn btn-outline-primary" (click)="checkSectionFieldValidation()">Final Submit</button> -->
@@ -2149,7 +2149,7 @@
 
                                         </div>
                                         <div class="col-md-4 mb-2"
-                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                             <button class="btn btn-success"
                                                 (click)="saveInsurancePaymentInfo(false)">Save</button>
                                         </div>
@@ -2302,7 +2302,7 @@
                                                 <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                                     <button class="btn btn-success"
                                                         (click)="saveInsuranceFollowUpInfo(false)">Save</button>
                                                 </div>
@@ -2490,7 +2490,7 @@
                                                     *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1">
                                                 </div>
                                                 <div class="col-md-4 mb-2"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0 && (this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) && !allowOtherSaveWhileReqRebilling()">
+                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0 && (this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                                     <button class="btn btn-success"
                                                         (click)="savePatientStaementInfo(false)">Save</button>
                                                 </div>
@@ -2699,7 +2699,7 @@
                                                 <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                                     <button class="btn btn-success"
                                                         (click)="savePatientCommunicationSection(false)">Save</button>
                                                 </div>
@@ -2871,7 +2871,7 @@
 
                                             <div class="row">
                                                 <div class="col-sm-12"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                                     <button class="btn btn-success"
                                                         (click)="saveCollectionAgencyInfo(false)">Save</button>
                                                 </div>
@@ -2953,7 +2953,7 @@
 
                                         </div>
                                         <div class="col-md-4 mb-2"
-                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                             <button class="btn btn-success"
                                                 (click)="saveAppealLevelinfo(false)">Save</button>
                                         </div>
@@ -3077,7 +3077,7 @@
                                             *ngIf="claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'fullClaim' || !claimSectionModal.REQUEST_REBILLING['rebillingType']">
                                         </div>
                                         <div class="col-md-4 mb-2"
-                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && claimRcm.currentState==0">
+                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && claimRcm.currentState==0 && isPrimaryClaimClosed()">
                                             <button class="btn btn-success"
                                                 (click)="checkValidationReqRebilling();">Request Rebilling</button>
                                         </div>
@@ -3269,7 +3269,7 @@
                                             <div class="col-md-4 mb-2" *ngIf="!claimSectionModal.REBILLING['modal']['rebillingStatus']"></div> -->
                                             <div class="row">
                                                 <div class="col-md-12 mb-2"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && claimRcm.currentState==0 && claimSectionModal.REBILLING['modal']['rebillingStatus']">
+                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && claimRcm.currentState==0 && claimSectionModal.REBILLING['modal']['rebillingStatus'] && isPrimaryClaimClosed()">
                                                     <button class="btn btn-success"
                                                         (click)="saveRebillingSection(false)">Mark as Rebilled</button>
                                                 </div>
@@ -3313,7 +3313,7 @@
                                                     class="form-control"
                                                     [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['newClaimId']}"
                                                     (change)="clearSelectedRadioButtons()">
-                                                <button class="btn btn-sm btn-success validate-btn"
+                                                <button class="btn btn-sm btn-success validate-btn" *ngIf="isPrimaryClaimClosed()"
                                                     [disabled]="!claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']"
                                                     (click)="validateNewClaimId()">Validate Claim</button>
                                             </div>
@@ -3578,7 +3578,7 @@
                                         </ng-container>
 
                                         <div class="col-md-4 mb-2"
-                                            *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != null && ((checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit) && !hideRecreateButton)">
+                                            *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != null && ((checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit) && !hideRecreateButton) && isPrimaryClaimClosed()">
                                             <button class="btn btn-success" (click)="saveRecreateNewClaim(false)">
                                                 {{claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen'] ?
                                                 'Recreate and Rebill' : 'Recreate'}}</button>
@@ -3591,7 +3591,7 @@
                                 <!-- Current Status and next action required START-->
 
                                 <ng-container
-                                    *ngIf="( !claimRcm.rebilledStatus || !claimSectionModal.REBILLING['modal']['rebillingStatus']) && !claimRcm.pending &&  claimRcm.allowEdit && claimRcm.currentStatus!=appConstants.claimClosedId && checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
+                                    *ngIf="isPrimaryClaimClosed() && ( !claimRcm.rebilledStatus || !claimSectionModal.REBILLING['modal']['rebillingStatus']) && !claimRcm.pending &&  claimRcm.allowEdit && claimRcm.currentStatus!=appConstants.claimClosedId && checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
                                     <div class="bold-b-text"
                                         [ngClass]="{'collapsed':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
                                         <a data-toggle="collapse" aria-expanded="false"

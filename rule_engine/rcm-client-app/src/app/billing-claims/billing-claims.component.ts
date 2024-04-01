@@ -3481,5 +3481,10 @@ export class BillingClaimsComponent {
     }
   }
 
+  isPrimaryClaimClosed(){
+  return false;
+
+  }
+
 
 }
