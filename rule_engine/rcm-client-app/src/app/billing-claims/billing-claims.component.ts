@@ -3259,7 +3259,7 @@ export class BillingClaimsComponent {
     }
 
     this.appService.validateNewClaimId(params, (res: any) => {
-      if (res.data && res.data?.serviceCodesNewClaim?.length>0) {
+      if (res.data) {
         console.log(res);
         this.loader['validationData'] = false;
         this.claimSectionModal.RECREATE_CLAIM['validationData'] = res.data.validationResponse;
@@ -3268,9 +3268,9 @@ export class BillingClaimsComponent {
         //this.claimSectionModal.RECREATE_CLAIM['claimFromSheet']['claimTypeS'] = 'Billing';
         this.showOrHideRecreateButton();
         this.otherErrormsg='';
-
-      }else{
-        this.otherErrormsg = "No Service Codes Found";
+        if(res.data?.serviceCodesNewClaim?.length == 0){
+          this.otherErrormsg = "No Service Codes Found";
+        }
       }
     })
   }
