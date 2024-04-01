@@ -742,14 +742,14 @@ public class ClaimServiceImpl {
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
 									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),""
-									,claimTypeEnum);
+									,claimTypeEnum,ClaimSourceEnum.GOOGLESHEET.toString());
 							missing=false;
 							}
 							if (  isMedicaid || isChip) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
-										"",claimTypeEnum);
+										"",claimTypeEnum,ClaimSourceEnum.GOOGLESHEET.toString());
 								missing=false;
 							}
 							if(missing) {//no Billing or Medicaid
@@ -757,7 +757,7 @@ public class ClaimServiceImpl {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
-										"",claimTypeEnum);
+										"",claimTypeEnum,ClaimSourceEnum.GOOGLESHEET.toString());
 								missing=false;
 								isBilling=true;
 							}
@@ -1051,14 +1051,14 @@ public class ClaimServiceImpl {
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
 									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),"",
-									claimTypeEnum);
+									claimTypeEnum,ClaimSourceEnum.GOOGLESHEET.toString());
 							missing=false;
 							}
 							if (isMedicaid  || isChip) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
-										"",claimTypeEnum);
+										"",claimTypeEnum,ClaimSourceEnum.GOOGLESHEET.toString());
 								missing=false;
 							}
 							if(missing) {//no Billing or Medicaid
@@ -1066,7 +1066,7 @@ public class ClaimServiceImpl {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
-										"",claimTypeEnum);
+										"",claimTypeEnum,ClaimSourceEnum.GOOGLESHEET.toString());
 								missing=false;
 								isBilling=true;
 							}
@@ -1665,14 +1665,14 @@ public class ClaimServiceImpl {
 							claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 									ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
 									ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),"",
-									claimTypeEnum);
+									claimTypeEnum,ClaimSourceEnum.RECREATECLAIMSECTION.toString());
 							missing=false;
 							}
 							if (isMedicaid  || isChip) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
-										"",claimTypeEnum);
+										"",claimTypeEnum,ClaimSourceEnum.RECREATECLAIMSECTION.toString());
 								missing=false;
 							}
 							if(missing) {//no Billing or Medicaid
@@ -1680,7 +1680,7 @@ public class ClaimServiceImpl {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.BILLING.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
-										"",claimTypeEnum);
+										"",claimTypeEnum,ClaimSourceEnum.RECREATECLAIMSECTION.toString());
 								missing=false;
 								isBilling=true;
 							}
@@ -2399,6 +2399,7 @@ public class ClaimServiceImpl {
 					implDto.setAssoicatedClaimUuid(s[0].toString());
 					implDto.setAssoicatedClaimStatus((boolean) s[1]);
 					implDto.setPrimInsurance(s[2]==null?"":s[2].toString());
+					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
 				}
 
 			} else {
@@ -2410,6 +2411,7 @@ public class ClaimServiceImpl {
 					implDto.setAssoicatedClaimUuid(s[0].toString());
 					implDto.setAssoicatedClaimStatus((boolean) s[1]);
 					implDto.setSecInsurance(s[2].toString());//For Primary see if we have Primary
+					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
 				}else {
 					implDto.setSecInsurance("N/A");
 				}

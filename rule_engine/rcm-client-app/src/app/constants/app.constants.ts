@@ -82,6 +82,7 @@ export class AppConstants {
     public static INTERNAL_AUDIT_TEAM = 3;
     public static BILLING_TEAM = 7;
     public static CDP_TEAM = 11;
+    public CLOSED_CLAIM_STATUS = 30;
     public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
 
 

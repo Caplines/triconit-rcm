@@ -127,7 +127,7 @@ public class ClaimUtil {
 	public static RcmClaims createClaimFromSheetData(RcmClaims claims, RcmOffice off, ClaimFromSheet re, RcmTeam team,
 			RcmUser user, RcmInsurance prim, RcmInsurance sec, RcmClaimStatusType cType, String claimSuffix,
 			RcmInsuranceType rcmInsuranceType, String timelyLmt, String preferredModeOfSubmission,
-			ClaimTypeEnum claimTypeEnum) {
+			ClaimTypeEnum claimTypeEnum,String source) {
 
 		claims.setOffice(off);
 		claims.setAttachmentCount(0);
@@ -226,7 +226,7 @@ public class ClaimUtil {
 			}
 		}
 
-		claims.setRcmSource(ClaimSourceEnum.GOOGLESHEET.toString());
+		claims.setRcmSource(source);
 		// claims.setRcmStatus(Constants.CLAIM_WITH_SYSTEM);
 
 		claims.setClaimId(re.getClaimId() + claimSuffix);

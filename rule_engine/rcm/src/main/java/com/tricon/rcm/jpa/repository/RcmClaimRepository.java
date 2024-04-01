@@ -578,13 +578,13 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("primarysecnnoifo") List<String> primarysecnnoifo);//Primary Secondary no information*/
 	
 	
-	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.pending,sins.name secInsurance from rcm_claims cl "
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.pending,sins.name secInsurance,cl.current_status currentStatus from rcm_claims cl "
 			+ " left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id "
 			+ " where "
 			+ " cl.office_id=:officeId and cl.claim_id=:claimid ")
 	Object getClaimsUuidClaimIdSec(@Param("claimid") String claimid,@Param("officeId") String officeId);
 	
-	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.pending,sins.name primInsurance from rcm_claims cl "
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.pending,sins.name primInsurance,cl.current_status currentStatus from rcm_claims cl "
 			+ " left join rcm_insurance sins on sins.id = cl.prim_insurance_company_id "
 			+ " where "
 			+ " cl.office_id=:officeId and cl.claim_id=:claimid ")

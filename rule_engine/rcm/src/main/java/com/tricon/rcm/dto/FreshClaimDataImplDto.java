@@ -88,6 +88,7 @@ public class FreshClaimDataImplDto {
 	String claimRemarks;
 	String assoicatedClaimUuid;//Primary Secondary
 	boolean assoicatedClaimStatus;
+	int assoicatedClaimCurrentStatus;
 	
 	boolean  rcmToolChecksValidationsSheet;
 	
