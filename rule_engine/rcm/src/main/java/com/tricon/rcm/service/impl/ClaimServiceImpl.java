@@ -4603,7 +4603,7 @@ public class ClaimServiceImpl {
     
     
     @Transactional(rollbackFor = Exception.class)
-    public String archiveActiveClaim(@RequestBody ClaimStatusUpdate dto,PartialHeader partialHeader) {
+    public String archiveActiveClaim(@RequestBody ClaimStatusUpdate dto,PartialHeader partialHeader,String... archiveClaimId) {
     	
 		 boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
 			
@@ -4628,7 +4628,7 @@ public class ClaimServiceImpl {
 			history.setClaim(claim);
 			history.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED);
 			rcmClaimArchiveHistoryRepo.save(history);
-			String claimId=date.getTime()+Constants.HYPHEN+Constants.ARCHIVE_PREFIX+claim.getClaimId();
+			String claimId=archiveClaimId!=null && archiveClaimId.length>0?archiveClaimId[0]:date.getTime()+Constants.HYPHEN+Constants.ARCHIVE_PREFIX+claim.getClaimId();
 			claim.setClaimId(claimId);
 			claim.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED);
 			RcmUser updatedBy= userRepo.findByUuid(partialHeader.getJwtUser().getUuid()) ;
