@@ -3124,10 +3124,10 @@ export class BillingClaimsComponent {
   receiveChildrenEvent(event: any) {
     if (event['action'] === 'updateServiceCode') {
       this.claimSectionModal.REQUEST_REBILLING['rebillingServiceCodes'] = event.value;
-      if(event.value.length == this.serviceLevelSectionMultiSelectConfig.serviceCodesList.length){
+      if (event.value.length == this.serviceLevelSectionMultiSelectConfig.serviceCodesList.length) {
         this.claimSectionModal.REQUEST_REBILLING['rebillingType'] = 'fullClaim';
-        this.serviceLevelSectionMultiSelectConfig.serviceCodesList.forEach((e:any)=>e.checked=false);
-      } else{
+        this.serviceLevelSectionMultiSelectConfig.serviceCodesList.forEach((e: any) => e.checked = false);
+      } else {
         this.claimSectionModal.REQUEST_REBILLING['rebillingType'] = 'partialClaim';
       }
       this.concatenateRebillingServiceCode();
@@ -3153,12 +3153,12 @@ export class BillingClaimsComponent {
     } else if (type === 'reCreateServiceCodes') {
       this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes'] = array.map((obj: any) => obj.name);
 
-        if(this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes'].length === this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'].length){
-              this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = 2;
-              this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'].forEach((e:any)=>e.checked=false);
-        }else{
-          this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = 3;
-        }
+      if (this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes'].length === this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'].length) {
+        this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = 2;
+        this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'].forEach((e: any) => e.checked = false);
+      } else {
+        this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = 3;
+      }
 
     }
   }
@@ -3267,8 +3267,8 @@ export class BillingClaimsComponent {
         this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid'] = res.data.secondaryValid;
         //this.claimSectionModal.RECREATE_CLAIM['claimFromSheet']['claimTypeS'] = 'Billing';
         this.showOrHideRecreateButton();
-        this.otherErrormsg='';
-        if(res.data?.serviceCodesNewClaim?.length == 0){
+        this.otherErrormsg = '';
+        if (res.data?.serviceCodesNewClaim?.length == 0) {
           this.otherErrormsg = "No Service Codes Found";
         }
       }
@@ -3276,13 +3276,13 @@ export class BillingClaimsComponent {
   }
 
   showOrHideRecreateButton() {
-    this.hideRecreateButton=false;
-    this.claimSectionModal.RECREATE_CLAIM['validationData'].forEach((e:any)=>{
-        if((e.ruleId == 325 || e.ruleId == 326) && e.resultType == 'FAIL'){
-          this.hideRecreateButton = true;
-        } else if((e.ruleId == 324 || e.ruleId == 330 || e.ruleId == 329)  && e.resultType == 'FAIL'){
-          this.hideRecreateButton = true;
-        }
+    this.hideRecreateButton = false;
+    this.claimSectionModal.RECREATE_CLAIM['validationData'].forEach((e: any) => {
+      if ((e.ruleId == 325 || e.ruleId == 326) && e.resultType == 'FAIL') {
+        this.hideRecreateButton = true;
+      } else if ((e.ruleId == 324 || e.ruleId == 330 || e.ruleId == 329) && e.resultType == 'FAIL') {
+        this.hideRecreateButton = true;
+      }
     })
   }
 
@@ -3330,7 +3330,7 @@ export class BillingClaimsComponent {
         }
 
       }
-      else{
+      else {
         this.otherErrormsg = " Something went wrong";
       }
     }
@@ -3495,9 +3495,10 @@ export class BillingClaimsComponent {
     }
   }
 
-  isPrimaryClaimClosed(){
-  return true;
-
+  isPrimaryClaimClosed() {
+    if (!this.claimRcm.primary && this.claimRcm.assoicatedClaimCurrentStatus === this.appConstants.CLOSED_CLAIM_STATUS)
+      return true;
+    else return false;
   }
 
 

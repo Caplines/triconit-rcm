@@ -48,6 +48,7 @@ export interface ClaimRcmDataModel {
 	secPolicyHolder?: string;
 	assoicatedClaimUuid?: string;
 	assoicatedClaimStatus?: string;
+	assoicatedClaimCurrentStatus?: number;
 	primary?: boolean;
 	claimNotes?: Array<ClaimNotesModel>;
 	claimRemarks?: string;
@@ -88,9 +89,9 @@ export interface ClaimRcmDataModel {
 
 	currentStatusName?: String;
 	nextActionName?: String;
-	rebilledStatus?:boolean;
-	billingUserUuid?:String;
-	 btp?: number;
+	rebilledStatus?: boolean;
+	billingUserUuid?: String;
+	btp?: number;
 	adjustment?: number;
 
 	paymentReceived?: number;
@@ -106,8 +107,8 @@ export interface ClaimRcmDataModel {
 	balanceFromEsAfterPosting?: number;
 
 	reconciliationPass?: boolean;
-	amountCollectedClaims?:number;
-	statusESUpdated?:string;
+	amountCollectedClaims?: number;
+	statusESUpdated?: string;
 
 }
 
