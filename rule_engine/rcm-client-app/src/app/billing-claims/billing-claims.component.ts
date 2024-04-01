@@ -3152,6 +3152,14 @@ export class BillingClaimsComponent {
       this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'] = array.map((obj: any) => obj.name);
     } else if (type === 'reCreateServiceCodes') {
       this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes'] = array.map((obj: any) => obj.name);
+
+        if(this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes'].length === this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'].length){
+              this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = 2;
+              this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'].forEach((e:any)=>e.checked=false);
+        }else{
+          this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = 3;
+        }
+
     }
   }
 
@@ -3251,7 +3259,7 @@ export class BillingClaimsComponent {
     }
 
     this.appService.validateNewClaimId(params, (res: any) => {
-      if (res.data) {
+      if (res.data && res.data?.serviceCodesNewClaim?.length>0) {
         console.log(res);
         this.loader['validationData'] = false;
         this.claimSectionModal.RECREATE_CLAIM['validationData'] = res.data.validationResponse;
@@ -3259,7 +3267,10 @@ export class BillingClaimsComponent {
         this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid'] = res.data.secondaryValid;
         //this.claimSectionModal.RECREATE_CLAIM['claimFromSheet']['claimTypeS'] = 'Billing';
         this.showOrHideRecreateButton();
+        this.otherErrormsg='';
 
+      }else{
+        this.otherErrormsg = "No Service Codes Found";
       }
     })
   }
@@ -3318,6 +3329,9 @@ export class BillingClaimsComponent {
           })
         }
 
+      }
+      else{
+        this.otherErrormsg = " Something went wrong";
       }
     }
 
@@ -3482,7 +3496,7 @@ export class BillingClaimsComponent {
   }
 
   isPrimaryClaimClosed(){
-  return false;
+  return true;
 
   }
 

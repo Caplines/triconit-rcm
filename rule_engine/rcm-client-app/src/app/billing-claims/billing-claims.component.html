@@ -2490,7 +2490,7 @@
                                                     *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1">
                                                 </div>
                                                 <div class="col-md-4 mb-2"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0 && (this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                    *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0 && (this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) && !allowOtherSaveWhileReqRebilling()">
                                                     <button class="btn btn-success"
                                                         (click)="savePatientStaementInfo(false)">Save</button>
                                                 </div>
@@ -3582,6 +3582,7 @@
                                             <button class="btn btn-success" (click)="saveRecreateNewClaim(false)">
                                                 {{claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen'] ?
                                                 'Recreate and Rebill' : 'Recreate'}}</button>
+                                            <span class="text-danger" *ngIf="otherErrormsg">{{otherErrormsg}}</span>    
                                         </div>
                                     </div>
                                 </ng-container>
