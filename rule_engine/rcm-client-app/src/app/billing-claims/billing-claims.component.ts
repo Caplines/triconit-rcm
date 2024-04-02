@@ -296,7 +296,10 @@ export class BillingClaimsComponent {
         modeOfFollowUp: ''
       }
     },
-    CURRENT_STATUS_AND_NEXT_ACTION: {},
+    CURRENT_STATUS_AND_NEXT_ACTION: {
+      "currentClaimStatusEs":"",
+
+    },
     REQUEST_REBILLING: {
       "nextAction": "Re-billing",
       "currentAction": "Re-billing",
@@ -464,6 +467,10 @@ export class BillingClaimsComponent {
           ths.fetchTLUsers();
           ths.fetchOtherTeams();
           ths.fetchAttachmentCount();
+
+          if(this.claimRcm.patientContactNo){
+            this.claimRcm.patientContactNo =  this.claimRcm.patientContactNo.split(",").join(", ");
+          }
         } else {
           this.invalidClaim = "- Not authorized to view this claim";
 
@@ -1502,6 +1509,9 @@ export class BillingClaimsComponent {
           if (res.data.tpId != null) this.claimRcm.tpId = res.data.tpId;
           if (res.data.tpDos != null) this.claimRcm.tpDos = res.data.tpDos;
           if (res.data.ssn != null) this.claimRcm.ssn = res.data.ssn;
+          if (res.data.insuranceContact){
+            this.claimRcm.insuranceContactNo = res.data.insuranceContact.split(",").join(", ");
+          } 
           this.reval();
         }
       }
