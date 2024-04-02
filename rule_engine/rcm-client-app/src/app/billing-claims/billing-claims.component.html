@@ -1897,19 +1897,19 @@
 
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelInfo']}">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['CLAIM_LEVEL_INFORMATION']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Level Information
                                         </a>
-                                        <div class="down-icon" (click)="showHide('claimLevelInfo')">
+                                        <div class="down-icon" (click)="showHide('CLAIM_LEVEL_INFORMATION')">
                                             <a href="javascript:void(0)"
-                                                [ngClass]="{'close':toggleTab['claimLevelInfo']}"></a>
+                                                [ngClass]="{'close':toggleTab['CLAIM_LEVEL_INFORMATION']}"></a>
                                         </div>
                                     </div>
 
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                     <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
-                                        [ngClass]="{'show':!toggleTab['claimLevelInfo']}" id="CLAIM_LEVEL_INFORMATION">
+                                        [ngClass]="{'show':!toggleTab['CLAIM_LEVEL_INFORMATION']}" id="CLAIM_LEVEL_INFORMATION">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="claim">Claim #</label>
@@ -2029,18 +2029,18 @@
                                 </ng-container>
                                 <ng-container
                                     *ngIf="(sectionLevelInfoTotalConfig.paidAmount>0) &&  !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['INSURANCE_PAYMENT_INFORMATION']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Insurance Payment Information
                                         </a>
-                                        <div class="down-icon" (click)="showHide('appeal')">
-                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['appeal']}"></a>
+                                        <div class="down-icon" (click)="showHide('INSURANCE_PAYMENT_INFORMATION')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['INSURANCE_PAYMENT_INFORMATION']}"></a>
                                         </div>
                                     </div>
 
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                     <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
-                                        [ngClass]="{'show':!toggleTab['appeal']}" id="INSURANCE_PAYMENT_INFORMATION">
+                                        [ngClass]="{'show':!toggleTab['INSURANCE_PAYMENT_INFORMATION']}" id="INSURANCE_PAYMENT_INFORMATION">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="paymentIssueTo">Payment Issued To</label>
@@ -2898,18 +2898,18 @@
                                 <!-- Appeal START-->
                                 <ng-container
                                     *ngIf="!claimRcm.pending &&  checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'view')">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['appeal']}">
+                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['APPEAL']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Appeal
                                         </a>
-                                        <div class="down-icon" (click)="showHide('appeal')">
-                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['appeal']}"></a>
+                                        <div class="down-icon" (click)="showHide('APPEAL')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['APPEAL']}"></a>
                                         </div>
                                     </div>
 
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                     <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
-                                        [ngClass]="{'show':!toggleTab['appeal']}" id="APPEAL">
+                                        [ngClass]="{'show':!toggleTab['APPEAL']}" id="APPEAL">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="modeOfAppeal">Mode of Appeal</label>
@@ -3298,7 +3298,7 @@
                                 <ng-container
                                     *ngIf="((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
                                     <div class="bold-b-text"
-                                        [ngClass]="{'collapsed':toggleTab['claimLevelInfo'] || activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)}">
+                                        [ngClass]="{'collapsed':toggleTab['RECREATE_CLAIM'] || activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Recreation in PMS
                                             <ng-container
@@ -3308,15 +3308,15 @@
                                             </ng-container>
 
                                         </a>
-                                        <div class="down-icon" (click)="showHide('claimLevelInfo')">
+                                        <div class="down-icon" (click)="showHide('RECREATE_CLAIM')">
                                             <a href="javascript:void(0)"
-                                                [ngClass]="{'close':toggleTab['claimLevelInfo']}"></a>
+                                                [ngClass]="{'close':toggleTab['RECREATE_CLAIM']}"></a>
                                         </div>
                                     </div>
 
                                     <div *ngIf="loader['RECREATE_CLAIM']" class="loader-data"></div>
                                     <div *ngIf="!loader['RECREATE_CLAIM'] && !(activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount))"
-                                        class="form-row collapse" [ngClass]="{'show':!toggleTab['claimLevelInfo']}"
+                                        class="form-row collapse" [ngClass]="{'show':!toggleTab['RECREATE_CLAIM']}"
                                         id="RECREATE_CLAIM">
 
                                         <div class="col-md-4 mb-2">
