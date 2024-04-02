@@ -157,7 +157,7 @@
             margin-right: 5px;
     
             &.width-reduce {
-                width: calc(100% - 230px);
+                width: calc(100% - 286px);
             }
         }
 
@@ -174,7 +174,7 @@
     position: relative;
     padding-top: 45px;
     transition: all 0.3s;
-    min-width: 210px;
+    min-width: 260px;
 }
 
 .steps-taken ul {
@@ -360,7 +360,7 @@
 
 .steps-taken.vertical ul li {
     margin-bottom: 55px;
-    min-width: 210px;
+    min-width: 260px;
     border-radius: 30px;
     text-align: center;
     margin-right: 0px;

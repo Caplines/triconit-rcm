@@ -116,15 +116,19 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th class="width-200" style="z-index:9;">
+                                                <th class="width-200" [ngStyle]="{'z-index':showTooltipConfig.tooltipOne ? 99 : 9}">
                                                     <div class="dFlex">
                                                         Days Since Oldest Pending Claim (Upload Date)
-                                                        <div class="tooltip2">
-                                                            <img src="../../assets/img/question-icon.png" />
-                                                            <span class="tooltiptext">It shows the number of days the claim is pending to be billed since the claim was
-                                                                uploaded to the RCM tool</span>
-                                                        </div>
-                                                
+                                                        <ng-container *ngIf="showTooltipConfig.tooltipOne">
+                                                            <div class="tooltip-backdrop" ></div>
+                                                        </ng-container>
+                                                            <div class="tooltip2" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="showTooltipConfig.tooltipOne=!showTooltipConfig.tooltipOne;" />
+                                                                <span class="tooltiptext" *ngIf="showTooltipConfig.tooltipOne">
+                                                                    <span (click)="showTooltipConfig.tooltipOne=false;" class="tooltip-cross-btn">×</span>
+                                                                    It shows the number of days the claim is pending to be billed since the claim was
+                                                                    uploaded to the RCM tool</span>
+                                                                </div>
                                                 
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['opdtd']}"
@@ -134,13 +138,19 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th class="width-200" style="z-index:9;">
+                                                <th class="width-200" [ngStyle]="{'z-index':showTooltipConfig.tooltipTwo ? 99: 9}">
                                                     <div class="dFlex">
                                                         Days Since Oldest Pending Claim (DOS)
-                                                        <div class="tooltip2">
-                                                            <img src="../../assets/img/question-icon.png" />
-                                                            <span class="tooltiptext">It shows the number of days the claim is pending to be billed since the date of service </span>
-                                                        </div>
+                                                        <ng-container *ngIf="showTooltipConfig.tooltipTwo">
+                                                            <div class="tooltip-backdrop" ></div>
+                                                        </ng-container>
+                                                            <div class="tooltip2" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="showTooltipConfig.tooltipTwo=!showTooltipConfig.tooltipTwo;" />
+                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig.tooltipTwo">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig.tooltipTwo=false;">×</span>
+                                                                           It shows the number of days the claim is pending to be billed since the date of service
+                                                                </span>
+                                                            </div>
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['opdosd']}"

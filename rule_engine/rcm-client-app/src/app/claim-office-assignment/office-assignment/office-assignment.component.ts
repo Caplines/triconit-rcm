@@ -45,6 +45,7 @@ export class OfficeAssignmentComponent implements OnInit {
   filterName:any;
   isRoleAssociate:boolean;
   currentTeamId:number = Utils.selectedTeam();
+  showTooltipConfig:any={tooltipOne:false,tooltipTwo:false};
 
   constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
