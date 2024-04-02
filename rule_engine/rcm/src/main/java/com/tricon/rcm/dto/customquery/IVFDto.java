@@ -13,4 +13,6 @@ public interface IVFDto {
 	String getPdName();
 	
 	String getSsn();
+	
+	String getInsuranceContact();
 }

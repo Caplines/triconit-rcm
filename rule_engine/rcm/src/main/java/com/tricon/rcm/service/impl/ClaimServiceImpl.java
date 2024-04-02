@@ -2119,10 +2119,8 @@ public class ClaimServiceImpl {
 			BeanUtils.copyProperties(dto, implDto);
 			//set es_status updated
 			
-			if (dto.getEsStatusUpdated() == null) {
+			if (dto.getStatusESUpdated() == null) {
 				implDto.setStatusESUpdated(dto.getStatusES());
-			} else {
-				implDto.setStatusESUpdated(dto.getEsStatusUpdated());
 			}
 			
 			if (dto.getCurrentStatus()!=0) {
@@ -2220,6 +2218,7 @@ public class ClaimServiceImpl {
 					claim.setIvDos(ivDos);	
 					claim.setSsn(ivfDto.getSsn());
 					implDto.setSsn(ivfDto.getSsn());
+					implDto.setInsuranceContactNo(ivfDto.getInsuranceContact());
 					if (!implDto.isPrimary()) {
 						
 						
@@ -2257,10 +2256,31 @@ public class ClaimServiceImpl {
 						
 				 }
 				
-				}else {
+				} else {
 					ivfId = implDto.getIvfId();
 					
 				}
+				
+				if (implDto.getInsuranceContactNo() == null || (implDto.getInsuranceContactNo() != null
+						&& implDto.getInsuranceContactNo().trim().equals(""))) {
+
+					// get insurance contactNumber
+					Set<String> insTypes = new HashSet<>();
+					insTypes.add(claimSubTy);
+					if (claimSubTy.equalsIgnoreCase(Constants.insuranceTypePrimary)) {
+						insTypes.add("");
+						insTypes.add("No Information");
+					}
+					ivfDto = rcmClaimRepository.getIVIdOfClaimByDos(Constants.SDF_MYSL_DATE.format(implDto.getDos()),
+							implDto.getOfficeUuid(), implDto.getPatientId(), insTypes);
+					if (ivfDto != null) {
+						implDto.setInsuranceContactNo(ivfDto.getInsuranceContact());
+					if (claim==null)  claim = rcmClaimRepository.findByClaimUuid(claimUuid);
+					   claim.setInsuranceContactNo(ivfDto.getInsuranceContact());
+					   
+					}
+				}
+				
 				if (implDto.getTpId() == null) implDto.setTpId("");
 				if (!ivfId.equals("") && implDto.getTpId().equals("")) {
 					
@@ -2636,6 +2656,8 @@ public class ClaimServiceImpl {
 				claim.setIvDos(ivfDto.getDos());
 				claim.setSsn(ivfDto.getSsn());
 				det.setSsn(ivfDto.getSsn());
+				det.setInsuranceContact(ivfDto.getInsuranceContact());
+				claim.setInsuranceContactNo(ivfDto.getInsuranceContact());
 			}
 		}else {
 			det.setSuccess(true);
@@ -2647,6 +2669,8 @@ public class ClaimServiceImpl {
 			 det.setIvDos("");
 			 claim.setSsn("");
 			 det.setSsn("");
+			 claim.setInsuranceContactNo("");
+			 det.setInsuranceContact("");
 		}
 		//Fetch Tpid Date based on New Tpid
 		if (dto.getTpId() !=null && !dto.getTpId().equals("")) {
@@ -4902,6 +4926,22 @@ public class ClaimServiceImpl {
 			return false;
 		}
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(sectionRequestBody.getClaimUuid());
+		
+		String[] claimSplit = claim.getClaimId().split("_");
+		boolean isPrimary = false;
+		int assoicatedClaimCurrentStatus = 0;
+		if (("_" + claimSplit[1]).equals(ClaimTypeEnum.P.getSuffix())) {
+			isPrimary = true;
+		} else {
+			isPrimary = false;
+			Object sec = rcmClaimRepository.getClaimsUuidClaimIdSec(
+					claim.getClaimId().split(ClaimTypeEnum.S.getSuffix())[0] + ClaimTypeEnum.P.getSuffix(),
+					claim.getOffice().getUuid());
+			if (sec != null) {
+				Object s[] = (Object[]) sec;
+				assoicatedClaimCurrentStatus = s[3] == null ? 0 : Integer.parseInt(s[3].toString());
+			}
+		}
 
 		RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(
 				partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
@@ -4917,6 +4957,17 @@ public class ClaimServiceImpl {
 			return false;
 		}
 		
+		if (isPrimary && claim.getCurrentStatus() == ClaimStatusEnum.Closed.getId()) {
+			logger.error("Primary is open but current status is closed");
+			return false;
+		}
+
+		if (!isPrimary && (claim.getCurrentStatus() == ClaimStatusEnum.Closed.getId()
+				|| assoicatedClaimCurrentStatus != ClaimStatusEnum.Closed.getId())) {
+			logger.error("Primary is closed or secondary is also closed");
+			return false;
+		}
+	
 		List<SectionDto> sectionsData = masterService.getSections();
 
 		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());

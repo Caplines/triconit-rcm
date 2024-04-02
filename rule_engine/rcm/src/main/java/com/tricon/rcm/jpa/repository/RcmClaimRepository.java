@@ -470,7 +470,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" cl.insurance_contact_no insuranceContactNo, cl.patient_contact_no patientContactNo, cl.current_status currentStatus,cl.next_action nextAction,cl.rebilled_status rebilledStatus, "
 			+ "COALESCE(cl.btp, 0) as btp,COALESCE(cl.adjustment, 0) as adjustment,COALESCE(cl.payment_received, 0) as paymentReceived,COALESCE(cl.paid_amount, 0) as paidAmount, "
 			+ "COALESCE(cl.balance_from_es_after_posting, 0) as balanceFromEsAfterPosting,COALESCE(cl.balance_from_es_before_posting, 0) as balanceFromEsBeforePosting ,cl.first_posting_date as firstPostingDate, "
-			+ "cl.first_rebilled_date as firstRebilledDate, cl.reconciliation_pass as reconciliationPass, COALESCE(cl.amount_collected_claims,0) as amountCollectedClaims,cl.status_es_updated as esStatusUpdated from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
+			+ "cl.first_rebilled_date as firstRebilledDate, cl.reconciliation_pass as reconciliationPass, COALESCE(cl.amount_collected_claims,0) as amountCollectedClaims,cl.status_es_updated as statusESUpdated from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+
 			"  left join rcm_team Cteam  on Cteam.id=cl.current_team_id"+
@@ -496,7 +496,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 	//9 May 2023 and IV Date is 5th May 2023 -
 	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos,policy_holder_dob pdob,policy_holder pdName, "
-			+ " pd.member_ssn ssn " + 
+			+ " pd.member_ssn ssn,pd.ins_contact as insuranceContact " + 
 			" from  patient p , patient_detail pd where pd.patient_id=p.id and p.patient_id=:patientId " + 
 			" and p.office_id=:officeId and pd.cob_status in (:insTypes) " + 
 			" and STR_TO_DATE(:dos,'%Y-%m-%d')>=STR_TO_DATE(general_date_iv_wasdone,'%Y-%m-%d') order by " + 
@@ -674,7 +674,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "where off.company_id=:companyId and cl.resolved is false order by cl.id limit :offset, :limit", nativeQuery = true)
 	List<IssueClaimDto> getIssueClaimsByPagination(@Param("companyId") String companyId,@Param("offset")int offSet,@Param("limit")int limit); //and off.activeis true
 	
-	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos,member_ssn ssn " + 
+	@Query(nativeQuery = true, value = "select pd.id ivId,p.office_id officeId,general_date_iv_wasdone dos,member_ssn ssn,pd.ins_contact as insuranceContact " + 
 			" from  patient p , patient_detail pd where pd.patient_id=p.id and p.patient_id=:patientId " + 
 			" and p.office_id=:officeId and pd.id=:ivid " + 
 			" order by " + 
