@@ -1542,7 +1542,7 @@
                                                         <th>View Notes</th>
                                                         <!--<th>Reconciliation</th>-->
                                                         <!-- <th>BTP Flag</th> -->
-                                                        <ng-container *ngIf="clientName != 'Smilepoint'">
+                                                        <ng-container *ngIf="!smilePoint">
                                                             <th></th>
                                                         </ng-container>
                                                     </tr>
@@ -1552,7 +1552,7 @@
                                                         *ngFor="let data of claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;let idx=index;let last=last;">
                                                         <tr>
                                                             <ng-container class="row-grey"
-                                                                *ngIf="clientName != 'Smilepoint'">
+                                                                *ngIf="!smilePoint">
                                                                 <td>
                                                                     <!-- <input type="text" class="form-control" [(ngModel)]="data.snum"> -->
                                                                     {{idx+1}}
@@ -1576,7 +1576,7 @@
                                                                         [(ngModel)]="data.surface"> </td>
                                                             </ng-container>
                                                             <ng-container class="row-grey"
-                                                                *ngIf="clientName == 'Smilepoint'">
+                                                                *ngIf="smilePoint">
                                                                 <td class="row-grey"> {{idx+1}}</td>
                                                                 <td class="row-grey"
                                                                     [ngClass]="{'text-danger':data.rebilledCodeStatus}"
@@ -1667,7 +1667,7 @@
                                                                     <label class="custom-control-label" for="customSwitch{{idx}}"></label>
                                                                 </div>
                                                             </td> -->
-                                                            <ng-container *ngIf="clientName != 'Smilepoint'">
+                                                            <ng-container *ngIf="!smilePoint">
                                                                 <td *ngIf="!last">
                                                                     <!-- <button class="btn btn-sm btn-danger"(click)="removeSectionLevelRow(idx)">-</button> -->
                                                                     <span (click)="removeSectionLevelRow(idx)"
