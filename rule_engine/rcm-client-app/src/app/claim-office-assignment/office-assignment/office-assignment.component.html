@@ -123,7 +123,7 @@
                                                             <div class="tooltip-backdrop" ></div>
                                                         </ng-container>
                                                             <div class="tooltip2" >
-                                                                <img src="../../assets/img/question-icon.png" (click)="showTooltipConfig.tooltipOne=!showTooltipConfig.tooltipOne;" />
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('tooltipOne');" />
                                                                 <span class="tooltiptext" *ngIf="showTooltipConfig.tooltipOne">
                                                                     <span (click)="showTooltipConfig.tooltipOne=false;" class="tooltip-cross-btn">×</span>
                                                                     It shows the number of days the claim is pending to be billed since the claim was
@@ -145,7 +145,7 @@
                                                             <div class="tooltip-backdrop" ></div>
                                                         </ng-container>
                                                             <div class="tooltip2" >
-                                                                <img src="../../assets/img/question-icon.png" (click)="showTooltipConfig.tooltipTwo=!showTooltipConfig.tooltipTwo;" />
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('tooltipTwo');" />
                                                                 <span class="tooltiptext"  *ngIf="showTooltipConfig.tooltipTwo">
                                                                        <span class="tooltip-cross-btn" (click)="showTooltipConfig.tooltipTwo=false;">×</span>
                                                                            It shows the number of days the claim is pending to be billed since the date of service

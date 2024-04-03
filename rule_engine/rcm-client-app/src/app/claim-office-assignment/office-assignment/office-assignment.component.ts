@@ -399,6 +399,20 @@ get staticUtil():any {
   return Utils;
 }
 
+toggleTooltip(tooltip:any){
+  this.showTooltipConfig[tooltip] = !this.showTooltipConfig[tooltip];
+  document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' || event.keyCode === 27) {
+    this.showTooltipConfig[tooltip] = false;
+  }
+})
+if(!this.showTooltipConfig[tooltip]){
+  document.removeAllListeners('keydown');
+}
+
+
+}
+
 // sortDosDesc(){
 //   this.isSorted['opdosd'] = true;
 //   this.sortData(this.filteredItems,'opdosd','desc','number');
