@@ -12,12 +12,12 @@
                                          (change)="switchTab('withoutDos')">Claims pending to be billed -
                                     Assigned to other teams
                                 </label>
-                                <label class="btn btn-light" style="min-width: 270px;"
+                                <label class="btn btn-light" style="min-width: 270px;" 
                                     [ngClass]="{'active':tabSwitch.withDos}">
                                     <input class="form-check-input" [disabled]="showLoader.loader" type="radio" (change)="switchTab('withDOS')"
                                         name="options" id="option2">Days since oldest pending claim (DOS)
                                 </label>
-                                <label class="btn btn-light" style="min-width: 270px;"
+                                <label class="btn btn-light" style="min-width: 270px;" 
                                     [ngClass]="{'active':tabSwitch.withDateOfPending}">
                                     <input class="form-check-input" type="radio" [disabled]="showLoader.loader" (change)="switchTab('withDOP')"
                                         name="options" id="option3">Days since oldest pending claim (Upload date)
@@ -153,9 +153,19 @@
                                                         </div>
                                                     </th>
                                                     <ng-container *ngFor="let data of teamData;let last = last;">
-                                                        <th *ngIf="currentTeamId != data.teamId">
+                                                        <th *ngIf="currentTeamId != data.teamId" [ngStyle]="{'z-index':showTooltipConfig[data.unFormatedName] ? 999999 : 99}">
                                                             <div class="dFlex">
                                                                    {{data.teamName}}
+                                                                   <ng-container *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                    <div class="tooltip-backdrop"></div>
+                                                                </ng-container>
+                                                                <div class="tooltip2 ml-1" *ngIf="(data.teamId == 11 || data.teamId == 19 || data.teamId == 3 ||data.teamId == 4 ||data.teamId == 14 ||data.teamId == 20 ||data.teamId == 10 || data.teamId == 6 || data.teamId == 18 || data.teamId == 12 || data.teamId == 13 || data.teamId == 16)">
+                                                                    <img src="../../assets/img/question-icon.png" (click)="toggleTooltip(data.unFormatedName);" />
+                                                                    <span class="tooltiptext"  *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                           <span class="tooltip-cross-btn" (click)="showTooltipConfig[data.unFormatedName]=false;">×</span>
+                                                                          {{tooltipText[data.unFormatedName]}}
+                                                                    </span>
+                                                                </div>
                                                                 <span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
                                                                         [ngClass]="{'selected': !isSorted[data.unFormatedName]}"
@@ -314,9 +324,20 @@
                                                         </div>
                                                     </th>
                                                     <ng-container *ngFor="let data of teamData;let last=last">
-                                                        <th *ngIf="currentTeamId != data.teamId">
+                                                        <th *ngIf="currentTeamId != data.teamId" [ngStyle]="{'z-index':showTooltipConfig[data.unFormatedName] ? 999999 : 99}">
                                                             <div class="dFlex">
-                                                                   {{data.teamName}} <span class="sorting">
+                                                                   {{data.teamName}}
+                                                                   <ng-container *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                    <div class="tooltip-backdrop"></div>
+                                                                </ng-container>
+                                                                <div class="tooltip2 ml-1" *ngIf="(data.teamId == 11 || data.teamId == 19 || data.teamId == 3 ||data.teamId == 4 ||data.teamId == 14 ||data.teamId == 20 ||data.teamId == 10 || data.teamId == 6 || data.teamId == 18 || data.teamId == 12 || data.teamId == 13 || data.teamId == 16)">
+                                                                    <img src="../../assets/img/question-icon.png" (click)="toggleTooltip(data.unFormatedName);" />
+                                                                    <span class="tooltiptext"  *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                           <span class="tooltip-cross-btn" (click)="showTooltipConfig[data.unFormatedName]=false;">×</span>
+                                                                          {{tooltipText[data.unFormatedName]}}
+                                                                    </span>
+                                                                </div>
+                                                                    <span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
                                                                         [ngClass]="{'selected': !isSorted[data.unFormatedName]}"
                                                                         (click)="sortData(filteredItems,'count','asc','nestedDate',data.unFormatedName); isSorted[data.unFormatedName] = false"></a>
@@ -467,9 +488,20 @@
                                                         </div>
                                                     </th>
                                                     <ng-container *ngFor="let data of teamData;let last=last">
-                                                        <th *ngIf="currentTeamId != data.teamId">
+                                                        <th *ngIf="currentTeamId != data.teamId" [ngStyle]="{'z-index':showTooltipConfig[data.unFormatedName] ? 999999 : 99}">
                                                             <div class="dFlex">
-                                                                {{data.teamName}}<span class="sorting">
+                                                                {{data.teamName}}
+                                                                <ng-container *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                    <div class="tooltip-backdrop"></div>
+                                                                </ng-container>
+                                                                <div class="tooltip2 ml-1" *ngIf="(data.teamId == 11 || data.teamId == 19 || data.teamId == 3 ||data.teamId == 4 ||data.teamId == 14 ||data.teamId == 20 ||data.teamId == 10 || data.teamId == 6 || data.teamId == 18 || data.teamId == 12 || data.teamId == 13 || data.teamId == 16)">
+                                                                    <img src="../../assets/img/question-icon.png" (click)="toggleTooltip(data.unFormatedName);" />
+                                                                    <span class="tooltiptext"  *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                           <span class="tooltip-cross-btn" (click)="showTooltipConfig[data.unFormatedName]=false;">×</span>
+                                                                          {{tooltipText[data.unFormatedName]}}
+                                                                    </span>
+                                                                </div>
+                                                                <span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
                                                                         [ngClass]="{'selected': !isSorted[data.unFormatedName]}"
                                                                         (click)="sortData(filteredItems,'count','asc','nestedDate',data.unFormatedName); isSorted[data.unFormatedName] = false"></a>

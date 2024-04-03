@@ -72,8 +72,7 @@
                                                                             [checked]="isFilterAllSelected.officeName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'officeName')">
-                                                                        {{isFilterAllSelected.officeName ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.officeName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -142,9 +141,20 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th>
+                                                <th [ngStyle]="{'z-index':showTooltipConfig['claimAge'] ? 999999 : 99}">
                                                     <div class="dFlex">
-                                                        Claim Age<span class="sorting">
+                                                        Claim Age
+                                                        <ng-container *ngIf="showTooltipConfig['claimAge']">
+                                                            <div class="tooltip-backdrop" ></div>
+                                                        </ng-container>
+                                                        <div class="tooltip2" >
+                                                            <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('claimAge');" />
+                                                            <span class="tooltiptext"  *ngIf="showTooltipConfig['claimAge']">
+                                                                   <span class="tooltip-cross-btn" (click)="showTooltipConfig['claimAge']=false;">×</span>
+                                                                   Shows how long it has been since the date of service
+                                                            </span>
+                                                        </div>
+                                                        <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['claimAge']}"
                                                                 (click)="sortData(filteredItems,'claimAge','asc','number'); isSorted['claimAge'] = false"></a>
@@ -154,18 +164,38 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th>
+                                                <th [ngStyle]="{'z-index':showTooltipConfig['tfl'] ? 999999 : 99}">
                                                     <div class="dFlex">
                                                         TFL
+                                                        <ng-container *ngIf="showTooltipConfig['tfl']">
+                                                                <div class="tooltip-backdrop" ></div>
+                                                            </ng-container>
+                                                            <div class="tooltip2 ml-1" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('tfl');" />
+                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['tfl']">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['tfl']=false;">×</span>
+                                                                       Timely Filing Limit
+                                                                </span>
+                                                            </div>
                                                         <!-- <span class="sorting">
                                                           <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['officeName']}" (click)="isSorted['officeName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['officeName']}" (click)="isSorted['officeName'] = true"></a>
                                                         </span> -->
                                                     </div>
                                                 </th>
-                                                <th class="width-115">
+                                                <th class="width-115" [ngStyle]="{'z-index':showTooltipConfig['age'] ? 999999 : 99}">
                                                     <div class="dFlex">
                                                         Age Bracket
+                                                        <ng-container *ngIf="showTooltipConfig['age']">
+                                                            <div class="tooltip-backdrop" ></div>
+                                                        </ng-container>
+                                                        <div class="tooltip2" >
+                                                            <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('age');" />
+                                                            <span class="tooltiptext"  *ngIf="showTooltipConfig['age']">
+                                                                   <span class="tooltip-cross-btn" (click)="showTooltipConfig['age']=false;">×</span>
+                                                                   Categorizes claims based on their age (e.g., 0-29 days, 30-59 days, etc.).
+                                                            </span>
+                                                        </div>
                                                         <div class="dropdown">
                                                             <img (click)="showHideFilteredDropdown('ageBracket')"
                                                                 src="../../assets/img/filterIcon.png"
@@ -391,9 +421,20 @@
                                                     </div>
                                                 </th>
 
-                                                <th>
+                                                <th [ngStyle]="{'z-index':showTooltipConfig['psd'] ? 999999 : 99}">
                                                     <div class="dFlex">
-                                                        Pending Since Date<span class="sorting">
+                                                        Pending Since Date
+                                                        <ng-container *ngIf="showTooltipConfig['psd']">
+                                                                <div class="tooltip-backdrop" ></div>
+                                                            </ng-container>
+                                                            <div class="tooltip2" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('psd');" />
+                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['psd']">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['psd']=false;">×</span>
+                                                                       Shows the date since when a claim is pending with the Office.
+                                                                </span>
+                                                            </div>
+                                                        <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['pendingSince']}"
                                                                 (click)="sortData(filteredItems,'pendingSince','asc','dateOnly'); isSorted['pendingSince'] = false"></a>
@@ -434,14 +475,34 @@
                                                         Due Balance
                                                     </div>
                                                 </th>
-                                                <th class="remarks-bg" *ngIf="showColumns.showAttach">
+                                                <th class="remarks-bg" *ngIf="showColumns.showAttach" [ngStyle]="{'z-index':showTooltipConfig['remark'] ? 999 : 99}">
                                                     <div class="dFlex">
                                                         Enter Your Remarks
+                                                        <ng-container *ngIf="showTooltipConfig['remark']">
+                                                                <div class="tooltip-backdrop" ></div>
+                                                            </ng-container>
+                                                            <div class="tooltip2" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('remark');" />
+                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['remark']">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['remark']=false;">×</span>
+                                                                       Add comments or notes about the claim with respect to the "Last Team's Remarks".
+                                                                </span>
+                                                            </div>
                                                     </div>
                                                 </th>
-                                                <th class="remarks-bg" *ngIf="showColumns.showAttach">
+                                                <th class="remarks-bg" *ngIf="showColumns.showAttach" [ngStyle]="{'z-index':showTooltipConfig['attach'] ? 999 : 99}">
                                                     <div class="dFlex">
                                                         Attach File
+                                                        <ng-container *ngIf="showTooltipConfig['attach']">
+                                                                <div class="tooltip-backdrop" ></div>
+                                                            </ng-container>
+                                                            <div class="tooltip2" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('attach');" />
+                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['attach']">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['attach']=false;">×</span>
+                                                                       Upload supporting documents for the claim.
+                                                                </span>
+                                                            </div>
                                                     </div>
                                                 </th>
                                                 <th class="remarks-bg" *ngIf="showColumns.showAttach">

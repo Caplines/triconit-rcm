@@ -71,6 +71,8 @@ export class OtherTeamsWorkComponent implements OnInit {
     'Patient Calling': ['showAttach'],
   };
 
+  showTooltipConfig:any={};
+
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -942,5 +944,17 @@ export class OtherTeamsWorkComponent implements OnInit {
     Object.keys(this.showColumns).forEach(column => {
       this.showColumns[column] = columnsToShow.includes(column);
     });
+  }
+
+  toggleTooltip(tooltip:any){
+    this.showTooltipConfig[tooltip] = !this.showTooltipConfig[tooltip];
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' || event.keyCode === 27) {
+        this.showTooltipConfig[tooltip] = false;
+      }
+    })
+    if(!this.showTooltipConfig[tooltip]){
+      document.removeAllListeners('keydown');
+    }
   }
 }

@@ -20,12 +20,12 @@
                                                         (change)="switchTab('Fresh')">Fresh
                                                     Claims
                                                 </label>
-                                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.sendBack}">
+                                                <label class="btn btn-light"  [ngClass]="{'active':tabSwitch.sendBack}">
                                                     <input class="form-check-input" type="radio" name="options"
                                                         [disabled]="loader.listClaimLoader" id="option2"
                                                         (change)="switchTab('sendBack')">Claims Sent back by Other Teams
                                                 </label>
-                                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.MyClaims}"
+                                                <label class="btn btn-light"  [ngClass]="{'active':tabSwitch.MyClaims}"
                                                     *ngIf="isRoleLead">
                                                     <input class="form-check-input" type="radio"
                                                         [disabled]="loader.listClaimLoader" name="options" id="option3"
@@ -73,8 +73,7 @@
                                                                                 [checked]="isFilterAllSelected.officeName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear
-                                                                            All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.officeName=false;"
                                                                             type="button" class="close"
@@ -157,9 +156,20 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th>
-                                                        <div class="dFlex">
-                                                            Claim Age<span class="sorting">
+                                                    <th [ngStyle]="{'z-index':showTooltipConfig['claimAge'] ? 999999 : 99}">
+                                                        <div class="dFlex" >
+                                                            Claim Age
+                                                            <ng-container *ngIf="showTooltipConfig['claimAge']">
+                                                                <div class="tooltip-backdrop" ></div>
+                                                            </ng-container>
+                                                            <div class="tooltip2 ml-1" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('claimAge');" />
+                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['claimAge']">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['claimAge']=false;">×</span>
+                                                                       Shows how long it has been since the date of service
+                                                                </span>
+                                                            </div>
+                                                            <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
                                                                     [ngClass]="{'selected': !isSorted['claimAge']}"
                                                                     (click)="sortData(filteredItems,'claimAge','asc','number'); isSorted['claimAge'] = false"></a>
@@ -169,18 +179,39 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th>
+                                                    <th [ngStyle]="{'z-index':showTooltipConfig['tfl'] ? 999999 : 99}">
                                                         <div class="dFlex">
                                                             TFL
+                                                            <ng-container *ngIf="showTooltipConfig['tfl']">
+                                                                <div class="tooltip-backdrop" ></div>
+                                                            </ng-container>
+                                                            <div class="tooltip2 ml-1" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('tfl');" />
+                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['tfl']">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['tfl']=false;">×</span>
+                                                                       Timely Filing Limit
+                                                                </span>
+                                                            </div>
                                                             <!-- <span class="sorting">
                                                           <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['officeName']}" (click)="isSorted['officeName'] = false"></a>
                                                             <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['officeName']}" (click)="isSorted['officeName'] = true"></a>
                                                         </span> -->
                                                         </div>
                                                     </th>
-                                                    <th class="width-115">
+                                                    <th class="width-115" [ngStyle]="{'z-index':showTooltipConfig['psd'] ? 999999 : 99}">
                                                         <div class="dFlex">
-                                                            Pending Since Date<span class="sorting">
+                                                            Pending Since Date
+                                                            <ng-container *ngIf="showTooltipConfig['psd']">
+                                                                <div class="tooltip-backdrop" ></div>
+                                                            </ng-container>
+                                                            <div class="tooltip2 ml-1">
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('psd');" />
+                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['psd']">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['psd']=false;">×</span>
+                                                                       Shows the date since when a claim is pending with the Office.
+                                                                </span>
+                                                            </div>
+                                                            <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
                                                                     [ngClass]="{'selected': !isSorted['pendingSince']}"
                                                                     (click)="sortData(filteredItems,'pendingSince','asc','dateOnly'); isSorted['pendingSince'] = false"></a>
@@ -190,9 +221,19 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th class="width-115">
+                                                    <th class="width-115" [ngStyle]="{'z-index':showTooltipConfig['age'] ? 999999 : 99}">
                                                         <div class="dFlex">
                                                             Age Bracket
+                                                            <ng-container *ngIf="showTooltipConfig['age']">
+                                                                <div class="tooltip-backdrop" ></div>
+                                                            </ng-container>
+                                                            <div class="tooltip2" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('age');" />
+                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['age']">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['age']=false;">×</span>
+                                                                       Categorizes claims based on their age (e.g., 0-29 days, 30-59 days, etc.).
+                                                                </span>
+                                                            </div>
                                                             <div class="dropdown">
                                                                 <img (click)="showHideFilteredDropdown('ageBracket')"
                                                                     src="../../assets/img/filterIcon.png"

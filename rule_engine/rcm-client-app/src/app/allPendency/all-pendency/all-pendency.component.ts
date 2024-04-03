@@ -38,6 +38,21 @@ export class AllPendencyComponent {
   allUserClients:any=[];
 
   officeData:any= [];
+  showTooltipConfig:any={};
+  tooltipText:any={
+    'CDP':'CDP team identifies reasons for claim denials & suggests solutions.',
+    'CREDENTIALING':'Credentialing team helps in provider enrollment with insurance companies.',
+    'INTERNAL_AUDIT':'Internal Audit team ensures you are following billing & clinical compliance.',
+    'LC3':'LC3 Team ensures insurance guidelines and billing accuracy.',
+    'MEDICAID_IV':'Medicaid IV team verifies patient eligibility for Medicaid patients.',
+    'AGING':'Aging team follows up on claim status and work on denials.',
+    'ORTHO':'Ortha team follows up on Orthodontics procedure claim status and work on denials.',
+    'PATIENT_CALLING':'Patient calling team manages patient inquiries, booking and confirming appointments.',
+    'PATIENT_STATEMENT':'Patient Statement team addresses patient responsibility after the claims get settled.',
+    'PAYMENT_POSTING':'Posting team manages payment posting and closure of the claim in PMS',
+    'PPO_IV':'PPO IV team verifies patient eligibility for PPO insurance patients.',
+    'QUALITY':'Quality team ensures the accuracy of all RCM related tasks.',
+  }
 
   constructor(public constants:AppConstants,private _service: ApplicationServiceService, private title: Title,private datePipe: DatePipe,private downloadService:DownLoadService,private router:Router) {
     title.setTitle(Utils.defaultTitle + "Pendency - Other Teams")
@@ -434,6 +449,18 @@ openSpecificPendencyData(user:any,teamId:any){
   const url =  this.router.createUrlTree([`/pendency/${user.officeUuid}/${user.clientUuid}/${teamId}`],{queryParams}).toString();
    window.open(url, '_blank');
 } 
+
+toggleTooltip(tooltip: any) {
+  this.showTooltipConfig[tooltip] = !this.showTooltipConfig[tooltip];
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' || event.keyCode === 27) {
+      this.showTooltipConfig[tooltip] = false;
+    }
+  })
+  if (!this.showTooltipConfig[tooltip]) {
+    document.removeAllListeners('keydown');
+  }
+}
 
 
 }
