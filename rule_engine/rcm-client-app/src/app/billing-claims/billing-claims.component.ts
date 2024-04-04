@@ -364,7 +364,7 @@ export class BillingClaimsComponent {
   stringToSearch: any = '';
   zoom_to: any = 1.0;
   pdfUrlSrc: any = "";
-  sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0, balanceFromEsBeforePosting: 0, balanceFromEsAfterPosting: 0, isCorrectTotalPaidAmt: true, isCorrectTotalAllowedAmt: true, reconcile: false };
+  sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0, balanceFromEsBeforePosting: 0, balanceFromEsAfterPosting: 0, isCorrectTotalPaidAmt: true, isCorrectTotalAllowedAmt: true, reconcile: false,creditAdjustmentAmount:0,debitAdjustmentAmount:0 };
   viewNotesConfig: any = { showNotes: false, viewNotes: [] };
   isBtpFlagTrue: boolean = false;
   serviceLevelSectionMultiSelectConfig: any = { serviceCodesList: [], rebillingRequirements: [], showModal: false };
@@ -2737,6 +2737,8 @@ export class BillingClaimsComponent {
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalBtpAmount'] = 0;
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalAdjustmentAmount'] = 0;
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] = 0;
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalCreditAdjustmentAmount'] = 0;
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalDebitAdjustmentAmount'] = 0;
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['balanceFromEsBeforePosting'] = Number(this.sectionLevelInfoTotalConfig.balanceFromEsBeforePosting);
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['balanceFromEsAfterPosting'] = Number(this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting);
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['serviceLevelBody'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;
@@ -2745,6 +2747,8 @@ export class BillingClaimsComponent {
       this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalBtpAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalBtpAmount'] + +e.billToPatientAmount;
       this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalAdjustmentAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalAdjustmentAmount'] + +e.adjustmentAmount;
       this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] + +e.paidAmount;
+      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalCreditAdjustmentAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalCreditAdjustmentAmount'] + +e.creditAdjustmentAmount;
+      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalDebitAdjustmentAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalDebitAdjustmentAmount'] + +e.debitAdjustmentAmount;
 
     });
     this.updatBalanceFromESBeforePosting();
@@ -2838,6 +2842,8 @@ export class BillingClaimsComponent {
       this.sectionLevelInfoTotalConfig.estPrimary = this.sectionLevelInfoTotalConfig.estPrimary + +e.estPrimary;
       this.sectionLevelInfoTotalConfig.fee = this.sectionLevelInfoTotalConfig.fee + +e.fee;
       this.sectionLevelInfoTotalConfig.billToPatientAmount = this.sectionLevelInfoTotalConfig.billToPatientAmount + +e.billToPatientAmount;
+      this.sectionLevelInfoTotalConfig.creditAdjustmentAmount = this.sectionLevelInfoTotalConfig.creditAdjustmentAmount + +e.creditAdjustmentAmount;
+      this.sectionLevelInfoTotalConfig.debitAdjustmentAmount = this.sectionLevelInfoTotalConfig.debitAdjustmentAmount + +e.debitAdjustmentAmount;
     });
     this.sectionLevelInfoTotalConfig.billToPatientAmount > 0 ? this.isBtpFlagTrue = true : this.isBtpFlagTrue = false;
     this.addDecimalInTotalServiceValue();
@@ -2883,6 +2889,8 @@ export class BillingClaimsComponent {
     this.sectionLevelInfoTotalConfig.estPrimary = 0;
     this.sectionLevelInfoTotalConfig.fee = 0;
     this.sectionLevelInfoTotalConfig.billToPatientAmount = 0;
+    this.sectionLevelInfoTotalConfig.creditAdjustmentAmount = 0;
+    this.sectionLevelInfoTotalConfig.debitAdjustmentAmount = 0;
   }
 
   addDecimalInTotalServiceValue() {
@@ -2892,6 +2900,9 @@ export class BillingClaimsComponent {
     this.sectionLevelInfoTotalConfig.estPrimary = +this.sectionLevelInfoTotalConfig.estPrimary?.toFixed(2);
     this.sectionLevelInfoTotalConfig.fee = +this.sectionLevelInfoTotalConfig.fee?.toFixed(2);
     this.sectionLevelInfoTotalConfig.billToPatientAmount = +this.sectionLevelInfoTotalConfig.billToPatientAmount?.toFixed(2);
+    this.sectionLevelInfoTotalConfig.creditAdjustmentAmount = +this.sectionLevelInfoTotalConfig.creditAdjustmentAmount?.toFixed(2);
+    this.sectionLevelInfoTotalConfig.debitAdjustmentAmount = +this.sectionLevelInfoTotalConfig.debitAdjustmentAmount?.toFixed(2);
+
   }
 
 

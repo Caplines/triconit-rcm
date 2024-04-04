@@ -264,4 +264,8 @@ export default class Utils {
    static currentUserEmail() {
       return (localStorage.getItem("currentUser"));
    }
+
+   static isNotTeamOffice(){
+      return <any>localStorage.getItem("selected_teamId") != 5 ? true : false;
+   }
 }

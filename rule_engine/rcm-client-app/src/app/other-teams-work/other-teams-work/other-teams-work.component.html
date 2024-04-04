@@ -99,12 +99,12 @@
 
                                                     </div>
                                                 </th>
-                                                <th class="width-90">
+                                                <th class="width-90" *ngIf="staticUtil.isNotTeamOffice()">
                                                     <div class="dFlex">
                                                         Claim ID
                                                     </div>
                                                 </th>
-                                                <th class="width-90">
+                                                <th class="width-90" *ngIf="staticUtil.isNotTeamOffice()">
                                                     <div class="dFlex">
                                                         Patient ID<span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
@@ -141,7 +141,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th [ngStyle]="{'z-index':showTooltipConfig['claimAge'] ? 999999 : 99}">
+                                                <th [ngStyle]="{'z-index':showTooltipConfig['claimAge'] ? 999999 : 99}" *ngIf="staticUtil.isNotTeamOffice()">
                                                     <div class="dFlex">
                                                         Claim Age
                                                         <ng-container *ngIf="showTooltipConfig['claimAge']">
@@ -372,7 +372,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th>
+                                                <th *ngIf="staticUtil.isNotTeamOffice()">
                                                     <div class="dFlex">
                                                         Assigned By <div class="dropdown">
                                                             <img (click)="showHideFilteredDropdown('lastTeam')"
@@ -445,7 +445,7 @@
                                                     </div>
                                                 </th>
 
-                                                <th>
+                                                <th *ngIf="staticUtil.isNotTeamOffice()">
                                                     <div class="dFlex">
                                                         Current Team
                                                     </div>
@@ -534,11 +534,11 @@
                                                     <tr>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}">
                                                             {{det.officeName}}</td>
-                                                        <td class="noWrape"><a
+                                                        <td *ngIf="staticUtil.isNotTeamOffice()" class="noWrape"><a
                                                                 [ngClass]="{'changeColor' : det.colorChange}"
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
-                                                        <td><a [ngClass]="{'changeColor' : det.colorChange}"
+                                                        <td *ngIf="staticUtil.isNotTeamOffice()"><a [ngClass]="{'changeColor' : det.colorChange}"
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientId}}</a></td>
                                                         <td><a [ngClass]="{'changeColor' : det.colorChange}"
@@ -546,7 +546,7 @@
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"
                                                             class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                        <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}">
                                                             {{det.claimAge}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}">
                                                             {{det.timelyFilingLimitData}}</td>
@@ -577,14 +577,14 @@
                                                             *ngIf="! (det.claimId | claimTypeFilter)">
                                                             {{det.secTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                        <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}">
                                                             {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" class="">
                                                             {{det.lastTeamRemark}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"
                                                             class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}
                                                         </td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                        <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}"
                                                             class="alignRight">{{currentTeamName?.teamName}}</td>
                                                         <td *ngIf="showColumns.currentStatus">1</td>
                                                         <!--  //api changes required -->

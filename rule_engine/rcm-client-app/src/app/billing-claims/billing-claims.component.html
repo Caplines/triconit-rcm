@@ -1533,6 +1533,8 @@
                                                         <th class="row-grey">Surface</th>
                                                         <th>Allowed Amount</th>
                                                         <th>Paid Amount</th>
+                                                        <th>Credit Adjustment Amount</th>
+                                                        <th>Debit Adjustment Amount</th>
                                                         <th>Adjustment Amount</th>
                                                         <th>Adjustment Reason</th>
                                                         <th>Bill to Patient Amount</th>
@@ -1596,6 +1598,16 @@
                                                                     class="attach-secondary-width form-control"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="data.paidAmount"
+                                                                    (blur)="getTotalServiceLevelInfo()" /> </td>
+                                                            <td><input type="number"
+                                                                    class="attach-secondary-width form-control"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [(ngModel)]="data.creditAdjustmentAmount"
+                                                                    (blur)="getTotalServiceLevelInfo()" /> </td>
+                                                            <td><input type="number"
+                                                                    class="attach-secondary-width form-control"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [(ngModel)]="data.debitAdjustmentAmount"
                                                                     (blur)="getTotalServiceLevelInfo()" /> </td>
                                                             <td> <input type="number"
                                                                     class="attach-secondary-width form-control"
@@ -1728,6 +1740,8 @@
                                                                 [(ngModel)]="sectionLevelInfoTotalConfig.paidAmount"
                                                                 [class.is-invalid]="!sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt" />
                                                         </td>
+                                                        <td>{{sectionLevelInfoTotalConfig.creditAdjustmentAmount}}</td>
+                                                        <td>{{sectionLevelInfoTotalConfig.debitAdjustmentAmount}}</td>
                                                         <td>{{sectionLevelInfoTotalConfig.adjustmentAmount}}</td>
                                                         <td></td>
                                                         <td>{{sectionLevelInfoTotalConfig.billToPatientAmount}}</td>

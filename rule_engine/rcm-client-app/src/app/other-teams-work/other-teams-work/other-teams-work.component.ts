@@ -957,4 +957,8 @@ export class OtherTeamsWorkComponent implements OnInit {
       document.removeAllListeners('keydown');
     }
   }
+
+  get staticUtil():any{
+      return Utils;
+  }
 }
