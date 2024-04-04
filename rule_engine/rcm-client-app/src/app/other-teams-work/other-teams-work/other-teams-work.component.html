@@ -588,7 +588,7 @@
                                                             class="alignRight">{{currentTeamName?.teamName}}</td>
                                                         <td *ngIf="showColumns.currentStatus">1</td>
                                                         <!--  //api changes required -->
-                                                        <td *ngIf="showColumns.nextActionRequird">{{det.nextAction}}</td>
+                                                        <td *ngIf="showColumns.nextActionRequired">{{det.nextAction}}</td>
                                                         <td *ngIf="showColumns.nextFollowUpDate">{{det.followUpDate | date: 'MMM dd, YYYY'}}</td>
                                                         <td *ngIf="showColumns.providerSpeciality">N/A</td>
                                                         <td *ngIf="showColumns.dueBalance">{{det.dueBalance | currency:'USD':true:'.0-0'}}</td>
