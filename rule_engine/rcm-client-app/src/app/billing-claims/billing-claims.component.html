@@ -3,6 +3,10 @@
         <a class="backBtn" (click)="goToListofClaimsPage()"><img src="../../assets/img/arrow-back.png"
                 [style]="{width:'16px'}"></a>
         <h1>Capline RCM</h1>
+        <h5 class="mt-2 mx-3">
+            <a class="text-decoration-none text-light" href="mailto:ar@caplineservices.com?subject=I need help on this page&body=Page URL: {{emailUrl}}" (click)="sendFeedback()"  ><img
+                src="../../assets/img/help.png" /> Feedback</a>
+        </h5>
     </div>
 </div>
 <div [ngClass]="{'setPadding':appService.setPaddingContainer}">

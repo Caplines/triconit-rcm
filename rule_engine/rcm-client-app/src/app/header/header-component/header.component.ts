@@ -48,6 +48,7 @@ export class HeaderComponent implements OnInit {
 
   issueClaimPageNum: any = 0;
   totalPages: number;
+  emailUrl:any;
 
   @ViewChild('modalElement') modalElementRef!: ElementRef;
 
@@ -356,6 +357,10 @@ export class HeaderComponent implements OnInit {
 
   sortData(data: any, sortProp: string, order: any, sortType: string) {
     this.appSer.sortData(data, sortProp, order, sortType);
+  }
+
+  sendFeedback(){
+    this.emailUrl = window.location.href;
   }
 
 

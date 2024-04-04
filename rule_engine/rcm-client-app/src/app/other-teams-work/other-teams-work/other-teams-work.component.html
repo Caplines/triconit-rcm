@@ -587,12 +587,7 @@
                                                         <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}"
                                                             class="alignRight">{{currentTeamName?.teamName}}</td>
                                                         <td *ngIf="showColumns.currentStatus">
-                                                            <div [ngSwitch]="det.statusESUpdated">
-                                                                <div *ngIf="!det.statusESUpdated">N/A</div>
-                                                                <div *ngFor="let item of appConstants.statusESUpdated | keyvalue">
-                                                                    <div *ngSwitchCase=item.key>{{ item.value }}</div>
-                                                                </div>
-                                                            </div>
+                                                            {{det.statusES ? appConstants.statusESUpdated[det.statusES] : det.statusESUpdated ?  appConstants.statusESUpdated[det.statusESUpdated] : 'N/A'  }}
                                                         </td>
                                                         <!--  //api changes required -->
                                                         <td *ngIf="showColumns.nextActionRequired">{{det.nextAction}}</td>

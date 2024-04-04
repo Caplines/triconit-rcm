@@ -370,6 +370,7 @@ export class BillingClaimsComponent {
   serviceLevelSectionMultiSelectConfig: any = { serviceCodesList: [], rebillingRequirements: [], showModal: false };
   hideRecreateButton: boolean = false;
   selectedServiceCodesExist: boolean = false;
+  emailUrl:any='';
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
 
 
@@ -3526,6 +3527,11 @@ export class BillingClaimsComponent {
     if (!this.claimRcm.primary && this.claimRcm.assoicatedClaimCurrentStatus != this.appConstants.CLOSED_CLAIM_STATUS)
       return false;
     else return true;
+  }
+
+  
+  sendFeedback(){
+    this.emailUrl = window.location.href;
   }
 
 
