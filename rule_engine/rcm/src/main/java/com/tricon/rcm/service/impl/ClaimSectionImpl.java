@@ -965,6 +965,8 @@ public class ClaimSectionImpl {
 			serviceLevelData.setActive(true);
 			serviceLevelData.setGroupRun(maxRun + 1);
 			BeanUtils.copyProperties(data, serviceLevelData);
+			serviceLevelData.setCreditAdjustmentAmount(data.getCreditAdjustmentAmount());
+			serviceLevelData.setDebitAdjustmentAmount(data.getDebitAdjustmentAmount());
 			serviceLevelRepo.save(serviceLevelData);
 			//update Original rcm_claim_detail in
 		    if (finalSubmit && claimDetailData!=null) {
