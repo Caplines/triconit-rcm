@@ -586,7 +586,14 @@
                                                         </td>
                                                         <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}"
                                                             class="alignRight">{{currentTeamName?.teamName}}</td>
-                                                        <td *ngIf="showColumns.currentStatus">1</td>
+                                                        <td *ngIf="showColumns.currentStatus">
+                                                            <div [ngSwitch]="det.statusESUpdated">
+                                                                <div *ngIf="!det.statusESUpdated">N/A</div>
+                                                                <div *ngFor="let item of appConstants.statusESUpdated | keyvalue">
+                                                                    <div *ngSwitchCase=item.key>{{ item.value }}</div>
+                                                                </div>
+                                                            </div>
+                                                        </td>
                                                         <!--  //api changes required -->
                                                         <td *ngIf="showColumns.nextActionRequired">{{det.nextAction}}</td>
                                                         <td *ngIf="showColumns.nextFollowUpDate">{{det.followUpDate | date: 'MMM dd, YYYY'}}</td>

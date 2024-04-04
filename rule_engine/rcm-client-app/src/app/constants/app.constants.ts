@@ -296,4 +296,12 @@ export class AppConstants {
     ]
 
     public claimClosedId: number = 30;
+
+    public statusESUpdated: any = {
+        C: "Closed",
+        E: "Unbilled (E)",
+        P: "Unbilled (P)",
+        O: "Open",
+        U: "Primary Open - Secondary Unsubmitted",
+      };
 }
