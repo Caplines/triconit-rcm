@@ -301,4 +301,14 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "status_es_updated")
 	private String statusESUpdated;
+	
+	@Temporal(TemporalType.DATE)
+	@Column(name = "next_follow_up_date")
+	private Date nextFollowUpDate;
+	
+	@Column(name = "credit_adjustment_amount")
+	private Float creditAdjustmentAmount;
+
+	@Column(name = "debit_adjustment_amount")
+	private Float debitAdjustmentAmount;
 }

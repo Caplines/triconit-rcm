@@ -27,4 +27,9 @@ public interface FreshClaimDataDto {
 	Date getPendingSince();
 	
 	
+	String getStatusES();
+	String getStatusESUpdated();
+	int getNextAction();
+	Date getFollowUpDate();
+	Float getDueBalance();
 }

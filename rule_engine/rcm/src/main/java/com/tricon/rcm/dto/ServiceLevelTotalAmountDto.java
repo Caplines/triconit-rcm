@@ -13,5 +13,7 @@ public class ServiceLevelTotalAmountDto {
 	private double balanceFromEsBeforePosting;
 	private double balanceFromEsAfterPosting;
 	private boolean reconciliationPass;
+	private double totalCreditAdjustmentAmount;
+	private double totalDebitAdjustmentAmount;
 	private List<ServiceLevelRequestBodyDto> serviceLevelBody;
 }

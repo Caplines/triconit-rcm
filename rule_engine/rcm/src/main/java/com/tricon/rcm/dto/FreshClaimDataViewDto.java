@@ -31,4 +31,9 @@ public class FreshClaimDataViewDto {
 	String  lastTeamRemark;
 	Date pendingSince;
 
+	String statusESUpdated;
+	String statusES;
+	String nextAction;
+	Date followUpDate;
+	Float dueBalance;
 }

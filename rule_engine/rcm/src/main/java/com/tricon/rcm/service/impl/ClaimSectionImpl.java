@@ -993,7 +993,7 @@ public class ClaimSectionImpl {
 		     
 		   }
 		}
-		// now we update totalPaid amount,adjustment amount and btp amount in rcm claim
+		// now we update totalPaid amount,adjustment amount and btp amount,CreditAdjustmentAmount,DebitAdjustmentAmount in rcm claim
 		// table
 		if (finalSubmit) {
 		 if (oldServiceCodes!=null && oldServiceCodes.size()>0) {
@@ -1007,6 +1007,8 @@ public class ClaimSectionImpl {
 			claim.setBtp((float) serviceLevelInformationInfoModel.getTotalBtpAmount());
 			claim.setPaidAmount((float) serviceLevelInformationInfoModel.getTotalPaidAmount());
 			claim.setReconciliationPass(true);
+			claim.setCreditAdjustmentAmount((float) serviceLevelInformationInfoModel.getTotalCreditAdjustmentAmount());	
+			claim.setDebitAdjustmentAmount((float) serviceLevelInformationInfoModel.getTotalDebitAdjustmentAmount());
 			rcmClaimRepository.save(claim);
 			
        }
@@ -1116,7 +1118,13 @@ public class ClaimSectionImpl {
 			rcmFollowUpInsuranceInfoModel.setFollowByUser(followUpInformation.getCreatedBy().getFirstName());	
 			rcmFollowUpInsuranceInfoModel.setFollowByUserLastName(followUpInformation.getCreatedBy().getLastName());
 			rcmFollowUpInsuranceInfoModel.setNextFollowUpDate(followUpInformation.getNextFollowUpDate()==null?"":Constants.SDF_MYSL_DATE_TIME.format(followUpInformation.getNextFollowUpDate()));
-			BeanUtils.copyProperties(followUpInformation, rcmFollowUpInsuranceInfoModel);
+			BeanUtils.copyProperties(followUpInformation, rcmFollowUpInsuranceInfoModel);	
+			if (finalSubmit) {
+				claim.setNextFollowUpDate(
+						!StringUtils.isNoneBlank(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate()) ? null
+								: Constants.SDF_MYSL_DATE.parse(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate()));
+				rcmClaimRepository.save(claim);
+			}
 		}
 		return rcmFollowUpInsuranceInfoModel;
 	}

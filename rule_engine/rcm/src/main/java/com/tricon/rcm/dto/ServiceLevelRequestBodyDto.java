@@ -25,6 +25,8 @@ public class ServiceLevelRequestBodyDto {
 	private boolean reconciliation;
 	private double balanceFromEsBeforePosting;
 	private double balanceFromEsAfterPosting;
+	private double creditAdjustmentAmount;
+	private double debitAdjustmentAmount;
 	private List<ServiceLevelNotes>serviceCodeNotes;
 	private boolean rebilledCodeStatus;
 }

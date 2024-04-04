@@ -154,6 +154,7 @@ import com.tricon.rcm.dto.customquery.FreshClaimDetailsImplDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
+import com.tricon.rcm.enums.EsStatusEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.ClaimCycleRepo;
@@ -1899,6 +1900,7 @@ public class ClaimServiceImpl {
 			 list.forEach(data->{
 					final FreshClaimDataViewDto	dataView = new FreshClaimDataViewDto();
 						BeanUtils.copyProperties(data, dataView);
+						dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction())!=null?ClaimStatusEnum.getById(data.getNextAction()).getType():"N/A");
 						listView.add(dataView);
 			});
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
@@ -1927,6 +1929,7 @@ public class ClaimServiceImpl {
 			list.forEach(data -> {
 				final FreshClaimDataViewDto dataView = new FreshClaimDataViewDto();
 				BeanUtils.copyProperties(data, dataView);
+				dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction())!=null?ClaimStatusEnum.getById(data.getNextAction()).getType():"N/A");
 				listView.add(dataView);
 			});
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
@@ -1951,6 +1954,7 @@ public class ClaimServiceImpl {
 			list.forEach(data -> {
 				final FreshClaimDataViewDto dataView = new FreshClaimDataViewDto();
 				BeanUtils.copyProperties(data, dataView);
+				dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction())!=null?ClaimStatusEnum.getById(data.getNextAction()).getType():"N/A");
 				listView.add(dataView);
 			});
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
@@ -1975,6 +1979,7 @@ public class ClaimServiceImpl {
 			list.forEach(data->{
 				final FreshClaimDataViewDto	dataView = new FreshClaimDataViewDto();
 				BeanUtils.copyProperties(data, dataView);
+				dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction())!=null?ClaimStatusEnum.getById(data.getNextAction()).getType():"N/A");
 				listView.add(dataView);
 				});
 		}

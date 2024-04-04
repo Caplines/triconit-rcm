@@ -19,4 +19,8 @@ export interface ClaimAssociateDetailModel {
     primTotal: number;
     secTotal: number;
     primeSecSubmittedTotal: number;
+    statusESUpdated:string;
+    nextAction:string;
+    followUpDate:Date;
+	dueBalance:number;
 }
