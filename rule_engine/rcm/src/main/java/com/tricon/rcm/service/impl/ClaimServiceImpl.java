@@ -2,6 +2,7 @@ package com.tricon.rcm.service.impl;
 
 
 import java.io.File;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -154,7 +155,6 @@ import com.tricon.rcm.dto.customquery.FreshClaimDetailsImplDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
-import com.tricon.rcm.enums.EsStatusEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.ClaimCycleRepo;
