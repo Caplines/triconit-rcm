@@ -1034,20 +1034,21 @@ width: 24px;
     .tooltiptext {
         visibility: visible;
         opacity: 1;
-        background-color: #555;
+        background-color: #4bcd3e;
         color: #fff;
         text-align: center;
         border-radius: 4px;
         padding: 5px 10px;
         position: absolute;
         top: 110%;
-        left: 0;
-        // opacity: 0;
+        left: 50%;
         font-size: 14px;
         font-family: "Lato", sans-serif;
         transition: opacity 0.3s;
         z-index: 11;
         padding-right: 25px;
+        width: 200px;
+        margin-left: -100px;
  
         &:after {
             content: "";
@@ -1057,7 +1058,7 @@ width: 24px;
             margin-left: -5px;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent transparent #555 transparent;
+            border-color: transparent transparent #4bcd3e transparent;
         }
     }
 }

@@ -276,35 +276,35 @@ tbody tr.totalRow {
             cursor:pointer;
         }
      
-        .tooltiptext {
-            visibility: visible;
-            opacity: 1;
-            background-color: #555;
-            color: #fff;
-            text-align: center;
-            border-radius: 4px;
-            padding: 5px 10px;
-            position: absolute;
-            top: 110%;
-            left: 0;
-            // opacity: 0;
-            font-size: 14px;
-            font-family: "Lato", sans-serif;
-            transition: opacity 0.3s;
-            z-index: 11;
-            padding-right: 25px;
+        // .tooltiptext {
+        //     visibility: visible;
+        //     opacity: 1;
+        //     background-color: #555;
+        //     color: #fff;
+        //     text-align: center;
+        //     border-radius: 4px;
+        //     padding: 5px 10px;
+        //     position: absolute;
+        //     top: 110%;
+        //     left: 0;
+        //     // opacity: 0;
+        //     font-size: 14px;
+        //     font-family: "Lato", sans-serif;
+        //     transition: opacity 0.3s;
+        //     z-index: 11;
+        //     padding-right: 25px;
      
-            &:after {
-                content: "";
-                position: absolute;
-                bottom: 100%;
-                left: 50%;
-                margin-left: -5px;
-                border-width: 5px;
-                border-style: solid;
-                border-color: transparent transparent #555 transparent;
-            }
-        }
+        //     &:after {
+        //         content: "";
+        //         position: absolute;
+        //         bottom: 100%;
+        //         left: 50%;
+        //         margin-left: -5px;
+        //         border-width: 5px;
+        //         border-style: solid;
+        //         border-color: transparent transparent #555 transparent;
+        //     }
+        // }
      
         // &:hover {
         //     .tooltiptext {
