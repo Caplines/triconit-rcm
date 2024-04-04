@@ -141,8 +141,19 @@
                                         </div>
                                     </th>
                                     <th>
-                                        <div class="dFlex">
-                                            Claim Age<span class="sorting">
+                                        <div class="dFlex" [ngStyle]="{'z-index':showTooltipConfig['tfl'] ? 999999 : 99}">
+                                            Claim Age
+                                            <ng-container *ngIf="showTooltipConfig['claimAge']">
+                                                <div class="tooltip-backdrop" ></div>
+                                            </ng-container>
+                                            <div class="tooltip2" >
+                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('claimAge');" />
+                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['claimAge']">
+                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['claimAge']=false;">×</span>
+                                                       Shows how long it has been since the date of service
+                                                </span>
+                                            </div>
+                                            <span class="sorting">
                                                 <a href="javascript:void(0);" class="arrow-up"
                                                     [ngClass]="{'selected': !isSorted['claimAge']}"
                                                     (click)="sortData(filteredItems,'claimAge','asc','number'); isSorted['claimAge'] = false"></a>
@@ -153,8 +164,18 @@
                                         </div>
                                     </th>
                                     <th>
-                                        <div class="dFlex">
+                                        <div class="dFlex" [ngStyle]="{'z-index':showTooltipConfig['tfl'] ? 999999 : 99}">
                                             TFL
+                                            <ng-container *ngIf="showTooltipConfig['tfl']">
+                                                <div class="tooltip-backdrop" ></div>
+                                            </ng-container>
+                                            <div class="tooltip2" >
+                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('tfl');" />
+                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['tfl']">
+                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['tfl']=false;">×</span>
+                                                       Timely Filing Limit
+                                                </span>
+                                            </div>
                                             <!-- <span class="sorting">
                                               <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['officeName']}" (click)="isSorted['officeName'] = false"></a>
                                                 <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['officeName']}" (click)="isSorted['officeName'] = true"></a>

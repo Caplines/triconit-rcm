@@ -36,6 +36,7 @@ export class SearchClaimsPaginationComponent {
   tabValue: any;
   accessToListOfClaims: any;
   currentTeamId: number;
+  showTooltipConfig:any={};
 
   @Input() searchInputConfig: any;
   @HostListener('mouseleave') onMouseLeave(event: Event) {
@@ -754,4 +755,15 @@ export class SearchClaimsPaginationComponent {
     });
   }
 
+  toggleTooltip(tooltip:any){
+    this.showTooltipConfig[tooltip] = !this.showTooltipConfig[tooltip];
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' || event.keyCode === 27) {
+        this.showTooltipConfig[tooltip] = false;
+      }
+    })
+    if(!this.showTooltipConfig[tooltip]){
+      document.removeAllListeners('keydown');
+    }
+  }
 }
