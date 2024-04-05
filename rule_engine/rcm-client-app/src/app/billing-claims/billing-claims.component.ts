@@ -297,7 +297,7 @@ export class BillingClaimsComponent {
       }
     },
     CURRENT_STATUS_AND_NEXT_ACTION: {
-      "currentClaimStatusEs":"",
+      "currentClaimStatusEs": "",
 
     },
     REQUEST_REBILLING: {
@@ -364,13 +364,13 @@ export class BillingClaimsComponent {
   stringToSearch: any = '';
   zoom_to: any = 1.0;
   pdfUrlSrc: any = "";
-  sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0, balanceFromEsBeforePosting: 0, balanceFromEsAfterPosting: 0, isCorrectTotalPaidAmt: true, isCorrectTotalAllowedAmt: true, reconcile: false,creditAdjustmentAmount:0,debitAdjustmentAmount:0 };
+  sectionLevelInfoTotalConfig: any = { allowedAmount: 0, paidAmount: 0, adjustmentAmount: 0, billToPatientAmount: 0, estPrimary: 0, fee: 0, balanceFromEsBeforePosting: 0, balanceFromEsAfterPosting: 0, isCorrectTotalPaidAmt: true, isCorrectTotalAllowedAmt: true, reconcile: false, creditAdjustmentAmount: 0, debitAdjustmentAmount: 0 };
   viewNotesConfig: any = { showNotes: false, viewNotes: [] };
   isBtpFlagTrue: boolean = false;
   serviceLevelSectionMultiSelectConfig: any = { serviceCodesList: [], rebillingRequirements: [], showModal: false };
   hideRecreateButton: boolean = false;
   selectedServiceCodesExist: boolean = false;
-  emailUrl:any='';
+  emailUrl: any = '';
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
 
 
@@ -390,7 +390,7 @@ export class BillingClaimsComponent {
       this.claimUUid = params.get('uuid') || '';
       this.fetchClaimRights(this.claimUUid);
     });
-
+    this.emailUrl = window.location.href;
   }
 
   fetchClaimRights(uuid: string) {
@@ -469,8 +469,8 @@ export class BillingClaimsComponent {
           ths.fetchOtherTeams();
           ths.fetchAttachmentCount();
 
-          if(this.claimRcm.patientContactNo){
-            this.claimRcm.patientContactNo =  this.claimRcm.patientContactNo.split(",").join(", ");
+          if (this.claimRcm.patientContactNo) {
+            this.claimRcm.patientContactNo = this.claimRcm.patientContactNo.split(",").join(", ");
           }
         } else {
           this.invalidClaim = "- Not authorized to view this claim";
@@ -1510,9 +1510,9 @@ export class BillingClaimsComponent {
           if (res.data.tpId != null) this.claimRcm.tpId = res.data.tpId;
           if (res.data.tpDos != null) this.claimRcm.tpDos = res.data.tpDos;
           if (res.data.ssn != null) this.claimRcm.ssn = res.data.ssn;
-          if (res.data.insuranceContact){
+          if (res.data.insuranceContact) {
             this.claimRcm.insuranceContactNo = res.data.insuranceContact.split(",").join(", ");
-          } 
+          }
           this.reval();
         }
       }
@@ -3518,21 +3518,15 @@ export class BillingClaimsComponent {
   }
 
   isPrimaryClaimClosed() {
-    if(this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS ){
+    if (this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS) {
       return false;
     }
-    if(!this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS ){
+    if (!this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS) {
       return false;
     }
     if (!this.claimRcm.primary && this.claimRcm.assoicatedClaimCurrentStatus != this.appConstants.CLOSED_CLAIM_STATUS)
       return false;
     else return true;
   }
-
-  
-  sendFeedback(){
-    this.emailUrl = window.location.href;
-  }
-
 
 }

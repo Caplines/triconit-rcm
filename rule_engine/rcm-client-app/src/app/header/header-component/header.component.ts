@@ -7,13 +7,14 @@ import { SwitchAccountModel } from '../../models/switch.account.model';
 import Utils from '../../util/utils';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { AppConstants } from 'src/app/constants/app.constants';
+import { FeedbackModule } from 'src/app/shared/feedback/feedback.module';
 
 @Component({
   selector: 'app-header-component',
   templateUrl: './header.component.html',
   styleUrls: ['./header.component.css'],
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterModule, FormsModule, FeedbackModule],
   providers: [AuthService],
 })
 export class HeaderComponent implements OnInit {
@@ -48,7 +49,7 @@ export class HeaderComponent implements OnInit {
 
   issueClaimPageNum: any = 0;
   totalPages: number;
-  emailUrl:any;
+  emailUrl: any;
 
   @ViewChild('modalElement') modalElementRef!: ElementRef;
 
@@ -87,7 +88,7 @@ export class HeaderComponent implements OnInit {
         }
       }
     })
-
+    this.emailUrl = window.location.href;
   }
 
   getRoles() {
@@ -131,9 +132,9 @@ export class HeaderComponent implements OnInit {
     this.loginUserType = localStorage.getItem('loginAs');
     this.modelElement.modal.style.display = "none";
     this.showPopup = false;
-    let adminRadioBox =  (<HTMLInputElement>document.getElementById('admin'));
+    let adminRadioBox = (<HTMLInputElement>document.getElementById('admin'));
     adminRadioBox ? adminRadioBox.checked = false : '';
-    let normalRadioBox =  (<HTMLInputElement>document.getElementById('normal'));
+    let normalRadioBox = (<HTMLInputElement>document.getElementById('normal'));
     normalRadioBox ? normalRadioBox.checked = false : '';
   }
 
@@ -173,7 +174,7 @@ export class HeaderComponent implements OnInit {
       this.cwModel.teams = this.staticUtil.getTeamsFromLS();
       this.cwModel.roles = this.staticUtil.getRolesFromLS();
 
-      this.sortData(this.cwModel.companies,'name','asc','string')
+      this.sortData(this.cwModel.companies, 'name', 'asc', 'string')
       this.cwModel.roles = this.cwModel.roles.map((roleId: any) => {
         let foundRole = this.roleData.find((role: any) => role.roleId === roleId.substring(5));
         return foundRole ? { roleName: foundRole.roleName, roleId: foundRole.roleId } : null;
@@ -207,7 +208,7 @@ export class HeaderComponent implements OnInit {
     this.loginUserType = event.target.value;
     if (this.loginUserType == 'Normal') {
       this.cwModel.teams = this.appConstants.teamData;
-      this.sortData(this.cwModel.teams,'teamName','asc','string')
+      this.sortData(this.cwModel.teams, 'teamName', 'asc', 'string')
       this.btnDisabled = true;
     } else if (this.loginUserType == 'Admin') {
       this.selectedTeam = '';
@@ -358,10 +359,5 @@ export class HeaderComponent implements OnInit {
   sortData(data: any, sortProp: string, order: any, sortType: string) {
     this.appSer.sortData(data, sortProp, order, sortType);
   }
-
-  sendFeedback(){
-    this.emailUrl = window.location.href;
-  }
-
 
 }

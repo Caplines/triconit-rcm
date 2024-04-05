@@ -12,8 +12,8 @@ import { AttachFileModule } from '../shared/attach-file/attach-file.module';
 import { DatePipe } from '@angular/common';
 
 import { PdfViewerModule } from "ng2-pdf-viewer";
-import {MultiSelectDropdownModule} from "../shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module";
-
+import { MultiSelectDropdownModule } from "../shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module";
+import { FeedbackModule } from 'src/app/shared/feedback/feedback.module';
 
 
 @NgModule({
@@ -25,7 +25,8 @@ import {MultiSelectDropdownModule} from "../shared/multi-select-dropdown/multi-s
     PipesModule,
     AttachFileModule,
     PdfViewerModule,
-    MultiSelectDropdownModule
+    MultiSelectDropdownModule,
+    FeedbackModule,
   ],
   providers: [ApplicationServiceService, ClaimService, DownLoadService, DatePipe],
   exports: [BillingClaimsComponent],

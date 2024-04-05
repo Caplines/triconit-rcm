@@ -4,8 +4,7 @@
                 [style]="{width:'16px'}"></a>
         <h1>Capline RCM</h1>
         <h5 class="mt-2 mx-3">
-            <a class="text-decoration-none text-light" href="mailto:ar@caplineservices.com?subject=I need help on this page&body=Page URL: {{emailUrl}}" (click)="sendFeedback()"  ><img
-                src="../../assets/img/help.png" /> Feedback</a>
+            <app-feedback [emailUrl]="emailUrl"></app-feedback>
         </h5>
     </div>
 </div>
@@ -1557,8 +1556,7 @@
                                                     <ng-container
                                                         *ngFor="let data of claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;let idx=index;let last=last;">
                                                         <tr>
-                                                            <ng-container class="row-grey"
-                                                                *ngIf="!smilePoint">
+                                                            <ng-container class="row-grey" *ngIf="!smilePoint">
                                                                 <td>
                                                                     <!-- <input type="text" class="form-control" [(ngModel)]="data.snum"> -->
                                                                     {{idx+1}}
@@ -1581,8 +1579,7 @@
                                                                         class="attach-secondary-width form-control"
                                                                         [(ngModel)]="data.surface"> </td>
                                                             </ng-container>
-                                                            <ng-container class="row-grey"
-                                                                *ngIf="smilePoint">
+                                                            <ng-container class="row-grey" *ngIf="smilePoint">
                                                                 <td class="row-grey"> {{idx+1}}</td>
                                                                 <td class="row-grey"
                                                                     [ngClass]="{'text-danger':data.rebilledCodeStatus}"
@@ -1915,7 +1912,8 @@
 
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['CLAIM_LEVEL_INFORMATION']}">
+                                    <div class="bold-b-text"
+                                        [ngClass]="{'collapsed':toggleTab['CLAIM_LEVEL_INFORMATION']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Claim Level Information
                                         </a>
@@ -1927,7 +1925,8 @@
 
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                     <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
-                                        [ngClass]="{'show':!toggleTab['CLAIM_LEVEL_INFORMATION']}" id="CLAIM_LEVEL_INFORMATION">
+                                        [ngClass]="{'show':!toggleTab['CLAIM_LEVEL_INFORMATION']}"
+                                        id="CLAIM_LEVEL_INFORMATION">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="claim">Claim #</label>
@@ -2047,18 +2046,21 @@
                                 </ng-container>
                                 <ng-container
                                     *ngIf="(sectionLevelInfoTotalConfig.paidAmount>0) &&  !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['INSURANCE_PAYMENT_INFORMATION']}">
+                                    <div class="bold-b-text"
+                                        [ngClass]="{'collapsed':toggleTab['INSURANCE_PAYMENT_INFORMATION']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Insurance Payment Information
                                         </a>
                                         <div class="down-icon" (click)="showHide('INSURANCE_PAYMENT_INFORMATION')">
-                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['INSURANCE_PAYMENT_INFORMATION']}"></a>
+                                            <a href="javascript:void(0)"
+                                                [ngClass]="{'close':toggleTab['INSURANCE_PAYMENT_INFORMATION']}"></a>
                                         </div>
                                     </div>
 
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                     <div *ngIf="!loader.linkToRelatedDoc" class="form-row collapse"
-                                        [ngClass]="{'show':!toggleTab['INSURANCE_PAYMENT_INFORMATION']}" id="INSURANCE_PAYMENT_INFORMATION">
+                                        [ngClass]="{'show':!toggleTab['INSURANCE_PAYMENT_INFORMATION']}"
+                                        id="INSURANCE_PAYMENT_INFORMATION">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="paymentIssueTo">Payment Issued To</label>
@@ -3682,7 +3684,7 @@
                                                     <div class="custom-row text-number">
                                                         <label for="currentClaimStatusEs">Current Claim status in
                                                             ES</label>
-                                                            <select id="currentClaimStatusEs" class="form-control"
+                                                        <select id="currentClaimStatusEs" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
                                                             [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusEs']}">
@@ -3691,7 +3693,8 @@
                                                             <option value="E">Unbilled (E)</option>
                                                             <option value="P">Unbilled (P)</option>
                                                             <option value="O">Open</option>
-                                                            <option value="U"> Primary Open - Secondary Unsubmitted</option>
+                                                            <option value="U"> Primary Open - Secondary Unsubmitted
+                                                            </option>
                                                         </select>
                                                     </div>
                                                 </div>
