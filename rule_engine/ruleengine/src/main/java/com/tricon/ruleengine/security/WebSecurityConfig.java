@@ -138,6 +138,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/.well-known/acme-challenge/AoJiyMAei-mA1StzpKpf22vgqefQLxk8GgBsa3yplpA",
                 "/queryivdatafromdbgoogle",
                 "/queryivdatahistoryfromdbgoogle",
+                "/queryrcmtoolclaimdata",
                 "/open/*",
                 "/login",
                 "/readDriveSuc",

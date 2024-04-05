@@ -175,6 +175,7 @@ public class Constants {
 
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT= new SimpleDateFormat("MM/dd/yyyy");
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_IVF= new SimpleDateFormat("yyyy-MM-dd");
+	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_IVF_WITH_TIME= new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	//public static final SimpleDateFormat SIMPLE_DATE_FORMAT_DB= new SimpleDateFormat("yyyy-MM-dd");
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_YEAR= new SimpleDateFormat("yyyy");
 	public static final SimpleDateFormat SIMPLE_DATE_FORMAT_HEADER= new SimpleDateFormat("MMM dd,yyyy");
@@ -441,6 +442,9 @@ public class Constants {
 	public static final String RULE_TYPE_RULE_ENGINE_AND_RCM=RULE_TYPE_RULE_ENGINE+","+RULE_TYPE_RCM;
 	public static final String RULE_TYPE_MANUAL="MANUAL";
 	public static final String RULE_TYPE_AUTO="AUTO";
+	
+	public static final String QUERY_FOR_RCMCALIM_1="QUERY_FOR_RCMCALIM_1";
+	public static final String QUERY_FOR_RCMCALIM_AUDITED="QUERY_FOR_RCMCALIM_AUDITED";
 	
 	
 }

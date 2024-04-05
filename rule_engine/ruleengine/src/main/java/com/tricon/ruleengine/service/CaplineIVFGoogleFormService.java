@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
+import com.tricon.ruleengine.dto.RcmClaimDto;
 import com.tricon.ruleengine.model.db.IVFormType;
 import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.model.db.Patient;
@@ -35,5 +36,8 @@ public interface CaplineIVFGoogleFormService {
 	public Object  searchIVFDataTemp(CaplineIVFQueryFormDto d,Office office) throws Exception;
 	
 	public Object searchCaplineDataReplication(CaplineDataReplicationDto d,Office office)throws Exception;
+	
+	public Object searchRcmClaimData(RcmClaimDto d,Office office)throws Exception;
 
+	
 }

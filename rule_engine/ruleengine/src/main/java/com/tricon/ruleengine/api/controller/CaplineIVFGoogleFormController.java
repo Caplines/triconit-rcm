@@ -31,6 +31,7 @@ import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GenericResponse;
+import com.tricon.ruleengine.dto.RcmClaimDto;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 import com.tricon.ruleengine.model.db.IVFormType;
@@ -630,6 +631,59 @@ public class CaplineIVFGoogleFormController {
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.BAD_REQUEST, "Error While Fetching Data", ""));
 		}
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK,msg, o));
+	}
+	
+	@CrossOrigin
+	@GetMapping
+	@RequestMapping(value = "/queryrcmtoolclaimdata")
+	public ResponseEntity<Object> queryrcmtoolclaimData(
+			@RequestParam(value = "columns", required = false) String columns,
+			@RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "columnCount", required = false, defaultValue = "0") int columnCount,
+            @RequestParam(value = "date1", required = true) String date1,
+            @RequestParam(value = "date2", required = true) String date2,
+            @RequestParam(value = "client", required = true) String client,
+            @RequestParam(value = "submited", required = true) boolean  submited,//QUERY_FOR_RCMCALIM_1
+            @RequestParam(value = "queryName", required = true) String  queryName,
+            @RequestParam(value = "office", required = false) String office, HttpServletRequest request,
+			HttpServletResponse response) {
+		//Example
+		/*
+		 localhost:8080/queryrcmtoolclaimdata?date1=mm/dd/yyyy&date2=mm/dd/yyyy&submited=true&client=Smilepoint&queryName=QUERY_FOR_RCMCALIM_1
+		 */
+
+		List<Object> cap = null;
+		RcmClaimDto dto = new RcmClaimDto();
+		
+		dto.setColumns(columns);
+		dto.setClient(client);
+		dto.setColumnCount(columnCount);
+		dto.setDate1(date1);
+		dto.setDate2(date2);
+		dto.setPassword(password);
+		dto.setSubmitted(submited);
+		dto.setOffice(office);
+		dto.setQueryName(queryName);
+		
+		
+		try {
+			Company cmp = companyDao.getCompanyByName(client);
+			Office off = od.getOfficeByName(office,cmp.getUuid());
+
+			//EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+			
+
+			if (cmp!=null) {
+				
+				cap = (List<Object>) civf.searchRcmClaimData(dto,off);
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", cap));
+
 	}
 
 }

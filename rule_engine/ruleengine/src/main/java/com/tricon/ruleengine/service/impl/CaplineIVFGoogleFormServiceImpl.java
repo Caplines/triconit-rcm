@@ -27,11 +27,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.PatientDao;
+import com.tricon.ruleengine.dao.RcmClaimDao;
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GoogleReportsRDDTO;
+import com.tricon.ruleengine.dto.RcmClaimDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.exception.RuleEngineException;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
@@ -91,6 +93,10 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 	@Autowired
 	PatientDao patientDao;
+	
+	@Autowired
+	RcmClaimDao rcmClaimDao;
+	
 
 	@Override
 	public Object[] saveIVFFormData(CaplineIVFFormDto d,Office office,boolean ivf,IVFormType iVFormType) throws Exception {
@@ -867,6 +873,34 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	public Object searchCaplineDataReplication(CaplineDataReplicationDto d,Office office) throws Exception{
 		
 		List<Object> data=patientDao.replicationQueries(d,office);
+		 if(!data.isEmpty()) {
+		 List<GoogleReportsRDDTO> beanList = new ArrayList<>();
+			GoogleReportsRDDTO dt= null;		
+			for(Object o:data) {
+				dt = new GoogleReportsRDDTO();
+				int x=-1;
+				if (o!=null) {
+					Object [] a=(Object []) o;
+					for(Object f:a) {
+						if (x==-2) {
+							x++;
+							continue ;
+						}
+						setUPResponseData(dt, ++x,f);	
+					}
+				}
+				beanList.add(dt);
+			}
+			return beanList;
+		 }else{
+			 return data;
+		 }
+	}
+	
+	@Override
+	public Object searchRcmClaimData(RcmClaimDto d,Office office) throws Exception{
+		
+		List<Object> data=rcmClaimDao.getRcmClaimData(d, office);
 		 if(!data.isEmpty()) {
 		 List<GoogleReportsRDDTO> beanList = new ArrayList<>();
 			GoogleReportsRDDTO dt= null;		

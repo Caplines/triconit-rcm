@@ -1,0 +1,90 @@
+package com.tricon.ruleengine.dao.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
+
+import com.tricon.ruleengine.dao.RcmClaimDao;
+import com.tricon.ruleengine.dto.RcmClaimDto;
+import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.model.db.Office;
+import com.tricon.ruleengine.utils.Constants;
+
+@Repository
+public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
+
+	static Class<?> clazz = RcmClaimDaoImpl.class;
+	@Override
+	public List<Object> getRcmClaimData(RcmClaimDto d, Office office) {
+		Session s=null;
+		List<Object> data=new ArrayList<>();
+		String finalQuery="",queryFor="";
+		queryFor=d.getQueryName();
+		switch(queryFor)
+		{
+		    case Constants.QUERY_FOR_RCMCALIM_1:
+		    	finalQuery="select off.name,SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id,cl.patient_id,cl.dos,"+
+		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN prime_sec_submitted_total ELSE sec_submitted_total  END  estimatedamount,"+
+		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN 'Primary' ELSE 'Secondary'   END as claimType,"+
+		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN pins.name ELSE sins.name   END as insurancename,"+
+		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN pinst.name ELSE sinst.name   END as insurancetype,"+
+		    			"CASE  WHEN rcsd.updated_date is null THEN  DATE_FORMAT( rcsd.created_date, '%m/%d/%Y') ELSE DATE_FORMAT( rcsd.updated_date, '%m/%d/%Y')   END as submissiodate,"+
+		    			"us.first_name,us.last_name,CASE  WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran'   END as runenginerun "+
+		    			" from rcm_claims cl inner join office off on off.uuid=cl.office_id "+
+		    			" inner join company cmp on cmp.uuid=off.company_id "+
+		    			" inner join rcm_claims_submission_details rcsd on rcsd.claim_id=cl.claim_uuid "+
+		    			" inner join rcm_user us on rcsd.submitted_by=us.uuid "+
+		    			" left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id  left join "+
+		    			" rcm_insurance sins on sins.id = cl.sec_insurance_company_id  left join "+
+		    			" rcm_insurance_type pinst on pins.insurance_type_id = pinst.id "+
+		    			" left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id "+
+		    			" left join reports_claim rc on rc.claim_id=SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) and rc.patient_id=cl.patient_id "+
+		    			" where cl.pending =false and cmp.name='"+d.getClient()+"' "+(office==null?"":" and cl.office_id='"+office.getUuid()+"' ")+" and IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date)"+
+		    			" between  STR_TO_DATE('"+d.getDate1()+" 00:00:00', '%m/%d/%Y %H:%i:%s') AND STR_TO_DATE('"+d.getDate2()+" 23:59:59', '%m/%d/%Y %H:%i:%s')" +
+		    			" "; 
+		    	break;
+		    case Constants.QUERY_FOR_RCMCALIM_AUDITED:
+		    	finalQuery="select off.name,SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id,cl.patient_id,cl.dos,"+
+		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN prime_sec_submitted_total ELSE sec_submitted_total  END  estimatedamount,"+
+		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN 'Primary' ELSE 'Secondary'   END as claimType,"+
+		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN pins.name ELSE sins.name   END as insurancename,"+
+		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN pinst.name ELSE sinst.name   END as insurancetype,"+
+		    			"CASE  WHEN rcsd.updated_date is null THEN  DATE_FORMAT( rcsd.created_date, '%m/%d/%Y') ELSE DATE_FORMAT( rcsd.updated_date, '%m/%d/%Y')   END as submissiodate,"+
+		    			"us.first_name,us.last_name,CASE  WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran'   END as runenginerun "+
+		    			" from rcm_claims cl inner join office off on off.uuid=cl.office_id "+
+		    			" inner join company cmp on cmp.uuid=off.company_id "+
+		    			" inner join rcm_claims_submission_details rcsd on rcsd.claim_id=cl.claim_uuid "+
+		    			" inner join rcm_user us on rcsd.submitted_by=us.uuid "+
+		    			" left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id  left join "+
+		    			" rcm_insurance sins on sins.id = cl.sec_insurance_company_id  left join "+
+		    			" rcm_insurance_type pinst on pins.insurance_type_id = pinst.id "+
+		    			" left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id "+
+		    			" left join reports_claim rc on rc.claim_id=SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) and rc.patient_id=cl.patient_id "+
+		    			" where  cmp.name='"+d.getClient()+"' "+(office==null?"":" and cl.office_id='"+office.getUuid()+"' ")+" and IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date)"+
+		    			" between  STR_TO_DATE('"+d.getDate1()+" 00:00:00', '%m/%d/%Y %H:%i:%s') AND STR_TO_DATE('"+d.getDate2()+" 23:59:59', '%m/%d/%Y %H:%i:%s')" +
+		    			" "; 
+		    	break;
+	   }
+		
+		try {
+	          if(finalQuery!=null && !finalQuery.isEmpty()) {
+	          s=getSession();
+			  Query q=s.createSQLQuery(finalQuery);
+			  data=q.list();
+			  }
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
+			finally{
+				if(s!=null) {
+				closeSession(s);
+				}
+			}
+			return data;
+	}
+
+}

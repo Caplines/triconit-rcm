@@ -118,7 +118,7 @@ public class RuleBook {
 				 * Constants.EXTI_ENGINE);
 				 */
 
-				ivfPlanTermDate = Constants.SIMPLE_DATE_FORMAT_IVF.parse(td);
+				ivfPlanTermDate = Constants.SIMPLE_DATE_FORMAT_IVF_WITH_TIME.parse(td+" 59:59:59");
 
 				if (userType == Constants.userType_CL && tpList != null) {
 					for (Object obj : tpList) {
@@ -13299,6 +13299,8 @@ public class RuleBook {
 			 * if (userType==Constants.userType_CL) { ER_MSG=Constants.CL; }
 			 */
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+			RuleEngineLogger.generateLogs(clazz,"ivf.getProviderName()->" +ivf.getProviderName(),
+					Constants.rule_log_debug, bw);
 			boolean D0145 = false;
 			boolean D9230 = false;
 			boolean D9248 = false;
@@ -15559,8 +15561,8 @@ public class RuleBook {
 	private InsuranceMappingDto getMappingFromInsurance(List<InsuranceMappingDto> list, String provider) {
 		InsuranceMappingDto r = null;
 		Collection<InsuranceMappingDto> ruleGen = Collections2.filter(list,
-				rule -> (rule.getProviders().equalsIgnoreCase(provider)
-						|| rule.getProviders().equalsIgnoreCase("Dr. " + provider)));
+				rule -> (rule.getProviders().replace(",","").trim().equalsIgnoreCase(provider.replace(",","").trim())
+						|| rule.getProviders().replace(",","").trim().equalsIgnoreCase("Dr. " + provider.replace(",","").trim())));
 		for (InsuranceMappingDto rule : ruleGen) {
 			r = rule;
 			break;
