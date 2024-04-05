@@ -1,5 +1,6 @@
 package com.tricon.rcm.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -121,6 +122,12 @@ public class ClaimUtil {
 		}
 
 		claims.setPrimaryEob("N/A");
+		
+		List<String> patientContact= new ArrayList<>();
+		if (re.getHomePhone()!=null && !re.getHomePhone().equals("")) patientContact.add(re.getHomePhone());
+		if (re.getWorkPhone()!=null && !re.getWorkPhone().equals("")) patientContact.add(re.getWorkPhone());
+		if (re.getCellPhone()!=null && !re.getCellPhone().equals("")) patientContact.add(re.getCellPhone());
+		if (patientContact.size()>0) claims.setPatientContactNo(String.join(",", patientContact));
 		return claims;
 	}
 

@@ -57,11 +57,20 @@ public class ClaimsFromRuleEngine {
 	@JsonProperty("c16")
 	String primeSecPolicyHolder;
 	
-	//Now for Secondary
 	@JsonProperty("c17")
-	String primDateSent;
+	String homePhone;
 	
 	@JsonProperty("c18")
+	String workPhone;
+	
+	@JsonProperty("c19")
+	String cellPhone;
+	
+	//Now for Secondary
+	@JsonProperty("c20")
+	String primDateSent;
+	
+	@JsonProperty("c21")
 	float primTotalPaid;
 	
 
