@@ -1034,8 +1034,8 @@ width: 24px;
     .tooltiptext {
         visibility: visible;
         opacity: 1;
-        background-color: #4bcd3e;
-        color: #fff;
+        background-color: #eee;
+        color: #000;
         text-align: center;
         border-radius: 4px;
         padding: 5px 10px;
@@ -1058,7 +1058,7 @@ width: 24px;
             margin-left: -5px;
             border-width: 5px;
             border-style: solid;
-            border-color: transparent transparent #4bcd3e transparent;
+            border-color: transparent transparent #eee transparent;
         }
     }
 }
