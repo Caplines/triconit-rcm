@@ -4322,12 +4322,16 @@ public class ClaimServiceImpl {
 		if (rcmUserCompany== null) {
 			return null;
 		}
+		
+		int currentStatusClosed=ClaimStatusEnum.Closed.getId();
+		int currentStatusVoided=ClaimStatusEnum.Voided.getId();
+		
 		if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-            count =rcmClaimRepository.allPendencyCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid());
-			date =rcmClaimRepository.allPendencyDateCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid());
+            count =rcmClaimRepository.allPendencyCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid(),currentStatusClosed,currentStatusVoided);
+			date =rcmClaimRepository.allPendencyDateCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid(),currentStatusClosed,currentStatusVoided);
 		}else {
-			count =rcmClaimRepository.allPendencyCount(company.getUuid());
-			date =rcmClaimRepository.allPendencyDateCount(company.getUuid());
+			count =rcmClaimRepository.allPendencyCount(company.getUuid(),currentStatusClosed,currentStatusVoided);
+			date =rcmClaimRepository.allPendencyDateCount(company.getUuid(),currentStatusClosed,currentStatusVoided);
 		}
 		//dto.setCount(count);
 		//dto.setDateCount(date);

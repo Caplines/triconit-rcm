@@ -2294,4 +2294,11 @@ public class ClaimSectionImpl {
 //		}
 //		return null;
 //	}
+
+	public List<ReconciliationResponseDto> fetchReconcillationData(PartialHeader partialHeader) {
+		ReconciliationResponseDto data = new ReconciliationResponseDto();
+		List<ReconciliationResponseDto> dataList = new ArrayList<ReconciliationResponseDto>();
+		dataList.add(data);
+		return dataList;
+	}
 }

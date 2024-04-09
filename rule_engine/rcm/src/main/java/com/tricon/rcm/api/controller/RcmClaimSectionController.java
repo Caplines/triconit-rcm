@@ -35,6 +35,7 @@ import com.tricon.rcm.dto.RcmPatientCommunicationDto;
 import com.tricon.rcm.dto.RcmPatientStatementDto;
 import com.tricon.rcm.dto.RebillingDto;
 import com.tricon.rcm.dto.RebillingResponseDto;
+import com.tricon.rcm.dto.ReconciliationResponseDto;
 import com.tricon.rcm.dto.RecreateResponseDto;
 import com.tricon.rcm.dto.ServiceLevelRequestBodyDto;
 import com.tricon.rcm.dto.ValidateCreateClaimInformationDto;
@@ -473,6 +474,24 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		}
 		try {
 			response = claimSection.validateRecreateClaim(partialHeader, dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@GetMapping(value = "api/reconciliation")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> reconcillationData(Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		List<ReconciliationResponseDto> response = null;
+		try {
+			response = claimSection.fetchReconcillationData(partialHeader);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
