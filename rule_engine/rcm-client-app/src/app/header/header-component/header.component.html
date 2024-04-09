@@ -77,11 +77,11 @@
                     Client</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);"
                     [routerLink]="['/manage-section']" routerLinkActive="active" #rla="routerLinkActive"><img
-                        [src]="rla.isActive? '../../assets/img/clientManage-active.png':'../../assets/img/clientManage.png'" />Manage
+                        [src]="rla.isActive? '../../assets/img/manage-section-green-icon.png':'../../assets/img/manage-section.png'" />Manage
                     Section</a></li>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);"
                     [routerLink]="['/reconciliation']" routerLinkActive="active" #rla="routerLinkActive"><img
-                        [src]="rla.isActive? '../../assets/img/clientManage-active.png':'../../assets/img/clientManage.png'" />Reconciliation
+                        [src]="rla.isActive? '../../assets/img/reconciliation-green-icon.png':'../../assets/img/reconciliation.png'" />Reconciliation
                 </a></li>
             <li
                 *ngIf="(currentTeamId == 7|| currentTeamId == 3) && (staticUtil.isRoleLead() || staticUtil.checkRoleSuperAdmin() ) ">

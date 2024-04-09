@@ -67,7 +67,7 @@
                                             id="table">
                                             <thead>
                                                 <tr>
-                                                    <th style="z-index: 10;">
+                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.clientName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Clients
                                                              <span class="sorting">
@@ -110,7 +110,7 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th style="z-index: 9;">
+                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.officeName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Office <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
@@ -175,7 +175,7 @@
                                                                         (click)="sortData(filteredItems,'count','desc','nestedCount',data.unFormatedName);isSorted[data.unFormatedName] = true"></a>
                                                                 </span>
                                                             </div>
-                                                            <small *ngIf="data.teamId == 20 || data.teamId == 11 || data.teamId == 18 ||data.teamId == 12 ||data.teamId == 16 ||data.teamId == 15">(Coming soon)</small>
+                                                            <!-- <small *ngIf="data.teamId == 20 || data.teamId == 11 || data.teamId == 18 ||data.teamId == 12 ||data.teamId == 16 ||data.teamId == 15">(Coming soon)</small> -->
                                                         </th>
                                                         <th *ngIf="last"></th>
                                                     </ng-container>
@@ -238,7 +238,7 @@
                                             id="dos-table">
                                             <thead>
                                                 <tr>
-                                                    <th style="z-index: 10;">
+                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.clientName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Clients
                                                              <span class="sorting">
@@ -281,7 +281,7 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th style="z-index: 9;">
+                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.officeName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Office <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
@@ -346,7 +346,7 @@
                                                                         (click)="sortData(filteredItems,'count','desc','nestedDate',data.unFormatedName);isSorted[data.unFormatedName] = true"></a>
                                                                 </span>
                                                             </div>
-                                                            <small *ngIf="data.teamId == 20 || data.teamId == 11 || data.teamId == 18 ||data.teamId == 12 ||data.teamId == 16 ||data.teamId == 15">(Coming soon)</small>
+                                                            <!-- <small *ngIf="data.teamId == 20 || data.teamId == 11 || data.teamId == 18 ||data.teamId == 12 ||data.teamId == 16 ||data.teamId == 15">(Coming soon)</small> -->
                                                         </th>
                                                         <!-- <th *ngIf="last"></th> -->
                                                     </ng-container>
@@ -402,7 +402,7 @@
                                             id="dop-table">
                                             <thead>
                                                 <tr>
-                                                    <th style="z-index: 10;">
+                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.clientName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Clients
                                                              <span class="sorting">
@@ -445,7 +445,7 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th style="z-index: 9;">
+                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.officeName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Office <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
@@ -510,7 +510,7 @@
                                                                         (click)="sortData(filteredItems,'count','desc','nestedDate',data.unFormatedName);isSorted[data.unFormatedName] = true"></a>
                                                                 </span>
                                                             </div>
-                                                            <small *ngIf="data.teamId == 20 || data.teamId == 11 || data.teamId == 18 ||data.teamId == 12 ||data.teamId == 16 ||data.teamId == 15">(Coming soon)</small>
+                                                            <!-- <small *ngIf="data.teamId == 20 || data.teamId == 11 || data.teamId == 18 ||data.teamId == 12 ||data.teamId == 16 ||data.teamId == 15">(Coming soon)</small> -->
                                                         </th>
                                                         <!-- <th *ngIf="last"></th> -->
                                                     </ng-container>
