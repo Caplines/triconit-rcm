@@ -11,6 +11,8 @@ public class RcmClaimDto {
 	private String password;
 	private boolean submitted;
 	private String queryName;
+	private String dateCheckType;
+	
 	public String getColumns() {
 		return columns;
 	}
@@ -64,6 +66,12 @@ public class RcmClaimDto {
 	}
 	public void setQueryName(String queryName) {
 		this.queryName = queryName;
+	}
+	public String getDateCheckType() {
+		return dateCheckType;
+	}
+	public void setDateCheckType(String dateCheckType) {
+		this.dateCheckType = dateCheckType;
 	}
 	
 	

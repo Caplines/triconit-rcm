@@ -643,8 +643,9 @@ public class CaplineIVFGoogleFormController {
             @RequestParam(value = "date1", required = true) String date1,
             @RequestParam(value = "date2", required = true) String date2,
             @RequestParam(value = "client", required = true) String client,
-            @RequestParam(value = "submited", required = true) boolean  submited,//QUERY_FOR_RCMCALIM_1
+            @RequestParam(value = "submited", required = false) boolean  submited,//QUERY_FOR_RCMCALIM_1
             @RequestParam(value = "queryName", required = true) String  queryName,
+            @RequestParam(value = "dateCheckType", required = false) String  dateCheckType,
             @RequestParam(value = "office", required = false) String office, HttpServletRequest request,
 			HttpServletResponse response) {
 		//Example
@@ -664,8 +665,7 @@ public class CaplineIVFGoogleFormController {
 		dto.setSubmitted(submited);
 		dto.setOffice(office);
 		dto.setQueryName(queryName);
-		
-		
+		dto.setDateCheckType(dateCheckType);
 		try {
 			Company cmp = companyDao.getCompanyByName(client);
 			Office off = od.getOfficeByName(office,cmp.getUuid());
