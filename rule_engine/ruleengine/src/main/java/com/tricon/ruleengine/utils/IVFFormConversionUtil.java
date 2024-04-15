@@ -472,6 +472,10 @@ public class IVFFormConversionUtil {
 		pd2.setD5862fr(d.getD5862fr());
 		pd2.setD7311Select(d.getD7311Select());
 		
+		pd2.setD5213142625(d.getD5213142625());
+		pd2.setD5213142625fr(d.getD5213142625fr());
+		pd2.setD2954(d.getD2954());	
+		pd2.setD2954fr(d.getD2954fr());	
 		pd.setPatientDetails2(pd2);
 		
 		Set<PatientDetail2> p2Set = new HashSet<>();
@@ -927,6 +931,11 @@ public class IVFFormConversionUtil {
 				pd.setD5862(d.getD5862());
 				pd.setD5862fr(d.getD5862fr());
 				pd.setD7311Select(d.getD7311Select());
+				pd.setD5213142625(d.getD5213142625());
+				pd.setD5213142625fr(d.getD5213142625fr());
+				pd.setD2954(d.getD2954());	
+				pd.setD2954fr(d.getD2954fr());	
+				
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -1471,6 +1480,10 @@ public class IVFFormConversionUtil {
 		pd2.setD5862(d.getD5862());
 		pd2.setD5862fr(d.getD5862fr());
 		pd2.setD7311Select(d.getD7311Select());
+		pd2.setD5213142625(d.getD5213142625());
+		pd2.setD5213142625fr(d.getD5213142625fr());
+		pd2.setD2954(d.getD2954());	
+		pd2.setD2954fr(d.getD2954fr());	
 		
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();

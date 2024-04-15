@@ -398,7 +398,7 @@
         </div>
         </xsl:if>
 
-        <xsl:if test="contains(translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'guardian')">
+        <xsl:if test="(translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'guardian')">
         <div class="red-clr">
         <strong>Alert-</strong> D0140 only Covered with x rays, If performed with other treatment amounts to be collected from patient and WO to insurance at $0.
         </div>
@@ -610,7 +610,6 @@
 					  <td colspan="2" class="red dullRed"><xsl:value-of select="prosthetics2"/>		</td>
 					 </xsl:otherwise>
 				</xsl:choose>
-                
             </tr>
             <tr>
                 <td class="dullBlue">D0140 (LOE)</td>
@@ -619,7 +618,6 @@
                 <td class="borderNone"></td>
                 <td class="dullYellow">Quads Allowed / SRP </td>
                 <td class="dullYellow align-right" colspan="2"><xsl:value-of select="perio3"/></td>
-               
                 <td class="borderNone"></td>
                 <td class="rowHeading">Buildups &amp; Crowns</td>
                 <td class="rowHeading width-7">Pct.	</td>
@@ -632,14 +630,12 @@
                 <td class="borderNone"></td>
                 <td class="dullYellow">Rest Recommended B/W Quads</td>
                 <td class="dullYellow" colspan="2"><xsl:value-of select="perio4"/></td>
-                
                 <td class="borderNone"></td>
                 <td class="dullRed">D2950 (Core Buidup)</td>
                 <td class="dullRed width-7 align-right"><xsl:value-of select="posterior10"/></td>
                 <td class="dullRed"><xsl:value-of select="posterior11"/></td>
             </tr>
             <tr>
-                
                 <td class="dullBlue">Does Exams Share Freq? </td>
                 <td class="dullBlue" colspan="2"><xsl:value-of select="shareFr"/></td>
                 <td class="borderNone"></td>
@@ -649,10 +645,9 @@
                 <td class="borderNone"></td>
                 <td class="dullRed">Crown Paid on Date</td>
                 <td class="dullRed" colspan="2"><xsl:value-of select="prosthetics3"/></td>
-               
             </tr>
             <tr>
-                 <td class="rowHeading">Radiographs</td>
+                <td class="rowHeading">Radiographs</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
@@ -663,10 +658,9 @@
                 <td class="dullRed">D2740 (Porcelain)</td>
                 <td class="dullRed align-right"><xsl:value-of select="posterior4"/></td>
                 <td class="dullRed"><xsl:value-of select="posterior5"/></td>
-               
             </tr>
             <tr>
-               <td class="dullBlue">D0220/30 (PAs)</td>
+                <td class="dullBlue">D0220/30 (PAs)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="percentages11"/></td>
                 <td class="dullBlue"><xsl:value-of select="xrays2"/></td>
                 <td class="borderNone"></td>
@@ -679,7 +673,7 @@
                 <td class="dullRed"><xsl:value-of select="d2750fr"/></td>
             </tr>
             <tr>
-                  <td class="dullBlue">D0210 (FMX)</td>
+                <td class="dullBlue">D0210 (FMX)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="percentages16"/></td>
                 <td class="dullBlue"><xsl:value-of select="xrays4"/></td>
                 <td class="borderNone"></td>
@@ -691,7 +685,7 @@
                 <td class="dullRed" colspan="2"><xsl:value-of select="posterior6"/></td>
             </tr>
             <tr>
-               <td class="dullBlue">D0330 (Pano)</td>
+                <td class="dullBlue">D0330 (Pano)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="pano1"/></td>
                 <td class="dullBlue"><xsl:value-of select="d0330Freq"/></td>
                 <td class="borderNone"></td>
@@ -701,11 +695,9 @@
                 <td class="borderNone"></td>
                 <td class="dullRed">Downgraded to Code</td>
                 <td class="dullRed" colspan="2"><xsl:value-of select="posterior17"/></td>
-                
-               
             </tr>
             <tr>
-                 <td class="dullBlue">D0272/74 (BWXs)</td>
+                <td class="dullBlue">D0272/74 (BWXs)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="bwx"/></td>
                 <td class="dullBlue"><xsl:value-of select="xrays1"/></td>
                 <td class="borderNone"></td>
@@ -715,8 +707,6 @@
                 <td class="borderNone"></td>
                 <td class="dullRed">No. of Crowns / Year </td>
                 <td class="dullRed" colspan="2"><xsl:value-of select="crn1"/></td>
-               
-               
             </tr>
             <tr>
                 <td class="dullBlue">Does FMX &amp; PANO share Freq?</td>
@@ -726,14 +716,12 @@
                 <td class="dullYellow align-right"><xsl:value-of select="d0431"/></td>
                 <td class="dullYellow align-right"><xsl:value-of select="d0431fr"/></td>
                 <td class="borderNone"></td>
-                 <td class="rowHeading">SSC Crowns</td>
-                <td class="rowHeading">Pct.</td>
-                <td class="rowHeading">Freq</td>
-                
-               
+                <td class="dullRed">D2954 (Prefabricated)</td>
+                <td class="dullRed align-right"><xsl:value-of select="d2954"/></td>
+                <td class="dullRed"><xsl:value-of select="d2954fr"/></td>             
             </tr>
             <tr>
-                 <td class="rowHeading">Prophylaxis</td>
+                <td class="rowHeading">Prophylaxis</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
@@ -741,21 +729,21 @@
                 <td class="dullYellow align-right"><xsl:value-of select="d4999"/></td>
                 <td class="dullYellow align-right"><xsl:value-of select="d4999fr"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed">D2930/34 (Primary)</td>
-                <td class="dullRed"><xsl:value-of select="d2930"/></td>
-                <td class="dullRed"><xsl:value-of select="ssc1"/></td>
+                <td class="rowHeading">Bridges</td>
+                <td class="rowHeading">Pct.</td>
+                <td class="rowHeading">Freq</td>
             </tr>
             <tr>
                 <td class="dullBlue">Roll Age for Prophylaxis</td>
                 <td class="dullBlue align-right" colspan="2"><xsl:value-of select="rollage"/></td>
                 <td class="borderNone"></td>
-                 <td class="dullYellow">D9630 (Peridex)</td>
+                <td class="dullYellow">D9630 (Peridex)</td>
                 <td class="dullYellow align-right"><xsl:value-of select="d9630"/></td>
                 <td class="dullYellow align-right"><xsl:value-of select="d9630fr"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed">D2931(Permanent)</td>
-                <td class="dullRed align-right"><xsl:value-of select="d2931"/></td>
-                <td class="dullRed"><xsl:value-of select="ssc2"/></td>
+                <td class="dullRed">D6245/D6740</td>
+                <td class="dullRed align-right"><xsl:value-of select="bridges1"/></td>
+                <td class="dullRed"><xsl:value-of select="bridges2"/></td> 
             </tr>
             <tr>
                 <td class="dullBlue">D1120 (Child)</td>
@@ -766,12 +754,12 @@
                 <td class="dullYellow align-right"><xsl:value-of select="perioD4921"/></td>
                 <td class="dullYellow align-right"><xsl:value-of select="d4921Frequency"/></td>
                 <td class="borderNone"></td>
-                <td class="rowHeading">Bridges</td>
+                <td class="rowHeading">Dentures</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
             </tr>
             <tr>
-                 <td class="dullBlue">D1110 (Adult)</td>
+                <td class="dullBlue">D1110 (Adult)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="d1110"/></td>
                 <td class="dullBlue"><xsl:value-of select="prophy1"/></td>
                 <td class="borderNone"></td>
@@ -779,48 +767,48 @@
                 <td class="dullYellow align-right"><xsl:value-of select="perioD4266"/></td>
                 <td class="dullYellow align-right"><xsl:value-of select="d4266Frequency"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed">D6245/D6740</td>
-                <td class="dullRed align-right"><xsl:value-of select="bridges1"/></td>
-                <td class="dullRed"><xsl:value-of select="bridges2"/></td>
+                <td class="dullRed">D5110/20 (Complete)</td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="d511020Percentage"/></td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="dentures1"/></td>
             </tr>
             <tr>
-               <td class="rowHeading">Flouride</td>
+                <td class="rowHeading">Flouride</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
-                 <td class="rowHeading">Fillings</td>
+                <td class="rowHeading">Fillings</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
-                <td class="rowHeading">Dentures</td>
-                <td class="rowHeading">Pct.</td>
-                <td class="rowHeading">Freq</td>
+                <td class="dullRed">D5130/40<br/> (Immediate)</td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="d513040Percentage"/></td>
+                <td class="dullRed"  colspan="2"><xsl:value-of select="d5130_40"/></td>
             </tr>
             <tr>
-               
-                 <td class="dullBlue">Fluoride Covered till Age</td>
+                <td class="dullBlue">Fluoride Covered till Age</td>
                 <td class="dullBlue align-right"  colspan="2"><xsl:value-of select="fluroide2"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D2391 (Composites)</td>
                 <td class="dullYellow align-right"><xsl:value-of select="posterior1"/></td>
                 <td class="dullYellow"><xsl:value-of select="posterior2"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed">D5110/20 (Complete)</td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="d511020Percentage"/></td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="dentures1"/></td>
-                
+                <td class="dullRed"><strong>D5820/21 (Interim)</strong></td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="d5810CPercentage"/></td>
+                <td class="dullRed" colspan="2"><xsl:value-of select="d5810_c"/></td>
             </tr>
             <tr>
-                 <td class="dullBlue">D1206 (w/ Varnish)</td>
+                <td class="dullBlue">D1206 (w/ Varnish)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="d1206"/></td>
                 <td class="dullBlue"><xsl:value-of select="fluroide1"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">Downgraded to Amalgam (D2140)</td>
                 <td class="dullYellow"  colspan="2"><xsl:value-of select="posterior3"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed">D5130/40<br/> (Immediate)</td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="d513040Percentage"/></td>
-                <td class="dullRed"  colspan="2"><xsl:value-of select="d5130_40"/></td>
+                <td class="dullRed">D5213/14/26/25 (Partial)</td>
+                <td class="dullRed" colspan="1"><xsl:value-of select="d5213142625"/></td>
+                <td class="dullRed" colspan="2"><xsl:value-of select="d5213142625fr"/></td>
+                
+               
             </tr>
             <tr>
                 <td class="dullBlue">D1208 (w/o Varnish)</td>
@@ -830,13 +818,12 @@
                 <td class="dullYellow">No. of Fillings / Year </td>
                 <td class="dullYellow"  colspan="2"><xsl:value-of select="fill1"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed"><strong>D5820/21 (Interim)</strong></td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="d5810CPercentage"/></td>
-                <td class="dullRed"  colspan="2"><xsl:value-of select="d5810_c"/></td>
+                <td class="rowHeading">Implants</td>
+                <td class="rowHeading">Pct.</td>
+                <td class="rowHeading">Freq</td>
             </tr>
             <tr>
-                 
-               <td class="rowHeading">Oral Hygiene</td>
+                <td class="rowHeading">Oral Hygiene</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
@@ -844,10 +831,9 @@
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
-                <td class="rowHeading">Implants</td>
-                <td class="rowHeading">Pct.</td>
-                <td class="rowHeading">Freq</td>
-                
+                 <td class="dullRed">D6010</td>
+                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants1"/></td>
+                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants5"/></td>
             </tr>
             <tr>
                 <td class="dullBlue">D1330 (Instructions)</td>
@@ -858,9 +844,9 @@
                 <td class="dullYellow align-right"><xsl:value-of select="extractions1"/></td>
                 <td class="dullYellow"><xsl:value-of select="extractions1fr"/></td>
                 <td class="borderNone"></td>
-                 <td class="dullRed">D6010</td>
-                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants1"/></td>
-                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants5"/></td>
+                <td class="dullRed">D6065 (Porc./Ceramic)</td>
+                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants4"/></td>
+                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants7"/></td>
             </tr>
             <tr>
                 <td class="rowHeading">Sealants</td>
@@ -871,7 +857,7 @@
                 <td class="dullYellow align-right"><xsl:value-of select="extractions2"/></td>
                 <td class="dullYellow"><xsl:value-of select="extractions2fr"/></td>
                 <td class="borderNone"></td>
-               <td class="rowHeading">Oral Surgery</td>
+                <td class="rowHeading">Oral Surgery</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
             </tr>
@@ -884,7 +870,7 @@
                 <td class="dullYellow align-right"><xsl:value-of select="d7250"/></td>
                 <td class="dullYellow"><xsl:value-of select="d7250fr"/></td>
                 <td class="borderNone"></td>
-                 <td class="dullRed">D7310 (4 &gt;= Tooth/Quad)</td>
+                <td class="dullRed">D7310 (4 &gt;= Tooth/Quad)</td>
                 <td class="dullRed align-right"><xsl:value-of select="d7310"/></td>
                 <td class="dullRed"><xsl:value-of select="oral6"/></td>
             </tr>
@@ -898,19 +884,19 @@
                 <!-- <td class="dullYellow"></td> -->
                 <td class="dullYellow" colspan="2"><xsl:value-of select="extr1"/></td>
                 <td class="borderNone"></td>
-                 <td class="dullRed">D7311 (1-3 Tooth/Qaud)</td>
+                <td class="dullRed">D7311 (1-3 Tooth/Qaud)</td>
                 <td class="dullRed align-right"><xsl:value-of select="d7311"/></td>
-                <td class="dullRed"><xsl:value-of select="oral4"/></td>  
+                <td class="dullRed"><xsl:value-of select="oral4"/></td> 
             </tr>
             <tr>
-                 <td class="dullBlue">Covered on Primary Molars</td>
+                <td class="dullBlue">Covered on Primary Molars</td>
                 <td class="red blackClr" colspan="2"><xsl:value-of select="sealants3"/></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Endodontics</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
-                 <td class="dullRed">D7953 (Bone Graft)</td>
+                <td class="dullRed">D7953 (Bone Graft)</td>
                 <td class="dullRed align-right"><xsl:value-of select="d7953"/></td>
                 <td class="dullRed"><xsl:value-of select="dentures6"/></td>
             </tr>
@@ -918,26 +904,27 @@
                 <td class="dullBlue">Covered on Pre-Molars</td>
                 <td class="red blackClr" colspan="2"><xsl:value-of select="sealants4"/></td> 
                 <td class="borderNone"></td>
-                <td class="dullYellow">D3310 (Ant Teeth)</td>
+                <td class="dullYellow">D3310/20/30 (Endo)</td>
                 <td class="dullYellow"><xsl:value-of select="d3310"/></td>
                 <td class="dullYellow"><xsl:value-of select="d3310fr"/></td>
                 <td class="borderNone"></td>
-               <td class="dullRed" colspan="2">Bone Graft Covered with</td>
+                <td class="dullRed" colspan="2">Bone Graft Covered with</td>
                 <td class="dullRed"><xsl:value-of select="dentures5"/></td>
+              
             </tr>
             <tr>
-                 <td class="dullBlue">Covered on Permanent-Molars</td>
+                <td class="dullBlue">Covered on Permanent-Molars</td>
                 <td class="red blackClr" colspan="2"><xsl:value-of select="sealants5"/></td>
                 <td class="borderNone"></td>
-                <td class="dullYellow">D3320 (Pre-molar Tooth)</td>
+                <td class="dullYellow">D3220 (Pulpotomy)</td>
                 <td class="dullYellow"><xsl:value-of select="d3320"/></td>
                 <td class="dullYellow"><xsl:value-of select="d3320fr"/></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading text-center" colspan="3">Ortho Criteria</td>
-                 
+                
             </tr>
             <tr>
-                 <td class="rowHeading">Consultation</td>
+                <td class="rowHeading">Consultation</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
@@ -947,13 +934,13 @@
                 <td class="borderNone"></td>
                 <td class="dullRed" colspan="2">Ortho Coverage (D8070/80/90)</td>
                 <td class="dullRed align-right"><xsl:value-of select="ortho1"/></td> 
-
-                
+             
+               
             </tr>
             <tr>
                 <td class="dullBlue">D9310</td>
                 <td class="dullBlue align-right"><xsl:value-of select="posterior8"/></td>
-                <td class="dullBlue"><xsl:value-of select="posterior9"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="posterior9"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D9944/45 (Hard/Soft)</td>
                 <td class="dullYellow align-right"><xsl:value-of select="posterior7"/></td>
@@ -963,8 +950,114 @@
                 <td class="dullRed align-right"><xsl:value-of select="ortho2"/></td> 
             </tr>
             <tr>
+                <xsl:choose>
+                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <td class="rowHeading">Pedo Speciality Codes</td>
+                <td class="rowHeading">Pct.</td>
+                <td class="rowHeading">Freq</td>
+                </xsl:when> 
+                <xsl:otherwise>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                </xsl:otherwise>
+               </xsl:choose>
+                <td class="borderNone"></td>
+                <td class="rowHeading">Adjunctive</td>
+                <td class="rowHeading">Pct.</td>
+                <td class="rowHeading">Freq</td>
+                <td class="borderNone"></td>
+                <td colspan="3" class="borderNone"></td> 
+            </tr>
+            <tr>
+                <xsl:choose>
+                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <td class="dullBlue">D0350 (OFI)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0350"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0350Freq"/></td>
+                </xsl:when>
+                <xsl:otherwise>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                </xsl:otherwise>
+               </xsl:choose>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D9230 (Nitrous)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="sedations1"/></td>
+                <td class="dullYellow"><xsl:value-of select="sedations1fr"/></td>
+                <td class="borderNone"></td>
+                <td colspan="3" class="borderNone"></td> 
+            </tr>
+            <tr>
+                <xsl:choose>
+                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <td class="dullBlue">D0160 (PFE)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="pedo1"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="d0160Freq"/></td>
+                </xsl:when>
+                <xsl:otherwise>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                </xsl:otherwise>
+               </xsl:choose>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D9248 (Sedation)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="sedations3"/></td>
+                <td class="dullYellow"><xsl:value-of select="sedations3fr"/></td>
+                <td class="borderNone"></td>
+                <td colspan="3" class="borderNone"></td> 
+            </tr>
+             <tr>
+                <xsl:choose>
+                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <td class="dullBlue">D1510/16/17(SM)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1510"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="d1510Freq"/></td>
+                </xsl:when>
+                <xsl:otherwise>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                </xsl:otherwise>
+                 </xsl:choose>
+                <td class="borderNone"></td>
+                <td class="dullYellow">D9910 (Desensitizing)</td>
+                <td class="dullYellow align-right"><xsl:value-of select="perioD9910"/></td>
+                <td class="dullYellow"><xsl:value-of select="d9910Frequency"/></td>
+                <td class="borderNone"></td>
+                <td colspan="3" class="borderNone"></td> 
+            </tr>
+            <tr>
+                <xsl:choose>
+                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <td class="dullBlue">D2930/34 (Primary SSC)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d2930"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="ssc1"/></td>
+                </xsl:when>
+                <xsl:otherwise>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                </xsl:otherwise>
+                 </xsl:choose>
                 <td colspan="8" class="borderNone"></td> 
-                
+            </tr>
+             <tr>
+                <xsl:choose>
+                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <td class="dullBlue">D2931 (Permanent SSC)</td>
+                <td class="dullBlue align-right"><xsl:value-of select="d2931"/></td>
+                <td class="dullBlue align-right"><xsl:value-of select="ssc2"/></td>
+                </xsl:when>
+                <xsl:otherwise>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                <td class="borderNone"></td>
+                </xsl:otherwise>
+                 </xsl:choose>
+                <td colspan="8" class="borderNone"></td> 
             </tr>
         </table>
         <br />
@@ -1033,6 +1126,7 @@
                 <td class="historyBackground width-15">IVF ID</td>
                 <td class="lightGray width-15"><xsl:value-of select="id"/></td>
                 <td class="borderNone" colspan="7"></td>
+                
             </tr>  
         </table>
         <br/>

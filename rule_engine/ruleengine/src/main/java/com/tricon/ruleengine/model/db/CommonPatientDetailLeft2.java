@@ -632,6 +632,50 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "d7311_select", length = 15)
 	private String d7311Select;
 	
+	@Column(name = "d5213142625", length = 15)
+	private String d5213142625;
+	
+	@Column(name = "d5213142625_fr", length = 15)
+	private String d5213142625fr;
+	
+	@Column(name = "d2954", length = 15)
+	private String d2954;
+	
+	@Column(name = "d2954_fr", length = 15)
+	private String d2954fr;
+	
+
+	public String getD2954() {
+		return d2954;
+	}
+
+	public void setD2954(String d2954) {
+		this.d2954 = d2954;
+	}
+
+	public String getD2954fr() {
+		return d2954fr;
+	}
+
+	public void setD2954fr(String d2954fr) {
+		this.d2954fr = d2954fr;
+	}
+
+	public String getD5213142625() {
+		return d5213142625;
+	}
+
+	public void setD5213142625(String d5213142625) {
+		this.d5213142625 = d5213142625;
+	}
+
+	public String getD5213142625fr() {
+		return d5213142625fr;
+	}
+
+	public void setD5213142625fr(String d5213142625fr) {
+		this.d5213142625fr = d5213142625fr;
+	}
 
 	public String getNpi() {
 		return npi;
