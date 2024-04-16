@@ -951,7 +951,7 @@
             </tr>
             <tr>
                 <xsl:choose>
-                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="rowHeading">Pedo Speciality Codes</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
@@ -971,7 +971,7 @@
             </tr>
             <tr>
                 <xsl:choose>
-                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D0350 (OFI)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="d0350"/></td>
                 <td class="dullBlue align-right"><xsl:value-of select="d0350Freq"/></td>
@@ -991,7 +991,7 @@
             </tr>
             <tr>
                 <xsl:choose>
-                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D0160 (PFE)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="pedo1"/></td>
                 <td class="dullBlue align-right"><xsl:value-of select="d0160Freq"/></td>
@@ -1011,7 +1011,7 @@
             </tr>
              <tr>
                 <xsl:choose>
-                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D1510/16/17(SM)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="d1510"/></td>
                 <td class="dullBlue align-right"><xsl:value-of select="d1510Freq"/></td>
@@ -1031,7 +1031,7 @@
             </tr>
             <tr>
                 <xsl:choose>
-                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D2930/34 (Primary SSC)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="d2930"/></td>
                 <td class="dullBlue align-right"><xsl:value-of select="ssc1"/></td>
@@ -1046,7 +1046,7 @@
             </tr>
              <tr>
                 <xsl:choose>
-                <xsl:when test="(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'ghazal')">
+                <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D2931 (Permanent SSC)</td>
                 <td class="dullBlue align-right"><xsl:value-of select="d2931"/></td>
                 <td class="dullBlue align-right"><xsl:value-of select="ssc2"/></td>
