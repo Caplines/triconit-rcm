@@ -731,12 +731,13 @@ public class ClaimServiceImpl {
 							boolean isMedicaid= false;
 							boolean isMedicare =false;
 							boolean isChip =false;
-							
+							boolean isFCL= false;
 							if (clCompany.getName().equals(Constants.COMPANY_NAME)) {
 								isBilling = ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
+								isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName());
 							}
 							boolean missing=true;
 							if (isBilling || isMedicare ) {
@@ -746,7 +747,7 @@ public class ClaimServiceImpl {
 									,claimTypeEnum,ClaimSourceEnum.GOOGLESHEET.toString());
 							missing=false;
 							}
-							if (  isMedicaid || isChip) {
+							if (  isMedicaid || isChip || isFCL) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
@@ -840,7 +841,7 @@ public class ClaimServiceImpl {
 								
 								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(),ClaimStatusEnum.Need_to_Bill.getType(), assignedTeamBilling, user);
 							}
-							if (assignedUserInternalAudit != null && (isMedicaid  || isChip)) {
+							if (assignedUserInternalAudit != null && (isMedicaid  || isChip || isFCL)) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -1035,12 +1036,14 @@ public class ClaimServiceImpl {
 							boolean isMedicaid= false;
 							boolean isMedicare= false;
 							boolean isChip= false;
+							boolean isFCL= false;
 							//For External we always have claims in Billing 
 							if (clCompany.getName().equals(Constants.COMPANY_NAME)) {
 								isBilling = ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
+								isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName());
 							}
 							
 							//boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
@@ -1055,7 +1058,7 @@ public class ClaimServiceImpl {
 									claimTypeEnum,ClaimSourceEnum.GOOGLESHEET.toString());
 							missing=false;
 							}
-							if (isMedicaid  || isChip) {
+							if (isMedicaid  || isChip || isFCL) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
@@ -1149,7 +1152,7 @@ public class ClaimServiceImpl {
 								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(), ClaimStatusEnum.Need_to_Bill.getType(), assignedTeamBilling, user);
 								
 							}
-							if (assignedUserInternalAudit != null && ( isMedicaid || isChip)) {
+							if (assignedUserInternalAudit != null && ( isMedicaid || isChip || isFCL)) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
@@ -1649,12 +1652,14 @@ public class ClaimServiceImpl {
 							boolean isMedicaid= false;
 							boolean isMedicare= false;
 							boolean isChip= false;
+							boolean isFCL= false;
 							//For External we always have claims in Billing 
 							if (clCompany.getName().equals(Constants.COMPANY_NAME)) {
 								isBilling = ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
+								isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName());
 							}
 							
 							//boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
@@ -1669,7 +1674,7 @@ public class ClaimServiceImpl {
 									claimTypeEnum,ClaimSourceEnum.RECREATECLAIMSECTION.toString());
 							missing=false;
 							}
-							if (isMedicaid  || isChip) {
+							if (isMedicaid  || isChip || isFCL ) {
 								claim = ClaimUtil.createClaimFromSheetData(claim, off, re,
 										ClaimUtil.filterTeamByNameId(allTeams, RcmTeamEnum.INTERNAL_AUDIT.toString()), user, ins,
 										ins, claimStatusType, claimTypeEnum.getSuffix(), rcmInsuranceType, timely.getTimelyFilingLimit(),
@@ -1765,7 +1770,7 @@ public class ClaimServiceImpl {
 								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(), ClaimStatusEnum.Need_to_Bill.getType(), assignedTeamBilling, user);
 								
 							}
-							if (assignedUserInternalAudit != null && ( isMedicaid || isChip)) {
+							if (assignedUserInternalAudit != null && ( isMedicaid || isChip || isFCL)) {
 								rcmAssigment = new RcmClaimAssignment();
 								//
 								rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
