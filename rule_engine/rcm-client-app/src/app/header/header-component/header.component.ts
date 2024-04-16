@@ -71,6 +71,17 @@ export class HeaderComponent implements OnInit {
     if (this.roleData.length == 0) {
       this.getRoles();
     }
+      
+      if(Utils.getRolesFromLS()[0] === 'ROLE_ADMIN' && !this.userInfo.currentRoleName){
+          this.selectedClient= 'Smilepoint';
+          this.selectedRole = 'Admin';
+          this.btnDisabled = false;
+
+          // this.checkBtnDisabled();
+          setTimeout(() => {
+            this.switchAccount();
+          }, 1000);
+    }
 
     // if(this.userInfo.currentClientName && this.userInfo.currentTeamId != "-1"){
     //   this.issueClaim();
@@ -212,6 +223,7 @@ export class HeaderComponent implements OnInit {
       this.btnDisabled = true;
     } else if (this.loginUserType == 'Admin') {
       this.selectedTeam = '';
+      this.selectedClient = 'Smilepoint';
       this.checkValidationSuperAdmin();
     }
   }

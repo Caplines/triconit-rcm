@@ -172,7 +172,7 @@
                         <label class="font-weight-bolder">Client</label>
                         <select class="form-control" id="selectClientAC" name="selectClientAC"
                             (change)="checkBtnDisabled()" [(ngModel)]="selectedClient"
-                            [disabled]="cwModel?.companies?.length == 1 ? true : false">
+                            [disabled]="cwModel?.companies?.length == 1 ? true : false || (loginUserType=='Admin' || staticUtil.getRolesFromLS()[0] == 'ROLE_ADMIN')">
                             <option selected="true" hidden="true" value="">Select Client</option>
                             <ng-container *ngFor="let tl of cwModel?.companies">
                                 <option value="{{tl.name}}">{{tl.name}}</option>
