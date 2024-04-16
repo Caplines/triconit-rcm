@@ -371,6 +371,7 @@ export class BillingClaimsComponent {
   hideRecreateButton: boolean = false;
   selectedServiceCodesExist: boolean = false;
   emailUrl: any = '';
+  hideSideBarDom:boolean=false;
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
 
 
@@ -2917,10 +2918,26 @@ export class BillingClaimsComponent {
       (res: any) => {
         if (res.status === 200) {
           console.log(res.data);
-          ths.claimSteps = res.data;
+          ths.claimSteps = this.filterConsecutiveDuplicates(res.data);
         }
       });
   }
+
+   filterConsecutiveDuplicates(data:any) {
+    if (data.length === 0) return data;
+    const filteredData = [data[0]];
+    for (let i = 1; i < data.length; i++) {
+        const prev = filteredData[filteredData.length - 1];
+        const current = data[i];
+        if (prev.status === current.status && prev.name === current.name) {
+            continue;
+        } else {
+            filteredData.push(current);
+        }
+    }
+
+    return filteredData;
+}
 
   saveInsuranceFollowUpInfo(isFinal: boolean) {
     //if (this.validate_SERVICE_LEVEL_INFORMATION()) {
@@ -3527,6 +3544,18 @@ export class BillingClaimsComponent {
     if (!this.claimRcm.primary && this.claimRcm.assoicatedClaimCurrentStatus != this.appConstants.CLOSED_CLAIM_STATUS)
       return false;
     else return true;
+  }
+
+  hideSideBar(){
+    this.toggleSideBar = !this.toggleSideBar;
+    if(!this.toggleSideBar){
+      this.hideSideBarDom = false;
+    }
+    setTimeout(() => {
+      if(this.toggleSideBar){
+        this.hideSideBarDom = true;
+      }
+    }, 100);
   }
 
 }

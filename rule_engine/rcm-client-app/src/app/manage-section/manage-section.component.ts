@@ -95,7 +95,7 @@ export class ManageSectionComponent {
             this.manageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = editAccess;
           }
           else if (!editAccess && type === 'edit') {
-            this.manageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = false;
+            // this.manageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = false;
             this.manageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = false;
           }
         }

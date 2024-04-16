@@ -4,7 +4,7 @@ import { ClaimSubmissionTeamPipe } from './claim-submission-team-pipe';
 import { ClaimIdPipe } from './claim-id-pipe';
 import { MessageTypePipe } from './message-type.pipe';
 import { GeneralDataFilter } from './general-filter';
-
+import {RelpaceAlphabetPipe} from "./relpace-alphabet.pipe";
 @NgModule({
   imports: [
     // dep modules
@@ -14,14 +14,16 @@ import { GeneralDataFilter } from './general-filter';
     ClaimIdPipe,
     MessageTypePipe,
     GeneralDataFilter,
-    ClaimSubmissionTeamPipe
+    ClaimSubmissionTeamPipe,
+    RelpaceAlphabetPipe
   ],
   exports: [
     ClaimTypeFilter,
     ClaimIdPipe,
     MessageTypePipe,
     GeneralDataFilter,
-    ClaimSubmissionTeamPipe
+    ClaimSubmissionTeamPipe,
+    RelpaceAlphabetPipe
 
   ]
 })

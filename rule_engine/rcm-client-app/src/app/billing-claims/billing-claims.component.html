@@ -17,7 +17,7 @@
                     <small id="tooltip" class="ms-2" style="visibility:hidden;font-size: 12px !important;">URL
                         copied!</small>
                 </div>
-                <button *ngIf="claimSteps.length>0" type="button" (click)="toggleSideBar = !toggleSideBar"
+                <button *ngIf="claimSteps.length>0" type="button" (click)="hideSideBar()"
                     class="btn btn-primary claim-steps-btn" [ngClass]="{'toggle-claim-steps':toggleSideBar}"
                     style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -160,7 +160,7 @@
                                         <div class="custom-row">
                                             <label for="" class="">Patient Contact</label>
                                             <div>
-                                                {{claimRcm.patientContactNo}}
+                                                {{claimRcm.patientContactNo|relpaceAlphabet}}
                                             </div>
 
                                         </div>
@@ -1504,6 +1504,16 @@
                                     </div>
                                 </div>
                                 <!-- NEW PHASE SECTION START HERE-->
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="SERVICE_LEVEL_INFORMATION" class="text-danger">
+                                            Sevice Level Information (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('SERVICE_LEVEL_INFORMATION')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['SERVICE_LEVEL_INFORMATION']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text"
@@ -1805,6 +1815,17 @@
                                     </div>
                                 </ng-container>
 
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['EOB']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="EOB" class="text-danger">
+                                            EOB (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('EOB')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['EOB']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['EOB']}">
@@ -1906,6 +1927,17 @@
                                                 <pdf-viewer style="display: block; min-height: 250px" [src]="pdfUrlSrc"
                                                     [render-text]="true" [zoom]="zoom_to"></pdf-viewer>
                                             </div>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['CLAIM_LEVEL_INFORMATION']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="CLAIM_LEVEL_INFORMATION" class="text-danger">
+                                            Claim Level Information (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('CLAIM_LEVEL_INFORMATION')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['CLAIM_LEVEL_INFORMATION']}"></a>
                                         </div>
                                     </div>
                                 </ng-container>
@@ -2044,6 +2076,18 @@
                                         </div>
                                     </div>
                                 </ng-container>
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['INSURANCE_PAYMENT_INFORMATION']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="INSURANCE_PAYMENT_INFORMATION" class="text-danger">
+                                            Insurance Payment Information (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('INSURANCE_PAYMENT_INFORMATION')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['INSURANCE_PAYMENT_INFORMATION']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                                 <ng-container
                                     *ngIf="(sectionLevelInfoTotalConfig.paidAmount>0) &&  !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
                                     <div class="bold-b-text"
@@ -2194,6 +2238,16 @@
                                 <!-- Payment Posting END-->
 
                                 <!--AGING Insurance Follow-Up Details START-->
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['INSURANCE_FOLLOW_UP']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="INSURANCE_FOLLOW_UP" class="text-danger">
+                                            Insurance Follow-Up Details (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('INSURANCE_FOLLOW_UP')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['INSURANCE_FOLLOW_UP']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
 
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'view')">
@@ -2347,6 +2401,18 @@
                                 </ng-container>
                                 <!-- Insurance Follow-Up Details END-->
                                 <!-- Patient Statement START-->
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['PATIENT_STATEMENT']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="PATIENT_STATEMENT" class="text-danger">
+                                            Patient Statement (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('PATIENT_STATEMENT')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['PATIENT_STATEMENT']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['PATIENT_STATEMENT']}">
@@ -2535,6 +2601,18 @@
                                 </ng-container>
                                 <!-- Patient Statement END-->
                                 <!-- Patient Payment START-->
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['PATIENT_PAYMENT']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="PATIENT_PAYMENT" class="text-danger">
+                                            Patient Payment (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('PATIENT_PAYMENT')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['PATIENT_PAYMENT']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['PATIENT_PAYMENT']}">
@@ -2636,6 +2714,18 @@
 
                                 <!-- Patient Payment END-->
                                 <!-- Patient Communication START-->
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['PATIENT_COMMUNICATION']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="PATIENT_COMMUNICATION" class="text-danger">
+                                            Patient Commmunication (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('PATIENT_COMMUNICATION')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['PATIENT_COMMUNICATION']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
                                     <div class="bold-b-text"
@@ -2744,6 +2834,18 @@
                                 </ng-container>
                                 <!-- Patient Communication END-->
                                 <!-- Collection Agency START-->
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['COLLECTION_AGENCY']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="COLLECTION_AGENCY" class="text-danger">
+                                            Collection Agency (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('COLLECTION_AGENCY')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['COLLECTION_AGENCY']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                                 <ng-container
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['COLLECTION_AGENCY']}">
@@ -2916,6 +3018,18 @@
                                 </ng-container>
                                 <!-- Collection Agency END-->
                                 <!-- Appeal START-->
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['APPEAL']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="APPEAL" class="text-danger">
+                                            Appeal (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('APPEAL')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['APPEAL']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                                 <ng-container
                                     *ngIf="!claimRcm.pending &&  checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['APPEAL']}">
@@ -2998,6 +3112,18 @@
                                 </ng-container>
                                 <!-- Appeal END-->
                                 <!-- Request Rebilling START-->
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="REQUEST_REBILLING" class="text-danger">
+                                            Request Rebilling (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('REQUEST_REBILLING')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['REQUEST_REBILLING']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                                 <ng-container
                                     *ngIf="!claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text"
@@ -3120,6 +3246,18 @@
                                 </ng-container>
                                 <!-- Request Rebilling END-->
                                 <!-- REBILLING START-->
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['REBILLING']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="REBILLING" class="text-danger">
+                                            Rebilling (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('REBILLING')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['REBILLING']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+
                                 <ng-container
                                     *ngIf="claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REBILLING']}">
@@ -3314,6 +3452,19 @@
                                 </ng-container>
 
                                 <!-- NEED TO CREATE REBLIING START-->
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view')">
+                                    
+                                    <div class="bold-b-text collapsed
+                                    " [ngClass]="{'collapsed':toggleTab['RECREATE_CLAIM']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="RECREATE_CLAIM" class="text-danger">
+                                            Claim Recreation in PMS (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('RECREATE_CLAIM')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['RECREATE_CLAIM']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
 
                                 <ng-container
                                     *ngIf="((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
@@ -3642,6 +3793,17 @@
                                 <!-- END NEED TO CREATE -->
 
                                 <!-- Current Status and next action required START-->
+
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="CURRENT_STATUS_AND_NEXT_ACTION" class="text-danger">
+                                            Current Status and next action required (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('CURRENT_STATUS_AND_NEXT_ACTION')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
 
                                 <ng-container
                                     *ngIf="isPrimaryClaimClosed() && ( !claimRcm.rebilledStatus || !claimSectionModal.REBILLING['modal']['rebillingStatus']) && !claimRcm.pending &&  claimRcm.allowEdit && claimRcm.currentStatus!=appConstants.claimClosedId && checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
@@ -4012,7 +4174,7 @@
 
                         </div>
                     </div>
-                    <div *ngIf="claimSteps.length>0" class="steps-taken vertical"
+                    <div *ngIf="claimSteps.length>0 && !hideSideBarDom " class="steps-taken vertical"
                         [ngClass]="{'toggleSidebar':toggleSideBar}">
                         <ul>
                             <ng-container *ngFor="let steps of claimSteps">

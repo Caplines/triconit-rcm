@@ -271,7 +271,7 @@
 
                         <div class="action-buttons" *ngIf="!loader.showLoader && !isRoleAsso">
                             <button type="button" class="btn btn-success"
-                                [ngClass]="{'disabled':assignOfficeDetails.assignOfficeDetails.length==0}"
+                                [ngClass]="{'disabled':assignOfficeDetails.assignOfficeDetails.length==0 || loader.assignLoader}"
                                 (click)="saveAssignments()">
                                 <span *ngIf="loader.assignLoader" class="spinner-grow spinner-grow-sm" role="status"
                                     aria-hidden="true"></span> Save Assignment</button>
