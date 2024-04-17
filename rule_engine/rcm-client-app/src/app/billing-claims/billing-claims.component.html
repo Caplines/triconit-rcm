@@ -1,11 +1,12 @@
 <div class="sticky-top bg-dark">
-    <div class="topbar" style="justify-content: flex-start;">
+    <div class="topbar">
+        <div style="display: flex;">
         <a class="backBtn" (click)="goToListofClaimsPage()"><img src="../../assets/img/arrow-back.png"
                 [style]="{width:'16px'}"></a>
         <h1>Capline RCM</h1>
-        <h5 class="mt-2 mx-3">
+    </div>
             <app-feedback [emailUrl]="emailUrl"></app-feedback>
-        </h5>
+        
     </div>
 </div>
 <div [ngClass]="{'setPadding':appService.setPaddingContainer}">

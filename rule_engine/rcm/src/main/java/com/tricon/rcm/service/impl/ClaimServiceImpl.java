@@ -2008,6 +2008,8 @@ public class ClaimServiceImpl {
 
 		List<Integer> ct = dto.getClaimType();
 		List<String> inst = dto.getInsuranceType();
+		int currentStatusClosed=ClaimStatusEnum.Closed.getId();
+		int currentStatusVoided=ClaimStatusEnum.Voided.getId();
 		if (dto.getClaimType() == null) {
 			ct = new ArrayList<>();
 			ct.add(ClaimStatusEnum.Billing.getId());
@@ -2039,7 +2041,7 @@ public class ClaimServiceImpl {
 						instDB,partialHeader.getTeamId(),partialHeader.getJwtUser().getUuid());
 				
 			}else {
-				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam(companies, ct, instDB,partialHeader.getTeamId());
+				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam(companies, ct, instDB,partialHeader.getTeamId(),currentStatusClosed,currentStatusVoided);
 					
 			}
 			
