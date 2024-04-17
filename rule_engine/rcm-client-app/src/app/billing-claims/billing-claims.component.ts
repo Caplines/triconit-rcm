@@ -373,6 +373,7 @@ export class BillingClaimsComponent {
   emailUrl: any = '';
   hideSideBarDom:boolean=false;
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
+  isLoggedInAdmin:boolean=false;
 
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -392,6 +393,7 @@ export class BillingClaimsComponent {
       this.fetchClaimRights(this.claimUUid);
     });
     this.emailUrl = window.location.href;
+    this.isLoggedInAdmin = Utils.checkAdmin();
   }
 
   fetchClaimRights(uuid: string) {
