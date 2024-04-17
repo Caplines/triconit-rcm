@@ -836,10 +836,10 @@ public class ClaimServiceImpl {
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
 								claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Billing.getId());
-								claim.setNextAction(ClaimStatusEnum.Need_to_Bill.getId());
-								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Need_to_Bill.getId(),claim.getClaimUuid());
+								claim.setNextAction(ClaimStatusEnum.Pending_For_Billing.getId());
+								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Pending_For_Billing.getId(),claim.getClaimUuid());
 								
-								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(),ClaimStatusEnum.Need_to_Bill.getType(), assignedTeamBilling, user);
+								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(),ClaimStatusEnum.Pending_For_Billing.getType(), assignedTeamBilling, user);
 							}
 							if (assignedUserInternalAudit != null && (isMedicaid  || isChip || isFCL)) {
 								rcmAssigment = new RcmClaimAssignment();
@@ -1145,11 +1145,11 @@ public class ClaimServiceImpl {
 										systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
-								claim.setCurrentStatus(ClaimStatusEnum.Need_to_Bill.getId());
+								claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Billing.getId());
 								claim.setNextAction(ClaimStatusEnum.Pending_For_Billing.getId());
 								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Pending_For_Billing.getId(),claim.getClaimUuid());
 								
-								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(), ClaimStatusEnum.Need_to_Bill.getType(), assignedTeamBilling, user);
+								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(), ClaimStatusEnum.Pending_For_Billing.getType(), assignedTeamBilling, user);
 								
 							}
 							if (assignedUserInternalAudit != null && ( isMedicaid || isChip || isFCL)) {
@@ -1763,11 +1763,11 @@ public class ClaimServiceImpl {
 										systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
 
 								rcmClaimAssignmentRepo.save(rcmAssigment);
-								claim.setCurrentStatus(ClaimStatusEnum.Need_to_Bill.getId());
+								claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Billing.getId());
 								claim.setNextAction(ClaimStatusEnum.Pending_For_Billing.getId());
 								rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Pending_For_Billing.getId(),claim.getClaimUuid());
 								
-								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(), ClaimStatusEnum.Need_to_Bill.getType(), assignedTeamBilling, user);
+								claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(), ClaimStatusEnum.Pending_For_Billing.getType(), assignedTeamBilling, user);
 								
 							}
 							if (assignedUserInternalAudit != null && ( isMedicaid || isChip || isFCL)) {
@@ -2038,7 +2038,7 @@ public class ClaimServiceImpl {
 		try {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUser(companies,ct, 
-						instDB,partialHeader.getTeamId(),partialHeader.getJwtUser().getUuid());
+						instDB,partialHeader.getTeamId(),partialHeader.getJwtUser().getUuid(),currentStatusClosed,currentStatusVoided);
 				
 			}else {
 				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam(companies, ct, instDB,partialHeader.getTeamId(),currentStatusClosed,currentStatusVoided);
@@ -3853,8 +3853,8 @@ public class ClaimServiceImpl {
 				String nextAction =null;
 				if (originalClaimPendingStatus) {
 					 if ( dto.getAssignToTeam()==RcmTeamEnum.BILLING.getId()) {
-						 createStatus = ClaimStatusEnum.Need_to_Bill.getType(); 
-						 nextAction =ClaimStatusEnum.Need_to_Bill.getType();
+						 createStatus = ClaimStatusEnum.Pending_For_Billing.getType(); 
+						 nextAction =ClaimStatusEnum.Pending_For_Billing.getType();
 					 }
 					 // As per phase 2 this will never happen
 					 if ( dto.getAssignToTeam()==RcmTeamEnum.INTERNAL_AUDIT.getId()) {

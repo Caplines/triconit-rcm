@@ -130,7 +130,7 @@ public class ClaimMovementUtil {
 	public static ClaimStatusEnum getBillingNextAction(int currentClaimTeamId, RcmClaims claim, RcmClaims secondaryClaim,
 			boolean checkForPrimary) {
 
-		return ClaimStatusEnum.Need_to_Bill;
+		return ClaimStatusEnum.Pending_For_Billing;
 
 	}
 	// Billing- END

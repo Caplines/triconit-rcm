@@ -290,7 +290,7 @@ export class AppConstants {
         { name: "Need to send to IC system" },
         { name: "Need to Void" },
         { name: "Need to Post" },
-        { name: "Need to Bill" },
+        { name: "Pending For Billing" },
         { name: "Need to Audit" }
 
     ]
