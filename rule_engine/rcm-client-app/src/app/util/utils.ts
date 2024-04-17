@@ -121,6 +121,14 @@ export default class Utils {
       }
       return false;
    }
+   static checkAdminLoginRole() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('loginAs').indexOf("Admin") > -1) {
+         return true;
+      }
+      return false;
+   }
+
    static checkRoleAdmin() {
       let ls: any = localStorage;
       if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("ADMIN") > -1) {
@@ -265,7 +273,7 @@ export default class Utils {
       return (localStorage.getItem("currentUser"));
    }
 
-   static isNotTeamOffice(){
+   static isNotTeamOffice() {
       return <any>localStorage.getItem("selected_teamId") != 5 ? true : false;
    }
 }
