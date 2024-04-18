@@ -371,8 +371,9 @@ export class BillingClaimsComponent {
   hideRecreateButton: boolean = false;
   selectedServiceCodesExist: boolean = false;
   emailUrl: any = '';
-  hideSideBarDom:boolean=false;
+  hideSideBarDom: boolean = false;
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
+  isLoggedInAdmin: boolean = false;
 
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -386,12 +387,14 @@ export class BillingClaimsComponent {
   ngOnInit(): void {
     this.smilePoint = Utils.isSmilePoint();
     this.selectedTeam = Utils.selectedTeam();
+    this.isLoggedInAdmin = Utils.checkAdminLoginRole();
     this.clientName = localStorage.getItem("selected_clientName");
     this.route.paramMap.subscribe(params => {
       this.claimUUid = params.get('uuid') || '';
-      this.fetchClaimRights(this.claimUUid);
+      if (!this.isLoggedInAdmin) this.fetchClaimRights(this.claimUUid);
     });
     this.emailUrl = window.location.href;
+
   }
 
   fetchClaimRights(uuid: string) {
@@ -2923,21 +2926,21 @@ export class BillingClaimsComponent {
       });
   }
 
-   filterConsecutiveDuplicates(data:any) {
+  filterConsecutiveDuplicates(data: any) {
     if (data.length === 0) return data;
     const filteredData = [data[0]];
     for (let i = 1; i < data.length; i++) {
-        const prev = filteredData[filteredData.length - 1];
-        const current = data[i];
-        if (prev.status === current.status && prev.name === current.name) {
-            continue;
-        } else {
-            filteredData.push(current);
-        }
+      const prev = filteredData[filteredData.length - 1];
+      const current = data[i];
+      if (prev.status === current.status && prev.name === current.name) {
+        continue;
+      } else {
+        filteredData.push(current);
+      }
     }
 
     return filteredData;
-}
+  }
 
   saveInsuranceFollowUpInfo(isFinal: boolean) {
     //if (this.validate_SERVICE_LEVEL_INFORMATION()) {
@@ -3546,13 +3549,13 @@ export class BillingClaimsComponent {
     else return true;
   }
 
-  hideSideBar(){
+  hideSideBar() {
     this.toggleSideBar = !this.toggleSideBar;
-    if(!this.toggleSideBar){
+    if (!this.toggleSideBar) {
       this.hideSideBarDom = false;
     }
     setTimeout(() => {
-      if(this.toggleSideBar){
+      if (this.toggleSideBar) {
         this.hideSideBarDom = true;
       }
     }, 100);
