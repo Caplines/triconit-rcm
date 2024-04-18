@@ -1,7 +1,7 @@
 <!-- <button type="button" class="btn btn-primary attached" style="width: auto;" (click)="openModal()" *ngIf="!inputConfig['isDetailPage']"
     id="attach{{inputConfig.claimUuid}}">{{totalFile>0 ? (totalFile==1?'1 File Attached' :totalFile+" Files Attached") : inputConfig.attachmentCount>0 ?
     (inputConfig.attachmentCount==1 ?'1 File Attached' :inputConfig.attachmentCount+" Files Attached" ): 'Attach'}}</button> -->
-<div style="display: flex; white-space: nowrap;">
+<div style="display: flex; white-space: nowrap;" *ngIf="!this.inputConfig['isDetailPage']">
     <img src="../../assets/img/attach_file.png" title="Attach files"  style="width: auto; cursor: pointer;" (click)="openModal()" *ngIf="!inputConfig['isDetailPage']" id="attach{{inputConfig.claimUuid}}"/>
     {{ totalFile > 0 ? (totalFile == 1 ? '1 File' : totalFile + ' Files') : inputConfig.attachmentCount > 0 ? (inputConfig.attachmentCount == 1 ? '1 File' : inputConfig.attachmentCount + ' Files') : ''}}
 </div>

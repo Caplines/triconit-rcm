@@ -86,9 +86,11 @@ public class AttachmentServiceImpl {
 				return ClaimAttachmentsResponseDto.builder().message(MessageConstants.CLAIM_NOT_EXIST).status(false)
 						.build();
 			}
-			if (!rcmClaims.isPending()) {
-				return ClaimAttachmentsResponseDto.builder().message(MessageConstants.CLAIM_ALREADY_SUBMITTED).status(false).build();
-			}
+			
+			/*This section is considering for new,so no need to check pending status*/
+//			if (!rcmClaims.isPending()) {
+//				return ClaimAttachmentsResponseDto.builder().message(MessageConstants.CLAIM_ALREADY_SUBMITTED).status(false).build();
+//			}
 			try {
 				in = file.getInputStream();
 				attachmentType = attachmentTypeRepo.findById(attachmentTypeId);
@@ -183,10 +185,11 @@ public class AttachmentServiceImpl {
 			response = FileResponseDto.builder().message(MessageConstants.CLAIM_NOT_EXIST).fileResponseStatus(false).build();
 			return response;
 		}
-		if (!claims.isPending()) {
-			response = FileResponseDto.builder().message(MessageConstants.CLAIM_ALREADY_SUBMITTED).fileResponseStatus(false).build();
-			return response;
-		}
+		/*This section is considering for new,so no need to check pending status*/
+//		if (!claims.isPending()) {
+//			response = FileResponseDto.builder().message(MessageConstants.CLAIM_ALREADY_SUBMITTED).fileResponseStatus(false).build();
+//			return response;
+//		}
 		List<RcmClaimAttachmentDto> data = attachmentRepo.findByAttachmentsById(dto.getClaimAttachmentId(),claims.getClaimUuid());
 		if (!data.isEmpty()) {
 			for (RcmClaimAttachmentDto d : data) {

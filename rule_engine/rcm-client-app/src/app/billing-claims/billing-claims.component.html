@@ -405,9 +405,19 @@
                                         </div>
                                     </div>
                                 </div>
-                                <ng-container *ngIf="attachmentConfig['showAttachment']">
+                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['ATTACHMENT']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="ATTACHMENT" class="text-danger">
+                                            Attachments (Access to this section of the RCM Tool is restricted for you)
+                                        </a>
+                                        <div class="down-icon" (click)="showHide('ATTACHMENT')">
+                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['ATTACHMENT']}"></a>
+                                        </div>
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['attachment']}">
-                                        <a data-toggle="collapse" aria-expanded="false">Attachments</a>
+                                        <a data-toggle="collapse" aria-expanded="false">Attachments <span *ngIf="!(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit'))" class="text-danger"> (Access to this section of the RCM Tool is restricted for you)</span></a>
                                         <div class="down-icon" (click)="showHide('attachment')">
                                             <a href="javascript:void(0)"
                                                 [ngClass]="{'close':toggleTab['attachment']}"></a>
@@ -416,9 +426,11 @@
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                     <div *ngIf="!loader.linkToRelatedDoc" class="collapse" id="attachment-files"
                                         [ngClass]="{'show':!toggleTab['attachment']}">
+                                        <ng-container *ngIf="(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)">
                                         <app-attach-file
                                             [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit && (isBilling || isInternalAudit)}"
                                             (emitToParent)="receiveChildEvent($event)"></app-attach-file>
+                                        </ng-container>
                                     </div>
                                 </ng-container>
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['additionalRebilled']}">
