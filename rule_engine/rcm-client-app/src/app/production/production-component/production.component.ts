@@ -48,19 +48,22 @@ export class ProductionComponent implements OnInit {
       this.loader.fetch = false;
       this.fetchbtnDisable=false;
    this.productionData = callback.data;
+    
    if( this.productionData.length==0){
     this.loader.showLoader = true;
     this.isDataAvailable= true;
    }
-   this.productionData.forEach((x:any) =>{
-            Object.entries(x).forEach(([key, value])=>{
-             if(key=='total')
-                this.total=this.total+value;            
-             if(key=='days')
-              this.days=this.days+value;           
-            })
-            
-   });
+      let count = 0;
+      this.productionData.forEach((x: any) => {
+        this.total = this.total + x.total;
+        if (x.days == '0') {
+          count++;
+        }else{
+        this.days = this.days + x.days;
+        }
+      });
+      this.days = this.days / (this.productionData.length - count);          //calucating average
+      
    if(this.productionData.length >0 ){
     this.sortAvgDays();
   }
