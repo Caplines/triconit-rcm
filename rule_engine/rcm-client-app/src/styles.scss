@@ -1034,7 +1034,7 @@ width: 24px;
     .tooltiptext {
         visibility: visible;
         opacity: 1;
-        background-color: #eee;
+        background-color: #efefef;
         color: #000;
         text-align: center;
         border-radius: 4px;
@@ -1043,12 +1043,12 @@ width: 24px;
         top: 110%;
         left: 50%;
         font-size: 14px;
-        font-family: "Lato", sans-serif;
+        font-family: "Open Sans", sans-serif;
         transition: opacity 0.3s;
         z-index: 11;
         padding-right: 25px;
-        width: 200px;
-        margin-left: -100px;
+        width: 216px;
+        margin-left: -108px;
  
         &:after {
             content: "";
@@ -1071,7 +1071,7 @@ z-index: 10;
 width: 100vw;
 height: 100vh;
 background-color: #000;
-opacity: .5;
+opacity: 0.75;
 }
 
 .tooltip-cross-btn{
