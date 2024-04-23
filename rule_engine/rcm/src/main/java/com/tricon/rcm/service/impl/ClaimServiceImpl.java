@@ -84,6 +84,8 @@ import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PendencyDataCountDto;
 import com.tricon.rcm.dto.PendencyKeyValDto;
 import com.tricon.rcm.dto.PendencyWithOfficeOnlyDto;
+import com.tricon.rcm.dto.ProductionAgeWiseDto;
+import com.tricon.rcm.dto.ProductionCurrentStatusWiseDto;
 import com.tricon.rcm.dto.ProivderHelpingSheetDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
@@ -121,6 +123,7 @@ import com.tricon.rcm.dto.customquery.IVFDto;
 import com.tricon.rcm.dto.customquery.IssueClaimDto;
 import com.tricon.rcm.dto.customquery.LinkedClaimDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
+import com.tricon.rcm.dto.customquery.ProductionForAging;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.RcmClaimNoteDto;
 import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
@@ -3084,7 +3087,7 @@ public class ClaimServiceImpl {
 		return data;
 	}
 
-	public List<ProductionDto> claimsProductionReportByTeam(ClaimProductionLogDto dto,PartialHeader partialHeader) {
+	public List<?> claimsProductionReportByTeam(ClaimProductionLogDto dto,PartialHeader partialHeader) {
 
 		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
 		if (partialHeader.getTeamId() == RcmTeamEnum.BILLING.getId() ) {
@@ -3103,7 +3106,95 @@ public class ClaimServiceImpl {
 					return rcmClaimRepository.claimProductionForInternalAudit(companies, partialHeader.getTeamId(), dto.getStartDate(),
 					dto.getEndDate());
 			}
-		}else  {
+		}
+		
+		else if (partialHeader.getTeamId() == RcmTeamEnum.PAYMENT_POSTING.getId()) {
+			List<ProductionForAging> agingData = null;
+			List<ProductionAgeWiseDto> listOfAgeWiseData = new ArrayList<>();
+			List<ProductionCurrentStatusWiseDto> currentStatusData = null;
+			List<ProductionCurrentStatusWiseDto> listOfCurrentStatusData = new ArrayList<>();
+			List<RcmOfficeDto> offices = officeRepo.findByCompany(partialHeader.getCompany());
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				agingData = rcmClaimRepository.claimProductionForAgingAssoicate(partialHeader.getTeamId(),
+						dto.getStartDate(), dto.getEndDate(), partialHeader.getJwtUser().getUuid());
+
+			} else {
+				agingData = rcmClaimRepository.claimProductionForAging(partialHeader.getTeamId(), dto.getStartDate(),
+						dto.getEndDate());
+			}
+
+			// ageWise
+			for (RcmOfficeDto off : offices) {
+				ProductionAgeWiseDto agingDto = new ProductionAgeWiseDto(off.getName(), 0, 0, 0, 0);
+				listOfAgeWiseData.add(agingDto);
+			}
+
+			for (ProductionAgeWiseDto pd : listOfAgeWiseData) {
+				List<ProductionForAging> filterAge = agingData.stream()
+						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
+				for (ProductionForAging age : filterAge) {
+					if (age.getClaimAge() <= 30) {
+						pd.setCountForAgeRange1(pd.getCountForAgeRange1() + 1);
+					} else if (age.getClaimAge() > 31 && age.getClaimAge() <= 60) {
+						pd.setCountForAgeRange2(pd.getCountForAgeRange2() + 1);
+					} else if (age.getClaimAge() > 61 && age.getClaimAge() <= 90) {
+						pd.setCountForAgeRange3(pd.getCountForAgeRange3() + 1);
+					} else {
+						pd.setCountForAgeRange4(pd.getCountForAgeRange4() + 1);
+					}
+				}
+			}
+
+			// status wise
+			for (RcmOfficeDto off : offices) {
+				ProductionCurrentStatusWiseDto currentStausDto = new ProductionCurrentStatusWiseDto(off.getName(), 0, 0,
+						0, 0, 0, 0, 0, 0, 0);
+				listOfCurrentStatusData.add(currentStausDto);
+			}
+
+			for (ProductionCurrentStatusWiseDto pd : listOfCurrentStatusData) {
+				List<ProductionForAging> filterStatus = agingData.stream()
+						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
+				for (ProductionForAging status : filterStatus) {
+					if (status.getCurrentClaimStatus() == ClaimStatusEnum.Pending_For_Review.getId()) {
+						pd.setPendingForReviewCount(pd.getPendingForReviewCount());
+					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Pending_For_Billing.getId()) {
+						pd.setPendingForBillingCount(pd.getPendingForBillingCount() + 1);
+					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Billed.getId()) {
+						pd.setBilledCount(pd.getBilledCount() + 1);
+					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.IN_PROCESS.getId()) {
+						pd.setBilledCount(pd.getBilledCount() + 1);
+					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Closed.getId()) {
+						pd.setClosedCount(pd.getClosedCount() + 1);
+					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Voided.getId()) {
+						pd.setVoidedCount(pd.getVoidedCount() + 1);
+					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.ReBilling.getId()) {
+						pd.setReBillingCount(pd.getReBillingCount() + 1);
+					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Reviewed.getId()) {
+						pd.setReviewedCount(pd.getReviewedCount() + 1);
+					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Submitted.getId()) {
+						pd.setSubmittedCount(pd.getSubmittedCount() + 1);
+					}
+				}
+			}
+			return listOfAgeWiseData;
+		}
+
+		else if (partialHeader.getTeamId() == RcmTeamEnum.LC3.getId()
+				|| partialHeader.getTeamId() == RcmTeamEnum.MEDICAID_IV.getId()
+				|| partialHeader.getTeamId() == RcmTeamEnum.OFFICE.getId()
+				|| partialHeader.getTeamId() == RcmTeamEnum.ORTHO.getId()
+				|| partialHeader.getTeamId() == RcmTeamEnum.PPO_IV.getId()
+				|| partialHeader.getTeamId() == RcmTeamEnum.CREDENTIALING.getId()) {
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				return rcmClaimRepository.claimProductionForAssignToOtherTeamsAssoicate(partialHeader.getTeamId(),
+						dto.getStartDate(), dto.getEndDate(), partialHeader.getJwtUser().getUuid());
+			} else {
+				return rcmClaimRepository.claimProductionForAssignToOtherTeams(partialHeader.getTeamId(),
+						dto.getStartDate(), dto.getEndDate());
+			}
+		}
+		else  {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				return rcmClaimRepository.claimProductionForOtherTeamAssoicate(companies, partialHeader.getTeamId(), dto.getStartDate(),
 						dto.getEndDate(),partialHeader.getJwtUser().getUuid());

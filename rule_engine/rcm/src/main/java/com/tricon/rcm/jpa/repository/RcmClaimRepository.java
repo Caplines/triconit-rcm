@@ -19,6 +19,7 @@ import com.tricon.rcm.dto.customquery.IVFDto;
 import com.tricon.rcm.dto.customquery.IssueClaimDto;
 import com.tricon.rcm.dto.customquery.PendingClaimToReAssignDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
+import com.tricon.rcm.dto.customquery.ProductionForAging;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.util.Constants;
@@ -788,5 +789,64 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<RcmClaimDataDto> getClaimsDataByClaimId(@Param("claimId") String claimId);
 	*/
 	
+	@Query(nativeQuery = true, value = "SELECT claims.current_status "
+			+ "as currentClaimStatus,claims.claim_uuid as claimid,off.uuid as officeUuid,off.name as officeName,"
+			+ "case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge FROM rcm_user us "
+			+ "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
+			+ "inner join  office off on off.uuid=uoff.office_id "
+			+ "left join rcm_claims claims on claims.office_id=off.uuid "
+			+ "inner join rcm_insurance_follow_up_section ifd on ifd.claim_uuid=claims.claim_uuid "
+			+ "where uoff.team_id =:teamId and ifd.team_id=:teamId and ifd.final_submit=true and "
+			+ "CAST(ifd.created_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d') "
+			+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') and " + "claims.current_state="
+			+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " group by off.uuid,claims.claim_uuid")
+	List<ProductionForAging> claimProductionForAging(@Param("teamId") int teamId, @Param("startDate") String stDate,
+			@Param("endDate") String endDate);
+
+	@Query(nativeQuery = true, value = " SELECT claims.current_status "
+			+ "as currentClaimStatus,claims.claim_uuid as claimid,off.uuid,off.name as officeName, "
+			+ "case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge FROM rcm_user us "
+			+ "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
+			+ "inner join  office off on off.uuid=uoff.office_id "
+			+ "left join rcm_claims claims on claims.office_id=off.uuid "
+			+ "inner join rcm_insurance_follow_up_section ifd on ifd.claim_uuid=claims.claim_uuid "
+			+ "where uoff.team_id =:teamId and ifd.team_id=:teamId and ifd.final_submit=true and "
+			+ "CAST(ifd.created_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d') "
+			+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') and claims.current_state="
+			+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " and uoff.user_id=:userId "
+			+ "group by off.uuid,claims.claim_uuid")
+	List<ProductionForAging> claimProductionForAgingAssoicate(@Param("teamId") int teamId, @Param("startDate") String stDate,
+			@Param("endDate") String endDate, @Param("userId") String userId);
 	
+	@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+			+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName "
+			+ "FROM rcm_user us "
+			+ "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
+			+ "inner join office off on off.uuid=uoff.office_id "
+			+ "left join rcm_claims claims on claims.office_id=off.uuid "
+			+ "inner join rcm_claim_assignment assign on assign.claim_id=claims.claim_uuid "
+			+ "inner join company comp on comp.uuid=off.company_id "
+			+ "where uoff.team_id = :teamId  and assign.active=false and assign.current_team_id=:teamId "
+			+ "and claims.current_team_id<>:teamId and "
+			+ "CAST(assign.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d') "
+			+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') and "
+			+ "claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED +" group by us.uuid,comp.name")
+	 List<ProductionDto> claimProductionForAssignToOtherTeams(@Param("teamId") int teamId, @Param("startDate") String stDate,
+			@Param("endDate") String endDate);
+
+	@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days,"
+			+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName "
+			+ "FROM rcm_user us "
+			+ "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
+			+ "inner join office off on off.uuid=uoff.office_id "
+			+ "left join rcm_claims claims on claims.office_id=off.uuid "
+			+ "inner join rcm_claim_assignment assign on assign.claim_id=claims.claim_uuid "
+			+ "inner join company comp on comp.uuid=off.company_id "
+			+ "where uoff.team_id = :teamId  and assign.active=false and assign.current_team_id=:teamId "
+			+ "and claims.current_team_id<>:teamId and "
+			+ "CAST(assign.updated_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d') "
+			+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') and "
+			+ "claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED +" and uoff.user_id=:userId group by us.uuid,comp.name")
+	 List<ProductionDto> claimProductionForAssignToOtherTeamsAssoicate(@Param("teamId") int teamId, @Param("startDate") String stDate,
+			@Param("endDate") String endDate, @Param("userId") String userId);
 }
