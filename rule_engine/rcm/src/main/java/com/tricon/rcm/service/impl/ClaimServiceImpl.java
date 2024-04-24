@@ -86,6 +86,7 @@ import com.tricon.rcm.dto.PendencyKeyValDto;
 import com.tricon.rcm.dto.PendencyWithOfficeOnlyDto;
 import com.tricon.rcm.dto.ProductionAgeWiseDto;
 import com.tricon.rcm.dto.ProductionCurrentStatusWiseDto;
+import com.tricon.rcm.dto.ProductionDtoFrorAging;
 import com.tricon.rcm.dto.ProivderHelpingSheetDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
@@ -3108,11 +3109,11 @@ public class ClaimServiceImpl {
 			}
 		}
 		
-		else if (partialHeader.getTeamId() == RcmTeamEnum.PAYMENT_POSTING.getId()) {
+		else if (partialHeader.getTeamId() == RcmTeamEnum.AGING.getId()) {
+			ProductionDtoFrorAging data=new ProductionDtoFrorAging();
 			List<ProductionForAging> agingData = null;
 			List<ProductionAgeWiseDto> listOfAgeWiseData = new ArrayList<>();
-			List<ProductionCurrentStatusWiseDto> currentStatusData = null;
-			List<ProductionCurrentStatusWiseDto> listOfCurrentStatusData = new ArrayList<>();
+			List<ProductionCurrentStatusWiseDto> listOfCurrentStatusWiseData = new ArrayList<>();
 			List<RcmOfficeDto> offices = officeRepo.findByCompany(partialHeader.getCompany());
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				agingData = rcmClaimRepository.claimProductionForAgingAssoicate(partialHeader.getTeamId(),
@@ -3149,10 +3150,10 @@ public class ClaimServiceImpl {
 			for (RcmOfficeDto off : offices) {
 				ProductionCurrentStatusWiseDto currentStausDto = new ProductionCurrentStatusWiseDto(off.getName(), 0, 0,
 						0, 0, 0, 0, 0, 0, 0);
-				listOfCurrentStatusData.add(currentStausDto);
+				 listOfCurrentStatusWiseData.add(currentStausDto);
 			}
 
-			for (ProductionCurrentStatusWiseDto pd : listOfCurrentStatusData) {
+			for (ProductionCurrentStatusWiseDto pd : listOfCurrentStatusWiseData) {
 				List<ProductionForAging> filterStatus = agingData.stream()
 						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
 				for (ProductionForAging status : filterStatus) {
@@ -3177,7 +3178,9 @@ public class ClaimServiceImpl {
 					}
 				}
 			}
-			return listOfAgeWiseData;
+			data.setListOfAgeWiseData(listOfAgeWiseData);
+			data.setListOfCurrentStatusWiseData(listOfCurrentStatusWiseData);
+			return Arrays.asList(data);
 		}
 
 		else if (partialHeader.getTeamId() == RcmTeamEnum.LC3.getId()
