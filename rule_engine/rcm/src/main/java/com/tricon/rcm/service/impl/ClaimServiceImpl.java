@@ -3126,7 +3126,7 @@ public class ClaimServiceImpl {
 
 			// ageWise
 			for (RcmOfficeDto off : offices) {
-				ProductionAgeWiseDto agingDto = new ProductionAgeWiseDto(off.getName(), 0, 0, 0, 0);
+				ProductionAgeWiseDto agingDto = new ProductionAgeWiseDto(off.getName(),"-", 0, 0, 0, 0);
 				listOfAgeWiseData.add(agingDto);
 			}
 
@@ -3134,6 +3134,7 @@ public class ClaimServiceImpl {
 				List<ProductionForAging> filterAge = agingData.stream()
 						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
 				for (ProductionForAging age : filterAge) {
+					pd.setAssociateName(age.getFName());
 					if (age.getClaimAge() <= 30) {
 						pd.setCountForAgeRange1(pd.getCountForAgeRange1() + 1);
 					} else if (age.getClaimAge() > 31 && age.getClaimAge() <= 60) {
@@ -3148,7 +3149,7 @@ public class ClaimServiceImpl {
 
 			// status wise
 			for (RcmOfficeDto off : offices) {
-				ProductionCurrentStatusWiseDto currentStausDto = new ProductionCurrentStatusWiseDto(off.getName(), 0, 0,
+				ProductionCurrentStatusWiseDto currentStausDto = new ProductionCurrentStatusWiseDto(off.getName(),"-", 0, 0,
 						0, 0, 0, 0, 0, 0, 0);
 				 listOfCurrentStatusWiseData.add(currentStausDto);
 			}
@@ -3157,6 +3158,7 @@ public class ClaimServiceImpl {
 				List<ProductionForAging> filterStatus = agingData.stream()
 						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
 				for (ProductionForAging status : filterStatus) {
+					pd.setAssociateName(status.getFName());
 					if (status.getCurrentClaimStatus() == ClaimStatusEnum.Pending_For_Review.getId()) {
 						pd.setPendingForReviewCount(pd.getPendingForReviewCount());
 					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Pending_For_Billing.getId()) {

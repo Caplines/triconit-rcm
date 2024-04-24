@@ -6,6 +6,7 @@ import lombok.Data;
 public class ProductionCurrentStatusWiseDto {
 
 	private String officeName;
+	private String associateName;
 	private int pendingForReviewCount;
 	private int PendingForBillingCount;
 	private int billedCount;
@@ -15,11 +16,12 @@ public class ProductionCurrentStatusWiseDto {
 	private int reBillingCount;
 	private int ReviewedCount;
 	private int submittedCount;
-	public ProductionCurrentStatusWiseDto(String officeName, int pendingForReviewCount, int pendingForBillingCount,
+	public ProductionCurrentStatusWiseDto(String officeName,String associateName, int pendingForReviewCount, int pendingForBillingCount,
 			int billedCount, int currentStatus4Count, int closedCount, int voidedCount, int reBillingCount,
 			int reviewedCount, int submittedCount) {
 		super();
 		this.officeName = officeName;
+		this.associateName = associateName;
 		this.pendingForReviewCount = pendingForReviewCount;
 		PendingForBillingCount = pendingForBillingCount;
 		this.billedCount = billedCount;

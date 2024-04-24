@@ -9,4 +9,8 @@ public interface ProductionForAging {
 	String getOfficeName();
 
 	int getClaimAge();
+	
+	String getFName();
+	
+	String getLName();
 }

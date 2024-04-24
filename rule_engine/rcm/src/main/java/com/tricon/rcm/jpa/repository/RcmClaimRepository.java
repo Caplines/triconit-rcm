@@ -791,6 +791,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	@Query(nativeQuery = true, value = "SELECT claims.current_status "
 			+ "as currentClaimStatus,claims.claim_uuid as claimid,off.uuid as officeUuid,off.name as officeName,"
+			+ "us.first_name as fName,us.last_name as lName,"
 			+ "case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge FROM rcm_user us "
 			+ "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
 			+ "inner join  office off on off.uuid=uoff.office_id "
