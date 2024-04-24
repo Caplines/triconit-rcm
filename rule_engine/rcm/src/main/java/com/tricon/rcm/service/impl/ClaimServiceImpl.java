@@ -133,6 +133,8 @@ import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmResponseMessageDto;
 import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
+import com.tricon.rcm.dto.ReconciliationDto;
+import com.tricon.rcm.dto.ReconciliationResponseDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.RuleRemarkDto;
 import com.tricon.rcm.dto.SearchParamDto;
@@ -5306,4 +5308,12 @@ public class ClaimServiceImpl {
 //
 //		return listView;
 //	}
+    
+		public List<ReconciliationResponseDto> fetchReconciliationData(ReconciliationDto dto,
+				PartialHeader partialHeader) {
+			ReconciliationResponseDto data = new ReconciliationResponseDto();
+			List<ReconciliationResponseDto> dataList = new ArrayList<ReconciliationResponseDto>();
+			dataList.add(data);
+			return dataList;
+		}
 }

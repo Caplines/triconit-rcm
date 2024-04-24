@@ -43,7 +43,8 @@ public enum ClaimStatusEnum {
 	Claim_Assign_TO_TL(39,"Claim Assigned to TL"),
 	Reviewed(36, "Reviewed"),
 	Submitted(37,"Submitted"),
-	IN_PROCESS(38,"In Process");
+	IN_PROCESS(38,"In Process"),
+	POSTED(40,"Posted");
 	
 	
 	final private int id;

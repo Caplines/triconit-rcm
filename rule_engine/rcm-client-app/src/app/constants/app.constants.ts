@@ -267,6 +267,7 @@ export class AppConstants {
         { name: "Voided" },
         { name: "Re-billing" },
         { name: "Reviewed" },
+        { name: "Posted" },
         { name: "Submitted" }
     ];
 

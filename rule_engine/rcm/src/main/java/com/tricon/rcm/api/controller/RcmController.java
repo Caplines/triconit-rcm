@@ -37,6 +37,8 @@ import com.tricon.rcm.dto.RcmIVfDto;
 import com.tricon.rcm.dto.RcmIssuClaimPaginationDto;
 import com.tricon.rcm.dto.RcmResponseMessageDto;
 import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
+import com.tricon.rcm.dto.ReconciliationDto;
+import com.tricon.rcm.dto.ReconciliationResponseDto;
 import com.tricon.rcm.dto.SearchParamDto;
 import com.tricon.rcm.dto.UnArchiveClaimDto;
 import com.tricon.rcm.dto.UnArchivedResponseDto;
@@ -953,5 +955,23 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
+	
+	@PostMapping(value = "api/reconciliation")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> reconcillationData(@RequestBody ReconciliationDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		List<ReconciliationResponseDto> response = null;
+		try {
+			response = claimServiceImpl.fetchReconciliationData(dto,partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 	
 }

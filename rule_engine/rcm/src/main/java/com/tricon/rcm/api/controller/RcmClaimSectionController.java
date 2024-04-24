@@ -481,23 +481,5 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
-	
-	@GetMapping(value = "api/reconciliation")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
-	public ResponseEntity<?> reconcillationData(Model model) {
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if (partialHeader == null)
-			return ResponseEntity.badRequest()
-					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		List<ReconciliationResponseDto> response = null;
-		try {
-			response = claimSection.fetchReconcillationData(partialHeader);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
 
 }
