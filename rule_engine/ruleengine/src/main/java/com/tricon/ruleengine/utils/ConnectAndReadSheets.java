@@ -59,6 +59,8 @@ import com.tricon.ruleengine.dto.scrapping.FullWebsiteScrapDto;
 import com.tricon.ruleengine.dto.scrapping.HistoryDto;
 import com.tricon.ruleengine.dto.scrapping.RosterDetails;
 import com.tricon.ruleengine.model.db.PatientTemp;
+import com.tricon.ruleengine.model.sheet.AdultMedicaidInsurance;
+import com.tricon.ruleengine.model.sheet.AdultMedicaidOffice;
 import com.tricon.ruleengine.model.sheet.CRAReqMappingDto;
 import com.tricon.ruleengine.model.sheet.FullWebsiteDataParsingSheet;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
@@ -1910,7 +1912,52 @@ public class ConnectAndReadSheets {
 			
 		}
 		return list;
-	  }
+    }
+	
+	//Adult Medicaid Limitation --https://docs.google.com/spreadsheets/d/1nh1chmA9ShZG6MpFw7biKfRGrZ_GInmGeGVQ3vadUO0/edit#gid=1884043642
+	public static Map<String,List<Object>> readSheetAdultMedicaidLimitation(String spreadsheetId, String sheetName,
+			String clientDir, String clientFolder) throws IOException {
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+				.setApplicationName(APPLICATION_NAME).build();
+		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		List<List<Object>> values = response.getValues();
+		ListIterator li = values.listIterator();
+		AdultMedicaidOffice office = null;
+		AdultMedicaidInsurance insurance =null;
+		List<Object> officeList = new ArrayList<>();
+		List<Object> insuranceList = new ArrayList<>();
+		int heading_rows = 0;
+        int ct=-1;
+		while (li.hasNext()) {
+			ArrayList<String> obj = (ArrayList<String>) li.next();
+			try {
+				ct++;
+				office=null;
+				insurance=null;
+				if (ct<=heading_rows)
+				continue;
+				int x = -1;
+				office = new AdultMedicaidOffice(obj.get(++x));
+				x++;
+				try {
+				insurance = new AdultMedicaidInsurance(obj.get(++x));
+				}catch(Exception c) {
+					
+				}
+				System.out.println();	
+				if (office!=null && !office.getName().equals("")) officeList.add(office);
+				if (insurance!=null && !insurance.getName().equals("")) insuranceList.add(insurance);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				continue;
+			}
+			
+		}
+		Map<String,List<Object>> map = new HashMap<>();
+		map.put(Constants.SHEET_OFFICE_ADULT_MEDICAID_Sub_PLANS_KEY, officeList) ;
+		map.put(Constants.SHEET_ADULT_MEDICAID_Sub_PLANS_KEY, insuranceList) ;
+		return map;
+	}
 	
 	public static List<OrthoOfficeMappingDto> readSheetOrthoMapping(String spreadsheetId, String sheetName,
 			String clientDir, String clientFolder) throws IOException {

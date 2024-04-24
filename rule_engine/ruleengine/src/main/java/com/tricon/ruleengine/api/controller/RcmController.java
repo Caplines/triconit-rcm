@@ -76,6 +76,12 @@ public class RcmController {
 	RcmEnv rcmEnvInsurance = null;
 	
 	RcmEnv rcmEnvAppointment = null;
+	
+	RcmEnv rcmReconCillationPrimaryUnbilled = null;
+	RcmEnv rcmReconCillationSecondaryUnbilled = null;
+	RcmEnv rcmReconCillationPrimaryOpen = null;
+	RcmEnv rcmReconCillationSecondaryOpen = null;
+	RcmEnv rcmReconCillationSecondaryUnsubmitted = null;
 
 	@Autowired
 	ScrappingFullDataService fullService;
@@ -108,6 +114,25 @@ public class RcmController {
 		
 		rcmEnvAppointment =new RcmEnv(env.getProperty("claim.appointment.query"),
 				env.getProperty("claim.appointment.query.count"), env.getProperty("claim.appointment.query.selectcolumns"),
+				env.getProperty("rmc.auth.token"));
+		
+		rcmReconCillationPrimaryUnbilled =new RcmEnv(env.getProperty("primary.unbilled.query"),
+				env.getProperty("primary.unbilled.count"), env.getProperty("primary.unbilled.selectcolumns"),
+				env.getProperty("rmc.auth.token"));
+		rcmReconCillationSecondaryUnbilled = new RcmEnv(env.getProperty("secondary.unbilled.query"),
+				env.getProperty("secondary.unbilled.count"), env.getProperty("secondary.unbilled.selectcolumns"),
+				env.getProperty("rmc.auth.token"));
+		
+		rcmReconCillationPrimaryOpen = new RcmEnv(env.getProperty("primary.open.query="),
+				env.getProperty("primary.open.count"), env.getProperty("primary.open.selectcolumns"),
+				env.getProperty("rmc.auth.token"));
+		
+		rcmReconCillationSecondaryOpen = new RcmEnv(env.getProperty("secondary.open.query"),
+				env.getProperty("secondary.open.count"), env.getProperty("secondary.open.selectcolumns"),
+				env.getProperty("rmc.auth.token"));
+		
+		rcmReconCillationSecondaryUnsubmitted = new RcmEnv(env.getProperty("secondary.unsubmitted.query"),
+				env.getProperty("secondary.unsubmitted.count"), env.getProperty("secondary.unsubmitted.selectcolumns"),
 				env.getProperty("rmc.auth.token"));
 	
 	}
@@ -330,6 +355,86 @@ public class RcmController {
 			
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Appointment Date Data Fetched Successfully", rootDto));
+	}
+	
+	@RequestMapping(value = "/reconcillation-query", method = RequestMethod.GET)
+	public ResponseEntity<?> reconcillationtData(@RequestHeader("x-api-key") String apiKey,
+			@RequestParam(value = "office", required = true) String officeUuid,
+			@RequestParam(value = "password", required = true) String password,
+			@RequestParam(value = "type", required = true) String type)
+			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+
+		String ids = null;
+		// Office office = null;
+		RuleEngineLogger.generateLogs(clazz, "ENTER reconcillation Query From RCM" + new Date(), " INFO", null);
+
+		if (!checkForKey(apiKey)) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created Successfully", "Key Error"));
+		}
+		String queryReplace =null;
+		String columns = null;
+		int count = 0;
+		if (type.equals("PrimaryUnbilled")) {
+			queryReplace = rcmReconCillationPrimaryUnbilled.getQuery();
+			columns = rcmReconCillationPrimaryUnbilled.getQuerySelectcolumns();
+			count = Integer.parseInt(rcmReconCillationPrimaryUnbilled.getQueryCount());
+		}
+		else if (type.equals("SecondaryUnbilled")) {
+			queryReplace = rcmReconCillationSecondaryUnbilled.getQuery();
+			columns = rcmReconCillationSecondaryUnbilled.getQuerySelectcolumns();
+			count = Integer.parseInt(rcmReconCillationSecondaryUnbilled.getQueryCount());
+		}
+		else if (type.equals("PrimaryOpen")) {
+			queryReplace = rcmReconCillationPrimaryOpen.getQuery();
+			columns = rcmReconCillationPrimaryOpen.getQuerySelectcolumns();
+			count = Integer.parseInt(rcmReconCillationPrimaryOpen.getQueryCount());
+		}
+		else if (type.equals("SecondaryOpen")) {
+			queryReplace = rcmReconCillationSecondaryOpen.getQuery();
+			columns = rcmReconCillationSecondaryOpen.getQuerySelectcolumns();
+			count = Integer.parseInt(rcmReconCillationSecondaryOpen.getQueryCount());
+		}
+		else if (type.equals("SecondaryUnsubmitted")) {
+			queryReplace = rcmReconCillationSecondaryUnsubmitted.getQuery();
+			columns = rcmReconCillationSecondaryUnsubmitted.getQuerySelectcolumns();
+			count = Integer.parseInt(rcmReconCillationSecondaryUnsubmitted.getQueryCount());
+		}
+		if (queryReplace == null ) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created Successfully", "Query Type Error"));
+		}
+		
+		RcmClaimDataDto dd = null;
+		RcmClaimRootDto rootDto = new RcmClaimRootDto();
+		ArrayList<RcmClaimDataDto> datas = new ArrayList<>();
+
+		rootDto.setDatas(datas);
+		rootDto.setMessage("reconcillationtData Data Fetch Successfully");
+		if (officeUuid != null) {
+			Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+			Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+			String officeName = "";
+			if (offices.isPresent() && offices.get() != null) {
+				officeName = offices.get().stream().filter(n -> n.getUuid().equals(officeUuid)).findFirst().get()
+						.getName();
+
+			}
+			
+			
+			
+			//queryReplace=queryReplace.replaceAll("DATE1", startDate);
+			//queryReplace=queryReplace.replace("PAT_ID", patientId);
+			GenericResponse data = (GenericResponse) googleReportsController
+					.fethESGoogleresponse(columns, queryReplace, ids,
+							count, password, officeName, null, null)
+					.getBody();
+			dd = new RcmClaimDataDto();
+			dd.setOfficeName(officeUuid);
+			dd.setData(data.getData());
+			datas.add(dd);
+		} else {
+			
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Reconcillation Data Fetched Successfully", rootDto));
 	}
 
 	@GetMapping("/diagnostic_check_for_rcm")

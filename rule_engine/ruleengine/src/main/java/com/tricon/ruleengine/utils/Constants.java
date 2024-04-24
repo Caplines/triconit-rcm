@@ -436,7 +436,10 @@ public class Constants {
 	public static final List<String> codesToCheckForDentureValidation1= Arrays.asList("IMP", "WXBITE", "TRYIN");
 	public static final List<String> codesToCheckForProviderCertStatus= Arrays.asList("D0145", "D9230", "D9248");
 	
-	
+	//Adult Medicaid Limitation
+	public static final String SHEET_OFFICE_ADULT_MEDICAID_Sub_PLANS_KEY="adult_sub_plan_office";
+	public static final String SHEET_ADULT_MEDICAID_Sub_PLANS_KEY="adult_sub_plan";
+			
 	public static final String RULE_TYPE_RULE_ENGINE="R";
 	public static final String RULE_TYPE_RCM="C";
 	public static final String RULE_TYPE_RULE_ENGINE_AND_RCM=RULE_TYPE_RULE_ENGINE+","+RULE_TYPE_RCM;
@@ -445,6 +448,6 @@ public class Constants {
 	
 	public static final String QUERY_FOR_RCMCALIM_1="QUERY_FOR_RCMCALIM_1";
 	public static final String QUERY_FOR_RCMCALIM_AUDITED="QUERY_FOR_RCMCALIM_AUDITED";
-	
+	public static final String QUERY_FOR_RCMCALIM_FROM_A_TO_B="QUERY_FOR_RCMCALIM_FROM_A_TO_B";
 	
 }

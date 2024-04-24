@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -33,6 +34,7 @@ import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GoogleReportsRDDTO;
+import com.tricon.ruleengine.dto.RCMQuerySubData;
 import com.tricon.ruleengine.dto.RcmClaimDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.exception.RuleEngineException;
@@ -901,6 +903,90 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	public Object searchRcmClaimData(RcmClaimDto d,Office office) throws Exception{
 		
 		List<Object> data=rcmClaimDao.getRcmClaimData(d, office);
+		
+		if (d.getQueryName().equals(Constants.QUERY_FOR_RCMCALIM_AUDITED)) {
+			if (data!=null && data.size()>0) {
+				
+				List<String> claim_ids=new ArrayList<>();
+				for(Object o:data) {
+					if (o!=null) {
+						Object [] a=(Object []) o;
+						claim_ids.add(a[5].toString());
+						
+					}
+				}
+				String cls=String.join("','", claim_ids);
+				
+				List<RCMQuerySubData> data1 = rcmClaimDao.getAuditQueryFieldsFromClaimData_1("'"+cls+"'");
+				List<RCMQuerySubData> data2 = rcmClaimDao.getAuditQueryFieldsFromClaimData_2("'"+cls+"'");
+				
+				for(Object o:data) {
+					if (o!=null) {
+						Object [] a=(Object []) o;
+						List<RCMQuerySubData> p1 =null;
+						if (data1!=null) {
+							p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Sedation Record Availibility")).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {
+						    	p1.forEach(x->{
+						    		if (a[6]==null) a[6]="";
+						    		if (a[6].toString().length()==0)
+						    		a[6]=a[6] + x.getService_code()+"="+x.getVal();
+						    		else a[6]=a[6] +";"+ x.getService_code()+"="+x.getVal();
+						    	});
+						    }
+						   p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Consent Form for Major Service")).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {
+						    	p1.forEach(x->{
+						    		if (a[7]==null) a[7]="";
+						    		if (a[7].toString().length()==0)
+						    		a[7]=a[7] + x.getService_code()+"="+x.getVal();
+						    		else a[7]=a[7] +";"+ x.getService_code()+"="+x.getVal();
+						    	});
+						    }
+						    p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Provider Notes")).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {
+						    	p1.forEach(x->{
+						    		if (a[8]==null) a[8]="";
+						    		if (a[8].toString().length()==0)
+						    		a[8]=a[8] + x.getService_code()+"="+x.getVal();
+						    		else a[8]=a[8] +";"+ x.getService_code()+"="+x.getVal();
+						    	});
+						    }
+						    p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("CRA Form Availability")).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {
+						    	p1.forEach(x->{
+						    		if (a[9]==null) a[9]="";
+						    		if (a[9].toString().length()==0)
+						    		a[9]=a[9] + x.getService_code()+"="+x.getVal();
+						    		else a[9]=a[9] +";"+ x.getService_code()+"="+x.getVal();
+						    	});
+						    }
+						}
+                        if (data2!=null) {
+                        	p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 319).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {
+						    	p1.forEach(x->{
+						    		if (a[10]==null) a[10]="";
+						    		if (a[10].toString().length()==0)
+						    		a[10]=a[10] + x.getMessage_type();
+						    		else a[10]=a[10] +";"+ x.getMessage_type();
+						    	});
+						    }
+						    p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 320).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {
+						    	p1.forEach(x->{
+						    		if (a[11]==null) a[11]="";
+						    		if (a[11].toString().length()==0)
+						    		a[11]=a[11] + x.getMessage_type();
+						    		else a[11]=a[11] +";"+ x.getMessage_type();
+						    	});
+						    }
+						}
+					}
+				}
+			}
+		}
+		
 		 if(!data.isEmpty()) {
 		 List<GoogleReportsRDDTO> beanList = new ArrayList<>();
 			GoogleReportsRDDTO dt= null;		
@@ -924,4 +1010,6 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			 return data;
 		 }
 	}
+	
+	
 }

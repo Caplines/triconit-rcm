@@ -646,7 +646,9 @@ public class CaplineIVFGoogleFormController {
             @RequestParam(value = "submited", required = false) boolean  submited,//QUERY_FOR_RCMCALIM_1
             @RequestParam(value = "queryName", required = true) String  queryName,
             @RequestParam(value = "dateCheckType", required = false) String  dateCheckType,
-            @RequestParam(value = "office", required = false) String office, HttpServletRequest request,
+            @RequestParam(value = "team1", required = false,defaultValue = "0") int  team1,
+            @RequestParam(value = "team2", required = false ,defaultValue = "0") int  team2,
+            @RequestParam(value = "office", required = true) String office, HttpServletRequest request,
 			HttpServletResponse response) {
 		//Example
 		/*
@@ -666,6 +668,8 @@ public class CaplineIVFGoogleFormController {
 		dto.setOffice(office);
 		dto.setQueryName(queryName);
 		dto.setDateCheckType(dateCheckType);
+		dto.setTeam1(team1);
+		dto.setTeam2(team2);
 		try {
 			Company cmp = companyDao.getCompanyByName(client);
 			Office off = od.getOfficeByName(office,cmp.getUuid());
@@ -676,6 +680,8 @@ public class CaplineIVFGoogleFormController {
 			if (cmp!=null) {
 				
 				cap = (List<Object>) civf.searchRcmClaimData(dto,off);
+				
+				
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

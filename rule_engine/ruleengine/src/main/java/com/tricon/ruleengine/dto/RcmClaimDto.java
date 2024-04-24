@@ -12,6 +12,8 @@ public class RcmClaimDto {
 	private boolean submitted;
 	private String queryName;
 	private String dateCheckType;
+	private int team1;
+	private int team2;
 	
 	public String getColumns() {
 		return columns;
@@ -72,6 +74,18 @@ public class RcmClaimDto {
 	}
 	public void setDateCheckType(String dateCheckType) {
 		this.dateCheckType = dateCheckType;
+	}
+	public int getTeam1() {
+		return team1;
+	}
+	public void setTeam1(int team1) {
+		this.team1 = team1;
+	}
+	public int getTeam2() {
+		return team2;
+	}
+	public void setTeam2(int team2) {
+		this.team2 = team2;
 	}
 	
 	

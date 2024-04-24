@@ -347,6 +347,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				List<ExceptionDataDto> exceptionData=null;
 				List<InsuranceMappingDto> insuranceData=null;
 				List<OrthoOfficeMappingDto> orthoData=null;
+				Map<String,List<Object>> adultMedicaidSheetData=null;
 				List<CRAReqMappingDto> craData=null;
 				
 				List<OSIVFormCodes> oSCodes=null;
@@ -492,6 +493,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}catch(Exception exp) {
 								
 						}
+						try {
+							adultMedicaidSheetData=ConnectAndReadSheets.readSheetAdultMedicaidLimitation(env.getProperty("mapping.sheet.adultMedicaidLimitation"), "Adult Medicaid Limitation", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+						}catch(Exception exp) {
+								
+						}
+						
 						
 						if (type==Constants.userType_TR) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getTreatmentPlanData(trids, esDB,bw);
 						if (type==Constants.userType_CL) tMap=(Map<String, List<Object>>) (Map<String, ?>)dbAccesService.getClaimData(trids, esDB,bw);
