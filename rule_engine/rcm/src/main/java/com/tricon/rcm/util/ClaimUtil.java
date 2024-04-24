@@ -374,12 +374,13 @@ public class ClaimUtil {
 
 	}
 	
-	public static boolean isFCLClaimByInsuranceName(String insuranceName) {
+	public static boolean isFCLClaimByInsuranceName(String insuranceType,String insName) {
 
 		boolean chip = false;
-		if (insuranceName.equalsIgnoreCase("FCL") || insuranceName.equalsIgnoreCase("First Continental Dental"))
+		if (insuranceType.equalsIgnoreCase("FCL") || insuranceType.equalsIgnoreCase("First Continental Dental"))
 			chip = true;
-
+		if (insName.equalsIgnoreCase("FCL") || insName.equalsIgnoreCase("First Continental Dental"))
+			chip = true;
 		return chip;
 
 	}

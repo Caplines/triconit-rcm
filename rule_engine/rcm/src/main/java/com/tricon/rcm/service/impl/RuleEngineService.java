@@ -354,7 +354,7 @@ public class RuleEngineService {
 										boolean isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(ins.getInsuranceType().getName());
 										boolean isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 										boolean isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
-										boolean isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName());
+										boolean isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName(),ins.getName());
 										
 										boolean missing=true;
 										try {

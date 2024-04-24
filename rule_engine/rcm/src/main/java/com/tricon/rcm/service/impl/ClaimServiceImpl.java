@@ -741,7 +741,7 @@ public class ClaimServiceImpl {
 								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
-								isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName());
+								isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName(),ins.getName());
 							}
 							boolean missing=true;
 							if (isBilling || isMedicare ) {
@@ -1047,7 +1047,7 @@ public class ClaimServiceImpl {
 								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
-								isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName());
+								isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName(),ins.getName());
 							}
 							
 							//boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
@@ -1663,7 +1663,7 @@ public class ClaimServiceImpl {
 								isMedicaid=ClaimUtil.isMedcaidClaimByInsuranceName(rcmInsuranceType.getName());
 								isMedicare=ClaimUtil.isMedicareClaimByInsuranceName(ins.getInsuranceType().getName());
 								isChip=ClaimUtil.isChipClaimByInsuranceName(ins.getInsuranceType().getName());
-								isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName());
+								isFCL=ClaimUtil.isFCLClaimByInsuranceName(ins.getInsuranceType().getName(),ins.getName());
 							}
 							
 							//boolean isBilling=ClaimUtil.isBillingClaimByInsuranceName(rcmInsuranceType.getName());
