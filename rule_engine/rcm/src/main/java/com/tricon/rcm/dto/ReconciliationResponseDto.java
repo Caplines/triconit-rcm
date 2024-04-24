@@ -10,5 +10,7 @@ public class ReconciliationResponseDto {
 	private String title;
 	private int claimsES;
 	private int claimsRCM;
+	private List<String> claimsNotFoundRCM;
+	private List<String> claimInUploadErrors;
 	private List<String> discrepancies;
 }

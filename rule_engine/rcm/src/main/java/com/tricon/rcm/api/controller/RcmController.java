@@ -956,7 +956,7 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	
-	@PostMapping(value = "api/reconciliation")
+	@PostMapping(value = "/api/reconciliation")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
 	public ResponseEntity<?> reconcillationData(@RequestBody ReconciliationDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

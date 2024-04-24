@@ -8,9 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.tricon.rcm.dto.RcmClaimMainRootDto;
+import com.tricon.rcm.dto.RcmClaimReconcillationMainRootDto;
+import com.tricon.rcm.dto.RcmClaimReconcillationRootDto;
 import com.tricon.rcm.dto.RcmInsuranceDatas;
 import com.tricon.rcm.dto.RcmInsuranceMainRootDto;
 import com.tricon.rcm.dto.RcmIvFMainRootDto;
+import com.tricon.rcm.dto.RcmReconcillationDatas;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.dto.customquery.ClaimXDaysDto;
@@ -59,6 +62,7 @@ import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAppointmentDto;
 import com.tricon.rcm.dto.ClaimDataDetails;
 import com.tricon.rcm.dto.ClaimDetailDto;
+import com.tricon.rcm.dto.ClaimReconcillationDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceFromRuleEngine;
@@ -1167,6 +1171,44 @@ public class RuleEngineService {
 			// TODO: handle exception
 		}
 		return appointmentDate;
+	}
+	
+	/**
+	 * Fetch Reconcillation Data From Rule engine
+	 * @param off
+	 * @return
+	 */
+	public List<ClaimReconcillationDto> fetchReconcillationDataFromES(RcmOffice off,String queryType) {
+
+		String officeUuid = off.getUuid();
+		List<ClaimReconcillationDto> li= new ArrayList<>();
+		try {
+			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			String param = "?password=" + eagleSoftDBDetailsRepo.findByOffice(off).getPassword() + "&type="
+					+ queryType;
+			param = param + "&office=" + officeUuid;
+			
+			//TEST DATA
+			/*param = "?password=" + "134568" + "&patientId="
+					+ "24734" + "&startDate=8/31/2023";
+			param = param + "&office=" + "c04a2dbe-9bc5-11e8-9f0b-8c16451459cd";*/
+			
+
+			ResponseEntity<RcmClaimReconcillationMainRootDto> result = restTemplate.exchange(
+					ev.getProperty("rcm.reconcillationquery") + param, HttpMethod.GET, entity,
+					RcmClaimReconcillationMainRootDto.class);
+
+			RcmClaimReconcillationMainRootDto rootDto = result.getBody();
+
+			for (RcmReconcillationDatas datas : rootDto.getData().getDatas()) {
+				
+				li.addAll(datas.getData());
+				
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		return li;
 	}
 	
 }
