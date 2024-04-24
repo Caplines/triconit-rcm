@@ -681,8 +681,10 @@
                 <td class="dullYellow"><xsl:value-of select="d4381"/></td>
                 <td class="dullYellow"><xsl:value-of select="d4381Freq"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed">Applicable to Downgrading</td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="posterior6"/></td>
+                <td class="dullRed">D2954 (Prefabricated)</td>
+                <td class="dullRed align-right"><xsl:value-of select="d2954"/></td>
+                <td class="dullRed"><xsl:value-of select="d2954fr"/></td>  
+                
             </tr>
             <tr>
                 <td class="dullBlue">D0330 (Pano)</td>
@@ -693,8 +695,8 @@
                 <td class="dullYellow"><xsl:value-of select="oral1"/></td>
                 <td class="dullYellow"><xsl:value-of select="oral2"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed">Downgraded to Code</td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="posterior17"/></td>
+                <td class="dullRed">Applicable to Downgrading</td>
+                <td class="dullRed" colspan="2"><xsl:value-of select="posterior6"/></td>
             </tr>
             <tr>
                 <td class="dullBlue">D0272/74 (BWXs)</td>
@@ -705,8 +707,9 @@
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
-                <td class="dullRed">No. of Crowns / Year </td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="crn1"/></td>
+                <td class="dullRed">Downgraded to Code</td>
+                <td class="dullRed" colspan="2"><xsl:value-of select="posterior17"/></td>
+               
             </tr>
             <tr>
                 <td class="dullBlue">Does FMX &amp; PANO share Freq?</td>
@@ -716,9 +719,8 @@
                 <td class="dullYellow align-right"><xsl:value-of select="d0431"/></td>
                 <td class="dullYellow align-right"><xsl:value-of select="d0431fr"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed">D2954 (Prefabricated)</td>
-                <td class="dullRed align-right"><xsl:value-of select="d2954"/></td>
-                <td class="dullRed"><xsl:value-of select="d2954fr"/></td>             
+                <td class="dullRed">No. of Crowns / Year </td>
+                <td class="dullRed" colspan="2"><xsl:value-of select="crn1"/></td>  
             </tr>
             <tr>
                 <td class="rowHeading">Prophylaxis</td>
@@ -884,7 +886,7 @@
                 <!-- <td class="dullYellow"></td> -->
                 <td class="dullYellow" colspan="2"><xsl:value-of select="extr1"/></td>
                 <td class="borderNone"></td>
-                <td class="dullRed">D7311 (1-3 Tooth/Qaud)</td>
+                <td class="dullRed">D7311 (1-3 Tooth/Quad)</td>
                 <td class="dullRed align-right"><xsl:value-of select="d7311"/></td>
                 <td class="dullRed"><xsl:value-of select="oral4"/></td> 
             </tr>
