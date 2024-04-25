@@ -3321,13 +3321,26 @@ public class ClaimServiceImpl {
 			}
 		}
 		
-		else  {
+		else if (partialHeader.getTeamId() == RcmTeamEnum.PAYMENT_POSTING.getId()) {
+
+			String claimStatus = ClaimStatusEnum.POSTED.getType();
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				return rcmClaimRepository.claimProductionForOtherTeamAssoicate(companies, partialHeader.getTeamId(), dto.getStartDate(),
-						dto.getEndDate(),partialHeader.getJwtUser().getUuid());
-			}else {
-					return rcmClaimRepository.claimProductionForOtherTeam(companies, partialHeader.getTeamId(), dto.getStartDate(),
-					dto.getEndDate());
+				return rcmClaimRepository.claimProductionForPaymentPostingAssoicate(companies,
+						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate(),
+						partialHeader.getJwtUser().getUuid(), claimStatus);
+			} else {
+				return rcmClaimRepository.claimProductionForPaymentPosting(companies, partialHeader.getTeamId(),
+						dto.getStartDate(), dto.getEndDate(), claimStatus);
+			}
+		}
+
+		else {
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				return rcmClaimRepository.claimProductionForOtherTeamAssoicate(companies, partialHeader.getTeamId(),
+						dto.getStartDate(), dto.getEndDate(), partialHeader.getJwtUser().getUuid());
+			} else {
+				return rcmClaimRepository.claimProductionForOtherTeam(companies, partialHeader.getTeamId(),
+						dto.getStartDate(), dto.getEndDate());
 			}
 		}
 		//return null;

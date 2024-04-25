@@ -22,6 +22,7 @@ import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.ProductionForAging;
 import com.tricon.rcm.dto.customquery.ProductionForPatientCalling;
 import com.tricon.rcm.dto.customquery.ProductionForPatientStatement;
+import com.tricon.rcm.dto.customquery.ProductionForPaymentPosting;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.util.Constants;
@@ -343,7 +344,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	//count(distinct DATE(assign.created_date)) as days
 	//Production means Total Claims Submitted and No days between 2 dates 
 	@Query(nativeQuery = true, value = 
-		       " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+		       " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
 						+" us.uuid as uuid,us.first_name "
 						+" 	 as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
 						+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -366,7 +367,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	//Production can be considered on the basis of processing of claim in ES instead of when we are marking that as submitted in the RCM Tool
 	//we are marking that as submitted in the RCM Tool
 	@Query(nativeQuery = true, value = 
-			" select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+			" select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
 			+ " us.uuid as uuid,us.first_name"
 			+ " as fName,us.last_name as lName,comp.name as companyName from rcm_user us"
 			+ " inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid"
@@ -386,7 +387,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	//Production means Total Claims Assigned by Internal Audit to other team and No days between 2 dates 
 	@Query(nativeQuery = true, value = 
-            " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+            " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
 			+" us.uuid as uuid,us.first_name "
 			+" 	 as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
 			+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -404,7 +405,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	
 	@Query(nativeQuery = true, value = 
-            " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+            " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
 			+" us.uuid as uuid,us.first_name "
 			+" 	 as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
 			+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -422,7 +423,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
 	
 	@Query(nativeQuery = true, value = 
-            " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+            " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
 			+" us.uuid as uuid,us.first_name "
 			+" 	 as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
 			+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -440,7 +441,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate,@Param("userId") String userId);
 
 	@Query(nativeQuery = true, value = 
-            " select count(distinct cl.claim_id) as total,FLOOR(count(distinct cl.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+            " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
 			+" us.uuid as uuid,us.first_name "
 			+" 	 as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
 			+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -824,7 +825,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<ProductionForAging> claimProductionForAgingAssoicate(@Param("companyIds") List<String> companyIds,@Param("teamId") int teamId, @Param("startDate") String stDate,
 			@Param("endDate") String endDate, @Param("userId") String userId);
 	
-	@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+	@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
 			+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName "
 			+ "FROM rcm_user us "
 			+ "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
@@ -841,7 +842,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	 List<ProductionDto> claimProductionForAssignToOtherTeams(@Param("companyIds") List<String> companyIds,@Param("teamId") int teamId, @Param("startDate") String stDate,
 			@Param("endDate") String endDate);
 
-	@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days,"
+	@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days,"
 			+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName "
 			+ "FROM rcm_user us "
 			+ "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
@@ -890,8 +891,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				@Param("startDate") String stDate, @Param("endDate") String endDate, @Param("userId") String userId);
 		
 		//Patient Statement
-		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,ps.statement_type as statementType,"
-				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days "
+		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,ps.statement_type as statementType,"
+				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days "
 				+ "FROM rcm_user us " + "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
 				+ "inner join office off on off.uuid=uoff.office_id "
 				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -905,8 +906,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		List<ProductionForPatientStatement> claimProductionForPatientStatement(@Param("companyIds") List<String> companyIds,@Param("teamId") int teamId,
 				@Param("startDate") String stDate, @Param("endDate") String endDate);
 
-		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,ps.statement_type as statementType,"
-				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days "
+		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,ps.statement_type as statementType,"
+				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days "
 				+ "FROM rcm_user us " + "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
 				+ "inner join office off on off.uuid=uoff.office_id "
 				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -923,8 +924,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				@Param("startDate") String stDate, @Param("endDate") String endDate, @Param("userId") String userId);
 
 		//CDP BY InsFollow Up
-		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,"
-				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days "
+		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,"
+				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days "
 				+ "FROM rcm_user us " + "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
 				+ "inner join office off on off.uuid=uoff.office_id "
 				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -938,8 +939,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		List<ProductionDto> claimProductionForCDPByInsuranceFollowUp(@Param("companyIds") List<String> companyIds,
 				@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate);
 
-		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,"
-				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days "
+		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,"
+				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days "
 				+ "FROM rcm_user us " + "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
 				+ "inner join office off on off.uuid=uoff.office_id "
 				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -956,8 +957,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				@Param("startDate") String stDate, @Param("endDate") String endDate, @Param("userId") String userId);
 		
 		//CDP BY APPEAL
-		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,"
-				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days "
+		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,"
+				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days "
 				+ "FROM rcm_user us " + "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
 				+ "inner join office off on off.uuid=uoff.office_id "
 				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -971,8 +972,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		List<ProductionDto> claimProductionForCDPByAppeal(@Param("companyIds") List<String> companyIds,
 				@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate);
 
-		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_id) as total,"
-				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_id))/(DATEDIFF(:endDate,:startDate)+1) as days "
+		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,"
+				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days "
 				+ "FROM rcm_user us " + "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
 				+ "inner join office off on off.uuid=uoff.office_id "
 				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -988,4 +989,38 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate,
 				@Param("userId") String userId);
 		
+		// payment posting
+		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,"
+				+ "sum(claims.amount_received_in_bank) as totalAmountReceivedInBank,"
+				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days "
+				+ "FROM rcm_user us " + "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
+				+ "inner join office off on off.uuid=uoff.office_id "
+				+ "inner join company comp on comp.uuid=off.company_id "
+				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+				+ "left join rcm_claims claims on claims.office_id=off.uuid "
+				+ "left join rcm_next_action_required_section nextAction on nextAction.claim_uuid=claims.claim_uuid "
+				+ "where cmp.company_id in (:companyIds) AND uoff.team_id =:teamId and nextAction.team_id=:teamId and nextAction.final_submit=true  and "
+				+ "nextAction.current_claim_status_rcm=:claimStaus and CAST(nextAction.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
+				+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') and " + "claims.current_state="
+				+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " group by us.uuid,comp.name")
+		List<ProductionForPaymentPosting> claimProductionForPaymentPosting(@Param("companyIds") List<String> companyIds,
+				@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate,@Param("claimStaus") String claimStaus);
+
+		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,"
+				+ "sum(claims.amount_received_in_bank) as totalAmountReceivedInBank,"
+				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days "
+				+ "FROM rcm_user us " + "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
+				+ "inner join office off on off.uuid=uoff.office_id "
+				+ "inner join company comp on comp.uuid=off.company_id "
+				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+				+ "left join rcm_claims claims on claims.office_id=off.uuid "
+				+ "left join rcm_next_action_required_section nextAction on nextAction.claim_uuid=claims.claim_uuid "
+				+ "where cmp.company_id in (:companyIds) AND uoff.team_id =:teamId and nextAction.team_id=:teamId and nextAction.final_submit=true  and "
+				+ "nextAction.current_claim_status_rcm=:claimStaus and CAST(nextAction.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
+				+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') and " + "claims.current_state="
+				+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+				+ " and uoff.user_id=:userId group by us.uuid,comp.name")
+		List<ProductionForPaymentPosting> claimProductionForPaymentPostingAssoicate(@Param("companyIds") List<String> companyIds,
+				@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate,
+				@Param("userId") String userId,@Param("claimStaus") String claimStaus);
 }

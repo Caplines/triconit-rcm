@@ -293,7 +293,8 @@ export class BillingClaimsComponent {
     PATIENT_COMMUNICATION: {
       data: [],
       modal: {
-        modeOfFollowUp: ''
+        modeOfFollowUp: '',
+        desposition:''
       }
     },
     CURRENT_STATUS_AND_NEXT_ACTION: {
