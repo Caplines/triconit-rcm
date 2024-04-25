@@ -4,6 +4,7 @@ import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
 import { Title } from '@angular/platform-browser';
 import { DownLoadService } from 'src/app/service/download.service';
+import { AppConstants } from 'src/app/constants/app.constants';
 
 
 @Component({
@@ -23,9 +24,14 @@ export class ProductionComponent implements OnInit {
   loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false,'fetch':false};
   isDataAvailable:boolean=false;
   clientName:string='';
+  currentTeamName:any='';
   fetchbtnDisable=true;
   isSorted:any={};
-  constructor(private appService: ApplicationServiceService,private title:Title,private downloadService:DownLoadService) { 
+  agingCategory:any='ageWise';
+  cdpCategory:any='followUp';
+  
+
+  constructor(private appService: ApplicationServiceService,private title:Title,private downloadService:DownLoadService,public constant:AppConstants) { 
      title.setTitle(Utils.defaultTitle + "Production");
      
     }
@@ -34,40 +40,53 @@ export class ProductionComponent implements OnInit {
    
     this.clientName = localStorage.getItem("selected_clientName");
     window.addEventListener("resize", this.setTopOnTotalRow);
+    this.getCurrentTeamName();
+    this.selectedDate.startDate = "2024-03-10";
+    this.selectedDate.endDate = "2024-04-10";
+  }
+
+  getCurrentTeamName(){
+   let teamName =  this.constant.teamData.find((e:any)=>e.teamId == Utils.selectedTeam());
+       this.currentTeamName = teamName.unFormatedName;
   }
 
   save(){
   this.fetchbtnDisable=false;
   this.loader.showLoader=true;
   this.loader.fetch = true;
+  this.isDataAvailable=true;
   this.total=0;
   this.days=0;
-  this.appService.saveProductionData({ "startDate": this.selectedDate.startDate,"endDate": this.selectedDate.endDate }, (callback: any) => {
-    if (callback.status == 200 && callback.data) {
-      this.loader.showLoader=false;
-      this.loader.fetch = false;
-      this.fetchbtnDisable=false;
-   this.productionData = callback.data;
-    
-   if( this.productionData.length==0){
-    this.loader.showLoader = true;
-    this.isDataAvailable= true;
-   }
-      let count = 0;
-      this.productionData.forEach((x: any) => {
-        this.total = this.total + x.total;
-        if (x.days == '0') {
-          count++;
-        }else{
-        this.days = this.days + x.days;
+    this.appService.saveProductionData({ "startDate": this.selectedDate.startDate, "endDate": this.selectedDate.endDate }, (callback: any) => {
+      if (callback.status == 200 && callback.data) {
+        this.loader.showLoader = false;
+        this.loader.fetch = false;
+        this.fetchbtnDisable = false;
+        if (this.currentTeamName == "AGING") {
+          this.productionData = callback.data[0];
+        } else {
+          this.productionData = callback.data;
         }
-      });
-      this.days = this.days / (this.productionData.length - count);          //calucating average
-      
-   if(this.productionData.length >0 ){
-    this.sortAvgDays();
-  }
-  } else this.alert.alertMsg = callback.message ? callback.message :'Something went wrong';
+
+        if (this.productionData.length == 0) {
+          this.loader.showLoader = false;
+          this.isDataAvailable = true;
+        }
+        //     let count = 0;
+        //     this.productionData.forEach((x: any) => {
+        //       this.total = this.total + x.total;
+        //       if (x.days == '0') {
+        //         count++;
+        //       }else{
+        //       this.days = this.days + x.days;
+        //       }
+        //     });
+        //     this.days = this.days / (this.productionData.length - count);          //calucating average
+
+        //  if(this.productionData.length >0 ){
+        //   this.sortAvgDays();
+        // }
+      } else this.alert.alertMsg = callback.message ? callback.message : 'Something went wrong';
     });
     
  }
@@ -163,6 +182,14 @@ setTopOnTotalRow(){
     totalRow.style.top = thead.clientHeight+"px";
    }
  } 
+
+ selectAgeCategory(category:any){
+  this.agingCategory = category;
+ }
+
+ selectCdpCategory(category:any){
+  this.cdpCategory = category;
+ }
 
 }
 
