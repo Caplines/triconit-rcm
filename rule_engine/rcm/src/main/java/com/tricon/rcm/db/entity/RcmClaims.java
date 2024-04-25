@@ -310,4 +310,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 
 	@Column(name = "debit_adjustment_amount")
 	private Float debitAdjustmentAmount;
+	
+	@Column(name = "amount_received_in_bank")
+	private Float amountReceivedInBank;
 }

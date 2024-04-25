@@ -885,6 +885,10 @@ public class ClaimSectionImpl {
 				paymentInsuranceInformation.setFinalSubmit(finalSubmit);
 				paymentInsuranceInformation.setTeam(team);
 				paymentInsuranceInformation = paymentSectionRepo.save(paymentInsuranceInformation);
+				if(finalSubmit) {
+					claim.setAmountReceivedInBank((float)paymentInformationInfoModel.getAmountReceivedInBank());
+					rcmClaimRepository.save(claim);		
+				}
 				return paymentInsuranceInformation != null ? true : null;
 			}
 		}

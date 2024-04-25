@@ -86,7 +86,11 @@ import com.tricon.rcm.dto.PendencyKeyValDto;
 import com.tricon.rcm.dto.PendencyWithOfficeOnlyDto;
 import com.tricon.rcm.dto.ProductionAgeWiseDto;
 import com.tricon.rcm.dto.ProductionCurrentStatusWiseDto;
+import com.tricon.rcm.dto.ProductionDispositionWiseDto;
 import com.tricon.rcm.dto.ProductionDtoFrorAging;
+import com.tricon.rcm.dto.ProductionForCDP;
+import com.tricon.rcm.dto.ProductionStatementTypeWiseDto;
+import com.tricon.rcm.dto.ProductionStatementTypeWiseDto.StatementType;
 import com.tricon.rcm.dto.ProivderHelpingSheetDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
@@ -125,6 +129,8 @@ import com.tricon.rcm.dto.customquery.IssueClaimDto;
 import com.tricon.rcm.dto.customquery.LinkedClaimDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.ProductionForAging;
+import com.tricon.rcm.dto.customquery.ProductionForPatientCalling;
+import com.tricon.rcm.dto.customquery.ProductionForPatientStatement;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
 import com.tricon.rcm.dto.customquery.RcmClaimNoteDto;
 import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
@@ -161,6 +167,7 @@ import com.tricon.rcm.dto.customquery.FreshClaimDetailsImplDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
+import com.tricon.rcm.enums.DispositionEnumForProduction;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.ClaimCycleRepo;
@@ -3112,23 +3119,23 @@ public class ClaimServiceImpl {
 		}
 		
 		else if (partialHeader.getTeamId() == RcmTeamEnum.AGING.getId()) {
-			ProductionDtoFrorAging data=new ProductionDtoFrorAging();
+			ProductionDtoFrorAging data = new ProductionDtoFrorAging();
 			List<ProductionForAging> agingData = null;
 			List<ProductionAgeWiseDto> listOfAgeWiseData = new ArrayList<>();
 			List<ProductionCurrentStatusWiseDto> listOfCurrentStatusWiseData = new ArrayList<>();
-			List<RcmOfficeDto> offices = officeRepo.findByCompany(partialHeader.getCompany());
+			List<RcmOfficeDto> offices = officeRepo.findByCompanyUuidIn(companies);
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				agingData = rcmClaimRepository.claimProductionForAgingAssoicate(partialHeader.getTeamId(),
+				agingData = rcmClaimRepository.claimProductionForAgingAssoicate(companies, partialHeader.getTeamId(),
 						dto.getStartDate(), dto.getEndDate(), partialHeader.getJwtUser().getUuid());
 
 			} else {
-				agingData = rcmClaimRepository.claimProductionForAging(partialHeader.getTeamId(), dto.getStartDate(),
-						dto.getEndDate());
+				agingData = rcmClaimRepository.claimProductionForAging(companies, partialHeader.getTeamId(),
+						dto.getStartDate(), dto.getEndDate());
 			}
 
 			// ageWise
 			for (RcmOfficeDto off : offices) {
-				ProductionAgeWiseDto agingDto = new ProductionAgeWiseDto(off.getName(),"-", 0, 0, 0, 0);
+				ProductionAgeWiseDto agingDto = new ProductionAgeWiseDto(off.getName(), "-", 0, 0, 0, 0);
 				listOfAgeWiseData.add(agingDto);
 			}
 
@@ -3151,9 +3158,9 @@ public class ClaimServiceImpl {
 
 			// status wise
 			for (RcmOfficeDto off : offices) {
-				ProductionCurrentStatusWiseDto currentStausDto = new ProductionCurrentStatusWiseDto(off.getName(),"-", 0, 0,
-						0, 0, 0, 0, 0, 0, 0);
-				 listOfCurrentStatusWiseData.add(currentStausDto);
+				ProductionCurrentStatusWiseDto currentStausDto = new ProductionCurrentStatusWiseDto(off.getName(), "-",
+						0, 0, 0, 0, 0, 0, 0, 0);
+				listOfCurrentStatusWiseData.add(currentStausDto);
 			}
 
 			for (ProductionCurrentStatusWiseDto pd : listOfCurrentStatusWiseData) {
@@ -3187,6 +3194,117 @@ public class ClaimServiceImpl {
 			return Arrays.asList(data);
 		}
 
+		else if (partialHeader.getTeamId() == RcmTeamEnum.PATIENT_CALLING.getId()) {
+			List<ProductionForPatientCalling> patientCallingData = null;
+			List<RcmOfficeDto> offices = officeRepo.findByCompanyUuidIn(companies);
+			List<ProductionDispositionWiseDto> data = new ArrayList<>();
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				patientCallingData = rcmClaimRepository.claimProductionForPatientCallingAssoicate(companies,
+						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate(),
+						partialHeader.getJwtUser().getUuid());
+			} else {
+				patientCallingData = rcmClaimRepository.claimProductionForPatientCalling(companies,
+						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate());
+			}
+
+			for (RcmOfficeDto off : offices) {
+				ProductionDispositionWiseDto dispositionDto = new ProductionDispositionWiseDto(off.getName(), 0, 0, 0,
+						0, 0, 0);
+				data.add(dispositionDto);
+			}
+
+			for (ProductionDispositionWiseDto pd : data) {
+				List<ProductionForPatientCalling> filterData = patientCallingData.stream()
+						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
+				for (ProductionForPatientCalling pc : filterData) {
+					pd.setOfficeName(pc.getOfficeName());
+					if (pc.getDesposition().equals(DispositionEnumForProduction.VOICE_MAIL_LEFT.getName())) {
+						pd.setVoiceMailLeft(pd.getVoiceMailLeft() + 1);
+					} else if (pc.getDesposition().equals(DispositionEnumForProduction.PAYMENT_PROMISED.getName())) {
+						pd.setPaymentPromised(pd.getPaymentPromised() + 1);
+					} else if (pc.getDesposition().equals(DispositionEnumForProduction.PAYMENT_MADE.getName())) {
+						pd.setPaymentMade(pd.getPaymentMade() + 1);
+					} else if (pc.getDesposition().equals(DispositionEnumForProduction.WRONG_NO.getName())) {
+						pd.setWrongNo(pd.getWrongNo() + 1);
+					} else if (pc.getDesposition().equals(DispositionEnumForProduction.NOT_READY_TO_PAY.getName())) {
+						pd.setNotReadyToPay(pd.getNotReadyToPay() + 1);
+					} else if (pc.getDesposition().equals(DispositionEnumForProduction.STATEMENT_REQUESTED.getName())) {
+						pd.setStatementRequested(pd.getStatementRequested() + 1);
+					}
+				}
+			}
+			return data;
+		}
+
+		else if (partialHeader.getTeamId() == RcmTeamEnum.PATIENT_STATEMENT.getId()) {
+			List<ProductionForPatientStatement> patientStatementData = null;
+			List<ProductionStatementTypeWiseDto> data = new ArrayList<>();
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				patientStatementData = rcmClaimRepository.claimProductionForPatientStatementAssoicate(companies,
+						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate(),
+						partialHeader.getJwtUser().getUuid());
+			} else {
+				patientStatementData = rcmClaimRepository.claimProductionForPatientStatement(companies,
+						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate());
+			}
+
+			List<String> userUuids = patientStatementData.stream().map(x -> x.getUuid()).distinct()
+					.collect(Collectors.toList());
+
+			for (String userUuid : userUuids) {
+				ProductionStatementTypeWiseDto statementTypeDto = new ProductionStatementTypeWiseDto(userUuid, 0, 0,
+						" ", " ", new ProductionStatementTypeWiseDto().new StatementType());
+				data.add(statementTypeDto);
+			}
+
+			for (ProductionStatementTypeWiseDto pd : data) {
+				List<ProductionForPatientStatement> filterData = patientStatementData.stream()
+						.filter(x -> x.getUuid().equals(pd.getUserUuid())).collect(Collectors.toList());
+				for (ProductionForPatientStatement ps : filterData) {
+					pd.setClientName(ps.getCompanyName());
+					pd.setFname(ps.getFName());
+					pd.setTotal(ps.getTotal());
+					if (ps.getStatementType() == 1) {
+						pd.getStatementType().setStatementType1(pd.getStatementType().getStatementType1() + 1);
+					} else if (ps.getStatementType() == 2) {
+						pd.getStatementType().setStatementType2(pd.getStatementType().getStatementType2() + 1);
+					} else if (ps.getStatementType() == 3) {
+						pd.getStatementType().setStatementType3(pd.getStatementType().getStatementType3() + 1);
+					}
+				}
+			}
+			return data;
+		}
+
+		else if (partialHeader.getTeamId() == RcmTeamEnum.CDP.getId()) {
+			ProductionForCDP data = new ProductionForCDP();
+			List<ProductionDto> productionDataForInsuranceFollowUp = null;
+			List<ProductionDto> productionDataForAppeal = null;
+			// fetch data with the help of cdp team in Insurance follow up section
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				productionDataForInsuranceFollowUp = rcmClaimRepository
+						.claimProductionForCDPByInsuranceFollowUpAssoicate(companies, partialHeader.getTeamId(),
+								dto.getStartDate(), dto.getEndDate(), partialHeader.getJwtUser().getUuid());
+			} else {
+				productionDataForInsuranceFollowUp = rcmClaimRepository.claimProductionForCDPByInsuranceFollowUp(
+						companies, partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate());
+			}
+
+			// fetch data with the help of cdp team in appeal section
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				productionDataForAppeal = rcmClaimRepository.claimProductionForCDPByAppealAssoicate(companies,
+						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate(),
+						partialHeader.getJwtUser().getUuid());
+			} else {
+				productionDataForAppeal = rcmClaimRepository.claimProductionForCDPByAppeal(companies,
+						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate());
+			}
+
+			data.setCdpForInsuranceFollowUp(productionDataForInsuranceFollowUp);
+			data.setCdpForAppeal(productionDataForAppeal);
+			return Arrays.asList(data);
+		}
+
 		else if (partialHeader.getTeamId() == RcmTeamEnum.LC3.getId()
 				|| partialHeader.getTeamId() == RcmTeamEnum.MEDICAID_IV.getId()
 				|| partialHeader.getTeamId() == RcmTeamEnum.OFFICE.getId()
@@ -3194,13 +3312,15 @@ public class ClaimServiceImpl {
 				|| partialHeader.getTeamId() == RcmTeamEnum.PPO_IV.getId()
 				|| partialHeader.getTeamId() == RcmTeamEnum.CREDENTIALING.getId()) {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				return rcmClaimRepository.claimProductionForAssignToOtherTeamsAssoicate(partialHeader.getTeamId(),
-						dto.getStartDate(), dto.getEndDate(), partialHeader.getJwtUser().getUuid());
+				return rcmClaimRepository.claimProductionForAssignToOtherTeamsAssoicate(companies,
+						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate(),
+						partialHeader.getJwtUser().getUuid());
 			} else {
-				return rcmClaimRepository.claimProductionForAssignToOtherTeams(partialHeader.getTeamId(),
+				return rcmClaimRepository.claimProductionForAssignToOtherTeams(companies, partialHeader.getTeamId(),
 						dto.getStartDate(), dto.getEndDate());
 			}
 		}
+		
 		else  {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				return rcmClaimRepository.claimProductionForOtherTeamAssoicate(companies, partialHeader.getTeamId(), dto.getStartDate(),
