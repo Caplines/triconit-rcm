@@ -52,4 +52,7 @@ public class RcmRequestRebiilingSection extends BaseAuditEntity implements java.
 	@Column(name = "final_submit")
 	private boolean finalSubmit;
 	
+	@Column(name = "used_ai")
+	private String usedAI;
+	
 }

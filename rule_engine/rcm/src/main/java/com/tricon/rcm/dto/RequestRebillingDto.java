@@ -10,6 +10,7 @@ public class RequestRebillingDto {
 	private String rebillingRequirements;
 	private String rebillingServiceCodes;	
 	private String rebillingType;
+	private String usedAI;
 	private String nextAction;
 	private String currentAction;
 	private int teamId;
