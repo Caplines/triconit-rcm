@@ -242,3 +242,18 @@ a.arrow-down.selected {
     border-bottom-color: #2d4047;
 }
 .rangeBtn { margin-left: 5px;}
+
+.rangeWithFilter {
+    align-items: center;
+}
+.rangeWithFilter .rangeFilter {
+    display: flex;   
+}
+.rangeWithFilter .rangeFilter label {
+    margin: 0px;
+    margin-right: 15px;
+    display: flex;
+}
+.rangeWithFilter .rangeFilter label input {
+    margin-right: 5px;
+}

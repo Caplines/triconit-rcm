@@ -62,4 +62,7 @@ public class RcmRebillingSection extends BaseAuditEntity implements java.io.Seri
 	
 	@Column(name = "final_submit")
 	private boolean finalSubmit;
+	
+	@Column(name = "used_ai")
+	private String usedAI;
 }

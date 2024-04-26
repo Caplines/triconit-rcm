@@ -16,4 +16,5 @@ public class RebillingResponseDto {
 	private boolean reCeationOptionChoosen;
 	private String dateOfRebiiling;
 	private int sectionId;
+	private String usedAI;
 }

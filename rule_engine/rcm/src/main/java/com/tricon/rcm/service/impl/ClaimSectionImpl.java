@@ -1506,12 +1506,15 @@ public class ClaimSectionImpl {
 			rebillingSection.setRequestedBy(requestedBy);
 			rebillingSection.setFinalSubmit(finalSubmit);
 			rebillingSection.setTeam(team);
+			rebillingSection.setUsedAI(rebillingInfoModel.getUsedAI());	
 			rebillingSection.setReCeationOptionChoosen(rebillingInfoModel.isReCeationOptionChoosen());
 			rebillingSection = rebillingSectionRepo.save(rebillingSection);
 
 			rebillingInfoModel.setDateOfRebiiling(Constants.SDF_MYSL_DATE.format(rebillingSection.getCreatedDate()));
 			rebillingInfoModel.setRequestedBy(rebillingSection.getRequestedBy().getFirstName());
 
+			rebillingInfoModel.setUsedAI(rebillingSection.getUsedAI());	
+			
 			// update rebilled status false in rcm_claims table
 			claim.setRebilledStatus(false);
 			if (claim.getFirstRebilledDate() == null) {
@@ -1648,6 +1651,7 @@ public class ClaimSectionImpl {
 				responseDto.setRequestedRemarks(data.getRequestedRemarks());		
 				responseDto.setRebillingRemarks(data.getRemarks());
 				responseDto.setRebillingStatus(data.isRebilling());	
+				responseDto.setUsedAI(data.getUsedAI());
 				responseDto.setReCeationOptionChoosen(data.isReCeationOptionChoosen());	
 				responseDto.setRebillingServiceCodes(data.getRebillingServiceCodes());		
 				responseDto.setRebillingRequirements(data.getRebillingRequirements());

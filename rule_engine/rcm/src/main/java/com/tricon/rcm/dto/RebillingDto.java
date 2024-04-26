@@ -21,4 +21,5 @@ public class RebillingDto {
 	private List<String>originalRequirements;//select rebilling requirement from  requestBilling UI
 	private int claimTransferNextTeamId;
 	private int sectionId;
+	private String usedAI;
 }
