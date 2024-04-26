@@ -3143,7 +3143,7 @@ public class ClaimServiceImpl {
 				List<ProductionForAging> filterAge = agingData.stream()
 						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
 				for (ProductionForAging age : filterAge) {
-					pd.setAssociateName(age.getFName());
+					pd.setAssociateName(age.getFName()+" "+age.getLName());
 					if (age.getClaimAge() <= 30) {
 						pd.setCountForAgeRange1(pd.getCountForAgeRange1() + 1);
 					} else if (age.getClaimAge() > 31 && age.getClaimAge() <= 60) {
@@ -3167,7 +3167,7 @@ public class ClaimServiceImpl {
 				List<ProductionForAging> filterStatus = agingData.stream()
 						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
 				for (ProductionForAging status : filterStatus) {
-					pd.setAssociateName(status.getFName());
+					pd.setAssociateName(status.getFName()+" "+status.getLName());
 					if (status.getCurrentClaimStatus() == ClaimStatusEnum.Pending_For_Review.getId()) {
 						pd.setPendingForReviewCount(pd.getPendingForReviewCount());
 					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Pending_For_Billing.getId()) {
@@ -3253,7 +3253,7 @@ public class ClaimServiceImpl {
 
 			for (String userUuid : userUuids) {
 				ProductionStatementTypeWiseDto statementTypeDto = new ProductionStatementTypeWiseDto(userUuid, 0, 0,
-						" ", " ", new ProductionStatementTypeWiseDto().new StatementType());
+						" ", " "," ", new ProductionStatementTypeWiseDto().new StatementType());
 				data.add(statementTypeDto);
 			}
 
@@ -3263,6 +3263,7 @@ public class ClaimServiceImpl {
 				for (ProductionForPatientStatement ps : filterData) {
 					pd.setClientName(ps.getCompanyName());
 					pd.setFname(ps.getFName());
+					pd.setLname(ps.getLName());
 					pd.setTotal(ps.getTotal());
 					if (ps.getStatementType() == 1) {
 						pd.getStatementType().setStatementType1(pd.getStatementType().getStatementType1() + 1);
