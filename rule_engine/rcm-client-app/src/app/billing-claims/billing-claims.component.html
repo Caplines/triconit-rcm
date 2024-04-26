@@ -3474,11 +3474,11 @@
                                                         <div class="custom-row text-number">
                                                             <label for="desposition">Service Codes to Rebill</label>
                                                             <ng-container
-                                                                *ngIf="claimSectionModal.REBILLING['modal'].serviceCodesForMultiSelect.length>0">
+                                                                *ngIf="claimSectionModal.REBILLING['modal']?.serviceCodesForMultiSelect?.length>0">
                                                                 <span class="mutliselect"
                                                                     [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['selectedRebillingServiceCodes']}">
                                                                     <multi-select-dropdown
-                                                                        [inputConfig]="{'reBillingServiceCodes':claimSectionModal.REBILLING['modal'].serviceCodesForMultiSelect,'isDetailPage':true}"
+                                                                        [inputConfig]="{'reBillingServiceCodes':claimSectionModal.REBILLING['modal']?.serviceCodesForMultiSelect,'isDetailPage':true}"
                                                                         (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
                                                                 </span>
                                                             </ng-container>
