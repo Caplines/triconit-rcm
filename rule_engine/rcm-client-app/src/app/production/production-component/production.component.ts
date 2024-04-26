@@ -130,7 +130,7 @@ export class ProductionComponent implements OnInit {
     this.productionData.forEach((e: any) => {
       this.paymentPostingTotalConfig.total = this.paymentPostingTotalConfig.total + e.total;
       this.paymentPostingTotalConfig.days = this.paymentPostingTotalConfig.days + e.days;
-      this.paymentPostingTotalConfig.amountPosted = this.paymentPostingTotalConfig.totalAmountReceivedInBank + e.totalAmountReceivedInBank;
+      this.paymentPostingTotalConfig.amountPosted = this.paymentPostingTotalConfig.amountPosted + e.totalAmountReceivedInBank;
   })
   }
 

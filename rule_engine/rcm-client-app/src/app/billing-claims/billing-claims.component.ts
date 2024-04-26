@@ -3242,6 +3242,7 @@ export class BillingClaimsComponent {
     reBillingModal['dataModal']['originalRequirements'] = reBillingModal['modal']['originalRequirements'];
     reBillingModal['dataModal']['claimTransferNextTeamId'] = reBillingModal['modal']['claimTransferNextTeamId'];
     reBillingModal['dataModal']['reCeationOptionChoosen'] = reBillingModal['modal']['reCeationOptionChoosen'];
+    reBillingModal['dataModal']['usedAI'] = reBillingModal['modal']['usedAI'];
 
 
     if (!isFinal) {
