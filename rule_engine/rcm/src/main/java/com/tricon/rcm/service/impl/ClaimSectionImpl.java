@@ -1420,7 +1420,6 @@ public class ClaimSectionImpl {
 			requestRebillingSection.setCreatedBy(createdBy);
 			requestRebillingSection.setFinalSubmit(finalSubmit);
 			requestRebillingSection.setTeam(team);
-			requestRebillingSection.setUsedAI(requestRebillingInfoModel.getUsedAI());	
 			requestRebillingSection.setRebillingServiceCodes(selectedCodes);
 			requestRebillingSection.setReasonForRebilling(requestRebillingInfoModel.getReasonForRebilling());
 			requestRebillingSection.setRebillingRequirements(requestRebillingInfoModel.getRebillingRequirements());
