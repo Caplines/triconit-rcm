@@ -3397,6 +3397,20 @@
 
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
+                                                        <label for="usedAI">Used AI?</label>
+                                                        <select class="form-control" 
+                                                        [(ngModel)]="this.claimSectionModal.REBILLING['modal']['usedAI']"
+                                                        [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['usedAI']}">
+                                                            <option value="">Select</option>
+                                                            <option value="yes">Yes</option>
+                                                            <option value="no">No</option>
+                                                            <option value="n/a">N/A</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-row text-number">
                                                         <label for="reasonForRebilling">Reason For Rebilling</label>
                                                         <select id="reasonForRebilling" class="form-control"
                                                             [disabled]="true"

@@ -310,7 +310,8 @@ export class BillingClaimsComponent {
     REBILLING: {
       data: [],
       modal: {
-        rebillingStatus: true
+        rebillingStatus: true,
+        usedAI:''
       },
       dataModal: {}
     },
@@ -3211,9 +3212,10 @@ export class BillingClaimsComponent {
       if (e.serviceCode.toLowerCase() !== 'undistributed') {
         this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({ name: e.serviceCode, checked: false });
       }
-      this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({ name: `option${idx}`, checked: false });
+      // this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({ name: `option${idx}`, checked: false });
     })
     this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'] = this.serviceLevelSectionMultiSelectConfig.serviceCodesList;   //for recreation section service codes
+    this.serviceLevelSectionMultiSelectConfig.rebillingRequirements = this.appConstants.requestRebillingRequirement;
   }
 
   closeReqRebillingModal() {

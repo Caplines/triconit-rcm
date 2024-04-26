@@ -30,7 +30,7 @@
                                             aria-hidden="true"></span>Submit</button>
                                     <!-- <app-date-range></app-date-range> -->
                                 </div>
-                                <div class="d-flex" *ngIf="currentTeamName == 'AGING' && (productionData.listOfAgeWiseData?.length>0 || productionData.listOfCurrentStatusWiseData?.length>0)">
+                                <div class="d-flex" *ngIf="currentTeamName == 'AGING' ">
                                     <label for="ageWise">
                                         <input type="radio" name="prod" id="ageWise" [checked]="true"
                                             (change)="selectAgeCategory('ageWise')">
@@ -77,10 +77,10 @@
                                             <ng-container *ngIf="!loader.showLoader">
                                                 <tr class="totalRow">
                                                     <td>Total</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td>{{agingTotalConfig.countForAgeRange1}}</td>
+                                                    <td>{{agingTotalConfig.countForAgeRange2}}</td>
+                                                    <td>{{agingTotalConfig.countForAgeRange3}}</td>
+                                                    <td>{{agingTotalConfig.countForAgeRange4}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="4" style="height: 15px;"></td>
@@ -122,14 +122,14 @@
                                             <ng-container *ngIf="!loader.showLoader">
                                                 <tr class="totalRow">
                                                     <td>Total</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td>{{agingTotalConfig.billedCount}}</td>
+                                                    <td>{{agingTotalConfig.closedCount}}</td>
+                                                    <td>{{agingTotalConfig.pendingForBillingCount}}</td>
+                                                    <td>{{agingTotalConfig.pendingForReviewCount}}</td>
+                                                    <td>{{agingTotalConfig.reBillingCount}}</td>
+                                                    <td>{{agingTotalConfig.reviewedCount}}</td>
+                                                    <td>{{agingTotalConfig.submittedCount}}</td>
+                                                    <td>{{agingTotalConfig.voidedCount}}</td>
                                                 </tr>
                                                 <tr>
                                                     <td colspan="4" style="height: 15px;"></td>
@@ -141,7 +141,7 @@
                                                         <td>{{data.billedCount}}</td>
                                                         <td>{{data.closedCount}}</td>
                                                         <td>{{data.pendingForBillingCount}}</td>
-                                                        <td>{{data.countForAgeRange4}}</td>
+                                                        <td>{{data.pendingForReviewCount}}</td>
                                                         <td>{{data.reBillingCount}}</td>
                                                         <td>{{data.reviewedCount}}</td>
                                                         <td>{{data.submittedCount}}</td>
@@ -229,7 +229,9 @@
                                                         </span>
                                                     </div> 
                                                 </th>
-                                                <th>Statement Type</th>
+                                                <th>Statement Type 1</th>
+                                                <th>Statement Type 2</th>
+                                                <th>Statement Type 3</th>
                                             </tr>
                                         </thead>
                                          <tbody>
@@ -238,20 +240,24 @@
                                                 <tr class="totalRow">
                                                     <td>Total</td>
                                                     <td></td>
-                                                    <td></td>
-                                                <td class="alignRight">{{total |number}}</td>
-                                                <td class="alignRight">{{days |number:'1.1-1'}}</td>
+                                                    <td class="alignRight">{{total |number}}</td>
+                                                    <td class="alignRight">{{days |number:'1.1-1'}}</td>
+                                                    <td>{{patientStatTotalConfig.statement1}}</td>
+                                                    <td>{{patientStatTotalConfig.statement2}}</td>
+                                                    <td>{{patientStatTotalConfig.statement3}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="5" style="height: 15px;"></td>
                                             </tr>
                                             <ng-container *ngFor="let data of productionData;">
                                                 <tr >
-                                                    <td>{{data.companyName}}</td>
+                                                    <td>{{data.clientName}}</td>
                                                     <td>{{data.fname}} {{data.lname}}</td>
-                                                    <td class="alignRight">{{data.total | number}}</td>
+                                                    <td class="alignRight">{{data.total}}</td>
                                                     <td class="alignRight">{{data.days | number:'1.1-1'}}</td>
-                                                    <td></td>
+                                                    <td>{{data.statementType.statementType1}}</td>
+                                                    <td>{{data.statementType.statementType2}}</td>
+                                                    <td>{{data.statementType.statementType3}}</td>
                                                 </tr>
                                             </ng-container>
                                         </ng-container>
@@ -293,9 +299,9 @@
                                                 <tr class="totalRow">
                                                     <td>Total</td>
                                                     <td></td>
-                                                    <td></td>
-                                                <td class="alignRight">{{total |number}}</td>
-                                                <td class="alignRight">{{days |number:'1.1-1'}}</td>
+                                                    <td class="alignRight">{{paymentPostingTotalConfig.total |number}}</td>
+                                                    <td class="alignRight">{{paymentPostingTotalConfig.days |number:'1.1-1'}}</td>
+                                                    <td class="alignRight">{{paymentPostingTotalConfig.amountPosted}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="5" style="height: 15px;"></td>
@@ -306,7 +312,7 @@
                                                     <td>{{data.fname}} {{data.lname}}</td>
                                                     <td class="alignRight">{{data.total | number}}</td>
                                                     <td class="alignRight">{{data.days | number:'1.1-1'}}</td>
-                                                    <td></td>
+                                                    <td>{{data.totalAmountReceivedInBank}}</td>
                                                 </tr>
                                             </ng-container>
                                         </ng-container>
@@ -338,23 +344,23 @@
                                             <ng-container *ngIf="!loader.showLoader">
                                                 <tr class="totalRow">
                                                     <td>Total</td>
-                                                    <td></td>
-                                                    <td></td>
-                                                    <td></td>
-                                                <td class="alignRight">{{total |number}}</td>
-                                                <td class="alignRight">{{days |number:'1.1-1'}}</td>
+                                                    <td class="alignRight">{{patientStatTotalConfig.paymentPromised}}</td>
+                                                    <td class="alignRight">{{patientStatTotalConfig.paymentMade}}</td>
+                                                    <td class="alignRight">{{patientStatTotalConfig.wrongNo}}</td>
+                                                    <td class="alignRight">{{patientStatTotalConfig.notReadyToPay}}</td>
+                                                    <td class="alignRight">{{patientStatTotalConfig.statementRequested}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="6" style="height: 15px;"></td>
                                             </tr>
                                             <ng-container *ngFor="let data of productionData;">
                                                 <tr >
-                                                    <td>{{data.companyName}}</td>
-                                                    <td>{{data.fname}} {{data.lname}}</td>
-                                                    <td class="alignRight">{{data.total | number}}</td>
-                                                    <td class="alignRight">{{data.days | number:'1.1-1'}}</td>
-                                                    <td></td>
-                                                    <td></td>
+                                                    <td>{{data.officeName}}</td>
+                                                    <td class="alignRight">{{data.paymentPromised}}</td>
+                                                    <td class="alignRight">{{data.paymentMade}}</td>
+                                                    <td class="alignRight">{{data.wrongNo}}</td>
+                                                    <td class="alignRight">{{data.notReadyToPay}}</td>
+                                                    <td class="alignRight">{{data.statementRequested}}</td>
                                                 </tr>
                                             </ng-container>
                                         </ng-container>
@@ -385,20 +391,33 @@
                                                 <tr class="totalRow">
                                                     <td>Total</td>
                                                     <td></td>
-                                                <td class="alignRight">{{total |number}}</td>
-                                                <td class="alignRight">{{days |number:'1.1-1'}}</td>
+                                                <td class="alignRight">{{cdpTotalConfig.total |number}}</td>
+                                                <td class="alignRight">{{cdpTotalConfig.days |number:'1.1-1'}}</td>
                                             </tr>
                                             <tr>
                                                 <td colspan="4" style="height: 15px;"></td>
                                             </tr>
-                                            <ng-container *ngFor="let data of productionData;">
-                                                <tr >
-                                                    <td>{{data.companyName}}</td>
-                                                    <td>{{data.fname}} {{data.lname}}</td>
-                                                    <td class="alignRight">{{data.total | number}}</td>
-                                                    <td class="alignRight">{{data.days | number:'1.1-1'}}</td>
-                                                </tr>
+                                            <ng-container *ngIf="cdpCategory == 'followUp'">
+                                                <ng-container *ngFor="let data of productionData.cdpForInsuranceFollowUp;">
+                                                    <tr>
+                                                        <td>{{data.companyName}}</td>
+                                                        <td>{{data.fname}} {{data.lname}}</td>
+                                                        <td class="alignRight">{{data.total | number}}</td>
+                                                        <td class="alignRight">{{data.days | number:'1.1-1'}}</td>
+                                                    </tr>
+                                                </ng-container>
                                             </ng-container>
+                                            <ng-container *ngIf="cdpCategory == 'appeal'">
+                                                <ng-container *ngFor="let data of productionData.cdpForAppeal;">
+                                                    <tr>
+                                                        <td>{{data.companyName}}</td>
+                                                        <td>{{data.fname}} {{data.lname}}</td>
+                                                        <td class="alignRight">{{data.total | number}}</td>
+                                                        <td class="alignRight">{{data.days | number:'1.1-1'}}</td>
+                                                    </tr>
+                                                </ng-container>
+                                            </ng-container>
+                                        
                                         </ng-container>
                                     </tbody>
                                     <ng-container *ngIf="productionData.length==0 && isDataAvailable" >
