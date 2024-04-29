@@ -623,4 +623,8 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['validate-secondary-claim-creation'] + "/" + claimUuid, callback)
   }
 
+  fetchReconcileData(param: any, callback: any) {
+    this.postData(param, this.httpUrl['fetch-reconcile-data'], callback);
+  }
+
 }

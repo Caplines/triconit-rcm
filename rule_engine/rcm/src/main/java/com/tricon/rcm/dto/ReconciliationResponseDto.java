@@ -1,6 +1,6 @@
 package com.tricon.rcm.dto;
 
-import java.util.List;
+import java.util.Set;
 
 import lombok.Data;
 
@@ -8,9 +8,11 @@ import lombok.Data;
 public class ReconciliationResponseDto {
 
 	private String title;
+	private String office;
 	private int claimsES;
 	private int claimsRCM;
-	private List<String> claimsNotFoundRCM;
-	private List<String> claimInUploadErrors;
-	private List<String> discrepancies;
+	private Set<String> claimsNotFoundRCM;
+	private Set<String> claimInUploadErrors;
+	private Set<String> discrepancies;
+	private Set<com.tricon.rcm.dto.ReconcillationClaimDto> discrepanciesAll;
 }

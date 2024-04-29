@@ -2614,6 +2614,12 @@ export class BillingClaimsComponent {
 
   fetchNextActionRequiredSection() {
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = ""; //this.claimRcm.currentStatusName;
+    if (this.claimRcm.primary && !(this.claimRcm.statusESUpdated === 'Closed' || this.claimRcm.statusESUpdated === 'Unbilled' || this.claimRcm.statusESUpdated === 'Billed')) {
+      this.claimRcm.statusESUpdated = "";
+    }
+    if (!this.claimRcm.primary && !(this.claimRcm.statusESUpdated === 'Unbilled' || this.claimRcm.statusESUpdated === 'Billed')) {
+      this.claimRcm.statusESUpdated = "";
+    }
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'] = this.claimRcm.statusESUpdated;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] = "";//this.claimRcm.nextActionName;
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;//this.claimRcm.assignedToTeam;

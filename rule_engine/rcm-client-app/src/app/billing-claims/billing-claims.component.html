@@ -407,19 +407,27 @@
                                         </div>
                                     </div>
                                 </div>
-                                <ng-container  *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view')">
-                                    <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['ATTACHMENT']}">
-                                        <a data-toggle="collapse" aria-expanded="false" id="ATTACHMENT" class="text-danger">
+                                <ng-container
+                                    *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view')">
+                                    <div class="bold-b-text collapsed"
+                                        [ngClass]="{'collapsed':toggleTab['ATTACHMENT']}">
+                                        <a data-toggle="collapse" aria-expanded="false" id="ATTACHMENT"
+                                            class="text-danger">
                                             Attachments (Access to this section of the RCM Tool is restricted for you)
                                         </a>
                                         <div class="down-icon" (click)="showHide('ATTACHMENT')">
-                                            <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['ATTACHMENT']}"></a>
+                                            <a href="javascript:void(0)"
+                                                [ngClass]="{'close':toggleTab['ATTACHMENT']}"></a>
                                         </div>
                                     </div>
                                 </ng-container>
-                                <ng-container *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view')">
+                                <ng-container
+                                    *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['attachment']}">
-                                        <a data-toggle="collapse" aria-expanded="false">Attachments <span *ngIf="!(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit'))" class="text-danger"> (Access to this section of the RCM Tool is restricted for you)</span></a>
+                                        <a data-toggle="collapse" aria-expanded="false">Attachments <span
+                                                *ngIf="!(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit'))"
+                                                class="text-danger"> (Access to this section of the RCM Tool is
+                                                restricted for you)</span></a>
                                         <div class="down-icon" (click)="showHide('attachment')">
                                             <a href="javascript:void(0)"
                                                 [ngClass]="{'close':toggleTab['attachment']}"></a>
@@ -428,10 +436,11 @@
                                     <div *ngIf="loader.linkToRelatedDoc" class="loader-data"></div>
                                     <div *ngIf="!loader.linkToRelatedDoc" class="collapse" id="attachment-files"
                                         [ngClass]="{'show':!toggleTab['attachment']}">
-                                        <ng-container *ngIf="(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)">
-                                        <app-attach-file
-                                            [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit && (isBilling || isInternalAudit)}"
-                                            (emitToParent)="receiveChildEvent($event)"></app-attach-file>
+                                        <ng-container
+                                            *ngIf="(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)">
+                                            <app-attach-file
+                                                [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit && (isBilling || isInternalAudit)}"
+                                                (emitToParent)="receiveChildEvent($event)"></app-attach-file>
                                         </ng-container>
                                     </div>
                                 </ng-container>
@@ -3925,12 +3934,15 @@
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
                                                             [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusEs']}">
                                                             <option value="">Select</option>
-                                                            <option value="C">Closed</option>
-                                                            <option value="E">Unbilled (E)</option>
-                                                            <option value="P">Unbilled (P)</option>
-                                                            <option value="O">Open</option>
-                                                            <option value="U"> Primary Open - Secondary Unsubmitted
-                                                            </option>
+                                                            <ng-container *ngIf="claimRcm.primary">
+                                                                <option value="Unbilled">Unbilled</option>
+                                                                <option value="Billed">Billed</option>
+                                                                <option value="Closed">Closed</option>
+                                                            </ng-container>
+                                                            <ng-container *ngIf="!claimRcm.primary">
+                                                                <option value="Unbilled">Unbilled</option>
+                                                                <option value="Billed">Billed</option>
+                                                            </ng-container>
                                                         </select>
                                                     </div>
                                                 </div>

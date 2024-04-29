@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
-
+import { ReconcilltationRequestModel } from '../models/reconcillation-request-model';
 @Component({
   selector: 'app-reconciliation',
   standalone: true,
@@ -19,7 +19,7 @@ export class ReconciliationComponent {
   reconcilData: any = [];
   loader: boolean = false;
   officeData: any = [];
-
+  reconcilltationRequestModel: ReconcilltationRequestModel = {};
   constructor(private _service: ApplicationServiceService) {
     this.title.setTitle("RCM TOOL - Reconciliation");
   }
@@ -38,15 +38,26 @@ export class ReconciliationComponent {
     })
   }
 
+  selectOffice(event: any) {
+    console.log(event);
+    this.reconcilltationRequestModel.officeUuid = event.target.value;
+  }
+
   getReconcileData() {
     this.loader = true;
+
+    this._service.fetchReconcileData(this.reconcilltationRequestModel, (res: any) => {
+      if (res.status === 200) {
+        console.log(res.data);
+      }
+    });
     setTimeout(() => {
       this.reconcilData = [
         {
           title: "Primary & Secondary Unbilled",
           claimsES: 100,
           claimsRCM: 200,
-          discrepancies: ['htttps://google.com','htttps://google.com']
+          discrepancies: ['htttps://google.com', 'htttps://google.com']
         },
         {
           title: "Primary Open & Secondary Unbilled",

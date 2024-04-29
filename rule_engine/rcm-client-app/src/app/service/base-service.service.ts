@@ -135,7 +135,8 @@ export class BaseService {
     'validate-recreate-claim': "/api/validate-recreate-claim",
     'get-collection-agency-info': "/api/get-collection-agency-info",
     'rebiiling-info': "/api/rebiiling-info",
-    'validate-secondary-claim-creation': "/api/validate-secondary-claim-creation"
+    'validate-secondary-claim-creation': "/api/validate-secondary-claim-creation",
+    'fetch-reconcile-data': "/api/reconciliation"
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {
