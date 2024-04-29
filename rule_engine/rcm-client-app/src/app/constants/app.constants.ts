@@ -305,4 +305,59 @@ export class AppConstants {
         O: "Open",
         U: "Primary Open - Secondary Unsubmitted",
       };
+    
+      public requestRebillingRequirement:any=[
+        {
+            name:'Perio Chart',
+            checked:false
+        },
+        {
+            name:'Bitewings',
+            checked:false
+        },
+        {
+            name:'PAs',
+            checked:false
+        },
+        {
+            name:'FMX',
+            checked:false
+        },
+        {
+            name:'PANO',
+            checked:false
+        },
+        {
+            name:'Pre-Op X-ray',
+            checked:false
+        },
+        {
+            name:'Post-Op X-ray',
+            checked:false
+        },
+        {
+            name:'Intra Oral Photos',
+            checked:false
+        },
+        {
+            name:'Cephlo',
+            checked:false
+        },
+        {
+            name:'CRA Code',
+            checked:false
+        },
+        {
+            name:'CRA Form',
+            checked:false
+        },
+        {
+            name:'Lab Slip',
+            checked:false
+        },
+        {
+            name:'Sedation Record',
+            checked:false
+        },
+      ]
 }

@@ -19,7 +19,7 @@ export class ReconciliationComponent {
   reconcilData: any = [];
   loader: boolean = false;
   officeData: any = [];
-  reconcilltationRequestModel: ReconcilltationRequestModel = {};
+  toggleLinks:boolean = false;
   constructor(private _service: ApplicationServiceService) {
     this.title.setTitle("RCM TOOL - Reconciliation");
   }

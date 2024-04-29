@@ -2387,9 +2387,14 @@
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus']"
                                                             [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus']}">
                                                             <option value="">Select</option>
-                                                            <option value="Check">Check</option>
-                                                            <option value="Eft">EFT</option>
-                                                            <option value="Vcc">VCC</option>
+                                                            <option value="Pending For Review">Pending For Review</option>
+                                                            <option value="Pending For Billing">Pending For Billing</option>
+                                                            <option value="Billed">Billed</option>
+                                                            <option value="In Process">In Process</option>
+                                                            <option value="Closed">Closed</option>
+                                                            <option value="Voided">Voided</option>
+                                                            <option value="Pending For Rebilling">Pending For Rebilling</option>
+                                                            <option value="Payment Promised">Payment Promised</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -2597,11 +2602,15 @@
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="statementType">Statement Type</label>
-                                                            <input type="text" id="statementType"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementType']"
-                                                                class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementType']}">
+                                                            <select id="modeOfFollowUp" class="form-control"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementType']"
+                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementType']}">
+                                                            <option value="">Select</option>
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                        </select>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4 mb-2">
@@ -2862,11 +2871,18 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
                                                         <label for="desposition">Desposition</label>
-                                                        <input type="text" id="desposition"
-                                                            [disabled]="!checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
-                                                            [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['desposition']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_COMMUNICATION'] && emptyFields['PATIENT_COMMUNICATION']['desposition']}">
+                                                        <select id="modeOfFollowUp" class="form-control"
+                                                        [disabled]="!checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                        [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['desposition']"
+                                                        [ngClass]="{'is-invalid':emptyFields['PATIENT_COMMUNICATION'] && emptyFields['PATIENT_COMMUNICATION']['desposition']}">
+                                                        <option value="">Select</option>
+                                                        <option value="Voice Mail Left">Voice Mail Left</option>
+                                                        <option value="Payment Promised">Payment Promised</option>
+                                                        <option value="Payment Made">Payment Made</option>
+                                                        <option value="Wrong No">Wrong No</option>
+                                                        <option value="Not Ready To Pay">Not Ready To Pay</option>
+                                                        <option value="Statement Requested">Statement Requested</option>
+                                                    </select>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4 mb-2">
@@ -2980,9 +2996,8 @@
                                                                 [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['collectionType']"
                                                                 [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['collectionType']}">
                                                                 <option value="">Select</option>
-                                                                <option value="Check">Check</option>
-                                                                <option value="Eft">EFT</option>
-                                                                <option value="Vcc">VCC</option>
+                                                                <option value="Phase 1">Phase 1</option>
+                                                                <option value="Phase 2">Phase 2</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -3391,6 +3406,20 @@
 
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
+                                                        <label for="usedAI">Used AI?</label>
+                                                        <select class="form-control" 
+                                                        [(ngModel)]="this.claimSectionModal.REBILLING['modal']['usedAI']"
+                                                        [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['usedAI']}">
+                                                            <option value="">Select</option>
+                                                            <option value="yes">Yes</option>
+                                                            <option value="no">No</option>
+                                                            <option value="n/a">N/A</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="custom-row text-number">
                                                         <label for="reasonForRebilling">Reason For Rebilling</label>
                                                         <select id="reasonForRebilling" class="form-control"
                                                             [disabled]="true"
@@ -3454,11 +3483,11 @@
                                                         <div class="custom-row text-number">
                                                             <label for="desposition">Service Codes to Rebill</label>
                                                             <ng-container
-                                                                *ngIf="claimSectionModal.REBILLING['modal'].serviceCodesForMultiSelect.length>0">
+                                                                *ngIf="claimSectionModal.REBILLING['modal']?.serviceCodesForMultiSelect?.length>0">
                                                                 <span class="mutliselect"
                                                                     [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['selectedRebillingServiceCodes']}">
                                                                     <multi-select-dropdown
-                                                                        [inputConfig]="{'reBillingServiceCodes':claimSectionModal.REBILLING['modal'].serviceCodesForMultiSelect,'isDetailPage':true}"
+                                                                        [inputConfig]="{'reBillingServiceCodes':claimSectionModal.REBILLING['modal']?.serviceCodesForMultiSelect,'isDetailPage':true}"
                                                                         (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
                                                                 </span>
                                                             </ng-container>
@@ -3593,8 +3622,8 @@
                                                     [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['reasonRecreation']"
                                                     [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['reasonRecreation']}">
                                                     <option [selected]="true" [value]="null">Select</option>
-                                                    <option value="in">In</option>
-                                                    <option value="out">Out</option>
+                                                    <option value="Rebilling Needed">Rebilling Needed</option>
+                                                    <option value="Code Change Needed">Code Change Needed</option>
                                                 </select>
                                             </div>
                                         </div>

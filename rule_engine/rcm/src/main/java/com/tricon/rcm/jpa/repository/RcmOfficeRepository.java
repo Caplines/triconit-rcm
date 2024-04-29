@@ -23,4 +23,6 @@ public interface RcmOfficeRepository extends JpaRepository<RcmOffice, String> {
 	int getMaxKeyFromOffice();
 	
 	List<RcmOfficeDto> findByCompanyAndActiveTrueOrderByNameAsc(RcmCompany company);
+	
+	List<RcmOfficeDto> findByCompanyUuidIn(List<String> company);
 }

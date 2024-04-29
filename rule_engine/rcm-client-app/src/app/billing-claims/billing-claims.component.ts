@@ -293,7 +293,8 @@ export class BillingClaimsComponent {
     PATIENT_COMMUNICATION: {
       data: [],
       modal: {
-        modeOfFollowUp: ''
+        modeOfFollowUp: '',
+        desposition:''
       }
     },
     CURRENT_STATUS_AND_NEXT_ACTION: {
@@ -309,7 +310,8 @@ export class BillingClaimsComponent {
     REBILLING: {
       data: [],
       modal: {
-        rebillingStatus: true
+        rebillingStatus: true,
+        usedAI:''
       },
       dataModal: {}
     },
@@ -3216,9 +3218,10 @@ export class BillingClaimsComponent {
       if (e.serviceCode.toLowerCase() !== 'undistributed') {
         this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({ name: e.serviceCode, checked: false });
       }
-      this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({ name: `option${idx}`, checked: false });
+      // this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({ name: `option${idx}`, checked: false });
     })
     this.claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'] = this.serviceLevelSectionMultiSelectConfig.serviceCodesList;   //for recreation section service codes
+    this.serviceLevelSectionMultiSelectConfig.rebillingRequirements = this.appConstants.requestRebillingRequirement;
   }
 
   closeReqRebillingModal() {
@@ -3245,6 +3248,7 @@ export class BillingClaimsComponent {
     reBillingModal['dataModal']['originalRequirements'] = reBillingModal['modal']['originalRequirements'];
     reBillingModal['dataModal']['claimTransferNextTeamId'] = reBillingModal['modal']['claimTransferNextTeamId'];
     reBillingModal['dataModal']['reCeationOptionChoosen'] = reBillingModal['modal']['reCeationOptionChoosen'];
+    reBillingModal['dataModal']['usedAI'] = reBillingModal['modal']['usedAI'];
 
 
     if (!isFinal) {
