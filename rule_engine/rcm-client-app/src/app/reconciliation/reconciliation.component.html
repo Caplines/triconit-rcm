@@ -1,65 +1,67 @@
-
 <div class="right-container">
     <div class="container-fluid my-5">
 
         <div class="office-box">
-                <div class="form-group">
-                    <div class="d-flex align-items-center m-3">
-                        <label for="office" class="me-5">Office</label>
-                        <select type="text" id="office" class="form-control mx-2">
-                            <option [value]="" [selected]="true">Select</option>
-                            <ng-container *ngFor="let item of officeData">
-                                <option [value]="item.name">{{item.name}}</option>
-                            </ng-container>
-                        </select>
-                    </div>
-                    <div class="d-flex align-items-center m-3">
-                        <label for="dos">Enter Dates of Service</label>
-                        <input type="date" id="dos" class="form-control mx-2">
-                    </div>
+            <div class="form-group">
+                <div class="d-flex align-items-center m-3">
+                    <label for="office" class="me-5">Office</label>
+                    <select type="text" id="office" class="form-control mx-2" (change)="selectOffice($event)">
+                        <option [value]="" [selected]="true">Select</option>
+                        <ng-container *ngFor="let item of officeData">
+                            <option [value]="item.uuid">{{item.name}}</option>
+                        </ng-container>
+                    </select>
                 </div>
-                <div class="form-group m-3">
-                    <button class="btn btn-success" (click)="getReconcileData()">Send</button>
+                <div class="d-flex align-items-center m-3">
+                    <label for="dos">Enter Dates of Service</label>
+                    <input type="date" id="dos" class="form-control mx-2">
                 </div>
+            </div>
+            <div class="form-group m-3">
+                <button class="btn btn-success" (click)="getReconcileData()">Send</button>
+            </div>
         </div>
 
-            <table class="table table-bordered table-striped">
-                <thead>
-                    <tr class="totalRow">
-                        <th>#</th>
-                        <th>No. of Claims in ES</th>
-                        <th>No. of Claims in RCM Tool</th>
-                        <th>Discrepancies Found</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngIf="loader">
-                        <td colspan="4" class="text-center">
-                            <span class="loader-data "></span>
-                         </td>
-                    </tr>
-                    <tr *ngFor="let data of reconcilData">
-                        <td>{{data.title}}</td>
-                        <td class="alignRight">{{data.claimsES}}</td>
-                        <td class="alignRight">{{data.claimsRCM}}</td>
-                        <td class="alignCenter">
-                            <div class="d-flex justify-content-between">
-                                <button (click)="data.toggleLinks = !data.toggleLinks" class="btn btn-link text-decoration-none">
-                                    <i *ngIf="!data.toggleLinks" class="arrow-right"></i>
-                                    <i *ngIf="data.toggleLinks" class="arrow-down"></i>
-                                    <span class="discrepancies-text">Discrepancies Found ({{data.discrepancies.length}}):</span>
-                                </button>
-                            </div>
-                            <ng-container *ngIf="data.toggleLinks">
-                                <ng-container *ngFor="let link of data.discrepancies; let idx =index">
-                                    <div>
-                                        <a class="btn btn-link text-decoration-none fs-4" [href]="link">Test Link {{idx+1}}</a>
-                                    </div>
-                                </ng-container>
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr class="totalRow">
+                    <th>#</th>
+                    <th>No. of Claims in ES</th>
+                    <th>No. of Claims in RCM Tool</th>
+                    <th>Discrepancies Found</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="loader">
+                    <td colspan="4" class="text-center">
+                        <span class="loader-data "></span>
+                    </td>
+                </tr>
+                <tr *ngFor="let data of reconcilData">
+                    <td>{{data.title}}</td>
+                    <td class="alignRight">{{data.claimsES}}</td>
+                    <td class="alignRight">{{data.claimsRCM}}</td>
+                    <td class="alignCenter">
+                        <div class="d-flex justify-content-between">
+                            <button (click)="data.toggleLinks = !data.toggleLinks"
+                                class="btn btn-link text-decoration-none">
+                                <i *ngIf="!data.toggleLinks" class="arrow-right"></i>
+                                <i *ngIf="data.toggleLinks" class="arrow-down"></i>
+                                <span class="discrepancies-text">Discrepancies Found
+                                    ({{data.discrepancies.length}}):</span>
+                            </button>
+                        </div>
+                        <ng-container *ngIf="data.toggleLinks">
+                            <ng-container *ngFor="let link of data.discrepancies; let idx =index">
+                                <div>
+                                    <a class="btn btn-link text-decoration-none fs-4" [href]="link">Test Link
+                                        {{idx+1}}</a>
+                                </div>
                             </ng-container>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </ng-container>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>

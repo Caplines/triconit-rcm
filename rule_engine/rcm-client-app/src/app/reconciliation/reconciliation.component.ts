@@ -17,9 +17,10 @@ export class ReconciliationComponent {
   private title = inject(Title);
 
   reconcilData: any = [];
+  reconcilltationRequestModel: ReconcilltationRequestModel = {}
   loader: boolean = false;
   officeData: any = [];
-  toggleLinks:boolean = false;
+  toggleLinks: boolean = false;
   constructor(private _service: ApplicationServiceService) {
     this.title.setTitle("RCM TOOL - Reconciliation");
   }

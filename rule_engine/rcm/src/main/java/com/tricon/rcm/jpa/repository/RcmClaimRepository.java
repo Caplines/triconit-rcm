@@ -24,6 +24,7 @@ import com.tricon.rcm.dto.customquery.ProductionForPatientCalling;
 import com.tricon.rcm.dto.customquery.ProductionForPatientStatement;
 import com.tricon.rcm.dto.customquery.ProductionForPaymentPosting;
 import com.tricon.rcm.dto.customquery.RcmClaimDetailDto;
+import com.tricon.rcm.dto.customquery.ReconcillationClaimDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
@@ -1023,4 +1024,59 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		List<ProductionForPaymentPosting> claimProductionForPaymentPostingAssoicate(@Param("companyIds") List<String> companyIds,
 				@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate,
 				@Param("userId") String userId,@Param("claimStaus") String claimStaus);
+		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
+				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
+				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated "
+				+ " from  rcm_claims  cl where "
+				+ " cl.office_id=:officeId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED+" and cl.claim_id  REGEXP :claimsIds "
+				+ " " )//select * from rcm_claims where claim_id  REGEXP '_13767_P|P';
+		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsArchived(@Param("officeId") String officeId,
+				@Param("claimsIds") String claimsIds);
+		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
+				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
+				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated from "
+				+ " rcm_claims  cl where "
+				+ " cl.office_id=:officeId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in :claimsIds "
+				+ " " )
+		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsUnarchived(@Param("officeId") String officeId,
+				@Param("claimsIds") List<String> claimsIds);
+		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
+				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
+				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated from "
+				+ " rcm_claims  cl where "
+				+ " cl.office_id=:officeId and status_es_updated=:statusEsUpdated and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in :claimsIds "
+				+ " " )
+		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdated(@Param("officeId") String officeId,
+				@Param("claimsIds") List<String> claimsIds,@Param("statusEsUpdated") String statusEsUpdated);
+		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
+				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
+				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated from "
+				+ " rcm_claims  cl where "
+				+ " cl.office_id=:officeId and status_es_updated not in ('Unbilled','Billed','Closed') and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in :claimsIds "
+				+ " " )
+		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdatedOPen(@Param("officeId") String officeId,
+				@Param("claimsIds") List<String> claimsIds);
+		
+		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
+				+ "cl.claim_id as claimUuid ,cl.resolved as currentState,"
+				+ "cl.is_archive as currentStatus "
+				+ " from  rcm_issue_claims  cl where "
+				+ " cl.office_id=:officeId and cl.resolved=false and is_archive=false and cl.claim_id in :claimsIds "
+				+ " " )
+		List<ReconcillationClaimDto> getClaimInIssueClaimByClaimIdAndOfficeUnarchived(@Param("officeId") String officeId,
+				@Param("claimsIds") List<String> claimsIds);
+		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
+				+ "cl.claim_id as claimUuid ,cl.resolved as currentState,"
+				+ "cl.is_archive as currentStatus"
+				+ " from  rcm_issue_claims  cl where "
+				+ " cl.office_id=:officeId and cl.resolved=false and is_archive=true and cl.claim_id REGEXP :claimsIds "
+				+ " " )//select * from rcm_claims where claim_id  REGEXP '_13767_P|P';
+		List<ReconcillationClaimDto> getClaimInIssueClaimByClaimIdAndOfficeArchived(@Param("officeId") String officeId,
+				@Param("claimsIds") String claimsIds);
 }
