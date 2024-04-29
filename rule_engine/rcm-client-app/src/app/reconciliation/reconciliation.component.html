@@ -42,16 +42,22 @@
                         <td>{{data.title}}</td>
                         <td class="alignRight">{{data.claimsES}}</td>
                         <td class="alignRight">{{data.claimsRCM}}</td>
-                        <td class="alignRight">
+                        <td class="alignCenter">
                             <div class="d-flex justify-content-between">
-                                Discrepancies Found {{data.discrepancies.length}} -:
-                                <ng-container *ngFor="let link of data.discrepancies;let idx =index">
+                                <button (click)="data.toggleLinks = !data.toggleLinks" class="btn btn-link text-decoration-none">
+                                    <i *ngIf="!data.toggleLinks" class="arrow-right"></i>
+                                    <i *ngIf="data.toggleLinks" class="arrow-down"></i>
+                                    <span class="discrepancies-text">Discrepancies Found ({{data.discrepancies.length}}):</span>
+                                </button>
+                            </div>
+                            <ng-container *ngIf="data.toggleLinks">
+                                <ng-container *ngFor="let link of data.discrepancies; let idx =index">
                                     <div>
-                                        <a class="text-decoration-none fs-4" [href]="link"> Test Link {{idx+1}}</a> 
+                                        <a class="btn btn-link text-decoration-none fs-4" [href]="link">Test Link {{idx+1}}</a>
                                     </div>
                                 </ng-container>
-                            </div>
-                            </td>
+                            </ng-container>
+                        </td>
                     </tr>
                 </tbody>
             </table>
