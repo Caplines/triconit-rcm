@@ -1,24 +1,25 @@
 <div class="right-container">
     <div class="container-fluid my-5">
-
         <div class="office-box">
             <div class="form-group">
                 <div class="d-flex align-items-center m-3">
                     <label for="office" class="me-5">Office</label>
-                    <select type="text" id="office" class="form-control mx-2" (change)="selectOffice($event)">
-                        <option [value]="" [selected]="true">Select</option>
+                    <select type="text" id="office" class="form-control mx-2" [(ngModel)] = "reconcilltationRequestModel.officeUuid" required>
+                        <option value="Select" >Select</option>
                         <ng-container *ngFor="let item of officeData">
                             <option [value]="item.uuid">{{item.name}}</option>
                         </ng-container>
                     </select>
                 </div>
                 <div class="d-flex align-items-center m-3">
-                    <label for="dos">Enter Dates of Service</label>
-                    <input type="date" id="dos" class="form-control mx-2">
+                    <label for="dos">Start Date Of Closed Claim</label>
+                    <input type="date" id="dos-s" class="form-control mx-2" [(ngModel)] = "reconcilltationRequestModel.startDate" required>
+                    <label for="dos">End Date Of Closed Claim</label>
+                    <input type="date" id="dos-e" class="form-control mx-2" [(ngModel)] = "reconcilltationRequestModel.endDate" required>
                 </div>
             </div>
             <div class="form-group m-3">
-                <button class="btn btn-success" (click)="getReconcileData()">Send</button>
+                <button class="btn btn-success" [disabled]="!isValidForm() || this.loader" (click)="getReconcileData()">Send</button>
             </div>
         </div>
 

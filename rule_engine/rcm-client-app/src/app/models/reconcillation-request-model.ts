@@ -1,3 +1,5 @@
 export class ReconcilltationRequestModel {
-    officeUuid?: string = "";
+    officeUuid?: string;
+    startDate?: Date;
+    endDate?: Date;
 }
