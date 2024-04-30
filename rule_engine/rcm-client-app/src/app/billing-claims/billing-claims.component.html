@@ -3236,7 +3236,18 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="reasonForRebilling">Reason for rebilling</label>
-                                                <select id="reasonForRebilling" class="form-control"
+                                                <select id="reasonForRebilling" class="form-control" *ngIf="claimSectionModal?.REQUEST_REBILLING"
+                                                    [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                    [(ngModel)]="this.claimSectionModal.REQUEST_REBILLING['reasonForRebilling']"
+                                                    [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['reasonForRebilling']}">
+                                                    <option value="">Select</option>
+                                                    <option value="COB Info Required">COB Info Required</option>
+                                                    <option value="Medical Necessity">Medical Necessity</option>
+                                                    <option value="Additional Info Needed">Additional Info Needed</option>
+                                                    <option value="Claim not on file">Claim not on file</option>
+                                                    <option value="Need Primary EOB">Need Primary EOB</option>
+                                                </select>
+                                                <!-- <select id="reasonForRebilling" class="form-control"
                                                     *ngIf="claimSectionModal?.REQUEST_REBILLING"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.REQUEST_REBILLING['reasonForRebilling']"
@@ -3246,7 +3257,7 @@
                                                         *ngFor="let item of appConstants.claimInitialDenialReason">
                                                         <option [value]="item.reasonName">{{item.reasonName}}</option>
                                                     </ng-container>
-                                                </select>
+                                                </select> -->
                                             </div>
                                         </div>
                                         <div class="col-md-4 mb-2">

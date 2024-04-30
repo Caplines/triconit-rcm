@@ -305,7 +305,7 @@ export class BillingClaimsComponent {
       "nextAction": "Re-billing",
       "currentAction": "Re-billing",
       "teamId": 7,
-      "reasonForRebilling": '-1'
+      "reasonForRebilling": ''
     },
     REBILLING: {
       data: [],
