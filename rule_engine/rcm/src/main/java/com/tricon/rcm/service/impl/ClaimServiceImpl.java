@@ -3613,12 +3613,13 @@ public class ClaimServiceImpl {
 
 	private String saveClaimSubmissionDetails(RcmUser user, RcmClaims claim, ClaimSubmissionDto dto) {
 		RcmClaimSubmissionDetails det = rcmClaimSubmissionDetailsRepo.findByClaim(claim);
+		Date date=new Date();
 		if (dto == null)
 			return "";
 		if (det != null) {
 			det.setSubmittedBy(user);
 			det.setUpdatedBy(user);
-			det.setUpdatedDate(new Date());
+			det.setUpdatedDate(date);
 		} else {
 			det = new RcmClaimSubmissionDetails();
 			det.setSubmittedBy(user);
@@ -3626,6 +3627,9 @@ public class ClaimServiceImpl {
 
 		det.setCreatedBy(user);
 		det.setClaim(claim);
+		if(dto.getEsDate()==null) {
+			dto.setEsDate(new java.sql.Date(date.getTime()));
+		}
 		det.setEsDate(dto.getEsDate());
 		det.setPreauth(dto.isPreauth());
 		det.setPreauthNo(dto.getPreauthNo());
