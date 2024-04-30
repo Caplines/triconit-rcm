@@ -928,31 +928,13 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 							p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Sedation Record Availibility")).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
-						    		if (a[6]==null) a[6]="";
-						    		if (a[6].toString().length()==0)
-						    		a[6]=a[6] + x.getService_code()+"="+x.getVal();
-						    		else a[6]=a[6] +";"+ x.getService_code()+"="+x.getVal();
-						    	});
-						    }
-						   p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Consent Form for Major Service")).collect(Collectors.toList());
-						    if (p1!=null && p1.size()>0) {
-						    	p1.forEach(x->{
-						    		if (a[7]==null) a[7]="";
-						    		if (a[7].toString().length()==0)
-						    		a[7]=a[7] + x.getService_code()+"="+x.getVal();
-						    		else a[7]=a[7] +";"+ x.getService_code()+"="+x.getVal();
-						    	});
-						    }
-						    p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Provider Notes")).collect(Collectors.toList());
-						    if (p1!=null && p1.size()>0) {
-						    	p1.forEach(x->{
 						    		if (a[8]==null) a[8]="";
 						    		if (a[8].toString().length()==0)
 						    		a[8]=a[8] + x.getService_code()+"="+x.getVal();
 						    		else a[8]=a[8] +";"+ x.getService_code()+"="+x.getVal();
 						    	});
 						    }
-						    p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("CRA Form Availability")).collect(Collectors.toList());
+						   p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Consent Form for Major Service")).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
 						    		if (a[9]==null) a[9]="";
@@ -961,24 +943,42 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 						    		else a[9]=a[9] +";"+ x.getService_code()+"="+x.getVal();
 						    	});
 						    }
+						    p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Provider Notes")).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {
+						    	p1.forEach(x->{
+						    		if (a[10]==null) a[10]="";
+						    		if (a[10].toString().length()==0)
+						    		a[10]=a[10] + x.getService_code()+"="+x.getVal();
+						    		else a[10]=a[10] +";"+ x.getService_code()+"="+x.getVal();
+						    	});
+						    }
+						    p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("CRA Form Availability")).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {
+						    	p1.forEach(x->{
+						    		if (a[11]==null) a[11]="";
+						    		if (a[11].toString().length()==0)
+						    		a[11]=a[11] + x.getService_code()+"="+x.getVal();
+						    		else a[11]=a[11] +";"+ x.getService_code()+"="+x.getVal();
+						    	});
+						    }
 						}
                         if (data2!=null) {
                         	p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 319).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
-						    		if (a[10]==null) a[10]="";
-						    		if (a[10].toString().length()==0)
-						    		a[10]=a[10] + x.getMessage_type();
-						    		else a[10]=a[10] +";"+ x.getMessage_type();
+						    		if (a[12]==null) a[12]="";
+						    		if (a[12].toString().length()==0)
+						    		a[12]=a[12] + x.getMessage_type();
+						    		else a[12]=a[12] +";"+ x.getMessage_type();
 						    	});
 						    }
 						    p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 320).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
-						    		if (a[11]==null) a[11]="";
-						    		if (a[11].toString().length()==0)
-						    		a[11]=a[11] + x.getMessage_type();
-						    		else a[11]=a[11] +";"+ x.getMessage_type();
+						    		if (a[13]==null) a[13]="";
+						    		if (a[13].toString().length()==0)
+						    		a[13]=a[13] + x.getMessage_type();
+						    		else a[13]=a[13] +";"+ x.getMessage_type();
 						    	});
 						    }
 						}

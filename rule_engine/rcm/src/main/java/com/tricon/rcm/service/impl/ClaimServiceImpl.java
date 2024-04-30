@@ -5455,11 +5455,19 @@ public class ClaimServiceImpl {
 		
 		RcmOffice office= officeRepo.findByUuid(dto.getOfficeUuid());
 		//Call Rule Engine 
-		List<ClaimReconcillationDto> primaryUnbilledClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryUnbilled");
-		List<ClaimReconcillationDto> secondaryUnbilledClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryUnsubmitted");
-		List<ClaimReconcillationDto> primaryOpenClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryOpen");
-		List<ClaimReconcillationDto> secondaryOpenClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryOpen");
-		List<ClaimReconcillationDto> secondaryUnsubmittedClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryUnbilled");
+		String date1= dto.getStartDate()!=null?Constants.SDF_CredentialSheetAnes.format(dto.getStartDate()):"";
+		String date2= dto.getEndDate()!=null?Constants.SDF_CredentialSheetAnes.format(dto.getEndDate()):"";
+				
+		List<ClaimReconcillationDto> primaryUnbilledClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryUnbilled",date1,date2);
+		List<ClaimReconcillationDto> secondaryUnbilledClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryUnsubmitted",date1,date2);
+		List<ClaimReconcillationDto> primaryOpenClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryOpen",date1,date2);
+		List<ClaimReconcillationDto> secondaryOpenClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryOpen",date1,date2);
+		List<ClaimReconcillationDto> secondaryUnsubmittedClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryUnbilled",date1,date2);
+		
+		List<ClaimReconcillationDto> primaryCloseClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryClose",date1,date2);
+		List<ClaimReconcillationDto> secondaryCloseClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryClose",date1,date2);
+		
+		
 		List<ReconciliationResponseDto> dataList= new ArrayList<>();
 		ReconciliationResponseDto resposeDto = null;
 		
@@ -5479,6 +5487,14 @@ public class ClaimServiceImpl {
 		
 		resposeDto = new ReconciliationResponseDto();
 		resposeDto= prepaireReconcillationData("Secondary Open",resposeDto, office, secondaryOpenClaims, false);
+		dataList.add(resposeDto);
+		
+		resposeDto = new ReconciliationResponseDto();
+		resposeDto= prepaireReconcillationData("Primary Closed",resposeDto, office, primaryCloseClaims, true);
+		dataList.add(resposeDto);
+		
+		resposeDto = new ReconciliationResponseDto();
+		resposeDto= prepaireReconcillationData("Secondary Closed",resposeDto, office, secondaryCloseClaims, false);
 		dataList.add(resposeDto);
 		
 		//resposeDto = new ReconciliationResponseDto();
@@ -5709,6 +5725,14 @@ public class ClaimServiceImpl {
 			}else if (title.equals("Secondary Open")) {
 				if (x.getStatusEsUpdated()==null) discrepancies.add(x.getClaimId().split("_")[0]);
 				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Billed"))
+					discrepancies.add(x.getClaimId().split("_")[0]);
+			}else if (title.equals("Primary Closed")) {
+				if (x.getStatusEsUpdated()==null) discrepancies.add(x.getClaimId().split("_")[0]);
+				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Closed"))
+					discrepancies.add(x.getClaimId().split("_")[0]);
+			}else if (title.equals("Secondary Closed")) {
+				if (x.getStatusEsUpdated()==null) discrepancies.add(x.getClaimId().split("_")[0]);
+				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Closed"))
 					discrepancies.add(x.getClaimId().split("_")[0]);
 			}
 			

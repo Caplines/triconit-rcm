@@ -82,7 +82,9 @@ public class RcmController {
 	RcmEnv rcmReconCillationPrimaryOpen = null;
 	RcmEnv rcmReconCillationSecondaryOpen = null;
 	RcmEnv rcmReconCillationSecondaryUnsubmitted = null;
-
+	RcmEnv rcmReconCillationPrimaryClose = null;
+	RcmEnv rcmReconCillationSecondaryClose = null;
+	
 	@Autowired
 	ScrappingFullDataService fullService;
 	
@@ -133,6 +135,14 @@ public class RcmController {
 		
 		rcmReconCillationSecondaryUnsubmitted = new RcmEnv(env.getProperty("secondary.unsubmitted.query"),
 				env.getProperty("secondary.unsubmitted.count"), env.getProperty("secondary.unsubmitted.selectcolumns"),
+				env.getProperty("rmc.auth.token"));
+		
+		rcmReconCillationPrimaryClose = new RcmEnv(env.getProperty("primary.close.query"),
+				env.getProperty("primary.close.count"), env.getProperty("primary.close.selectcolumns"),
+				env.getProperty("rmc.auth.token"));
+		
+		rcmReconCillationSecondaryClose = new RcmEnv(env.getProperty("secondary.close.query"),
+				env.getProperty("secondary.close.count"), env.getProperty("secondary.close.selectcolumns"),
 				env.getProperty("rmc.auth.token"));
 	
 	}
@@ -361,7 +371,9 @@ public class RcmController {
 	public ResponseEntity<?> reconcillationtData(@RequestHeader("x-api-key") String apiKey,
 			@RequestParam(value = "office", required = true) String officeUuid,
 			@RequestParam(value = "password", required = true) String password,
-			@RequestParam(value = "type", required = true) String type)
+			@RequestParam(value = "type", required = true) String type,
+			@RequestParam(value = "date1", required = false) String date1,
+			@RequestParam(value = "date2", required = false) String date2)
 			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
 
 		String ids = null;
@@ -398,6 +410,15 @@ public class RcmController {
 			queryReplace = rcmReconCillationSecondaryUnsubmitted.getQuery();
 			columns = rcmReconCillationSecondaryUnsubmitted.getQuerySelectcolumns();
 			count = Integer.parseInt(rcmReconCillationSecondaryUnsubmitted.getQueryCount());
+		}else if (type.equals("PrimaryClose")) {
+			queryReplace = rcmReconCillationPrimaryClose.getQuery();
+			columns = rcmReconCillationPrimaryClose.getQuerySelectcolumns();
+			count = Integer.parseInt(rcmReconCillationPrimaryClose.getQueryCount());
+		}
+		else if (type.equals("SecondaryClose")) {
+			queryReplace = rcmReconCillationSecondaryClose.getQuery();
+			columns = rcmReconCillationSecondaryClose.getQuerySelectcolumns();
+			count = Integer.parseInt(rcmReconCillationSecondaryClose.getQueryCount());
 		}
 		if (queryReplace == null ) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created Successfully", "Query Type Error"));
@@ -419,10 +440,8 @@ public class RcmController {
 
 			}
 			
-			
-			
-			//queryReplace=queryReplace.replaceAll("DATE1", startDate);
-			//queryReplace=queryReplace.replace("PAT_ID", patientId);
+			queryReplace=queryReplace.replaceAll("DATE1", date1);
+			queryReplace=queryReplace.replace("DATE2", date2);
 			GenericResponse data = (GenericResponse) googleReportsController
 					.fethESGoogleresponse(columns, queryReplace, ids,
 							count, password, officeName, null, null)

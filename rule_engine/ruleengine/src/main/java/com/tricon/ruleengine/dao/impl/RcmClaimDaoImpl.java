@@ -51,9 +51,10 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 		    	break;
 		    case Constants.QUERY_FOR_RCMCALIM_AUDITED:
 		    	finalQuery="select off.name,SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id,cl.patient_id,cl.dos,"+
-		    			"DATE_FORMAT( rca.created_date, '%m/%d/%Y') as reviewDate,cl.claim_uuid as uuid, '' as e1,'' as e2,'' as e3,'' as e4,'' as e5,'' as e6,'' as e7,'' as e8 "+//added e's to Populate Empty Array  
+		    			"DATE_FORMAT( rca.created_date, '%m/%d/%Y') as reviewDate,cl.claim_uuid as uuid,us.first_name,us.last_name, '' as e1,'' as e2,'' as e3,'' as e4,'' as e5,'' as e6,'' as e7,'' as e8 "+//added e's to Populate Empty Array  
 		    			" from rcm_claim_assignment rca inner join rcm_claims cl on cl.claim_uuid=rca.claim_id inner join office off on off.uuid=cl.office_id "+
 		    			" inner join company cmp on cmp.uuid=off.company_id "+
+		    			" inner join rcm_user us on rca.created_by=us.uuid "+ 
 		    			" where cl.current_state=0 and cmp.name='"+d.getClient()+"' "+(office==null?"":" and cl.office_id='"+office.getUuid()+"' ")+
 		    			" and rca.active=false and rca.action_name = 'Reviewed' and rca.current_team_id=7 and rca.System_comment='Claim Transfered To Team( From 3 to 7)' "+
 		    			(d.getDateCheckType().equals("dos")? "and cl.dos between  STR_TO_DATE('"+d.getDate1()+" 00:00:00', '%m/%d/%Y %H:%i:%s') AND STR_TO_DATE('"+d.getDate2()+" 23:59:59', '%m/%d/%Y %H:%i:%s')":" and rca.created_date between  STR_TO_DATE('"+d.getDate1()+" 00:00:00', '%m/%d/%Y %H:%i:%s') AND STR_TO_DATE('"+d.getDate2()+" 23:59:59', '%m/%d/%Y %H:%i:%s')") +
@@ -61,9 +62,10 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 		    	break;
 		    case Constants.QUERY_FOR_RCMCALIM_FROM_A_TO_B:
 		    	finalQuery="select off.name,SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id,cl.patient_id,cl.dos,"+
-		    			"DATE_FORMAT( rca.created_date, '%m/%d/%Y') as reviewDate,cl.claim_uuid as uuid, '' as e1,'' as e2,'' as e3,'' as e4,'' as e5,'' as e6,'' as e7,'' as e8 "+//added e's to Populate Empty Array  
+		    			"DATE_FORMAT( rca.created_date, '%m/%d/%Y') as reviewDate,cl.claim_uuid as uuid,us.first_name,us.last_name, '' as e1,'' as e2,'' as e3,'' as e4,'' as e5,'' as e6,'' as e7,'' as e8 "+//added e's to Populate Empty Array  
 		    			" from rcm_claim_assignment rca inner join rcm_claims cl on cl.claim_uuid=rca.claim_id inner join office off on off.uuid=cl.office_id "+
 		    			" inner join company cmp on cmp.uuid=off.company_id "+
+		    			" inner join rcm_user us on rca.created_by=us.uuid "+
 		    			" where cl.current_state=0 and cmp.name='"+d.getClient()+"' "+(office==null?"":" and cl.office_id='"+office.getUuid()+"' ")+
 		    			" and rca.active=false  and rca.System_comment='Claim Transfered To Team( From "+d.getTeam1()+" to "+d.getTeam2()+")' "+
 		    			(d.getDateCheckType().equals("dos")? "and cl.dos between  STR_TO_DATE('"+d.getDate1()+" 00:00:00', '%m/%d/%Y %H:%i:%s') AND STR_TO_DATE('"+d.getDate2()+" 23:59:59', '%m/%d/%Y %H:%i:%s')":" and rca.created_date between  STR_TO_DATE('"+d.getDate1()+" 00:00:00', '%m/%d/%Y %H:%i:%s') AND STR_TO_DATE('"+d.getDate2()+" 23:59:59', '%m/%d/%Y %H:%i:%s')") +

@@ -24,7 +24,7 @@ export class ReconciliationComponent {
   loader: boolean = false;
   officeData: any = [];
   toggleLinks: boolean = false;
-  datesDiff: number = 1000;
+  datesDiff: number = 1000000;
 
   constructor(private _service: ApplicationServiceService) {
     this.title.setTitle("RCM TOOL - Reconciliation");
@@ -47,16 +47,16 @@ export class ReconciliationComponent {
   isValidForm(): boolean {
     if (!this.reconcilltationRequestModel.officeUuid || !this.reconcilltationRequestModel.startDate ||
       !this.reconcilltationRequestModel.endDate || this.calculateDateDiff() > this.datesDiff)
-        return false;
+      return false;
     else
-        return true;
+      return true;
   }
 
   calculateDateDiff(): number {
     const startDate = new Date(this.reconcilltationRequestModel.startDate).getTime();
     const endDate = new Date(this.reconcilltationRequestModel.endDate).getTime();
     const diffInDays = Math.floor((endDate - startDate) / (1000 * 60 * 60 * 24));
-    if(diffInDays < 0){
+    if (diffInDays < 0) {
       return this.datesDiff + 1;
     }
     return diffInDays;
@@ -106,7 +106,7 @@ export class ReconciliationComponent {
         )
       }
     });
-    
+
   }
 
 }

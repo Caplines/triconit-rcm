@@ -1178,7 +1178,7 @@ public class RuleEngineService {
 	 * @param off
 	 * @return
 	 */
-	public List<ClaimReconcillationDto> fetchReconcillationDataFromES(RcmOffice off,String queryType) {
+	public List<ClaimReconcillationDto> fetchReconcillationDataFromES(RcmOffice off,String queryType,String date1, String date2) {
 
 		String officeUuid = off.getUuid();
 		List<ClaimReconcillationDto> li= new ArrayList<>();
@@ -1186,7 +1186,7 @@ public class RuleEngineService {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			String param = "?password=" + eagleSoftDBDetailsRepo.findByOffice(off).getPassword() + "&type="
 					+ queryType;
-			param = param + "&office=" + officeUuid;
+			param = param + "&office=" + officeUuid+"&date1="+date1+"&date2="+date2;
 			
 			//TEST DATA
 			/*param = "?password=" + "134568" + "&patientId="
