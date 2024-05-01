@@ -1061,9 +1061,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
 				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated from "
 				+ " rcm_claims  cl where "
-				+ " cl.office_id=:officeId and status_es_updated not in ('Unbilled','Billed','Closed') and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in :claimsIds "
+				+ " cl.office_id=:officeId and status_es_updated in ('Unbilled','Open') and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in :claimsIds "
 				+ " " )
-		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdatedOPen(@Param("officeId") String officeId,
+		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdatedOPenUnbilled(@Param("officeId") String officeId,
 				@Param("claimsIds") List<String> claimsIds);
 		
 		

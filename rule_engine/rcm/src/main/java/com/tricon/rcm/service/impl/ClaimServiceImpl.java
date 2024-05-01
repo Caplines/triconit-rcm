@@ -5458,14 +5458,14 @@ public class ClaimServiceImpl {
 		String date1= dto.getStartDate()!=null?Constants.SDF_CredentialSheetAnes.format(dto.getStartDate()):"";
 		String date2= dto.getEndDate()!=null?Constants.SDF_CredentialSheetAnes.format(dto.getEndDate()):"";
 				
-		List<ClaimReconcillationDto> primaryUnbilledClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryUnbilled",date1,date2);
-		List<ClaimReconcillationDto> secondaryUnbilledClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryUnsubmitted",date1,date2);
-		List<ClaimReconcillationDto> primaryOpenClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryOpen",date1,date2);
-		List<ClaimReconcillationDto> secondaryOpenClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryOpen",date1,date2);
-		List<ClaimReconcillationDto> secondaryUnsubmittedClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryUnbilled",date1,date2);
+		List<ClaimReconcillationDto> primaryUnbilledClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryUnbilled",date1,date2);//B23
+		List<ClaimReconcillationDto> secondaryUnbilledClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryUnsubmitted",date1,date2);//c25
+		List<ClaimReconcillationDto> primaryOpenClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryOpen",date1,date2);//B24
+		List<ClaimReconcillationDto> secondaryOpenClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryOpen",date1,date2);//C24
+		List<ClaimReconcillationDto> secondaryUnsubmittedClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryUnbilled",date1,date2);//c23
 		
-		List<ClaimReconcillationDto> primaryCloseClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryClose",date1,date2);
-		List<ClaimReconcillationDto> secondaryCloseClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryClose",date1,date2);
+		List<ClaimReconcillationDto> primaryCloseClaims =ruleEngineService.fetchReconcillationDataFromES(office,"PrimaryClose",date1,date2);//B26
+		List<ClaimReconcillationDto> secondaryCloseClaims =ruleEngineService.fetchReconcillationDataFromES(office,"SecondaryClose",date1,date2);//C26
 		
 		
 		List<ReconciliationResponseDto> dataList= new ArrayList<>();
@@ -5478,7 +5478,8 @@ public class ClaimServiceImpl {
 		dataList.add(resposeDto);
 		//Secondary Unbilled - (Primary Unbilled or Primary Open)
 		resposeDto = new ReconciliationResponseDto();
-		resposeDto=  prepaireReconcillationDataSecondaryUnbilled("Secondary Unbilled - (Primary Unbilled or Primary Open)", resposeDto, office, secondaryUnbilledClaims);
+		resposeDto=  prepaireReconcillationDataPrimarySecondaryStatuses("Secondary Unbilled - (Primary Unbilled or Primary Open)" + 
+				" (Primary & secondary unbilled ) Or (Primary Open & Secondary Unbilled)", resposeDto, office, secondaryUnbilledClaims,1);
 		dataList.add(resposeDto);
 		
 		resposeDto = new ReconciliationResponseDto();
@@ -5497,26 +5498,18 @@ public class ClaimServiceImpl {
 		resposeDto= prepaireReconcillationData("Secondary Closed",resposeDto, office, secondaryCloseClaims, false);
 		dataList.add(resposeDto);
 		
-		//resposeDto = new ReconciliationResponseDto();
-		//resposeDto= prepaireReconcillationData("Primary Closed",resposeDto, office, primaryOpenClaims, false);
-		//dataList.add(resposeDto);
-		
-		//resposeDto = new ReconciliationResponseDto();
-		//resposeDto.setTitle("Secondary Closed");
-		//dataList.add(resposeDto);
 		
 		resposeDto = new ReconciliationResponseDto();
-		resposeDto.setTitle("Secondary Unbilled - (Primary Closed)");
-		
+		resposeDto=  prepaireReconcillationDataPrimarySecondaryStatuses("Secondary Unbilled - (Primary Closed)", resposeDto, office, secondaryUnsubmittedClaims,2);
 		dataList.add(resposeDto);
-		
-		
 		
 	  return dataList;
 	}
 	
-	private ReconciliationResponseDto prepaireReconcillationDataSecondaryUnbilled(String title,ReconciliationResponseDto resposeDto,RcmOffice office,List<ClaimReconcillationDto> datas ){
+	private ReconciliationResponseDto prepaireReconcillationDataPrimarySecondaryStatuses(String title,ReconciliationResponseDto resposeDto,RcmOffice office,List<ClaimReconcillationDto> datas,
+			int typeQuery){
 		// _13767_P|P
+		//Secondary Unbilled  and primary Open+ unBilled
 		String passP="",pipe="",passS="";
 		resposeDto.setTitle(title);
 		List<String> claimsP= new ArrayList<>();
@@ -5535,13 +5528,19 @@ public class ClaimServiceImpl {
 		System.out.println(passP);
 		
 		Set<String> foundClaims = new HashSet<>();
-		Set<String> commonClaims = new HashSet<>();
-		List<ReconcillationClaimDto> unArchsPUB=rcmClaimRepository.getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdated(office.getUuid(), claimsP,"Unbilled");
-		List<ReconcillationClaimDto> unArchsSUB=rcmClaimRepository.getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdated(office.getUuid(), claimsS,"Unbilled");
+		//Set<String> commonClaims = new HashSet<>();
+		List<ReconcillationClaimDto> unArchsPUB=null;
+		List<ReconcillationClaimDto> unArchsSUB=null;
 		
-	
-		List<ReconcillationClaimDto> unArchsPUBOPen=rcmClaimRepository.getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdatedOPen(office.getUuid(), claimsP);
-		
+		if (typeQuery ==1) {
+			unArchsPUB=rcmClaimRepository.getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdatedOPenUnbilled(office.getUuid(), claimsP);
+			unArchsSUB=rcmClaimRepository.getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdated(office.getUuid(), claimsS,"Unbilled");
+		}else if (typeQuery ==2) {
+			unArchsPUB=rcmClaimRepository.getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdated(office.getUuid(), claimsP,"Closed");
+			unArchsSUB=rcmClaimRepository.getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdated(office.getUuid(), claimsS,"Unbilled");
+		}
+		final List<ReconcillationClaimDto> unArchsPUBFINAL=unArchsPUB;
+		final List<ReconcillationClaimDto> unArchsSUBFINAL=unArchsSUB;
 		List<ReconcillationClaimDto> archs = rcmClaimRepository.getClaimbyOfficeAndClaimIdsArchived(office.getUuid(), passS);
 		List<ReconcillationClaimDto> issueunArchs=rcmClaimRepository.getClaimInIssueClaimByClaimIdAndOfficeUnarchived(office.getUuid(), claimsS);
 		List<ReconcillationClaimDto> issuearchs= rcmClaimRepository.getClaimInIssueClaimByClaimIdAndOfficeArchived(office.getUuid(), passS);
@@ -5550,7 +5549,6 @@ public class ClaimServiceImpl {
         //
         Set<String> unArchsPUB1= new HashSet<>();
         Set<String> unArchsSUB1= new HashSet<>();
-        Set<String> unArchsPUB2= new HashSet<>();
         
         for(ReconcillationClaimDto x:unArchsPUB) {
         	unArchsPUB1.add(x.getClaimId().split("_")[0]);
@@ -5558,36 +5556,26 @@ public class ClaimServiceImpl {
         for(ReconcillationClaimDto x:unArchsSUB) {
         	unArchsSUB1.add(x.getClaimId().split("_")[0]);
 		}
-        for(ReconcillationClaimDto x:unArchsPUBOPen) {
-        	unArchsPUB2.add(x.getClaimId().split("_")[0]);
-		}
+        
         Set<String> commonClaimsinES=CollectionUtils.intersection(unArchsPUB1, unArchsSUB1).stream().collect(Collectors.toSet());
-        Set<String> commonClaimsinES2=CollectionUtils.intersection(unArchsPUB2, unArchsSUB1).stream().collect(Collectors.toSet());
-        commonClaimsinES.addAll(commonClaimsinES2);
         Set<String> differences = new HashSet<>((CollectionUtils.removeAll(unArchsPUB1, unArchsSUB1)));
-        Set<String> differences1 = new HashSet<>((CollectionUtils.removeAll(unArchsPUB2, unArchsSUB1)));
-        differences.removeAll(differences1);
         resposeDto.setClaimsRCM(commonClaimsinES.size());
         
         Set<String> discrepancies=new HashSet<>();
         differences.forEach(data -> {
-            Optional<ReconcillationClaimDto> dx =unArchsPUB.stream().filter(x->{
+            Optional<ReconcillationClaimDto> dx =unArchsPUBFINAL.stream().filter(x->{
             		return x.getClaimId().split("_")[0].equals(data);
             	}).findFirst();
             if (dx.isPresent()) 
             	discrepancies.add(dx.get().getClaimId().split("_")[0]);
             
-            Optional<ReconcillationClaimDto> dx1 =unArchsSUB.stream().filter(x->{
+            Optional<ReconcillationClaimDto> dx1 =unArchsSUBFINAL.stream().filter(x->{
         		return x.getClaimId().split("_")[0].equals(data);
         	}).findFirst();
+            if (dx1.isPresent()) 
+            	discrepancies.add(dx.get().getClaimId().split("_")[0]);
             
-            Optional<ReconcillationClaimDto> dx2 =unArchsPUBOPen.stream().filter(x->{
-        		return x.getClaimId().split("_")[0].equals(data);
-        	}).findFirst();
-            
-           if (dx2.isPresent()) 
-        	discrepancies.add(dx1.get().getClaimId().split("_")[0]);
-          
+           
         });
        
         for(ReconcillationClaimDto x:unArchsPUB) {
@@ -5626,7 +5614,7 @@ public class ClaimServiceImpl {
 		Set<com.tricon.rcm.dto.ReconcillationClaimDto> discrepanciesAll= new HashSet<>();
 		differences.forEach(data -> {
 			
-            Optional<ReconcillationClaimDto> dx =unArchsPUB.stream().filter(x->{
+            Optional<ReconcillationClaimDto> dx =unArchsPUBFINAL.stream().filter(x->{
             		return x.getClaimId().split("_")[0].equals(data);
             	}).findFirst();
             if (dx.isPresent()) {
@@ -5636,7 +5624,7 @@ public class ClaimServiceImpl {
             	
             }
             
-            Optional<ReconcillationClaimDto> dx1 =unArchsSUB.stream().filter(x->{
+            Optional<ReconcillationClaimDto> dx1 =unArchsSUBFINAL.stream().filter(x->{
         		return x.getClaimId().split("_")[0].equals(data);
         	}).findFirst();
             if (dx1.isPresent()) {
@@ -5645,14 +5633,7 @@ public class ClaimServiceImpl {
             	discrepanciesAll.add(q);
            }
             
-            Optional<ReconcillationClaimDto> dx3 =unArchsPUBOPen.stream().filter(x->{
-        		return x.getClaimId().split("_")[0].equals(data);
-        	}).findFirst();
-            if (dx3.isPresent()) {
-        	   com.tricon.rcm.dto.ReconcillationClaimDto q= new com.tricon.rcm.dto.ReconcillationClaimDto();
-            	BeanUtils.copyProperties(dx3.get(), q);
-            	discrepanciesAll.add(q);
-           }
+            
            Optional<com.tricon.rcm.dto.ReconcillationClaimDto> dx2 = discrepanciesAll.stream().filter(x->{
        		return x.getClaimId().split("_")[0].equals(data);
        	    }).findFirst();
@@ -5670,7 +5651,9 @@ public class ClaimServiceImpl {
 		resposeDto.setDiscrepanciesAll(discrepanciesAll);
 		resposeDto.setClaimsNotFoundRCM(tSet);
 		return resposeDto;
-	}	
+	}
+	
+	
 	
 	private ReconciliationResponseDto prepaireReconcillationData(String title,ReconciliationResponseDto resposeDto,RcmOffice office,List<ClaimReconcillationDto> datas,boolean primary ){
 		// _13767_P|P
