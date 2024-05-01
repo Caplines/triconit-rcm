@@ -342,70 +342,79 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignments(@Param("companyId") String companyId,
 			@Param("status") List<Integer> status, @Param("inst") Set<Integer> inst);
 	
-	//count(distinct DATE(assign.created_date)) as days
-	//Production means Total Claims Submitted and No days between 2 dates 
-	@Query(nativeQuery = true, value = 
-		       " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
-						+" us.uuid as uuid,us.first_name "
-						+" 	 as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
-						+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
-						+"     inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
-						//+" 	left join rcm_claim_assignment assign on us.uuid=assign.assigned_to and assign.current_team_id=:teamId "
-						+" 	left join rcm_claims cl on cl.updated_by=us.uuid "
-						+"     and rut.team_id=:teamId  and  cl.pending is false and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED//+" and cl.first_worked_team_id=:teamId  "
-					    + " inner join rcm_claims_submission_details cl_sub_det on cl_sub_det.claim_id=cl.claim_uuid  "
-					    //+ " and IF(cl_sub_det.updated_date is null, cl_sub_det.created_date, cl_sub_det.updated_date) "
-					    //+ " between  STR_TO_DATE(:startDate, '%Y-%m-%d') AND STR_TO_DATE(:endDate, '%Y-%m-%d') "
-					    +" 	and  CAST(cl_sub_det.es_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d')"
-						+"     and STR_TO_DATE(:endDate, '%Y-%m-%d') "
-						+" 	left join office off on off.uuid=cl.office_id  "
-						+ " inner join company comp on comp.uuid=off.company_id  "
-						+" 	where   cmp.company_id in (:companyIds) and rut.team_id=:teamId group by comp.name,us.uuid")
+	// count(distinct DATE(assign.created_date)) as days
+	// Production means Total Claims Submitted and No days between 2 dates
+	// use refrence from Ruleengine RcmClaimDaoImpl->>
+	// Constants.QUERY_FOR_RCMCALIM_1
+	@Query(nativeQuery = true, value = " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+			+ "us.uuid as uuid,us.first_name "
+			+ "as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
+			+ "left join rcm_claims cl on cl.updated_by=us.uuid " + "inner join office off on off.uuid=cl.office_id "
+			+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+			+ "inner join company comp on comp.uuid=cmp.company_id "
+			+ "inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
+			+ "inner join rcm_claims_submission_details rcsd on rcsd.claim_id=cl.claim_uuid "
+			+ "and rcsd.submitted_by=us.uuid "
+			// + "left join reports_claim rc on
+			// rc.claim_id=SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1)
+			// and rc.patient_id=cl.patient_id "
+			+ "where cl.pending =false and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
+			+ "and IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date) "
+			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid ")
 	List<ProductionDto> claimProductionByForBilling(@Param("companyIds") List<String> companyIds,
-			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
+			@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate);
 	
-	//Production can be considered on the basis of processing of claim in ES instead of when
-	//Production can be considered on the basis of processing of claim in ES instead of when we are marking that as submitted in the RCM Tool
-	//we are marking that as submitted in the RCM Tool
-	@Query(nativeQuery = true, value = 
-			" select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
-			+ " us.uuid as uuid,us.first_name"
-			+ " as fName,us.last_name as lName,comp.name as companyName from rcm_user us"
-			+ " inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid"
-			+ " inner join company comp on comp.uuid=cmp.company_id"
-			+ " left join rcm_user_assign_office assig on assig.user_id=us.uuid  and assig.team_id=:teamId and assig.user_id=:userId"
-			+ " left join rcm_user_team rut on rut.rcm_user_id=us.uuid and  rut.team_id=:teamId"
-			+ " left join office off on off.uuid=assig.office_id"
-			+ " left join rcm_claims_submission_details rcsd on rcsd.submitted_by=us.uuid and rcsd.es_date is not null"
-			+ " and  CAST(rcsd.es_date as DATE) between STR_TO_DATE( :startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d')"
-			+ " left join rcm_claims cl on cl.claim_uuid= rcsd.claim_id"
-			+ " and  cl.pending is false and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-			//+ " -- and cl.first_worked_team_id=:teamId"
-			+ " where   cmp.company_id in (:companyIds) and rut.team_id=:teamId group by us.uuid,comp.name")
+	// Production can be considered on the basis of processing of claim in ES
+	// instead of when
+	// Production can be considered on the basis of processing of claim in ES
+	// instead of when we are marking that as submitted in the RCM Tool
+	// we are marking that as submitted in the RCM Tool
+	// use refrence from Ruleengine RcmClaimDaoImpl->>
+	// Constants.QUERY_FOR_RCMCALIM_1
+	@Query(nativeQuery = true, value = " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+			+ "us.uuid as uuid,us.first_name "
+			+ "as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
+			+ "left join rcm_claims cl on cl.updated_by=us.uuid " + "inner join office off on off.uuid=cl.office_id "
+			+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+			+ "inner join company comp on comp.uuid=cmp.company_id "
+			+ "inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
+			+ " left join rcm_user_assign_office assig on assig.user_id=us.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
+			+ "inner join rcm_claims_submission_details rcsd on rcsd.claim_id=cl.claim_uuid "
+			+ "and rcsd.submitted_by=us.uuid "
+			// + "left join reports_claim rc on
+			// rc.claim_id=SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1)
+			// and rc.patient_id=cl.patient_id "
+			+ "where cl.pending =false and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "
+			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
+			+ "and IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date) "
+			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid ")
 	List<ProductionDto> claimProductionByForBillingAssoicate(@Param("companyIds") List<String> companyIds,
-			@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate,@Param("userId") String userId);
+			@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate,
+			@Param("userId") String userId);
 	
 	
-	//Production means Total Claims Assigned by Internal Audit to other team and No days between 2 dates 
-	@Query(nativeQuery = true, value = 
-            "select count(distinct cl.claim_uuid) as total,"
-            + "FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
-            + "us.uuid as uuid,us.first_name  as fName,us.last_name as lName,comp.name as companyName "
-            + "from rcm_user us "
-            + "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
-            + "inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
-            + "left join rcm_claim_assignment assign on us.uuid=assign.assigned_to "
-            + "left join rcm_claims cl on cl.claim_uuid=assign.claim_id "
-            + "inner join office off on off.uuid=cl.office_id "
-            + "inner join company comp on comp.uuid=off.company_id  "
-            + "where cmp.company_id in (:companyIds) and assign.created_by=us.uuid and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
-            + "and  assign.active=false and assign.action_name = 'Reviewed' "
-            + "and assign.System_comment='Claim Transfered To Team( From 3 to 7)' and assign.current_team_id=:teamId and rut.team_id=:teamId "
-            + "and  CAST(assign.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
-            + "and STR_TO_DATE(:endDate, '%Y-%m-%d') "
-            + "group by us.uuid,comp.name")
-     List<ProductionDto> claimProductionForInternalAudit(@Param("companyIds") List<String> companyIds,
-		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
+	// Production means Total Claims Assigned by Internal Audit to other team and No
+	// days between 2 dates
+	// use refrence from Ruleengine RcmClaimDaoImpl->>
+	// Constants.QUERY_FOR_RCMCALIM_AUDITED:
+	@Query(nativeQuery = true, value = "select count(distinct cl.claim_uuid) as total,"
+			+ "FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+			+ "us.uuid as uuid,us.first_name  as fName,us.last_name as lName,comp.name as companyName "
+			+ "from rcm_user us " + "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+			+ "inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
+			+ "left join rcm_claim_assignment assign on us.uuid=assign.assigned_to "
+			+ "left join rcm_claims cl on cl.claim_uuid=assign.claim_id "
+			+ "inner join office off on off.uuid=cl.office_id "
+			+ "inner join company comp on comp.uuid=off.company_id  "
+			+ "where cmp.company_id in (:companyIds) and assign.created_by=us.uuid and cl.current_state="
+			+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "
+			+ "and  assign.active=false and assign.action_name = 'Reviewed' "
+			+ "and assign.System_comment='Claim Transfered To Team( From 3 to 7)' and assign.current_team_id=:teamId and rut.team_id=:teamId "
+			+ "and  CAST(assign.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
+			+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') " + "group by us.uuid,comp.name")
+	List<ProductionDto> claimProductionForInternalAudit(@Param("companyIds") List<String> companyIds,
+			@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate);
 	
 	
 	@Query(nativeQuery = true, value = 
@@ -426,25 +435,27 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
      List<ProductionDto> claimProductionForOtherTeam(@Param("companyIds") List<String> companyIds,
 		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate);
 	
-	@Query(nativeQuery = true, value = 
-            "select count(distinct cl.claim_uuid) as total,"
-            + "FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
-            + "us.uuid as uuid,us.first_name  as fName,us.last_name as lName,comp.name as companyName "
-            + "from rcm_user us "
-            + "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
-            + "inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
-            + "left join rcm_claim_assignment assign on us.uuid=assign.assigned_to "
-            + "left join rcm_claims cl on cl.claim_uuid=assign.claim_id "
-            + "inner join office off on off.uuid=cl.office_id "
-            + "inner join company comp on comp.uuid=off.company_id  "
-            + "where cmp.company_id in (:companyIds) and assign.created_by=us.uuid and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
-            + "and  assign.active=false and assign.action_name = 'Reviewed' "
-            + "and assign.System_comment='Claim Transfered To Team( From 3 to 7)' and assign.current_team_id=:teamId and rut.team_id=:teamId "
-            + "and  CAST(assign.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
-            + "and STR_TO_DATE(:endDate, '%Y-%m-%d') and assig.user_id=:userId"
-            + "group by us.uuid,comp.name")
-     List<ProductionDto> claimProductionForInternalAuditAssoicate(@Param("companyIds") List<String> companyIds,
-		@Param("teamId") int teamId,@Param("startDate") String stDate,@Param("endDate") String endDate,@Param("userId") String userId);
+		// use refrence from Ruleengine RcmClaimDaoImpl->>
+		// Constants.QUERY_FOR_RCMCALIM_AUDITED:
+		@Query(nativeQuery = true, value = "select count(distinct cl.claim_uuid) as total,"
+				+ "FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
+				+ "us.uuid as uuid,us.first_name  as fName,us.last_name as lName,comp.name as companyName "
+				+ "from rcm_user us " + "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+				+ "inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
+				+ "left join rcm_claim_assignment assign on us.uuid=assign.assigned_to "
+				+ "left join rcm_claims cl on cl.claim_uuid=assign.claim_id "
+				+ "inner join office off on off.uuid=cl.office_id "
+				+ "inner join company comp on comp.uuid=off.company_id  "
+				+ "left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
+				+ "where cmp.company_id in (:companyIds) and assign.created_by=us.uuid and cl.current_state="
+				+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "
+				+ "and  assign.active=false and assign.action_name = 'Reviewed' "
+				+ "and assign.System_comment='Claim Transfered To Team( From 3 to 7)' and assign.current_team_id=:teamId and rut.team_id=:teamId "
+				+ "and  CAST(assign.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
+				+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') " + "group by us.uuid,comp.name")
+		List<ProductionDto> claimProductionForInternalAuditAssoicate(@Param("companyIds") List<String> companyIds,
+				@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate,
+				@Param("userId") String userId);
 
 	@Query(nativeQuery = true, value = 
             " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/(DATEDIFF(:endDate,:startDate)+1) as days ,"
