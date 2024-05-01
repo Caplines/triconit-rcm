@@ -2616,7 +2616,7 @@ export class BillingClaimsComponent {
 
   fetchNextActionRequiredSection() {
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = ""; //this.claimRcm.currentStatusName;
-    if (this.claimRcm.primary && !(this.claimRcm.statusESUpdated === 'Closed' || this.claimRcm.statusESUpdated === 'Unbilled' || this.claimRcm.statusESUpdated === 'Billed')) {
+    if (this.claimRcm.primary && !(this.claimRcm.statusESUpdated === 'Closed' || this.claimRcm.statusESUpdated === 'Unbilled' || this.claimRcm.statusESUpdated === 'Billed' || this.claimRcm.statusESUpdated === 'Open')) {
       this.claimRcm.statusESUpdated = "";
     }
     if (!this.claimRcm.primary && !(this.claimRcm.statusESUpdated === 'Unbilled' || this.claimRcm.statusESUpdated === 'Billed')) {

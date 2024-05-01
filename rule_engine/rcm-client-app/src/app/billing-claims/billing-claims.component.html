@@ -3975,6 +3975,7 @@
                                                             [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusEs']}">
                                                             <option value="">Select</option>
                                                             <ng-container *ngIf="claimRcm.primary">
+                                                                <option value="Open">Open</option>
                                                                 <option value="Unbilled">Unbilled</option>
                                                                 <option value="Billed">Billed</option>
                                                                 <option value="Closed">Closed</option>
