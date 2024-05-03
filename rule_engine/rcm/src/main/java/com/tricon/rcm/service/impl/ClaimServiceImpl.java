@@ -2082,8 +2082,10 @@ public class ClaimServiceImpl {
 				}
 				//Remove Primary claims from secondary
 				primaries.forEach( pr->{
+					if (pr.getClaimId().split("_P").length>0) {
 					primaryClaims.add(pr.getClaimId().split("_P")[0]+"_S");
 					secondaries.removeIf(n -> (n.getOfficeUuid().equals(pr.getOfficeUuid()) && n.getClaimId().equals(pr.getClaimId().split("_P")[0]+"_S")));
+					}
 				});
 				
 				 
@@ -2097,8 +2099,8 @@ public class ClaimServiceImpl {
 				
 			List<AssignFreshClaimLogsDto> x =	primaries.stream().filter(e -> e.getOfficeUuid().equals(off))
 					.collect(Collectors.toList());
-				AssignFreshClaimLogsDto minValue1 = x.stream().min(Comparator.comparing(v -> v.getOpdt())).get();
-				AssignFreshClaimLogsDto minValue2 = x.stream().min(Comparator.comparing(v -> v.getOpdos())).get();
+				AssignFreshClaimLogsDto minValue1 = x.stream().filter(e -> e.getOpdt()!=null).min(Comparator.comparing(v -> v.getOpdt())).get();
+				AssignFreshClaimLogsDto minValue2 = x.stream().filter(e -> e.getOpdos()!=null).min(Comparator.comparing(v -> v.getOpdos())).get();
 			dFA = new AssignFreshClaimLogsImplDto();
 			dFA.setOfficeName(minValue1.getOfficeName());
 			dFA.setAssignedUser(minValue1.getAssignedUser());

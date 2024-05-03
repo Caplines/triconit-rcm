@@ -369,7 +369,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
 			+ "  where off.company_id in (:companyIds) and off.active is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
 			+ " and cl.rcm_insurance_type in :inst   "
-			+ "  and cl.claim_status_type_id in :status and cl.current_team_id=:teamId and cl.current_team_id=:teamId and "
+			+ "  and cl.claim_status_type_id in :status and cl.current_team_id=:teamId  and "
 			+ "  (cl.status_es_updated not in (:currentStatusClosed)  or  cl.status_es_updated is null) order by companyName")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamType(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId,@Param("currentStatusClosed")String currentStatusClosed);
