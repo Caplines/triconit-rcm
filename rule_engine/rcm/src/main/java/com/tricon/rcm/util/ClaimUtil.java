@@ -21,6 +21,7 @@ import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
+import com.tricon.rcm.enums.ClaimStatusSearchEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 
 public class ClaimUtil {
@@ -49,7 +50,7 @@ public class ClaimUtil {
 		claims.setOffice(off);
 		claims.setAttachmentCount(0);
 		claims.setClaimStatusType(cType);// ;mStatus("NEED TO RELOOK");// see latter
-
+		claims.setStatusESUpdated(ClaimStatusSearchEnum.STATUS_UNBILLED.getStatus());
 		if (user != null)
 			claims.setCreatedBy(user);
 		claims.setCurrentTeamId(team);
@@ -58,6 +59,7 @@ public class ClaimUtil {
 		claims.setPatientId(re.getPatientId());
 		claims.setPatientName(re.getPatientName());
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {
+			claims.setPrimary(true);
 			claims.setPrimInsuranceCompanyId(prim);
 			claims.setPrimaryStaus(Constants.Primary_Status_Primary);
 			claims.setPrimeSecSubmittedTotal(re.getPrimSecSubmittedTotal());
@@ -71,6 +73,7 @@ public class ClaimUtil {
 			}
 		}
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
+			claims.setPrimary(false);
 			claims.setSecInsuranceCompanyId(sec);
 			claims.setPrimaryStaus(Constants.Primary_Status_Secondary);
 			claims.setSecSubmittedTotal(re.getPrimSecSubmittedTotal());
@@ -139,7 +142,7 @@ public class ClaimUtil {
 		claims.setOffice(off);
 		claims.setAttachmentCount(0);
 		claims.setClaimStatusType(cType);// ;mStatus("NEED TO RELOOK");// see latter
-
+		claims.setStatusESUpdated(ClaimStatusSearchEnum.STATUS_UNBILLED.getStatus());
 		if (user != null)
 			claims.setCreatedBy(user);
 		claims.setCurrentTeamId(team);
@@ -150,6 +153,7 @@ public class ClaimUtil {
 		claims.setPatientName(re.getPatientName());
 		claims.setPatientContactNo(re.getPatientContactNo());
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypePrimary)) {
+			claims.setPrimary(true);
 			claims.setPrimInsuranceCompanyId(prim);
 			claims.setInsuranceContactNo(re.getPrimaryInsuranceContactNo());
 			claims.setPrimaryStaus(Constants.Primary_Status_Primary);
@@ -185,6 +189,7 @@ public class ClaimUtil {
 			claims.setPrimStatus(re.getPrimaryClaimStatus());
 		}
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
+			claims.setPrimary(false);
 			claims.setSecInsuranceCompanyId(sec);
 			claims.setInsuranceContactNo(re.getSecondaryInsuranceContactNo());
 			claims.setPrimaryStaus(Constants.Primary_Status_Secondary);

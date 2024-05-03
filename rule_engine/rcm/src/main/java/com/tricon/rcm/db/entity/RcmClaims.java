@@ -313,4 +313,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "amount_received_in_bank")
 	private Float amountReceivedInBank;
+	
+	@Column(name = "is_primary",columnDefinition = "BIT default 0")
+	private boolean primary;
 }

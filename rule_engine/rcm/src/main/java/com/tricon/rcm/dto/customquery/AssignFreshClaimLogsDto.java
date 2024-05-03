@@ -19,8 +19,12 @@ public interface AssignFreshClaimLogsDto {
 	String getLName();
 	
 	String getAssignedUser();
-
 	
+	String getStatusESUpdated();
+
+	String getClaimId();
+	
+	int getPrimaryC();
 
 	//String getSource();
 
@@ -33,5 +37,7 @@ public interface AssignFreshClaimLogsDto {
 	int getAssignTeamId();
 	
 	String getCompanyName();
+	
+	int getPending();
 	
 }

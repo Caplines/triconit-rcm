@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -169,6 +171,7 @@ import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsImplDto;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
+import com.tricon.rcm.enums.ClaimStatusSearchEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.DispositionEnumForProduction;
 import com.tricon.rcm.enums.RcmRoleEnum;
@@ -2024,13 +2027,15 @@ public class ClaimServiceImpl {
 
 		List<Integer> ct = dto.getClaimType();
 		List<String> inst = dto.getInsuranceType();
-		int currentStatusClosed=ClaimStatusEnum.Closed.getId();
-		int currentStatusVoided=ClaimStatusEnum.Voided.getId();
+		String currentStatusClosed=ClaimStatusSearchEnum.STATUS_CLOSED.getStatus();
+		
 		if (dto.getClaimType() == null) {
 			ct = new ArrayList<>();
 			ct.add(ClaimStatusEnum.Billing.getId());
 			ct.add(ClaimStatusEnum.ReBilling.getId());
 		}
+		HashMap<String, RemoteLietStatusCount> remoteLiteMap = ruleEngineService.pullAndSaveRemoteLiteData();
+		
 		List<AssignFreshClaimLogsImplDto> finalList = new ArrayList<>();
 		Set<Integer> instDB = new HashSet<>();
 		List<RcmInsuranceType> insList = rcmInsuranceTypeRepo.findAll();
@@ -2049,67 +2054,79 @@ public class ClaimServiceImpl {
 			}
 
 		}
-		List<AssignFreshClaimLogsDto> l = null;
+		List<AssignFreshClaimLogsDto> ll = null;
 		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
 		try {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUser(companies,ct, 
-						instDB,partialHeader.getTeamId(),partialHeader.getJwtUser().getUuid(),currentStatusClosed,currentStatusVoided);
+				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserType(companies, ct, instDB,partialHeader.getTeamId(),partialHeader.getJwtUser().getUuid(),currentStatusClosed);
 				
 			}else {
-				l = rcmClaimRepository.fetchClaimsForAssignmentsByTeam(companies, ct, instDB,partialHeader.getTeamId(),currentStatusClosed,currentStatusVoided);
+				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamType(companies, ct, instDB,partialHeader.getTeamId(),currentStatusClosed);
 					
 			}
-			
-			
-			HashMap<String, RemoteLietStatusCount> remoteLiteMap = ruleEngineService.pullAndSaveRemoteLiteData();
-			RemoteLietStatusCount counts = null;
-
-			AssignFreshClaimLogsImplDto dF = null;
-			if (l != null) {
-				for (AssignFreshClaimLogsDto logD : l) {
-					dF = new AssignFreshClaimLogsImplDto();
-					dF.setOfficeName(logD.getOfficeName());
-					dF.setAssignedUser(logD.getAssignedUser());
-					dF.setCount(logD.getCount());
-					dF.setFName(logD.getFName());
-					dF.setLName(logD.getLName());
-					dF.setCompanyName(logD.getCompanyName());
-					dF.setOfficeUuid(logD.getOfficeUuid());
-//					if (logD.getOpdos()!=null) {
-//						//2022-10-12
-//						try {
-//						Date date=Constants.SDF_MYSL_DATE.parse(logD.getOpdos());  
-//						dF.setOpdosd(date);
-//						}catch(Exception c) {
-//							c.printStackTrace();
-//						}
-//					}//2023-04-13 03:30:03
-//					if (logD.getOpdt()!=null) {
-//						try {
-//						Date date=Constants.SDF_MYSL_DATE_TIME.parse(logD.getOpdt());  
-//						dF.setOpdtd(date);
-//						}catch(Exception c) {
-//							c.printStackTrace();			
-//						}
-//					}
-					dF.setOpdtd(logD.getOpdt()==null?"0":logD.getOpdt());
-					dF.setOpdosd(logD.getOpdos()==null?"0":logD.getOpdos());
-					//BeanUtils.copyProperties(logD, dF);
-					counts = remoteLiteMap.get(logD.getOfficeName());
-					if (counts != null) {
-						dF.setRemoteLiteRejections(counts.getRejectedCount());
-					}
-					finalList.add(dF);
+			List<AssignFreshClaimLogsDto> primaries=new ArrayList<>();
+			List<AssignFreshClaimLogsDto> secondaries=new ArrayList<>();
+			Set<String> offices = new HashSet<>();
+			if (ll!=null) {
+				Set<String> primaryClaims = new HashSet<>();
+				((List<AssignFreshClaimLogsDto>) ll).stream().map(AssignFreshClaimLogsDto::getOfficeUuid).forEach(offices::add);
+				for(String off:offices) {
+					List<AssignFreshClaimLogsDto> l2= ll.stream().filter(e -> e.getOfficeUuid().equals(off)
+   							&&  e.getPrimaryC() ==1).collect(Collectors.toList());
+					if (l2!=null && l2.size()>0) primaries.addAll(l2);
+					l2 =ll.stream().filter(e -> e.getOfficeUuid().equals(off)
+   							&&  e.getPrimaryC() ==0).collect(Collectors.toList());
+					if (l2!=null && l2.size()>0) secondaries.addAll(l2);
+					
 				}
-
+				//Remove Primary claims from secondary
+				primaries.forEach( pr->{
+					primaryClaims.add(pr.getClaimId().split("_P")[0]+"_S");
+					secondaries.removeIf(n -> (n.getOfficeUuid().equals(pr.getOfficeUuid()) && n.getClaimId().equals(pr.getClaimId().split("_P")[0]+"_S")));
+				});
+				
+				 
 			}
+			
+			if (secondaries.size()>0)primaries.addAll(secondaries);
+			RemoteLietStatusCount counts = null;
+			AssignFreshClaimLogsImplDto dFA = null;
+			
+			for(String off:offices) {
+				
+			List<AssignFreshClaimLogsDto> x =	primaries.stream().filter(e -> e.getOfficeUuid().equals(off))
+					.collect(Collectors.toList());
+				AssignFreshClaimLogsDto minValue1 = x.stream().min(Comparator.comparing(v -> v.getOpdt())).get();
+				AssignFreshClaimLogsDto minValue2 = x.stream().min(Comparator.comparing(v -> v.getOpdos())).get();
+			dFA = new AssignFreshClaimLogsImplDto();
+			dFA.setOfficeName(minValue1.getOfficeName());
+			dFA.setAssignedUser(minValue1.getAssignedUser());
+			dFA.setCount(x.size());
+			dFA.setFName(minValue1.getFName());
+			dFA.setLName(minValue1.getLName());
+			dFA.setCompanyName(minValue1.getCompanyName());
+			dFA.setOfficeUuid(minValue1.getOfficeUuid());
+
+			dFA.setOpdtd(minValue1.getOpdt()==null?"0":minValue1.getOpdt());
+			dFA.setOpdosd(minValue2.getOpdos()==null?"0":minValue2.getOpdos());
+			//BeanUtils.copyProperties(logD, dF);
+			counts = remoteLiteMap.get(minValue1.getOfficeName());
+			if (counts != null) {
+				dFA.setRemoteLiteRejections(counts.getRejectedCount());
+			}
+			finalList.add(dFA);
+			}
+			
+
 		} catch (Exception n) {
 			n.printStackTrace();
 		}
 		
+		Collections.sort(finalList, (o1, o2) -> (o1.getCompanyName().compareTo(o2.getCompanyName())));
+		
 		return finalList;
 	}
+		
 
 	@Transactional
 	public FreshClaimDataImplDto fetchIndividualClaim(String claimUuid, PartialHeader partialHeader,boolean pdf) {

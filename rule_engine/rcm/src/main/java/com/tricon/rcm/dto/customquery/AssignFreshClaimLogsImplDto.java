@@ -28,13 +28,23 @@ public class AssignFreshClaimLogsImplDto implements AssignFreshClaimLogsDto{
 	String lName;
 	
 	
+	
 	int remoteLiteRejections;
 
-	
+	int pending;
 
     int assignTeamId;
 	
 
     String companyName;
+
+
+    String statusESUpdated;
+	
+	String claimId;
+
+	int primaryC;
+
+
 
 }

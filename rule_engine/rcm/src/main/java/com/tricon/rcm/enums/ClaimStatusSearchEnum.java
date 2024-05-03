@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 public enum ClaimStatusSearchEnum {
-	STATUS_BILLED("Billed", 0), STATUS_UNBILLED("Unbilled", 1);
+	STATUS_BILLED("Billed", 0), STATUS_UNBILLED("Unbilled", 1),STATUS_CLOSED("Closed", 2),STATUS_OPEN("Open", 4);
 
 	final private String status;
 	final private int value;
