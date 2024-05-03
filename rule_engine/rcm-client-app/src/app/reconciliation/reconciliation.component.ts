@@ -5,6 +5,7 @@ import { RouterModule } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
 import { ReconcilltationRequestModel } from '../models/reconcillation-request-model';
+import { ReconcilltationResponseModel } from '../models/reconcillation-request-model';
 @Component({
   selector: 'app-reconciliation',
   standalone: true,
@@ -15,8 +16,8 @@ import { ReconcilltationRequestModel } from '../models/reconcillation-request-mo
 export class ReconciliationComponent {
 
   private title = inject(Title);
-
-  reconcilData: any = [];
+  
+  reconcileResponseData: ReconcilltationResponseModel[] = [];
   reconcilltationRequestModel: ReconcilltationRequestModel = {
     officeUuid: 'Select'
   }
@@ -25,6 +26,7 @@ export class ReconciliationComponent {
   officeData: any = [];
   toggleLinks: boolean = false;
   datesDiff: number = 1000000;
+  toggleState: { [key: string]: boolean } = {};
 
   constructor(private _service: ApplicationServiceService) {
     this.title.setTitle("RCM TOOL - Reconciliation");
@@ -62,51 +64,22 @@ export class ReconciliationComponent {
     return diffInDays;
   }
 
+  toggleText(id: string) {
+    this.toggleState[id] = !this.toggleState[id];
+  }
+
   getReconcileData() {
     this.loader = true;
-
+    this.toggleState = {};
+    this.reconcileResponseData = [];
     this._service.fetchReconcileData(this.reconcilltationRequestModel, (res: any) => {
       if (res.status === 200) {
         console.log(res.data);
         setTimeout(() => {
-          this.reconcilData = [
-            {
-              title: "Primary & Secondary Unbilled",
-              claimsES: 100,
-              claimsRCM: 200,
-              discrepancies: ['htttps://google.com', 'htttps://google.com']
-            },
-            {
-              title: "Primary Open & Secondary Unbilled",
-              claimsES: 100,
-              claimsRCM: 200,
-              discrepancies: ['htttps://google.com']
-            },
-            {
-              title: "Primary Closed & Secondary Unbilled",
-              claimsES: 100,
-              claimsRCM: 200,
-              discrepancies: ['htttps://google.com']
-            },
-            {
-              title: "Primary Closed & Secondary Open",
-              claimsES: 100,
-              claimsRCM: 200,
-              discrepancies: ['htttps://google.com']
-            },
-            {
-              title: "Primary & Secondary Closed",
-              claimsES: 100,
-              claimsRCM: 200,
-              discrepancies: ['htttps://google.com']
-            },
-          ];
+          this.reconcileResponseData = res.data;
           this.loader = false;
-        }, 0
-        )
+        }, 0)
       }
     });
-
   }
-
 }

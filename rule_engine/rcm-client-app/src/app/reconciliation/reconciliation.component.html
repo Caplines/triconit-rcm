@@ -1,11 +1,11 @@
-<div class="right-container">
+<div class="right-container reconciliationContainer">
     <div class="container-fluid my-5">
         <div class="office-box">
             <div class="form-group">
                 <div class="d-flex align-items-center m-3">
                     <label for="office" class="me-5">Office</label>
                     <select type="text" id="office" class="form-control mx-2" [(ngModel)] = "reconcilltationRequestModel.officeUuid" required>
-                        <option value="Select" >Select</option>
+                        <option value="Select" disabled>Select</option>
                         <ng-container *ngFor="let item of officeData">
                             <option [value]="item.uuid">{{item.name}}</option>
                         </ng-container>
@@ -18,51 +18,113 @@
                     <input type="date" id="dos-e" class="form-control mx-2" [(ngModel)] = "reconcilltationRequestModel.endDate" required>
                 </div>
             </div>
+            <div class="note" *ngIf="!isValidForm()">
+                <span class="info">*</span>The Start Date should be less than End Date.<br>
+                <span class="info">*</span>Difference between End & Start dates should be less than {{this.datesDiff}} days.
+            </div>
             <div class="form-group m-3">
                 <button class="btn btn-success" [disabled]="!isValidForm() || this.loader" (click)="getReconcileData()">Send</button>
             </div>
         </div>
 
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr class="totalRow">
-                    <th>#</th>
-                    <th>No. of Claims in ES</th>
-                    <th>No. of Claims in RCM Tool</th>
-                    <th>Discrepancies Found</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngIf="loader">
-                    <td colspan="4" class="text-center">
-                        <span class="loader-data "></span>
-                    </td>
-                </tr>
-                <tr *ngFor="let data of reconcilData">
-                    <td>{{data.title}}</td>
-                    <td class="alignRight">{{data.claimsES}}</td>
-                    <td class="alignRight">{{data.claimsRCM}}</td>
-                    <td class="alignCenter">
-                        <div class="d-flex justify-content-between">
-                            <button (click)="data.toggleLinks = !data.toggleLinks"
-                                class="btn btn-link text-decoration-none">
-                                <i *ngIf="!data.toggleLinks" class="arrow-right"></i>
-                                <i *ngIf="data.toggleLinks" class="arrow-down"></i>
-                                <span class="discrepancies-text">Discrepancies Found
-                                    ({{data.discrepancies.length}}):</span>
-                            </button>
-                        </div>
-                        <ng-container *ngIf="data.toggleLinks">
-                            <ng-container *ngFor="let link of data.discrepancies; let idx =index">
-                                <div>
-                                    <a class="btn btn-link text-decoration-none fs-4" [href]="link">Test Link
-                                        {{idx+1}}</a>
-                                </div>
-                            </ng-container>
-                        </ng-container>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="detail-box">
+            <div class="detail-box-form">
+                <div class="form-row">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr class="totalRow" style="text-align: center;">
+                                    <th class="width-200 min-max-180">Office</th>
+                                    <th class="width-200 min-max-180">Title</th>
+                                    <th class="width-200 min-max-180">No. of Claims in ES</th>
+                                    <th class="width-200 min-max-180">No. of Claims in RCM Tool</th>
+                                    <th class="width-200 min-max-180">Discrepancies Found</th>
+                                    <th class="width-200 min-max-180">Claims not Found in RCM Tool</th>
+                                    <th class="width-200 min-max-180">Claim in Upload Errors</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngIf="loader">
+                                    <td colspan="7" class="text-center">
+                                        <span class="loader-data "></span>
+                                    </td>
+                                </tr>
+                                <tr *ngFor="let data of reconcileResponseData">
+                                    <td class="alignCenter">{{data.office}}</td>
+                                    <td class="alignCenter">{{data.title}}</td>
+                                    <td class="alignCenter">{{data.claimsES}}</td>
+                                    <td class="alignCenter">{{data.claimsRCM}}</td>
+                                    <td class="alignCenter">
+                                        <ng-container *ngIf="data.discrepancies.length > 0; else noDiscrepancies">
+                                            <div class="d-flex justify-content-between">
+                                                <button (click)="toggleText('discrepancies' + data.title)"
+                                                    class="btn btn-link text-decoration-none">
+                                                    <i *ngIf="!toggleState['discrepancies' + data.title]" class="arrow-right"></i>
+                                                    <i *ngIf="toggleState['discrepancies' + data.title]" class="arrow-down"></i>
+                                                    <span class="discrepancies-text">{{data.discrepancies.length}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="toggle-scroll" *ngIf="toggleState['discrepancies' + data.title]">
+                                                <ng-container *ngFor="let link of data.discrepancies; let idx = index">
+                                                    <div>
+                                                        <a class="btn btn-link text-decoration-none fs-4" [href]="link">{{link}} {{idx+1}}</a>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #noDiscrepancies>
+                                            <span class="empty-data-text">{{data.discrepancies.length}}</span>
+                                        </ng-template>
+                                    </td>
+                                    <td class="alignCenter">
+                                        <ng-container *ngIf="data.claimsNotFoundRCM.length > 0; else noclaimsFound">
+                                            <div class="d-flex justify-content-center">
+                                                <button (click)="toggleText('claimsNotFoundRCM' + data.title)" class="btn btn-link text-decoration-none fixedButtonWidth">
+                                                    <i *ngIf="!toggleState['claimsNotFoundRCM' + data.title]" class="arrow-right"></i>
+                                                    <i *ngIf="toggleState['claimsNotFoundRCM' + data.title]" class="arrow-down"></i>
+                                                    <span class="discrepancies-text">{{data.claimsNotFoundRCM.length}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="toggle-scroll" *ngIf="toggleState['claimsNotFoundRCM' + data.title]">
+                                                <ng-container *ngFor="let item of data.claimsNotFoundRCM; let idx = index">
+                                                    <div>
+                                                        <span class="text-decoration-none fs-4">{{item}}</span>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #noclaimsFound>
+                                            <span class="empty-data-text">{{data.claimsNotFoundRCM.length}}</span>
+                                        </ng-template>
+                                    </td>
+                                    <td class="alignCenter">
+                                        <ng-container *ngIf="data.claimInUploadErrors.length > 0; else noUploadErrors">
+                                            <div class="d-flex justify-content-between">
+                                                <button (click)="toggleText('claimInUploadErrors' + data.title)"
+                                                    class="btn btn-link text-decoration-none">
+                                                    <i *ngIf="!toggleState['claimInUploadErrors' + data.title]" class="arrow-right"></i>
+                                                    <i *ngIf="toggleState['claimInUploadErrors' + data.title]" class="arrow-down"></i>
+                                                    <span class="discrepancies-text">{{data.claimInUploadErrors.length}}</span>
+                                                </button>
+                                            </div>
+                                            <div class="toggle-scroll" *ngIf="toggleState['claimInUploadErrors' + data.title]">
+                                                <ng-container *ngFor="let item of data.claimInUploadErrors; let idx = index">
+                                                    <div>
+                                                        <span class="btn btn-link text-decoration-none fs-4">{{item}}</span>
+                                                    </div>
+                                                </ng-container>
+                                            </div>
+                                        </ng-container>
+                                        <ng-template #noUploadErrors>
+                                            <span class="empty-data-text">{{data.claimInUploadErrors.length}}</span>
+                                        </ng-template>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
