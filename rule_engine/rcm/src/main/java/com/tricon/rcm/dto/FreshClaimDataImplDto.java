@@ -161,5 +161,7 @@ public class FreshClaimDataImplDto {
 	Boolean reconciliationPass;
 	
     String statusESUpdated;
+    
+    String nextFollowUpDate;
 }
 

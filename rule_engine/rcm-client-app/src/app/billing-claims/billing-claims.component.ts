@@ -2576,6 +2576,7 @@ export class BillingClaimsComponent {
       this.appService.fetchInsuranceFollowUpSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['INSURANCE_FOLLOW_UP'].data = res.data;
+          this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate'] =this.claimRcm.nextFollowUpDate;
         }
       })
     }
@@ -3520,7 +3521,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['modeOfFollowUp'] = "";
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['refNumber'] = "";
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['insuranceRepName'] = "";
-    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = "";
+    //this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = "";
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['followUpRemarks'] = "";
   }
 

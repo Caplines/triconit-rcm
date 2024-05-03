@@ -8,5 +8,6 @@ public interface ProductionDto {
 	String getFName();
 	String getLName();
 	String getCompanyName();
+	int getDisDate();
 	
 }

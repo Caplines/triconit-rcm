@@ -174,6 +174,7 @@ import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimStatusSearchEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.DispositionEnumForProduction;
+import com.tricon.rcm.enums.InsuranceTypeEnum;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.ClaimCycleRepo;
@@ -2226,6 +2227,16 @@ public class ClaimServiceImpl {
 			}
 			RcmClaims claim = null;
 			IVFDto ivfDto =null;
+			
+			// set automated field nextFollowUpDate inside follow_up_section
+			String insuranceType = implDto.isPrimary() ? dto.getPrimaryInsType() : dto.getSecondaryInsType();
+			Calendar calendarForNextFollowUpDate = Calendar.getInstance();
+			Date date = dto.getNextFollowUpDate() != null ? dto.getNextFollowUpDate() : new Date();
+			calendarForNextFollowUpDate.setTime(date);
+			int days = InsuranceTypeEnum.getDaysByType(insuranceType);
+			calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, days);
+			implDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE.format(calendarForNextFollowUpDate.getTime()));
+			
 			try {
 				
 				if (!implDto.isPrimary()) {

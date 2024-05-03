@@ -31,6 +31,7 @@
                     </svg>
                     <span style="margin-left: 5px;">Claim Steps</span>
                 </button>
+                <ng-container *ngIf="!isLoggedInAdmin">
                 <div class="main-container addSteps">
                     <div class="addSteps-col-1" [ngClass]="{'width-reduce' : claimSteps.length>0 && !toggleSideBar }">
                         <div class="row" id="primary-secondary-setting"
@@ -4316,7 +4317,7 @@
                         </ul>
                     </div>
                 </div>
-
+          </ng-container>
             </div>
         </div>
 

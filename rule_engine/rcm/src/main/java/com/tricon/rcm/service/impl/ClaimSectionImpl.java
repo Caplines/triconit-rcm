@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -93,6 +94,7 @@ import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
 import com.tricon.rcm.dto.customquery.RcmServiceNotesDto;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
+import com.tricon.rcm.enums.PatientStatementTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.jpa.repository.EOBSectionRepo;
 import com.tricon.rcm.jpa.repository.FollowUpInsuranceRepo;
@@ -253,6 +255,11 @@ public class ClaimSectionImpl {
 	
 //	@Autowired
 //	NeedToCallInsuranceRepo needToCallRepo;
+	
+	@Lazy
+	@Autowired
+	RcmCommonServiceImpl rcmCommonServiceImpl;
+	
 
 	@Transactional(rollbackOn = Exception.class)
 	public String manageClientSectionDetails(List<ClientSectionMappingDto> listOfClaimSections) throws Exception {
@@ -1210,26 +1217,93 @@ public class ClaimSectionImpl {
 		RcmPatientStatementSection patientStatement = null;
 		RcmPatientStatementDto responseDto = null;
 		if (showWithTeam) {
-			patientStatement = patientStatementRepo
-					.findFirstByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(claimUuid,partialHeader.getTeamId());
+			patientStatement = patientStatementRepo.findFirstByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(claimUuid,
+					partialHeader.getTeamId());
 		} else {
-			patientStatement = patientStatementRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(
-					claimUuid);
+			patientStatement = patientStatementRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
 		}
-		if (patientStatement != null) {
-			responseDto = new RcmPatientStatementDto();
-			responseDto.setNextReviewDate(patientStatement.getNextReviewDate()==null?"":
-					Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
-			responseDto.setNextStatementDate(
-					patientStatement.getNextStatementDate()==null?"":
-					Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
-			responseDto.setStatementSendingDate(
-					patientStatement.getStatementSendingDate()==null?"":
-					Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
-			BeanUtils.copyProperties(patientStatement, responseDto);
-			return responseDto;
+
+		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+		boolean sectionAccess = rcmCommonServiceImpl.validateUserSectionAccess(partialHeader,
+				15,createdBy);
+		if (sectionAccess) {
+			if (patientStatement == null) {
+				responseDto = new RcmPatientStatementDto();
+				// set automated fields value StatementType sefault
+				// 1,NextReviewDate,NextStatementDate
+				responseDto.setStatementType(String.valueOf(1));
+				responseDto.setButtonType(1);
+				Calendar calendarForNextReviewDate = Calendar.getInstance();
+				calendarForNextReviewDate.setTime(new Date());
+				calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, 7);
+				responseDto.setNextReviewDate(Constants.SDF_MYSL_DATE.format(calendarForNextReviewDate.getTime()));
+				Calendar calendarForNextStatementDate = Calendar.getInstance();
+				calendarForNextStatementDate.setTime(new Date());
+				calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, 7);
+				responseDto
+						.setNextStatementDate(Constants.SDF_MYSL_DATE.format(calendarForNextStatementDate.getTime()));
+			} else  {
+				if (patientStatement != null && patientStatement.isFinalSubmit()) {
+					responseDto = new RcmPatientStatementDto();
+					// set automated fields value StatementType,NextReviewDate,NextStatementDate
+					if (patientStatement.getStatementType()
+							.equals("" + PatientStatementTypeEnum.STATEMENT_1.getType())) {
+						int type = Integer.valueOf(patientStatement.getStatementType());
+						patientStatement.setStatementType(String.valueOf(type + 1));
+					} else if (patientStatement.getStatementType()
+							.equals("" + PatientStatementTypeEnum.STATEMENT_2.getType())) {
+						int type = Integer.valueOf(patientStatement.getStatementType());
+						patientStatement.setStatementType(String.valueOf(type + 1));
+					}
+
+					Calendar calendarForNextReviewDate = Calendar.getInstance();
+					Calendar calendarForNextStatementDate = Calendar.getInstance();
+					Date dateForNextReview = patientStatement.getNextReviewDate() != null
+							? patientStatement.getNextReviewDate()
+							: new Date();
+					Date dateForNextStatement = patientStatement.getNextStatementDate() != null
+							? patientStatement.getNextStatementDate()
+							: new Date();
+					PatientStatementTypeEnum type = PatientStatementTypeEnum
+							.getPatientStatementTypeByType(Integer.parseInt(patientStatement.getStatementType()));
+					calendarForNextReviewDate.setTime(dateForNextReview);
+					calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, type.getDays());
+					patientStatement.setNextReviewDate(calendarForNextReviewDate.getTime());
+					calendarForNextStatementDate.setTime(dateForNextStatement);
+					calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, type.getDays());
+					patientStatement.setNextStatementDate(calendarForNextStatementDate.getTime());
+					
+					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
+							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
+					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
+							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
+					responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
+							: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
+					BeanUtils.copyProperties(patientStatement, responseDto);
+				}else {
+					responseDto = new RcmPatientStatementDto();
+					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
+							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
+					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
+							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
+					responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
+							: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
+					BeanUtils.copyProperties(patientStatement, responseDto);
+				}
+			}
+		} else {
+			if (patientStatement != null) {
+				responseDto = new RcmPatientStatementDto();
+				responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
+						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
+				responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
+						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
+				responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
+						: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
+				BeanUtils.copyProperties(patientStatement, responseDto);
+			}
 		}
-		return null;
+		return responseDto;
 	}
 	
 	@Transactional(rollbackOn = Exception.class)
@@ -1252,7 +1326,7 @@ public class ClaimSectionImpl {
 			
 				
 		}
-		if (claim != null) {
+		if (claim != null && finalSubmit) {
 			currentClaimStatusAndNextActionData = new CurrentClaimStatusAndNextAction();
 			currentClaimStatusAndNextActionData
 					.setCurrentClaimStatusEs(nextActionReequiredInfoModel.getCurrentClaimStatusEs());
