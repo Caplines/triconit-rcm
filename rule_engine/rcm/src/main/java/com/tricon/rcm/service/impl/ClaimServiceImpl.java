@@ -24,6 +24,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
@@ -1898,7 +1899,6 @@ public class ClaimServiceImpl {
 		List<FreshClaimDataDto> list=null;
 		List<FreshClaimDataViewDto> listView=new ArrayList<>();
 		
-		
 		if (sub.equals("Fresh")) {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId())  {
@@ -1931,12 +1931,24 @@ public class ClaimServiceImpl {
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				 //Need to get Claim remark in of non billing and internal audit
 				
-				 listView.forEach(data->{
-					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-				 });
-			 }
+				  //List<String> claimUuid = listView.stream().map(x -> x.getUuid()).collect(Collectors.toList());
+
+				  this.populateClaimListWithComments(listView, teamId);
+					
+////			  int endIndex = Math.min(i + maxCommentDataPerPage, claimUuid.size());
+////		      List<String> claimUuidChunk = claimUuid.subList(i, endIndex);
+////			  commentsList.addAll(this.fetchLatestCommentsByClaimUuid(claimUuidChunk, teamId));
+////					}
+	
+//				 listView.forEach(data->{
+//					 
+//					 
+//					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+//				 });
+			 
 			
-		}
+		   }
+	    }
 		// submitted and unsubmitted claims except billing and internal audit teams
 		else if (sub.equals(Constants.SUBMITTED_CLAIMS)) {
 			
@@ -1960,9 +1972,11 @@ public class ClaimServiceImpl {
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				 //Need to get Claim remark in of non billing and internal audit
 				
-				 listView.forEach(data->{
-					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-				 });
+//				 listView.forEach(data->{
+//					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+//				 });
+				 
+				 this.populateClaimListWithComments(listView, teamId);
 			 }
 		} else if (sub.equals(Constants.UNSUBMITTED_CLAIMS)) {
 			//SAME AS FRESH
@@ -1985,9 +1999,10 @@ public class ClaimServiceImpl {
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				 //Need to get Claim remark in of non billing and internal audit
 				
-				 listView.forEach(data->{
-					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-				 });
+//				 listView.forEach(data->{
+//					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+//				 });
+				 this.populateClaimListWithComments(listView, teamId);
 			 }
 		}
 		else {
@@ -4184,8 +4199,8 @@ public class ClaimServiceImpl {
 		/*if (assignToTeamId == null) {
 			return "no Assigned team";
 		}*/;
-		RcmTeam team = rcmTeamRepo.findById(assignToTeamId);
-		if (team == null) {
+		Optional<RcmTeam>team = rcmTeamRepo.findById(assignToTeamId);
+		if (!team.isPresent()) {
 			return "Wrong Team";
 		}
 		if (dto.getRemark() == null) {
@@ -5789,5 +5804,32 @@ public class ClaimServiceImpl {
 		resposeDto.setDiscrepanciesAll(discrepanciesAll);
 		resposeDto.setClaimsNotFoundRCM(tSet);
 		return resposeDto;
+	}
+	
+	private List<com.tricon.rcm.dto.customquery.KeyValueDto> fetchLatestCommentsByClaimUuid(List<String> claimUuid,
+			int teamId) {
+		List<com.tricon.rcm.dto.customquery.KeyValueDto> comments = rcmClaimAssignmentRepo
+				.findLatestClaimCommentByOtherTeam(claimUuid, teamId);
+		return comments;
+	}
+	
+	private void populateClaimListWithComments(List<FreshClaimDataViewDto> listView, int teamId) {
+		int ctr = 0;
+		while (true) {
+			List<String> claimUuids = listView.stream().skip(ctr).limit(Constants.MAX_COMMENT_DATA_PER_PAGE)
+					.map(x -> x.getUuid()).collect(Collectors.toList());
+			List<com.tricon.rcm.dto.customquery.KeyValueDto> comments = this.fetchLatestCommentsByClaimUuid(claimUuids,
+					teamId);
+			listView.forEach(data -> {
+				com.tricon.rcm.dto.customquery.KeyValueDto dto = comments.stream()
+						.filter(x -> x.getKeyy().equals(data.getUuid())).findAny().orElse(null);
+				if (dto != null) {
+					data.setLastTeamRemark(dto.getValue());
+				}
+			});
+			ctr = ctr + Constants.MAX_COMMENT_DATA_PER_PAGE;
+			if (claimUuids.size() == 0)
+				break;
+		}
 	}
 }

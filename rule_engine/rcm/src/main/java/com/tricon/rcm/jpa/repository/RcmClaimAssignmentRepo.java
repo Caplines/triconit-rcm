@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmUser;
+import com.tricon.rcm.dto.customquery.KeyValueDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.ExistingClaimDto;
 import com.tricon.rcm.util.Constants;
@@ -109,4 +110,7 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	          + " and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED,nativeQuery=true)
 	      List<ExistingClaimDto> findExistingUserAssignClaimsAndClientStatus(@Param("assignTo")String assignTo);
 	
+			@Query(value = "select comment_assigned_by as value,claim_id as keyy from rcm_claim_assignment where active =false and current_team_id<>:teamId and claim_id in :claimUuid order by created_date desc limit 1", nativeQuery = true)
+			List<KeyValueDto> findLatestClaimCommentByOtherTeam(@Param("claimUuid") List<String> claimUUid,
+					@Param("teamId") int teamId);
 }

@@ -25,9 +25,4 @@ public interface RcmClaimNotesRepo extends JpaRepository<RcmClaimNotes, Integer>
 			+ "")
 	List<RcmClaimNoteDto> fetchClaimNotes(@Param("claim_id") String claimId,@Param("teamId") int teamId);
 
-	
-	@Transactional
-	@Modifying
-	@Query(nativeQuery = true,value="delete from rcm_claim_notes where claim_id = :claimId")
-	Integer deleteByClaimId(@Param("claimId")String claimId);
 }

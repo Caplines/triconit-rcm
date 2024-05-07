@@ -167,6 +167,8 @@ public class Constants {
 	public static final int BUTTON_TYPE_ATTACH_SECONDARY = 1;
 	public static final int BUTTON_TYPE_RECREATE_FULL_CLAIM= 2;
 	public static final int BUTTON_TYPE_RECREATE_PARTIAL_CLAIM = 3;
+	
+	public static final int MAX_COMMENT_DATA_PER_PAGE=100;
     
     
 }
