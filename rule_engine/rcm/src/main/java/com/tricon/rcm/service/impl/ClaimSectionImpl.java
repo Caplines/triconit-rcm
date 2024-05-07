@@ -1516,6 +1516,8 @@ public class ClaimSectionImpl {
 				String claimTransfer = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
 						claim.getClaimUuid(), nextTeam, requestRebillingInfoModel.getRemarks(), claim, assign,
 						createdBy, office, null, newCycleStatus, nextAction.getType(), assignActionName);
+				
+				rcmClaimAssignmentRepo.save(assign);
 				logger.info("claim transfer response->" + claimTransfer);
 			} else {
 				logger.info("claim transfer response-> Wrong claim Status:" + requestRebillingInfoModel.getNextAction()
@@ -1669,7 +1671,9 @@ public class ClaimSectionImpl {
 					String claimTransfer = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
 							claim.getClaimUuid(), nextTeam, rebillingInfoModel.getRebillingRemarks(), claim, assign,
 							createdBy, office, null, newCycleStatus, nextAction.getType(), assignActionName);
+					rcmClaimAssignmentRepo.save(assign);
 					logger.info("claim transfer response->" + claimTransfer);
+					
 				} else {
 					logger.info("claim transfer response-> Wrong claim Status:"
 							+ ClaimStatusEnum.Billed + " send for claim :" + claim.getClaimUuid());

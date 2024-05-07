@@ -2114,8 +2114,8 @@ public class ClaimServiceImpl {
 				
 			List<AssignFreshClaimLogsDto> x =	primaries.stream().filter(e -> e.getOfficeUuid().equals(off))
 					.collect(Collectors.toList());
-				AssignFreshClaimLogsDto minValue1 = x.stream().filter(e -> e.getOpdt()!=null).min(Comparator.comparing(v -> v.getOpdt())).get();
-				AssignFreshClaimLogsDto minValue2 = x.stream().filter(e -> e.getOpdos()!=null).min(Comparator.comparing(v -> v.getOpdos())).get();
+				AssignFreshClaimLogsDto minValue1 = x.stream().filter(e -> e.getOpdt()!=null).max(Comparator.comparing(v -> v.getOpdt())).get();
+				AssignFreshClaimLogsDto minValue2 = x.stream().filter(e -> e.getOpdos()!=null).max(Comparator.comparing(v -> v.getOpdos())).get();
 			dFA = new AssignFreshClaimLogsImplDto();
 			dFA.setOfficeName(minValue1.getOfficeName());
 			dFA.setAssignedUser(minValue1.getAssignedUser());
@@ -4108,7 +4108,7 @@ public class ClaimServiceImpl {
 						originalClaimPendingStatus? ClaimStatusEnum.Billed.getType() : null,originalClaimPendingStatus? ClaimStatusEnum.Need_to_Post.getType() : null,dto.getActionName());
 			    
 				
-				
+				rcmClaimAssignmentRepo.save(assign);
 				claim.setUpdatedBy(user);
 				claim.setPending(false);
 				claim.setUpdatedDate(new Date());
@@ -4155,6 +4155,7 @@ public class ClaimServiceImpl {
 				message= rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
 						dto.getAssignToTeam(),dto.getAssignToComment(),claim,assign,user,office,null,
 						createStatus,nextAction,dto.getActionName());
+				rcmClaimAssignmentRepo.save(assign);
 			}/*else if(dto.isAssignToTL()){//Separate API
 				//RcmUser assignuser = userRepo.findByUuid(jwtUser.getUuid());
 				claim.setUpdatedBy(user);
@@ -4245,6 +4246,7 @@ public class ClaimServiceImpl {
 				message =rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, dto.getClaimUuid(),
 						assignToTeamId, dto.getRemark(), claim,
 						 assign, user, office,dto.getAttachmentsWithRemarks(),null,null,null);
+				rcmClaimAssignmentRepo.save(assign);
 				if (message!=null && message.equals("OtherTeam")) message="done";
 				return message;
 			
@@ -5370,6 +5372,7 @@ public class ClaimServiceImpl {
 				   String assignActionName="Assign To Team";////Same we have in ui if change needed update that also (billing-claims.component.ts)
 				   String claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, sectionRequestBody.getClaimUuid(),
 							nextTeam, currentDto.getRemarks(), claim, assign, createdBy, office, null,newCycleStatus,nextAction.getType(),assignActionName);
+				   rcmClaimAssignmentRepo.save(assign);
 				}else {
 					logger.info("claim transfer response-> Wrong claim Status:"+currentDto.getNextAction()+" send for claim :"+claim.getClaimUuid() );
 				}
