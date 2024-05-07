@@ -1571,9 +1571,10 @@
                                                         <th class="row-grey">S.No.</th>
                                                         <th class="row-grey">Service Code</th>
                                                         <th class="row-grey">Tooth#</th>
+                                                        <th class="row-grey">Surface</th>
                                                         <th class="row-grey">Ledger Amt</th>
                                                         <th class="row-grey">Est. Amount</th>
-                                                        <th class="row-grey">Surface</th>
+                                                        <!-- <th class="row-grey">Surface</th> -->
                                                         <th>Allowed Amount</th>
                                                         <th>Paid Amount</th>
                                                         <th>Credit Adjustment Amount</th>
@@ -1607,6 +1608,7 @@
                                                                 <td><input type="text"
                                                                         class="attach-secondary-width form-control"
                                                                         [(ngModel)]="data.tooth"></td>
+                                                                <td><input type="text" class="attach-secondary-width form-control" [(ngModel)]="data.surface"> </td>
                                                                 <td><input type="text"
                                                                         class="attach-secondary-width form-control"
                                                                         [(ngModel)]="data.fee"
@@ -1615,9 +1617,9 @@
                                                                         class="attach-secondary-width form-control"
                                                                         [(ngModel)]="data.estPrimary"
                                                                         (blur)="getTotalServiceLevelInfo()"> </td>
-                                                                <td><input type="text"
+                                                                <!-- <td><input type="text"
                                                                         class="attach-secondary-width form-control"
-                                                                        [(ngModel)]="data.surface"> </td>
+                                                                        [(ngModel)]="data.surface"> </td> -->
                                                             </ng-container>
                                                             <ng-container class="row-grey" *ngIf="smilePoint">
                                                                 <td class="row-grey"> {{idx+1}}</td>
@@ -1626,9 +1628,10 @@
                                                                     [title]="data.rebilledCodeStatus? 'Rebilled' :''">
                                                                     {{data.serviceCode}}</td>
                                                                 <td class="row-grey"> {{data.tooth}}</td>
+                                                                <td class="row-grey"> {{data.surface}}</td>
                                                                 <td class="row-grey"> {{data.fee}}</td>
                                                                 <td class="row-grey"> {{data.estPrimary}}</td>
-                                                                <td class="row-grey"> {{data.surface}}</td>
+                                                                <!-- <td class="row-grey"> {{data.surface}}</td> -->
                                                             </ng-container>
                                                             <td> <input type="number"
                                                                     class="attach-secondary-width form-control"
@@ -1764,9 +1767,10 @@
                                                         <td>Total</td>
                                                         <td></td>
                                                         <td></td>
+                                                        <td></td>
                                                         <td>{{sectionLevelInfoTotalConfig.fee}}</td>
                                                         <td>{{sectionLevelInfoTotalConfig.estPrimary}}</td>
-                                                        <td></td>
+                                                        <!-- <td></td> -->
                                                         <td> <input type="number"
                                                                 class="attach-secondary-width form-control"
                                                                 type="number" (blur)="getTotalAllowedAmt()"
@@ -1786,7 +1790,7 @@
                                                         <td>{{sectionLevelInfoTotalConfig.adjustmentAmount}}</td>
                                                         <td></td>
                                                         <td>{{sectionLevelInfoTotalConfig.billToPatientAmount}}</td>
-                                                        <td colspan="5"></td>
+                                                        <td colspan="4"></td>
                                                     </tr>
                                                     <tr>
                                                         <td colspan="3">Enter Balance From ES Before Posting</td>
