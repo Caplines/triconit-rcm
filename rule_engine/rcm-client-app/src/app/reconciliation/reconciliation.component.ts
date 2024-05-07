@@ -19,7 +19,7 @@ export class ReconciliationComponent {
   
   reconcileResponseData: ReconcilltationResponseModel[] = [];
   reconcilltationRequestModel: ReconcilltationRequestModel = {
-    officeUuid: 'Select'
+    officeUuid: ''
   }
 
   loader: boolean = false;

@@ -5,7 +5,7 @@
                 <div class="d-flex align-items-center m-3">
                     <label for="office" class="me-5">Office</label>
                     <select type="text" id="office" class="form-control mx-2" [(ngModel)] = "reconcilltationRequestModel.officeUuid" required>
-                        <option value="Select" disabled>Select</option>
+                        <option value="" hidden>Select</option>
                         <ng-container *ngFor="let item of officeData">
                             <option [value]="item.uuid">{{item.name}}</option>
                         </ng-container>
@@ -56,9 +56,8 @@
                                     <td class="alignCenter">{{data.claimsRCM}}</td>
                                     <td class="alignCenter">
                                         <ng-container *ngIf="data.discrepancies.length > 0; else noDiscrepancies">
-                                            <div class="d-flex justify-content-between">
-                                                <button (click)="toggleText('discrepancies' + data.title)"
-                                                    class="btn btn-link text-decoration-none">
+                                            <div class="d-flex justify-content-center">
+                                                <button (click)="toggleText('discrepancies' + data.title)" class="btn btn-link text-decoration-none fixedButtonWidth">
                                                     <i *ngIf="!toggleState['discrepancies' + data.title]" class="arrow-right"></i>
                                                     <i *ngIf="toggleState['discrepancies' + data.title]" class="arrow-down"></i>
                                                     <span class="discrepancies-text">{{data.discrepancies.length}}</span>
@@ -67,7 +66,7 @@
                                             <div class="toggle-scroll" *ngIf="toggleState['discrepancies' + data.title]">
                                                 <ng-container *ngFor="let link of data.discrepancies; let idx = index">
                                                     <div>
-                                                        <a class="btn btn-link text-decoration-none fs-4" [href]="link">{{link}} {{idx+1}}</a>
+                                                        <a class="btn btn-link text-decoration-none fs-4" [href]="link">{{link}}</a>
                                                     </div>
                                                 </ng-container>
                                             </div>
@@ -99,9 +98,8 @@
                                     </td>
                                     <td class="alignCenter">
                                         <ng-container *ngIf="data.claimInUploadErrors.length > 0; else noUploadErrors">
-                                            <div class="d-flex justify-content-between">
-                                                <button (click)="toggleText('claimInUploadErrors' + data.title)"
-                                                    class="btn btn-link text-decoration-none">
+                                            <div class="d-flex justify-content-center">
+                                                <button (click)="toggleText('claimInUploadErrors' + data.title)" class="btn btn-link text-decoration-none fixedButtonWidth">
                                                     <i *ngIf="!toggleState['claimInUploadErrors' + data.title]" class="arrow-right"></i>
                                                     <i *ngIf="toggleState['claimInUploadErrors' + data.title]" class="arrow-down"></i>
                                                     <span class="discrepancies-text">{{data.claimInUploadErrors.length}}</span>
@@ -110,7 +108,7 @@
                                             <div class="toggle-scroll" *ngIf="toggleState['claimInUploadErrors' + data.title]">
                                                 <ng-container *ngFor="let item of data.claimInUploadErrors; let idx = index">
                                                     <div>
-                                                        <span class="btn btn-link text-decoration-none fs-4">{{item}}</span>
+                                                        <span class="text-decoration-none fs-4">{{item}}</span>
                                                     </div>
                                                 </ng-container>
                                             </div>
