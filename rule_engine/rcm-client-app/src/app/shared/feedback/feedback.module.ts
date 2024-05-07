@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FeedbackComponent } from './feedback.component';
-
+import { DatePipe } from '@angular/common';
 
 
 @NgModule({
@@ -9,6 +9,7 @@ import { FeedbackComponent } from './feedback.component';
   imports: [
     CommonModule,
   ],
-  exports: [FeedbackComponent]
+  exports: [FeedbackComponent],
+  providers: [DatePipe]
 })
 export class FeedbackModule { }

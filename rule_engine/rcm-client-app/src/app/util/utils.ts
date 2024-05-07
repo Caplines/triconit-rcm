@@ -278,4 +278,32 @@ export default class Utils {
    static isNotTeamOffice() {
       return <any>localStorage.getItem("selected_teamId") != 5 ? true : false;
    }
+
+   static getLoggedInUserFirstName(): string {
+      let ls: any = localStorage;
+      if (ls.getItem('name')) {
+         return ls.getItem('name');
+      }
+      return '';
+   }
+
+   static getLoggedInUserLastName(): string {
+      let ls: any = localStorage;
+      if (ls.getItem('lastName')) {
+         return ls.getItem('lastName');
+      }
+      return '';
+   }
+
+   static getLoggedInUserFirstAndLastName(): string {
+      return this.getLoggedInUserFirstName() + " " + this.getLoggedInUserLastName();
+   }
+
+   static getSelectedClientName(): string {
+      let ls: any = localStorage;
+      if (ls.getItem('selected_clientName')) {
+         return ls.getItem('selected_clientName');
+      }
+      return '';
+   }
 }
