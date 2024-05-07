@@ -67,7 +67,7 @@ export class BillingClaimsComponent {
   mtype: string = '1';//Fail By Default.
   tlErrormsg = "";
   otherErrormsg = "";
-  loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false }
+  loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false, EOB:false }
   //ivfData:any=[];
   updatedIvfId: any;
   updatedTpId: any;
@@ -2540,7 +2540,8 @@ export class BillingClaimsComponent {
   }
 
   getPdfUrlAndSaveEOB(isFinal: boolean) {
-
+    this.loader.EOB = true;
+    this.claimSectionModal['EOB']['errorMessage'] = '';
     this.claimSectionModal['EOB']['sectionId'] = this.sectionIds['EOB']['sectionId'];
     this.claimSectionModal['EOB']['extension'] = "pdf";
     if (!isFinal) {
@@ -2555,10 +2556,20 @@ export class BillingClaimsComponent {
         }
       };
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
+        
+        if (res.status === 200) {
           this.claimSectionModal['EOB']['pdfLink'] = '';
-          this.claimSectionModal['EOB'].data.push(res.data);
-          this.pdfUrlSrc = res.data.eobPathLink;
+          if(res.data !== null) {
+            this.claimSectionModal['EOB'].data.push(res.data);
+            this.pdfUrlSrc = res.data.eobPathLink;
+            this.loader.EOB = false;
+          } else {
+            this.claimSectionModal['EOB']['errorMessage'] = 'Invalid Link.';
+            this.loader.EOB = false;
+          }
+        } else {
+          this.claimSectionModal['EOB']['errorMessage'] = 'Failed to save';
+          this.loader.EOB = false;
         }
       })
     }

@@ -1903,6 +1903,11 @@
                                                                 (click)="removeEobById(data.id,idx)">
                                                         </td>
                                                     </tr>
+                                                    <tr *ngIf="loader.EOB">
+                                                        <td colspan="5" class="text-center">
+                                                            <span class="loader-data"></span>
+                                                        </td>
+                                                    </tr>
                                                 </tbody>
                                             </table>
                                             <!-- <div class="not-found" *ngIf="claimServiceLevelModel?.claimFound==false">
@@ -1923,6 +1928,7 @@
                                                         [disabled]="!claimSectionModal['EOB']['pdfLink']"
                                                         (click)="getPdfUrlAndSaveEOB(false)">Save</button>
                                                 </span>
+                                                <div *ngIf="claimSectionModal['EOB']['errorMessage']" class="text-danger">{{claimSectionModal['EOB']['errorMessage']}}</div>
                                             </div>
 
                                             <div class="pdf-viewer" *ngIf="pdfUrlSrc">
