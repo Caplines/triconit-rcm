@@ -109,9 +109,9 @@ version="1.0" >
                          <td>Client</td>
                          <td>Office</td>
                          <td>User Assignment</td>
-                         <td>Oldest Pending Date</td>
-                         <td>Oldest Pending DOS</td>
-                         <td># of Claims to be Billed</td>
+                         <td>Days Since Oldest Pending Claim (Upload Date)</td>
+                         <td>Days Since Oldest Pending Claim (DOS)</td>
+                         <td># of Claims to be <xsl:value-of select="currentTeamName"/></td>
                          <xsl:if test="$cTeamId=7">
                          <td># of RemoteLite Rejections</td>
                          </xsl:if>

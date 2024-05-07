@@ -64,6 +64,7 @@ export default class Utils {
       localStorage.setItem('token', token);
 
       localStorage.setItem('name', data.firstName);
+      localStorage.setItem('lastName', data.lastName);
       this.setLocalStoragePhase2(data.authorities, data.companies, data.teams);
 
    }
@@ -100,6 +101,7 @@ export default class Utils {
       localStorage.removeItem('token');
       localStorage.removeItem('roles');
       localStorage.removeItem('name');
+      localStorage.removeItem('lastName');
       localStorage.removeItem('clientName');
       localStorage.removeItem('selected_clientName')
       localStorage.removeItem('selected_roleName');

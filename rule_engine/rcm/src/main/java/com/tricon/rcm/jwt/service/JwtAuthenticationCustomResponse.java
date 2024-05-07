@@ -38,11 +38,13 @@ public class JwtAuthenticationCustomResponse implements Serializable {
 	
 	Collection<? extends GrantedAuthority> authorities;
 	
+	private String lastName;
+	
 	
     public JwtAuthenticationCustomResponse(String token,
     		String userName ,
     		Collection<? extends GrantedAuthority>  authorities,
-    		List<RcmTeam> teams,String firstName,List<RcmCompany> companies) {
+    		List<RcmTeam> teams,String firstName,List<RcmCompany> companies,String lastName) {
         this.token = token;
         this.userName = userName;
         this.authorities = authorities;
@@ -51,6 +53,7 @@ public class JwtAuthenticationCustomResponse implements Serializable {
         //this.clientName=clientName;
         this.teams=teams;
         this.companies=companies;
+        this.lastName = lastName;
         
     }
 	
@@ -85,7 +88,11 @@ public class JwtAuthenticationCustomResponse implements Serializable {
 	public List<RcmCompany> getCompanies() {
 		return companies;
 	}
-	
+
+	public String getLastName() {
+		return lastName;
+	}
+
 	/*public String getClientName() {
 		return clientName;
 	}*/

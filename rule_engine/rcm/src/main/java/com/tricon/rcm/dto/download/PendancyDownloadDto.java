@@ -26,5 +26,6 @@ public class PendancyDownloadDto {
 		private int totalRemLiteReject;
 		private int totalcountAndRemLiteReject;
 		private int currentTeamId;
+		private String currentTeamName;
 	
 }

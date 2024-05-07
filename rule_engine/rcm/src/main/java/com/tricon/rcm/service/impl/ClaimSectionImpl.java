@@ -790,6 +790,7 @@ public class ClaimSectionImpl {
 					eobInfoModel.setAttachBy(createdBy.getFirstName());
 					eobInfoModel.setDate(Constants.SDF_MYSL_DATE.format((eobInformation.getCreatedDate())));
 				
+					eobInfoModel.setId(eobInformation.getId());		
 			} catch (Exception e) {
 				logger.error("Invalid File Format");
 				eobInfoModel.setEobPathLink("Invalid Format");

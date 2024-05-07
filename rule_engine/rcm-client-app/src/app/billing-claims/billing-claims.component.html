@@ -1853,7 +1853,7 @@
                                     *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
                                     <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['EOB']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="EOB" class="text-danger">
-                                            EOB (Access to this section of the RCM Tool is restricted for you)
+                                            EOBs (Access to this section of the RCM Tool is restricted for you)
                                         </a>
                                         <div class="down-icon" (click)="showHide('EOB')">
                                             <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['EOB']}"></a>
@@ -1865,7 +1865,7 @@
                                     *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['EOB']}">
                                         <a data-toggle="collapse" aria-expanded="false" id="EOB">
-                                            EOB
+                                            EOBs
                                         </a>
                                         <div class="down-icon" (click)="showHide('EOB')">
                                             <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['EOB']}"></a>

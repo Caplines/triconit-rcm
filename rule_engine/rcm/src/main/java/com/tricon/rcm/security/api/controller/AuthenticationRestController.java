@@ -77,7 +77,7 @@ public class AuthenticationRestController {
 			// Return the token
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Success",
 					new JwtAuthenticationCustomResponse(token, userDetails.getUsername(), userDetails.getAuthorities(),
-							user.getTeams(), user.getFirstname(), user.getCompanies())));
+							user.getTeams(), user.getFirstname(), user.getCompanies(),user.getLastname())));
 		}
 
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.UNAUTHORIZED, "User Logged in Failed", null));
@@ -141,7 +141,7 @@ public class AuthenticationRestController {
 		// Return the token
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "User Logged in Success",
 				new JwtAuthenticationCustomResponse(token, userDetails.getUsername(), userDetails.getAuthorities(),
-						user.getTeams(), user.getFirstname(), user.getCompanies())));
+						user.getTeams(), user.getFirstname(), user.getCompanies(),user.getLastname())));
 		// return ResponseEntity.ok(new JwtAuthenticationResponse(token));
 	}
 }

@@ -9,6 +9,7 @@ import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { Router } from '@angular/router';
 import Utils from '../../util/utils';
 import { DownLoadService } from 'src/app/service/download.service';
+import { AppConstants } from '../../constants/app.constants';
 
 @Component({
   selector: 'claim-office-assignment',
@@ -46,8 +47,9 @@ export class OfficeAssignmentComponent implements OnInit {
   isRoleAssociate:boolean;
   currentTeamId:number = Utils.selectedTeam();
   showTooltipConfig:any={tooltipOne:false,tooltipTwo:false};
+  noOfClaimsBilledTeamName:string;
 
-  constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService) {
+  constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService,public constants:AppConstants,) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
     this.claimData = [];//{} as FreshClaimPLogs;
     console.log(this.router.url)
@@ -61,6 +63,7 @@ export class OfficeAssignmentComponent implements OnInit {
     this.getUserByTeamId();
     this.assignOfficeDetails.teamId = this.teamId;
     this.setTopOnTotalRow();
+    this.changeLabelByTeamName();
     window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
   }
 
@@ -197,7 +200,7 @@ export class OfficeAssignmentComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Client","Office", "User Assignment", "Days Since Oldest Pending Claim (Upload Date)", " Days Since Oldest Pending Claim (DOS)", "# of Claims to be Billed", this.teamId==7? "# of RemoteLite Rejections" : '', this.teamId==7?"Total Pendency":''],
+      headers: ["Client","Office", "User Assignment", "Days Since Oldest Pending Claim (Upload Date)", " Days Since Oldest Pending Claim (DOS)", "# of Claims to be "+this.noOfClaimsBilledTeamName+"", this.teamId==7? "# of RemoteLite Rejections" : '', this.teamId==7?"Total Pendency":''],
     }
     let excelData: any = JSON.parse(JSON.stringify(this.filteredItems));
     excelData = excelData.map((e: any) => {
@@ -278,7 +281,7 @@ export class OfficeAssignmentComponent implements OnInit {
   }
   downloadPdf() {
     this.loader.exportPDFLoader = true;
-    let data = { "fileName": "Pendancy", "data": this.filteredItems, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName ,"currentTeamId":this.teamId };
+    let data = { "fileName": "Pendancy", "data": this.filteredItems, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName ,"currentTeamId":this.teamId,"currentTeamName":this.noOfClaimsBilledTeamName};
     this.appService.pendancyPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
         this.date = new Date();
@@ -415,4 +418,9 @@ get staticUtil():any {
 //   this.isSorted['opdosd'] = true;
 //   this.sortData(this.filteredItems,'opdosd','desc','number');
 // }
+
+  changeLabelByTeamName() {
+    const matchedTeam = this.constants.teamData.find((item: any) => item.teamId == this.currentTeamId);
+    this.noOfClaimsBilledTeamName=matchedTeam.teamName;
+  }
 }
