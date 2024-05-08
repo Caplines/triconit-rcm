@@ -217,9 +217,10 @@ export class ManageSectionComponent {
   }
 
   selectClient(event: any) {
-    this.manageSectionData = this.copiedManageSectionData.filter((e: any) => e.clientName == event.target.value);
+    if (this.inputConfig && this.inputConfig?.isEditSection) {
+      this.manageSectionData = this.userManageSectionData.filter((e: any) => e.clientName == event.target.value);
+    } else {
+      this.manageSectionData = this.copiedManageSectionData.filter((e: any) => e.clientName == event.target.value);
+    }
   }
-
-
-
 }
