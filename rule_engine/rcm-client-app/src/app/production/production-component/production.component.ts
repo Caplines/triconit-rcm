@@ -76,7 +76,7 @@ export class ProductionComponent implements OnInit {
   this.isDataAvailable=true;
   this.total=0;
   this.days=0;
-    this.appService.saveProductionData({ "startDate": this.selectedDate.startDate, "endDate": this.selectedDate.endDate }, (callback: any) => {
+    this.appService.getProductionData({ "startDate": this.selectedDate.startDate, "endDate": this.selectedDate.endDate }, (callback: any) => {
       if (callback.status == 200 && callback.data) {
         this.loader.showLoader = false;
         this.loader.fetch = false;
@@ -93,6 +93,7 @@ export class ProductionComponent implements OnInit {
           this.loader.showLoader = false;
           this.isDataAvailable = true;
         }
+        this.fetchbtnDisable = true;
            
       } else this.alert.alertMsg = callback.message ? callback.message : 'Something went wrong';
     });

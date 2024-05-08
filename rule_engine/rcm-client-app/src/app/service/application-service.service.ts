@@ -352,7 +352,7 @@ export class ApplicationServiceService extends BaseService {
   }
 
 
-  saveProductionData(params: any, callback: any) {
+  getProductionData(params: any, callback: any) {
     this.postData(params, this.httpUrl['productionData'], callback)
   }
 

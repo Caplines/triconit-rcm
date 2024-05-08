@@ -1,4 +1,4 @@
-import { Component, Input} from '@angular/core';
+import { Component, Input, ChangeDetectorRef } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import Utils from '../../util/utils';
 import { AppConstants } from 'src/app/constants/app.constants';
@@ -17,7 +17,7 @@ export class FeedbackComponent {
   date: string;
   toAddress: string = 'rcmhelp@caplineservices.com';
 
-  constructor(private datePipe: DatePipe, public appConstants: AppConstants) {
+  constructor(private datePipe: DatePipe, public appConstants: AppConstants, private cdRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -29,6 +29,7 @@ export class FeedbackComponent {
   ngAfterViewChecked(): void {
     this.date = this.datePipe.transform(new Date(), 'EEE, dd MMM yyyy');
     this.emailUrl = window.location.href;
+    this.cdRef.detectChanges();
   }
 
   getCurrentTeamName(): string {
