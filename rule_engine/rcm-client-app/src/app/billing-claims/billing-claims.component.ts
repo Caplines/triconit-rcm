@@ -474,7 +474,7 @@ export class BillingClaimsComponent {
           ths.fetchTLUsers();
           ths.fetchOtherTeams();
           ths.fetchAttachmentCount();
-
+          this.claimRcm.patientContactNo=this.claimRcm.patientContactNo+',-NO-DATA-'+',2356786545'
           if (this.claimRcm.patientContactNo) {
             this.claimRcm.patientContactNo = this.claimRcm.patientContactNo.split(",").join(", ");
           }
@@ -2835,6 +2835,8 @@ export class BillingClaimsComponent {
       "surface": "",
       "estPrimary": 0,
       "fee": 0,
+      "creditAdjustmentAmount":0,
+      "debitAdjustmentAmount":0,
       "snum": this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length + 1
     };
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.push(model);

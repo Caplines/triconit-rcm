@@ -1579,7 +1579,7 @@
                                                         <th>Paid Amount</th>
                                                         <th>Credit Adjustment Amount</th>
                                                         <th>Debit Adjustment Amount</th>
-                                                        <th>Adjustment Amount</th>
+                                                        <!-- <th>Adjustment Amount</th> -->
                                                         <th>Adjustment Reason</th>
                                                         <th>Bill to Patient Amount</th>
                                                         <th>BTP Reason</th>
@@ -1622,15 +1622,15 @@
                                                                         [(ngModel)]="data.surface"> </td> -->
                                                             </ng-container>
                                                             <ng-container class="row-grey" *ngIf="smilePoint">
-                                                                <td class="row-grey"> {{idx+1}}</td>
-                                                                <td class="row-grey"
+                                                                <td> {{idx+1}}</td>
+                                                                <td
                                                                     [ngClass]="{'text-danger':data.rebilledCodeStatus}"
                                                                     [title]="data.rebilledCodeStatus? 'Rebilled' :''">
                                                                     {{data.serviceCode}}</td>
-                                                                <td class="row-grey"> {{data.tooth}}</td>
-                                                                <td class="row-grey"> {{data.surface}}</td>
-                                                                <td class="row-grey"> {{data.fee}}</td>
-                                                                <td class="row-grey"> {{data.estPrimary}}</td>
+                                                                <td> {{data.tooth}}</td>
+                                                                <td> {{data.surface}}</td>
+                                                                <td> {{data.fee}}</td>
+                                                                <td> {{data.estPrimary}}</td>
                                                                 <!-- <td class="row-grey"> {{data.surface}}</td> -->
                                                             </ng-container>
                                                             <td> <input type="number"
@@ -1653,11 +1653,11 @@
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="data.debitAdjustmentAmount"
                                                                     (blur)="getTotalServiceLevelInfo()" /> </td>
-                                                            <td> <input type="number"
+                                                            <!-- <td> <input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="data.adjustmentAmount"
-                                                                    (blur)="getTotalServiceLevelInfo()"> </td>
+                                                                    (blur)="getTotalServiceLevelInfo()"> </td> -->
                                                             <td>
                                                                 <select class="attach-secondary-width form-control"
                                                                     [(ngModel)]="data.adjustmentReason"
@@ -1787,7 +1787,7 @@
                                                         </td>
                                                         <td>{{sectionLevelInfoTotalConfig.creditAdjustmentAmount}}</td>
                                                         <td>{{sectionLevelInfoTotalConfig.debitAdjustmentAmount}}</td>
-                                                        <td>{{sectionLevelInfoTotalConfig.adjustmentAmount}}</td>
+                                                        <!-- <td>{{sectionLevelInfoTotalConfig.adjustmentAmount}}</td> -->
                                                         <td></td>
                                                         <td>{{sectionLevelInfoTotalConfig.billToPatientAmount}}</td>
                                                         <td colspan="4"></td>

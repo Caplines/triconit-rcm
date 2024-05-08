@@ -372,7 +372,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th *ngIf="staticUtil.isNotTeamOffice()">
+                                                <th *ngIf="(staticUtil.isNotTeamOffice() && staticUtil.isNotTeamPosting()) || staticUtil.isNotTeamPosting()">
                                                     <div class="dFlex">
                                                         Assigned By <div class="dropdown">
                                                             <img (click)="showHideFilteredDropdown('lastTeam')"
@@ -415,7 +415,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th style="min-width: 180px;">
+                                                <th *ngIf= "staticUtil.isNotTeamPosting()" style="min-width: 180px;">
                                                     <div class="dFlex">
                                                         Last Team's Remarks
                                                     </div>
@@ -577,9 +577,9 @@
                                                             *ngIf="! (det.claimId | claimTypeFilter)">
                                                             {{det.secTotal | currency:'USD':true:'.0-0'}}
                                                         </td>
-                                                        <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}">
+                                                        <td *ngIf="(staticUtil.isNotTeamOffice() && staticUtil.isNotTeamPosting()) || staticUtil.isNotTeamPosting() " [ngClass]="{'changeColor' : det.colorChange}">
                                                             {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" class="">
+                                                        <td *ngIf="staticUtil.isNotTeamPosting()" [ngClass]="{'changeColor' : det.colorChange}" class="">
                                                             {{det.lastTeamRemark}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"
                                                             class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}

@@ -306,4 +306,8 @@ export default class Utils {
       }
       return '';
    }
+
+   static isNotTeamPosting() {
+      return <any>localStorage.getItem("selected_teamId") != 12 ? true : false;
+   }
 }
