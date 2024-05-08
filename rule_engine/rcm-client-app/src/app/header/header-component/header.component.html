@@ -168,7 +168,8 @@
                         </div>
                     </ng-container>
 
-                    <div class="form-group  switchBoxContainer">
+                    <div class="form-group  switchBoxContainer"
+                        [ngStyle]="{'display': (loginUserType=='Admin' || staticUtil.getRolesFromLS()[0] == 'ROLE_ADMIN') ? 'none' : 'flex' }">
                         <label class="font-weight-bolder">Client</label>
                         <select class="form-control" id="selectClientAC" name="selectClientAC"
                             (change)="checkBtnDisabled()" [(ngModel)]="selectedClient"
@@ -181,7 +182,7 @@
                     </div>
 
 
-                    <div class="form-group  switchBoxContainer" [hidden]="cwModel?.roles?.length == 1 ? true : false">
+                    <div class="form-group  switchBoxContainer" [hidden]="(cwModel?.roles?.length == 1) ? true : false">
                         <label class="font-weight-bolder">Select Roles</label>
                         <select class="form-control" id="selectRolesAC" name="selectRolesAC"
                             (change)="checkBtnDisabled()" [(ngModel)]="selectedRole"
@@ -194,7 +195,8 @@
                     </div>
 
 
-                    <div class="form-group switchBoxContainer">
+                    <div class="form-group switchBoxContainer"
+                        [ngStyle]="{'display': (loginUserType=='Admin' || staticUtil.getRolesFromLS()[0] == 'ROLE_ADMIN') ? 'none' : 'flex' }">
                         <label class="font-weight-bolder">Team</label>
                         <select class="form-control" id="selectTeamAC" name="selectTeamAC" (change)="checkBtnDisabled()"
                             [(ngModel)]="selectedTeam"
