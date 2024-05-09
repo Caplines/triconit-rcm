@@ -776,6 +776,7 @@ public class ConnectAndReadSheets {
 			l.add(dto);
 			}catch(Exception n) {
 				n.printStackTrace();
+				break;
 			}
 
 		}

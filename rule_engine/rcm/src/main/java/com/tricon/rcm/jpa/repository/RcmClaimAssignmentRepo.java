@@ -38,6 +38,7 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	@Query(value = "select id from rcm_claim_assignment where active =true and assigned_to is not  null and claim_id=:claimUuid order by created_date asc", nativeQuery = true)
 	List<Integer> findIssueAssingments(@Param("claimUuid") String claimUUid);
 	
+	
 	RcmClaimAssignment findByClaimsClaimUuidAndActiveAndCurrentTeamIdId(String claimUUid,boolean active,int teamId);
 	
 	
@@ -83,7 +84,22 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			+"  where rca.claim_id=:claim_id and  rt.id<>:teamId  and rca.active is false")
    int claimWorkedBySomeEarlierByTLTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
 	
-//	@Transactional
+	@Query(nativeQuery = true, value = "  "
+			+" SELECT count(*) FROM rcm_claim_assignment rca "
+			+" where rca.claim_id=:claim_id")
+   int findTotalEntiresinClaimAssignment(@Param("claim_id") String claimId);
+	
+	@Query(nativeQuery = true, value = "  "
+			+" SELECT * FROM rcm_claim_assignment rca "
+			+" where rca.claim_id=:claim_id and current_team_id=:teamId and assigned_to is null and active is true")
+	List<RcmClaimAssignment>findTotalEntiresinClaimAssignmentWithNullAssignedTo(@Param("claim_id") String claimId,@Param("teamId") int teamId);
+	
+	@Query(nativeQuery = true, value = "  "
+			+" SELECT * FROM rcm_claim_assignment rca "
+			+" where rca.claim_id=:claim_id and current_team_id=:teamId  and active is true")
+	List<RcmClaimAssignment>findTotalActiveEntiresinClaimAssignment(@Param("claim_id") String claimId);
+
+	//	@Transactional
 //	@Modifying
 //	@Query(nativeQuery = true, value = "  "
 //			+" insert into rcm_claim_assignment (created_date,updated_date,active,taken_back,created_by,assigned_by,"

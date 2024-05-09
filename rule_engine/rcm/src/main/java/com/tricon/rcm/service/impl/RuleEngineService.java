@@ -981,8 +981,9 @@ public class RuleEngineService {
 					.findByOfficeUuidAndTeamId(claim.getOffice().getUuid(), teamId);
 			 
 			if (assignedUser != null) {
-				List<Integer> assignmentId = rcmClaimAssignmentRepo.findIssueAssingments(claimUUid);
-				if (assignmentId.size() < 1) {
+				int recordCount = rcmClaimAssignmentRepo.findTotalEntiresinClaimAssignment(claimUUid);
+				if (recordCount == 0 && teamId == claim.getCurrentTeamId().getId()) {
+				 //Insert only then	
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
 							claimUUid, claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT);
 					rcmClaimAssignmentRepo.save(rcmAssigment);
@@ -998,10 +999,23 @@ public class RuleEngineService {
 					}
 					if (status!= null) rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), claimUUid);		
 					claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),assignedTeam, assignedBy);
-				} else {
+				
+				}else {
+					List<RcmClaimAssignment> as =rcmClaimAssignmentRepo.findTotalEntiresinClaimAssignmentWithNullAssignedTo(claimUUid, teamId);
+					for(RcmClaimAssignment y:as) {
+						y.setUpdatedBy(assignedUser.getUser());
+						y.setUpdatedDate(new Date());
+						y.setAssignedTo(assignedUser.getUser());
+						rcmClaimAssignmentRepo.save(y);
+					}
+				}
+				/*List<Integer> assignmentId = rcmClaimAssignmentRepo.findIssueAssingments(claimUUid);
+				if (assignmentId.size() < 1) {
+					
+					} else {
 					logger.error("Unassigned claims(" + claimUUid + ") is already assigned to a user whose team id is: "
 							+ teamId + " ");
-				}
+				}*/
 			}
 			//}
 			
