@@ -618,7 +618,7 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Claim ID", "Patient ID", "Patient Name", 'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type", "Est. Amount", this.staticUtil.isNotTeamPosting()?"Assigned By":"", this.staticUtil.isNotTeamPosting()?"Last Team's Remarks":"", "Pending Since Date", "Current Team"]
+      headers: ["Office", this.staticUtil.isNotTeamOffice()?"Claim ID":"", this.staticUtil.isNotTeamOffice()?"Patient ID":"", "Patient Name", 'DOS', this.staticUtil.isNotTeamOffice()?"Claim Age":"", "TFL", "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type", "Est. Amount", this.staticUtil.isNotTeamPosting()?"Assigned By":"", this.staticUtil.isNotTeamPosting()?"Last Team's Remarks":"", "Pending Since Date", "Current Team"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -660,19 +660,19 @@ export class OtherTeamsWorkComponent implements OnInit {
     excelData = excelData.map((e: any) => {
       return {
         "Office Name": e.officeName,
-        "Claim ID": e.newClaimId,
-        "Patient ID": e.patientId,
+        "Claim ID": this.staticUtil.isNotTeamOffice()?e.newClaimId:"",
+        "Patient ID":this.staticUtil.isNotTeamOffice()? e.patientId:"",
         "Patient Name": e.patientName,
         'DOS': e.dos,
-        "Claim Age": e.claimAge,
+        "Claim Age": this.staticUtil.isNotTeamOffice()?e.claimAge:"",
         "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
         'Age Bracket': e.ageBracket,
         "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
         "Insurance Type": e.prName ? e.prName : e.secName,
         "Claim Type": e.claimType,
         "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
-        "Assigned By": e.lastTeam,
-        "Last Team's Remarks": e.lastTeamRemark,
+        "Assigned By": this.staticUtil.isNotTeamPosting()?e.lastTeam:"",
+        "Last Team's Remarks":this.staticUtil.isNotTeamPosting()? e.lastTeamRemark:"",
         "Pending Since Date": e.pendingSince,
         "Currrent Team": this.currentTeamName.teamName
       }

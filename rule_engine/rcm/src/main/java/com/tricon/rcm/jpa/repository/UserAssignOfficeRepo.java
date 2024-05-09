@@ -23,4 +23,9 @@ public interface UserAssignOfficeRepo extends JpaRepository<UserAssignOffice, In
 			+ "where off.company_id=:clientUuid and ur.role='"+Constants.ROLE_PREFIX+Constants.TEAMLEAD+"' and uoff.team_id=:teamId limit 1")
 	AssignOfficeDto findByTLByClientUuidWithRoleAndTeam(@Param("clientUuid") String clientUuid,@Param("teamId") int teamId);
 	
+	
+	@Query(nativeQuery = true, value = "select tm.name as teamName,tm.id as teamId,off.office_id as OfficeUuid,off.user_id  as userUuid from rcm_team tm left join rcm_user_assign_office off on "
+			+ "off.team_id=tm.id and  off.office_id =:officeUuid")
+	List<AssignOfficeDto> findTeamsByOffice(@Param("officeUuid") String officeUuid);
+	
 }

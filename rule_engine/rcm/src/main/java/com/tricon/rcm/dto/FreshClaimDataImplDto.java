@@ -163,5 +163,7 @@ public class FreshClaimDataImplDto {
     String statusESUpdated;
     
     String nextFollowUpDate;
+    
+    List<AssignOfficeResponseDto>userAssignOfficeData;
 }
 

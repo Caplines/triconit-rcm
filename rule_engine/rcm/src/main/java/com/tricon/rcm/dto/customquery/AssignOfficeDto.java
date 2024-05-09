@@ -5,4 +5,5 @@ public interface AssignOfficeDto {
 	String getOfficeUuid();
 	String getUserUuid();
 	Integer getTeamId();
+	String getTeamName();
 }

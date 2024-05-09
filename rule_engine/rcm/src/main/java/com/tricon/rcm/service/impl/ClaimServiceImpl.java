@@ -73,6 +73,7 @@ import com.tricon.rcm.db.entity.UserAssignOffice;
 import com.tricon.rcm.dto.AllPendencyReportDto;
 import com.tricon.rcm.dto.ArchiveClaimsPayloadDto;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
+import com.tricon.rcm.dto.AssignOfficeResponseDto;
 import com.tricon.rcm.dto.AutoRunClaimReponseDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
@@ -161,6 +162,7 @@ import com.tricon.rcm.dto.customquery.AllPendencyDateDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
+import com.tricon.rcm.dto.customquery.AssignOfficeDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimRuleRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimRuleValidationDto;
@@ -346,6 +348,9 @@ public class ClaimServiceImpl {
 	
 	@Autowired
 	RcmClaimLogServiceImpl rcmClaimLogServiceImpl;
+	
+	@Autowired
+	UserAssignOfficeRepo userAssignRepo;
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -2180,8 +2185,13 @@ public class ClaimServiceImpl {
 			// Fetch Data from RCM Tool Checks and Validations Sheets //141479965
 
 			BeanUtils.copyProperties(dto, implDto);
-			//set es_status updated
 			
+			// fetch user data from user_assign table by teams
+			 List<AssignOfficeResponseDto>teamsFromUserAssign=this.fetchTeamsDataFromUserAssignOffice(dto.getOfficeUuid());
+			 
+			 implDto.setUserAssignOfficeData(teamsFromUserAssign);		
+			
+			//set es_status updated
 			if (dto.getStatusESUpdated() == null) {
 				implDto.setStatusESUpdated(dto.getStatusES());
 			}
@@ -5834,5 +5844,32 @@ public class ClaimServiceImpl {
 			if (claimUuids.size() == 0)
 				break;
 		}
+	}
+	
+	private List<AssignOfficeResponseDto> fetchTeamsDataFromUserAssignOffice(String officeUuid) {
+		List<AssignOfficeResponseDto> dataList = null;
+		List<AssignOfficeDto> data = userAssignRepo.findTeamsByOffice(officeUuid);
+		if (!data.isEmpty()) {
+			dataList = new ArrayList<>();
+			for (AssignOfficeDto x : data) {
+				AssignOfficeResponseDto dto = new AssignOfficeResponseDto();
+				if (!StringUtils.isNoneBlank(x.getUserUuid()) && !StringUtils.isNoneBlank(x.getOfficeUuid())) {
+					dto.setOfficeId(x.getOfficeUuid());
+					dto.setTeamId(x.getTeamId());
+					dto.setTeamName(x.getTeamName());
+					dto.setUserExist(false);
+					dto.setUserId(x.getUserUuid());
+					dataList.add(dto);
+				} else {
+					dto.setOfficeId(x.getOfficeUuid());
+					dto.setTeamId(x.getTeamId());
+					dto.setTeamName(x.getTeamName());
+					dto.setUserExist(true);
+					dto.setUserId(x.getUserUuid());
+					dataList.add(dto);
+				}
+			}
+		}
+		return dataList;
 	}
 }
