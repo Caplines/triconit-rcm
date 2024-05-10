@@ -110,36 +110,45 @@ version="1.0" >
                      </tr>
                      <tr class="tableView">
                          <td>Office</td>
+                         <xsl:if test="$currentTeam != 'Office' ">
                          <td>Claim ID</td>
                          <td>Patient ID</td>
+                         </xsl:if>
                          <td>Patient Name</td>
                          <td>DOS</td>
+                         <xsl:if test="$currentTeam != 'Office' ">
                          <td>Claim Age</td>
+                         </xsl:if>
                          <td>TFL</td>
                          <td>Age Bracket</td>
                          <td>Insurance Name</td>
                          <td>Insurance Type</td>
                          <td>Claim Type</td>
                          <td>Est.Amount</td>
+                         <xsl:if test="$currentTeam != 'Payment Posting' ">
                          <td>Assigned By</td>
                          <td>Last Team's Remarks</td>
+                         </xsl:if>
                          <td>Pending since</td>
                          <td>Current Team</td>
-
                      </tr>    
                       <xsl:for-each select="data/data">   
 
                      <tr class="whiteBg">   
 
                          <td><xsl:value-of select="officeName"/></td>
+                          <xsl:if test="$currentTeam != 'Office' ">
                           <td><xsl:value-of select="newClaimId"/></td>
                          <td><xsl:value-of select="patientId"/></td>
+                         </xsl:if>
                          <td><xsl:value-of select="patientName"/></td>
                          <td><xsl:variable name="month" select="substring(dos, 6, 2)" />
                        <xsl:variable name="day" select="substring(dos, 9, 2)" />
                        <xsl:variable name="year" select="substring(dos, 1, 4)" />
                        <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>
+                        <xsl:if test="$currentTeam != 'Office' ">
                        <td><xsl:value-of select="claimAge"/></td>
+                       </xsl:if>
                        <td><xsl:value-of select="timelyFilingLimitData"/></td>
                        <td><xsl:value-of select="ageBracket"/></td>
                        <td> <xsl:choose>
@@ -178,9 +187,11 @@ version="1.0" >
                            <xsl:value-of select="concat('$', format-number(secTotal,'0'))"/>
                            </xsl:otherwise>
                            </xsl:choose>
-                       </td>            
+                       </td>
+                       <xsl:if test="$currentTeam != 'Payment Posting' ">            
                        <td><xsl:value-of select="lastTeam"/></td>
-                       <td><xsl:value-of select="lastTeamRemark"/></td>    
+                       <td><xsl:value-of select="lastTeamRemark"/></td>  
+                       </xsl:if>  
                         <td><xsl:variable name="month" select="substring(pendingSince, 6, 2)" />
                        <xsl:variable name="day" select="substring(pendingSince, 9, 2)" />
                        <xsl:variable name="year" select="substring(pendingSince, 1, 4)" />
