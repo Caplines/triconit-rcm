@@ -243,3 +243,163 @@ table#data-scroll-t1 tr:nth-child(odd) {
   padding: 3px 5px;
   color: #000;
 }
+
+
+
+.ivf-form .tableHeading {
+  font-size: 14px;
+  background-color: #3d85c6;
+  color: #fff;
+  text-align: center;
+  font-family: sans-serif;
+  font-weight: bold;
+}
+
+
+.ivf-form .sub-heading {
+  font-size: 12px;
+  color: #000;
+  text-align: center;
+  font-weight: bold;
+}
+
+.ivf-form .rowHeading {
+  background-color: #007ad8;
+  color: #fff;
+  font-size: 14px;
+}
+.ivf-form .darkYellow {
+  background-color: #f78d2c;
+  color: #fff;
+  font-size: 14px;
+}
+.ivf-form .table {
+  border-collapse: collapse;
+  width: 100%
+}
+
+.ivf-form .table td {
+      border: 1px solid #000;
+      border-collapse: collapse;
+      padding: 2px 4px;
+      vertical-align: top;
+      word-wrap: break-word;
+      max-width:200px;
+      text-align: left;
+  }
+
+  .ivf-form .lightGray {
+  background-color: #f3f3f3;
+}
+
+.ivf-form .lightBrown {
+  background-color: #f9cb9c;
+}
+
+.ivf-form .yellow {
+  background-color: #ff0;
+}
+
+.ivf-form .red {
+  background-color: #f00;
+  color: #fff;
+}
+
+.ivf-form .white {
+  background-color: #fff;
+}
+
+.ivf-form .dullBlue {
+  background-color: #a2c4c9;
+  color: #000;
+}
+
+.ivf-form .dullYellow {
+  background-color: #ffe599;
+  color: #000;
+}
+
+.ivf-form .dullRed {
+  background-color: #dd7e6b;
+  color: #000;
+}
+
+.ivf-form .dullGreen {
+  background-color: #b6d7a8;
+}
+.ivf-form .redText {
+  color: red;
+}
+.ivf-form .text-white {
+  color: #fff;
+}
+
+.ivf-form .width-5 {
+  width: 5%;
+  border: 0px;
+}
+.ivf-form .width-6 {
+  width: 6%;
+}
+.ivf-form .width-7 {
+  width: 7%;
+}
+
+.ivf-form .width-8 {
+  width: 8%;
+}
+
+.ivf-form .width-10 {
+  width: 10%;
+}
+
+.ivf-form .width-12 {
+  width: 12%;
+}
+.ivf-form .width-13 {
+  width: 13%;
+}
+.ivf-form .width-14 {
+  width: 14%;
+}
+
+.ivf-form .width-15 {
+  width: 15%;
+}
+
+.ivf-form .width-16 {
+  width: 16%;
+}
+
+.ivf-form .width-17 {
+  width: 17%;
+}
+
+.ivf-form .text-left {
+  text-align: left;
+}
+
+.ivf-form .text-center {
+  text-align: center;
+}
+
+.ivf-form .table td.borderNone {
+  border: 0px;
+  background:#fff;
+}
+.ivf-form .blackClr {
+  color:#000;
+}
+.ivf-form .align-right {
+  text-align:right;
+}
+.ivf-form .align-middle {
+  vertical-align:middle!important;
+}
+
+.ivf-form {
+  background-color: white;
+  padding-top: 25px;
+  padding-left:20px;
+  
+}

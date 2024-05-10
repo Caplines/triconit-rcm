@@ -502,7 +502,7 @@
 				<a href="javascript:void(0)" (click)="showDetailsData=false;">
 					Go Back </a>
 			</div>
-			<div class="table-container" *ngIf="reportDataInd.ivFormTypeId==1">
+			<!-- <div class="table-container" *ngIf="reportDataInd.ivFormTypeId==1">
 				<h3>IVF DATA- Details</h3>
 				<span>
 					<p style="text-align: center">Smilepoint - Insurance
@@ -620,7 +620,7 @@
 
                    -->
 
-				</table>
+				<!-- </table>
 
 				<span>
 					<p style="text-align: center">Percentages Covered</p>
@@ -1156,6 +1156,716 @@
 					<tr>
 						<td>Benefits Verified by : <span class="newff">{{reportDataInd.benefits}}</span></td>
 						<td>Date : <span class="newff">{{reportDataInd.date}}</span></td>
+					</tr>
+				</table>
+			</div> -->
+			<div  class="ivf-form" *ngIf="reportDataInd.ivFormTypeId==1">
+				<table class="table" vertical-align="top">
+					<tr>
+						<td colspan="10" class="tableHeading" style="text-align: center;">Smilepoint Insurance Verification Form</td>
+						<td class="width-5 borderNone"></td>
+					</tr>
+				</table>
+				<table class="table" vertical-align="top">
+					<tr>
+						<td colspan="10" class="tableHeading" style="text-align: center;">Subscriber and Insurance Details</td>
+						<td class="width-5 borderNone"></td>
+					</tr>
+					<tr>
+						<td class="width-15">Office Name</td>
+						<td class="width-7"><span class="redText">{{reportDataInd.basicInfo1}}</span></td>
+						<td class="width-10">Patient Name </td>
+						<td class="width-7"><span class="redText">{{reportDataInd.basicInfo2}}</span></td>
+						<td class="width-13">Insurance Name</td>
+						<td class="width-7"><span class="redText">{{reportDataInd.basicInfo3}}</span></td>
+						<td class="width-7">Provider Name</td>
+						<td class="width-7"><span class="redText">{{reportDataInd.basicInfo19}}</span></td>
+						<td class="width-15">Sec Provider Name</td>
+						<td class="width-7"><span class="redText">{{reportDataInd.secProviderName}}</span></td>
+						<td class="width-5 borderNone"></td>
+					</tr>
+					<tr class="lightGray">
+						<td>Tax ID</td>
+						<td><span class="redText">{{reportDataInd.basicInfo4}}</span></td>
+						<td>Patient DOB</td>
+						<td><span class="redText">{{reportDataInd.basicInfo6}}</span></td>
+						<td>Insurance Contact</td>
+						<td><span class="redText">{{reportDataInd.basicInfo7}}</span></td>
+						<td>Provider Network</td>
+						<td><span class="redText">{{reportDataInd.policy3}}</span></td>
+						<td>Sec Provider Network</td>
+						<td><span class="redText">{{reportDataInd.secProvNetwork}}</span></td>
+						<td class="borderNone"></td>
+					</tr>
+					<tr>
+						<td>ES/Patient ID</td>
+						<td><span class="redText">{{reportDataInd.basicInfo19}}</span></td>
+						<td>Policy Holder Name</td>
+						<td><span class="redText">{{reportDataInd.basicInfo5}}</span></td>
+						<td>Appointment Type</td>
+						<td><span class="redText">{{reportDataInd.basicInfo11}}</span></td>
+						<td>Plan w/ OON Benefits</td>
+						<td><span class="redText">{{reportDataInd.oonbenfits}}</span></td>
+						<td>Pt Assigned To Office</td>
+						<td><span class="redText">{{reportDataInd.yesNoAssignToffice}}</span></td>
+						<td class="borderNone"></td>
+					</tr>
+					<tr class="lightGray">
+						<td>Member ID/SSN</td>
+						<td><span class="redText">{{reportDataInd.basicInfo16}}</span></td>
+						<td>Policy Holder DOB</td>
+						<td><span class="redText">{{reportDataInd.basicInfo9}}</span></td>
+						<td>Appointment Date</td>
+						<td><span class="redText">{{reportDataInd.basicInfo17}}</span></td>
+						<td>Source</td>
+						<td><span class="redText">{{reportDataInd.basicInfo8}}</span></td>
+						<td>Ref #</td>
+						<td><span class="redText">{{reportDataInd.basicInfo12}}</span></td>
+						<td class="borderNone"></td>
+					</tr>
+		
+				</table>
+				<table class="table" vertical-align="top">
+					<tr>
+						<td colspan="10" class="tableHeading" style="text-align: center;">Policy Information</td>
+						<td class="width-5 borderNone"></td>
+					</tr>
+		
+					<tr>
+						<td class="width-15">Plan Type</td>
+						<td class="width-7"><span class="redText">{{reportDataInd.policy1}}</span></td>
+						<td class="width-10">Group/Emp Name </td>
+						<td class="width-7"><span class="redText">{{reportDataInd.basicInfo10}}</span></td>
+						<td class="width-13">Group No</td>
+						<td class="width-7"><span class="redText">{{reportDataInd.basicInfo14}}</span></td>
+						<td class="width-7">Effective Date</td>
+						<td class="width-7"><span class="redText">{{reportDataInd.policy5}}</span></td>
+						<td class="width-15">Termination Date </td>
+						<td class="width-7"><span class="redText">{{reportDataInd.policy2}}</span></td>
+						<td class="width-5 borderNone"></td>
+					</tr>
+					<tr class="lightGray">
+						<td>Annual Max</td>
+						<td><span class="redText">{{reportDataInd.policy7}}</span></td>
+						<td>Individual Deductible</td>
+						<td><span class="redText">{{reportDataInd.policy9}}</span></td>
+						<td>Fee Schedule</td>
+						<td><span class="redText">{{reportDataInd.policy4}}</span></td>
+						<td>Fee of D0120 </td>
+						<td><span class="redText">{{reportDataInd.policy18}}</span></td>
+						<td>Benefit Period Year </td>
+						<td><span class="redText">{{reportDataInd.policy6}}</span></td>
+						<td class="borderNone"></td>
+					</tr>
+					<tr>
+		
+						<td>Annual Max Remaining</td>
+						<td><span class="redText">{{reportDataInd.policy4}}</span></td>
+						<td>Ind Ded Remaining </td>
+						<td><span class="redText">{{reportDataInd.policy10}}</span></td>
+						<td>Coverage Book</td>
+						<td><span class="redText">{{reportDataInd.policy16}}</span></td>
+						<td>Fee of D2391</td>
+						<td><span class="redText">{{reportDataInd.policy19}}</span></td>
+						<td>COB Status</td>
+						<td><span class="redText">{{reportDataInd.basicInfo15}}</span></td>
+						<td class="borderNone"></td>
+					</tr>
+					<tr class="lightGray">
+						<td>AOB Accepted </td>
+						<td><span class="redText">{{reportDataInd.policy15}}</span></td>
+						<td>Pre- Auth Required</td>
+						<td><span class="redText">{{reportDataInd.policy12}}</span></td>
+						<td>Dep Covered till Age</td>
+						<td><span class="redText">{{reportDataInd.policy11}}</span></td>
+						<td>Claims Filing Limit</td>
+						<td><span class="redText">{{reportDataInd.percentages12}}</span></td>
+						<td>CRA Required</td>
+						<td><span class="redText">{{reportDataInd.policy17}}</span></td>
+						<td class="borderNone"></td>
+					</tr>
+		
+				</table>
+				<table class="table" vertical-align="top">
+					<tr class="lightGray">
+						<td class="width-15 align-middle">
+							Remarks for Office/LC3
+						</td>
+						<ng-container *ngIf="reportDataInd.policy15.toLowerCase()==='no'">
+							<td colspan="9" class="red">
+								AOB No means, Insurance will pay to the subscriber, collect from the pt upfront for the treatment rendered.
+							</td>
+						</ng-container>
+						<ng-container *ngIf="reportDataInd.policy17.toLowerCase()==='yes'">
+							<td colspan="9" class="red">
+								Refer to CRA Information for Medicaid Plans (RD2405) to confirm if the patient plan requires CRA for claim submission.
+							</td>
+						</ng-container>
+						<ng-container *ngIf="reportDataInd.policy12.toLowerCase()==='yes'">
+							<td colspan="9" class="red">
+								Refer to Medicaid, Adult Medicaid & Medicare Benefits (RD0703) for the full list of services applicable for Pre-auths.
+							</td>
+						</ng-container>
+						<td class="width-5 borderNone"></td>
+					</tr>
+				</table>
+				<table class="table" vertical-align="top">
+					<tr>
+						<td colspan="11" class="tableHeading" style="text-align: center;">Coverage & Frequency Information</td>
+					</tr>
+		
+					<tr>
+						<td colspan="2" class="width-15">Preventive Services % </td>
+						<td class="width-17"><span class="redText">{{reportDataInd.percentages9}}</span></td>
+						<td class="width-7 borderNone"></td>
+						<td class="width-13" colspan="2">Basic Services % </td>
+						<td class="width-14"><span class="redText">{{reportDataInd.percentages1}}</span></td>
+						<td class="width-7  borderNone"></td>
+						<td class="width-15" colspan="2">Major Services %</td>
+						<td class="width-12"><span class="redText">{{reportDataInd.percentages1}}</span></td>
+					</tr>
+					<tr>
+						<td colspan="2">Waiting Period</td>
+						<td><span class="redText">{{reportDataInd.waitingPeriod4}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Waiting Period</td>
+						<td><span class="redText">{{reportDataInd.waitingPeriod1}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Waiting Period</td>
+						<td><span class="redText">{{reportDataInd.waitingPeriod2}}</span></td>
+					</tr>
+					<tr>
+						<td colspan="2">Subject to Ded </td>
+						<td><span class="redText">{{reportDataInd.percentages13}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Subject to Ded </td>
+						<td><span class="redText">{{reportDataInd.percentages2}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Subject to Ded</td>
+						<td><span class="redText">{{reportDataInd.percentages4}}</span></td>
+					</tr>
+					<tr>
+						<td class="rowHeading">Oral Evaluations </td>
+						<td class="rowHeading width-7">Percentage</td>
+						<td class="rowHeading width-10">Frequency</td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Fillings</td>
+						<td class="rowHeading width-7">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td colspan="2">Missing tooth clause</td>
+						<td><span class="redText">{{reportDataInd.prosthetics1}}</span></td>
+					</tr>
+					<tr>
+						<td>D0120 (POE) </td>
+						<td><span class="redText">{{reportDataInd.d0120}}</span></td>
+						<td><span class="redText">{{reportDataInd.exams1}}</span></td>
+						<td class="borderNone"></td>
+						<td>D2391 (Composite) </td>
+						<td><span class="redText">{{reportDataInd.posterior1}}</span></td>
+						<td><span class="redText">{{reportDataInd.posterior2}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Replacement Clause</td>
+						<td><span class="redText">{{reportDataInd.prosthetics2}}</span></td>
+					</tr>
+					<tr>
+						<td>D0140 (LOE)</td>
+						<td><span class="redText">{{reportDataInd.d0140}}</span></td>
+						<td><span class="redText">{{reportDataInd.exams2}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Downgraded to Amalgam (D2140)</td>
+						<td><span class="redText">{{reportDataInd.posterior3}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Buidup and Crown</td>
+						<td class="rowHeading width-7">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+					</tr>
+					<tr>
+						<td>D0150 (COE) </td>
+						<td><span class="redText">{{reportDataInd.d0150}}</span></td>
+						<td><span class="redText">{{reportDataInd.xrays4}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">No. of Fillings Allowed in a Year</td>
+						<td><span class="redText">{{reportDataInd.fill1}}</span></td>
+						<td class="borderNone"></td>
+						<td>D2950 (Core Buildup)</td>
+						<td class="width-7"><span class="redText">{{reportDataInd.posterior10}}</span></td>
+						<td><span class="redText">{{reportDataInd.posterior11}}</span></td>
+					</tr>
+					<tr>
+						<td colspan="2">Does Exams Share Freq? </td>
+						<td><span class="redText">{{reportDataInd.shareFr}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Endodontics</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td>D2954 (Prefabricated)</td>
+						<td><span class="redText">{{reportDataInd.d2954}}</span></td>
+						<td><span class="redText">{{reportDataInd.d2954fr}}</span></td>
+					</tr>
+					<tr>
+						<td class="rowHeading">Radiographs </td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td>D3310/20/30 (Endo)</td>
+						<td><span class="redText">{{reportDataInd.d3310}}</span></td>
+						<td><span class="redText">{{reportDataInd.d3310fr}}</span></td>
+						<td class="borderNone"></td>
+						<td>D2740 (Porcelain) </td>
+						<td><span class="redText">{{reportDataInd.posterior4}}</span></td>
+						<td><span class="redText">{{reportDataInd.posterior5}}</span></td>
+					</tr>
+					<tr>
+						<td>D0220/30 (PAs)</td>
+						<td><span class="redText">{{reportDataInd.percentages11}}</span></td>
+						<td><span class="redText">{{reportDataInd.xrays2}}</span></td>
+						<td class="borderNone"></td>
+						<td>D3220 (Pulpotomy) </td>
+						<td><span class="redText">{{reportDataInd.d3320}}</span></td>
+						<td><span class="redText">{{reportDataInd.d3320fr}}</span></td>
+						<td class="borderNone"></td>
+						<td>D2750 (Noble Metal)</td>
+						<td><span class="redText">{{reportDataInd.d2750}}</span></td>
+						<td><span class="redText">{{reportDataInd.d2750fr}}</span></td>
+					</tr>
+					<tr>
+						<td>D0210 (FMX)</td>
+						<td><span class="redText">{{reportDataInd.bwx}}</span></td>
+						<td><span class="redText">{{reportDataInd.xrays1}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Perio (Non-Surgical)</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td colspan="3"></td>
+					</tr>
+					<tr>
+						<td>D0272/74 (BWXs) </td>
+						<td><span class="redText">{{reportDataInd.pano1}}</span></td>
+						<td><span class="redText">{{reportDataInd.xrays4}}</span></td>
+						<td class="borderNone"></td>
+						<td>D4910 (Perio Main) </td>
+						<td><span class="redText">{{reportDataInd.perio1}}</span></td>
+						<td><span class="redText">{{reportDataInd.perio2}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Applicable to Downgrading </td>
+						<td><span class="redText">{{reportDataInd.d2750fr}}</span></td>
+					</tr>
+		
+					<tr>
+						<td>D0330 (PANO)</td>
+						<td><span class="redText">{{reportDataInd.pano1}}</span></td>
+						<td><span class="redText">{{reportDataInd.d0330Freq}}</span></td>
+						<td class="borderNone"></td>
+						<td>D4346 (Gingivitis) </td>
+						<td><span class="redText">{{reportDataInd.perioMnt6}}</span></td>
+						<td><span class="redText">{{reportDataInd.perioMnt7}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Downgraded to Code </td>
+						<td><span class="redText">{{reportDataInd.d2750fr}}</span></td>
+					</tr>
+		
+		
+					<tr>
+						<td colspan="2">Does FMX & PANO share Freq?</td>
+						<td><span class="redText">{{reportDataInd.pano2}}</span></td>
+						<td class="borderNone"></td>
+						<td>D4341 (SRP) </td>
+						<td><span class="redText">{{reportDataInd.perioMnt1}}</span></td>
+						<td><span class="redText">{{reportDataInd.perioMnt2}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">No. of Crowns Allowed in a Year </td>
+						<td><span class="redText">{{reportDataInd.d2750fr}}</span></td>
+					</tr>
+					<tr>
+						<td class="rowHeading">Prophylaxis</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td colspan="2">Quads Allowed Per Day for SRP</td>
+						<td><span class="redText">{{reportDataInd.perio3}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="3"></td>
+					</tr>
+					<tr>
+						<td>D1120 (Child) </td>
+						<td><span class="redText">{{reportDataInd.d1120}}</span></td>
+						<td><span class="redText">{{reportDataInd.prophy2}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Rest Recommended B/W Quads</td>
+						<td><span class="redText">{{reportDataInd.perio4}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="3"></td>
+					</tr>
+		
+					<tr>
+						<td>D1110 (Adult) </td>
+						<td><span class="redText">{{reportDataInd.d1110}}</span></td>
+						<td><span class="redText">{{reportDataInd.prophy1}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Perio (Surgical) </td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td colspan="3"></td>
+					</tr>
+		
+		
+					<tr>
+						<td colspan="2">Roll Age for Prophylaxis</td>
+						<td><span class="redText">{{reportDataInd.rollage}}</span></td>
+						<td class="borderNone"></td>
+						<td>D4381 (Arestin)</td>
+						<td><span class="redText">{{reportDataInd.d4381}}</span></td>
+						<td><span class="redText">{{reportDataInd.d4381Freq}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Bridges</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+					</tr>
+		
+		
+					<tr>
+						<td class="rowHeading">Fluoride</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td>D4249 (Crown Len)</td>
+						<td><span class="redText">{{reportDataInd.oral1}}</span></td>
+						<td><span class="redText">{{reportDataInd.oral2}}</span></td>
+						<td class="borderNone"></td>
+						<td>D6245/D6740 </td>
+						<td><span class="redText">{{reportDataInd.bridges1}}</span></td>
+						<td><span class="redText">{{reportDataInd.bridges2}}</span></td>
+					</tr>
+		
+					<tr>
+						<td>D1206 (w/ Varnish) </td>
+						<td><span class="redText">{{reportDataInd.d1206}}</span></td>
+						<td><span class="redText">{{reportDataInd.fluroide1}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Extractions</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Dentures</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+					</tr>
+		
+					<tr>
+						<td>D1208 (w/o Varnish) </td>
+						<td><span class="redText">{{reportDataInd.d1208}}</span></td>
+						<td><span class="redText">{{reportDataInd.fluroide3}}</span></td>
+						<td class="borderNone"></td>
+						<td>D7111/40 (Minor) </td>
+						<td><span class="redText">{{reportDataInd.extractions1}}</span></td>
+						<td><span class="redText">{{reportDataInd.extractions1fr}}</span></td>
+						<td class="borderNone"></td>
+						<td>D5110/20 (Complete)</td>
+						<td><span class="redText">{{reportDataInd.d511020Percentage}}</span></td>
+						<td><span class="redText">{{reportDataInd.dentures1}}</span></td>
+					</tr>
+		
+					<tr>
+						<td colspan="2">Fluoride Covered till Age</td>
+						<td><span class="redText">{{reportDataInd.fluroide2}}</span></td>
+						<td class="borderNone"></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="borderNone"></td>
+						<td>D5130/40 (Immediate)</td>
+						<td><span class="redText">{{reportDataInd.d513040Percentage}}</span></td>
+						<td><span class="redText">{{reportDataInd.d5130_40}}</span></td>
+					</tr>
+		
+		
+					<tr>
+						<td class="rowHeading">Oral Hygiene</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td>D7210-40 (Major) </td>
+						<td><span class="redText">{{reportDataInd.extractions2}}</span></td>
+						<td><span class="redText">{{reportDataInd.extractions2fr}}</span></td>
+						<td class="borderNone"></td>
+						<td>D5213/14/26/25 (Partial)</td>
+						<td><span class="redText">{{reportDataInd.d5213142625}}</span></td>
+						<td><span class="redText">{{reportDataInd.d5213142625fr}}</span></td>
+					</tr>
+		
+		
+		
+					<tr>
+						<td>D1330 (Instructions)</td>
+						<td><span class="redText">{{reportDataInd.d1330}}</span></td>
+						<td><span class="redText">{{reportDataInd.d1330Freq}}</span></td>
+						<td class="borderNone"></td>
+						<td>D7250 (Wis Tooth)</td>
+						<td><span class="redText">{{reportDataInd.d7250}}</span></td>
+						<td><span class="redText">{{reportDataInd.d7250fr}}</span></td>
+						<td class="borderNone"></td>
+						<td>D5820/21 (Interim)</td>
+						<td><span class="redText">{{reportDataInd.d5810CPercentage}}</span></td>
+						<td><span class="redText">{{reportDataInd.d5810_c}}</span></td>
+					</tr>
+		
+					<tr>
+						<td class="rowHeading">Sealants</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td colspan="2">Max. # of Ext. / Year</td>
+						<td><span class="redText">{{reportDataInd.extr1}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Implants</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+					</tr>
+		
+					<tr>
+						<td>D1351 (Per Tooth) </td>
+						<td><span class="redText">{{reportDataInd.sealantsD}}</span></td>
+						<td><span class="redText">{{reportDataInd.sealantsD}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">VAPs</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td>D6010</td>
+						<td><span class="redText">{{reportDataInd.implants1}}</span></td>
+						<td><span class="redText">{{reportDataInd.implants5}}</span></td>
+					</tr>
+		
+					<tr>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="borderNone"></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td class="borderNone"></td>
+						<td>D6065 (Porc./Ceramic) </td>
+						<td><span class="redText">{{reportDataInd.implants4}}</span></td>
+						<td><span class="redText">{{reportDataInd.implants7}}</span></td>
+					</tr>
+		
+					<tr>
+						<td colspan="2">Sealants Covered till Age</td>
+						<td><span class="redText">{{reportDataInd.sealants2}}</span></td>
+						<td class="borderNone"></td>
+						<td>D0431 (Cancer SCRN)</td>
+						<td><span class="redText">{{reportDataInd.d0431}}</span></td>
+						<td><span class="redText">{{reportDataInd.d0431fr}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Oral Surgery</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+					</tr>
+		
+					<tr>
+						<td colspan="2">Covered on Primary Molars </td>
+						<td><span class="redText">{{reportDataInd.sealants3}}</span></td>
+						<td class="borderNone"></td>
+						<td>D4999 (Unsp. Perio)</td>
+						<td><span class="redText">{{reportDataInd.d4999}}</span></td>
+						<td><span class="redText">{{reportDataInd.d4999fr}}</span></td>
+						<td class="borderNone"></td>
+						<td>D7310 (4≥ Tooth/Quad)</td>
+						<td><span class="redText">{{reportDataInd.d7310}}</span></td>
+						<td><span class="redText">{{reportDataInd.oral6}}</span></td>
+					</tr>
+		
+					<tr>
+						<td colspan="2">Covered on Pre-Molars</td>
+						<td><span class="redText">{{reportDataInd.sealants4}}</span></td>
+						<td class="borderNone"></td>
+						<td>D9630 (Peridex)</td>
+						<td><span class="redText">{{reportDataInd.d9630}}</span></td>
+						<td><span class="redText">{{reportDataInd.d9630fr}}</span></td>
+						<td class="borderNone"></td>
+						<td>D7311 (1-3 Tooth/Quad)</td>
+						<td><span class="redText">{{reportDataInd.d7311}}</span></td>
+						<td><span class="redText">{{reportDataInd.oral4}}</span></td>
+					</tr>
+					<tr>
+						<td colspan="2">Covered on Permanent-Molars</td>
+						<td><span class="redText">{{reportDataInd.sealants5}}</span></td>
+						<td class="borderNone"></td>
+						<td>D4921 (Gingival Irrig.)</td>
+						<td><span class="redText">{{reportDataInd.perioD4921}}</span></td>
+						<td><span class="redText">{{reportDataInd.d4921Frequency}}</span></td>
+						<td class="borderNone"></td>
+						<td>D7953 (Bone Graft)</td>
+						<td><span class="redText">{{reportDataInd.d7953}}</span></td>
+						<td><span class="redText">{{reportDataInd.dentures6}}</span></td>
+					</tr>
+					<tr>
+						<td class="rowHeading">Consultation</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td>D4266 (Tissue Regen)</td>
+						<td><span class="redText">{{reportDataInd.perioD4266}}</span></td>
+						<td><span class="redText">{{reportDataInd.d4266Frequency}}</span></td>
+						<td class="borderNone"></td>
+						<td>Bone Graft Covered with</td>
+						<td colspan="2"><span class="redText">{{reportDataInd.dentures5}}</span></td>
+					</tr>
+		
+					<tr>
+						<td>D9310</td>
+						<td><span class="redText">{{reportDataInd.posterior8}}</span></td>
+						<td><span class="redText">{{reportDataInd.posterior8}}</span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Night Gaurds </td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td colspan="2" class="rowHeading">Ortho Coverage</td>
+						<td class="rowHeading">Percentage</td>
+					</tr>
+		
+					<tr>
+						<ng-container *ngIf="reportDataInd.basicInfo19.toLowerCase().includes('ghazal') ; else elseBlock">
+						<td class="rowHeading">Pedo Speciality Codes</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						</ng-container>
+						<ng-template #elseBlock>
+							<td class="borderNone"></td>
+							<td class="borderNone"></td>
+							<td class="borderNone"></td>
+						</ng-template>
+						<td class="borderNone"></td>
+						<td>D9944/45 (Hard/Soft) </td>
+						<td><span class="redText">{{reportDataInd.posterior7}}</span></td>
+						<td><span class="redText">{{reportDataInd.posterior19}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2">Ortho Coverage (D8070/80/90) </td>
+						<td><span class="redText">{{reportDataInd.ortho1}}</span></td>
+					</tr>
+					<tr>
+						<ng-container *ngIf="reportDataInd.basicInfo19.toLowerCase().includes('ghazal') ; else elseBlock">
+						<td class="dullYellow">D0350 (OFI) </td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.d0350}}</span></td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.d0350Freq}}</span></td>
+					    </ng-container>
+						<ng-template #elseBlock>
+							<td class="borderNone"></td>
+							<td class="borderNone"></td>
+							<td class="borderNone"></td>
+						</ng-template>
+						<td class="borderNone"></td>
+						<td class="rowHeading">Adjunctive</td>
+						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Frequency</td>
+						<td class="borderNone"></td>
+						<td colspan="2">Ortho Maximum</td>
+						<td><span class="redText">{{reportDataInd.ortho2}}</span></td>
+					</tr>
+		
+					<tr>
+						<ng-container *ngIf="reportDataInd.basicInfo19.toLowerCase().includes('ghazal') ; else elseBlock">
+						<td class="dullYellow">D0160 (PFE) </td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.pedo1}}</span></td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.d0160Freq}}</span></td>
+					</ng-container>
+					<ng-template #elseBlock>
+						<td class="borderNone"></td>
+						<td class="borderNone"></td>
+						<td class="borderNone"></td>
+					</ng-template>
+						<td class="borderNone"></td>
+						<td>D9230 (Nitrous)</td>
+						<td><span class="redText">{{reportDataInd.sedations1}}</span></td>
+						<td><span class="redText">{{reportDataInd.sedations1fr}}</span></td>
+						<td colspan="4" class="borderNone"></td>
+					</tr>
+					<tr>
+						<ng-container *ngIf="reportDataInd.basicInfo19.toLowerCase().includes('ghazal') ; else elseBlock">
+						<td class="dullYellow">D1510/16/17 (SM)</td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.d1510}}</span></td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.d1510Freq}}</span></td>
+					</ng-container>
+					<ng-template #elseBlock>
+						<td class="borderNone"></td>
+						<td class="borderNone"></td>
+						<td class="borderNone"></td>
+					</ng-template>
+						<td class="borderNone"></td>
+						<td>D9248 (Sedation)</td>
+						<td><span class="redText">{{reportDataInd.sedations3}}</span></td>
+						<td><span class="redText">{{reportDataInd.sedations3fr}}</span></td>
+						<td colspan="4" class="borderNone"></td>
+					</tr>
+					<tr>
+						<ng-container *ngIf="reportDataInd.basicInfo19.toLowerCase().includes('ghazal') ; else elseBlock">
+						<td class="dullYellow">D2930/34 (Primary SSC)</td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.d2930}}</span></td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.ssc1}}</span></td>
+					</ng-container>
+						<ng-template #elseBlock>
+							<td class="borderNone"></td>
+							<td class="borderNone"></td>
+							<td class="borderNone"></td>
+						</ng-template>
+						<td class="borderNone"></td>
+						<td>D9910 (Desensitizing)</td>
+						<td><span class="redText">{{reportDataInd.perioD9910}}</span></td>
+						<td><span class="redText">{{reportDataInd.d9910Frequency}}</span></td>
+						<td colspan="4" class="borderNone"></td>
+					</tr>
+					<tr>
+						<ng-container *ngIf="reportDataInd.basicInfo19.toLowerCase().includes('ghazal') ; else elseBlock">
+						<td class="dullYellow">D2931 (Permanent SSC) </td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.d2931}}</span></td>
+						<td class="dullYellow"><span class="redText">{{reportDataInd.ssc2}}</span></td>
+					</ng-container>
+					<ng-template #elseBlock>
+						<td class="borderNone"></td>
+						<td class="borderNone"></td>
+						<td class="borderNone"></td>
+					</ng-template>
+						<td colspan="8" class="borderNone"></td>
+					</tr>
+		
+				</table>
+				<table class="table table-striped" vertical-align="top">
+					<tr>
+						<td colspan="8" class="tableHeading" style="text-align: center;">Treatment History of the Patient</td>
+					</tr>
+					<tr>
+						
+							<td colspan="2"class="darkYellow">ADA Code</td>
+							<td colspan="2"class="darkYellow">Tooth No.- Surface</td>
+							<td colspan="2"class="darkYellow">DOS</td>
+					
+					</tr>
+		
+					<tr *ngFor="let c of reportDataInd.hdto">
+						<td colspan="2"><span class="newff">{{c.historyCode}}</span></td>
+						<td colspan="2"><span class="newff">{{c.historyTooth}}</span></td>
+						<td colspan="2"><span class="newff">{{c.historyDos}}</span></td>
+					</tr>
+					<tr>
+						<td class="darkYellow">Comments For Office/LC3</td>
+						<td class="lightGray"><span class="redText">{{reportDataInd.comments}}</span></td>
+						<td class="borderNone" colspan="9"></td>
+					</tr>
+					<tr>
+						<td class="borderNone" colspan="11">&nbsp;</td>
+					</tr>
+					<tr>
+						<td class="darkYellow">Benefits Verified by</td>
+						<td class="lightGray"><span class="redText">{{reportDataInd.benefits}}</span></td>
+						<td class="darkYellow">Verfied on Date </td>
+						<td class="lightGray"><span class="redText">{{reportDataInd.date}}</span></td>
+						<td class="borderNone" colspan="7"></td>
 					</tr>
 				</table>
 			</div>

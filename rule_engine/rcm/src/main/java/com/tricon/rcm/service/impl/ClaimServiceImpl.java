@@ -5853,7 +5853,7 @@ public class ClaimServiceImpl {
 			dataList = new ArrayList<>();
 			for (AssignOfficeDto x : data) {
 				AssignOfficeResponseDto dto = new AssignOfficeResponseDto();
-				if (!StringUtils.isNoneBlank(x.getUserUuid()) && !StringUtils.isNoneBlank(x.getOfficeUuid())) {
+				if (!StringUtils.isNoneBlank(x.getUserUuid())) {
 					dto.setOfficeId(x.getOfficeUuid());
 					dto.setTeamId(x.getTeamId());
 					dto.setTeamName(x.getTeamName());
