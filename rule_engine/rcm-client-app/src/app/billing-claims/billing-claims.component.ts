@@ -2540,12 +2540,12 @@ export class BillingClaimsComponent {
   }
 
   getPdfUrlAndSaveEOB(isFinal: boolean) {
-    this.loader.EOB = true;
     this.claimSectionModal['EOB']['errorMessage'] = '';
     this.claimSectionModal['EOB']['sectionId'] = this.sectionIds['EOB']['sectionId'];
     this.claimSectionModal['EOB']['extension'] = "pdf";
     if (!isFinal) {
 
+      this.loader.EOB = true;
       let params: any = {
         claimUuid: this.claimUUid,
         finalSubmit: isFinal,
@@ -2571,6 +2571,7 @@ export class BillingClaimsComponent {
           this.claimSectionModal['EOB']['errorMessage'] = 'Failed to save';
           this.loader.EOB = false;
         }
+        this.loader.EOB = false;
       })
     }
     return this.claimSectionModal['EOB']['pdfLink'] || null;
