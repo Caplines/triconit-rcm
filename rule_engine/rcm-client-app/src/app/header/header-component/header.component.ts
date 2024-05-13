@@ -52,6 +52,8 @@ export class HeaderComponent implements OnInit {
   emailUrl: any;
 
   @ViewChild('modalElement') modalElementRef!: ElementRef;
+  @Input() isClaimDetailPage: boolean = false;
+  isLoggedInAdmin: boolean = false;
 
   constructor(private appSer: ApplicationServiceService, private router: Router, public appConstants: AppConstants) {
 
@@ -100,6 +102,7 @@ export class HeaderComponent implements OnInit {
       }
     })
     this.emailUrl = window.location.href;
+    this.isLoggedInAdmin = Utils.checkAdminLoginRole();
   }
 
   getRoles() {
@@ -372,4 +375,7 @@ export class HeaderComponent implements OnInit {
     this.appSer.sortData(data, sortProp, order, sortType);
   }
 
+  goToListofClaimsPage() {
+    window.location.href = "/list-of-claims";
+  }
 }
