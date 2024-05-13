@@ -1593,10 +1593,6 @@ export class BillingClaimsComponent {
     if ('/billing-claims/' + url != this.router.url) this.location.go(url);
   }
 
-  goToListofClaimsPage() {
-    window.location.href = "/list-of-claims";
-  }
-
   get isSuperAdmin() {
     return Utils.checkRoleSuperAdmin();
   }

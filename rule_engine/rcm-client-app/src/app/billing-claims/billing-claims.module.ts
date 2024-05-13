@@ -14,6 +14,7 @@ import { DatePipe } from '@angular/common';
 import { PdfViewerModule } from "ng2-pdf-viewer";
 import { MultiSelectDropdownModule } from "../shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module";
 import { FeedbackModule } from 'src/app/shared/feedback/feedback.module';
+import { HeaderComponent } from '../header/header-component/header.component';
 
 
 @NgModule({
@@ -27,6 +28,7 @@ import { FeedbackModule } from 'src/app/shared/feedback/feedback.module';
     PdfViewerModule,
     MultiSelectDropdownModule,
     FeedbackModule,
+    HeaderComponent,
   ],
   providers: [ApplicationServiceService, ClaimService, DownLoadService, DatePipe],
   exports: [BillingClaimsComponent],
