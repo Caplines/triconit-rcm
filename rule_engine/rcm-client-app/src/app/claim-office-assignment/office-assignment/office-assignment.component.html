@@ -17,10 +17,12 @@
                     <div class="row">
                         <div class="col-md-12 mb-1 listClaimBox">
                             <div class="billingDropdown labelText">
+                                <ng-container *ngIf="staticUtil.isBilling()">
                                 Billing Type&nbsp;&nbsp;<select class="form-control" id="" name="bType" [(ngModel)]="bType"
                                     (change)="fetchClaimAssignments()">
                                     <option *ngFor="let sta of bl.bills" [value]="sta.key">{{sta.value}}</option>
                                 </select>
+                            </ng-container>
                                 Insurance Type&nbsp;&nbsp;<select (change)="fetchClaimAssignments()" class="form-control" id="" name="insType"
                                     [(ngModel)]="insType">
                                     <option *ngFor="let sta of bl.insTypes" [value]="sta.key">{{sta.value}}</option>
