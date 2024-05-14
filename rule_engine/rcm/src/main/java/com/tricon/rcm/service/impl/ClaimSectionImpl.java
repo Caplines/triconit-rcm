@@ -777,25 +777,30 @@ public class ClaimSectionImpl {
 			eobInformation.setClaim(claim);
 			eobInformation.setCreatedBy(createdBy);
 			eobInformation.setFinalSubmit(finalSubmit);
-			try {
-				// set eob file path
-				String fileName = claim.getClaimUuid() + new Date().getTime() + "." + eobInfoModel.getExtension();
-				    URL url = new URL(eobInfoModel.getEobLink());
-					FileUtils.copyURLToFile(url, new File(eobLinkFolder + File.separator + fileName), 60000, 60000);
-					eobInformation.setEobFilePath(fileName);
-					eobInformation = eobRepo.save(eobInformation);
-					eobInfoModel
-							.setEobPathLink(serverDomainLink + "/api/vieweoblink/" + eobInformation.getEobFilePath());
-					eobInfoModel.setAttachByTeam(team.getName());
-					eobInfoModel.setAttachBy(createdBy.getFirstName());
-					eobInfoModel.setDate(Constants.SDF_MYSL_DATE.format((eobInformation.getCreatedDate())));
-				
-					eobInfoModel.setId(eobInformation.getId());		
-			} catch (Exception e) {
-				logger.error("Invalid File Format");
-				eobInfoModel.setEobPathLink("Invalid Format");
-				return null;
-			}
+			eobInformation = eobRepo.save(eobInformation);
+			eobInfoModel.setAttachByTeam(team.getName());
+			eobInfoModel.setAttachBy(createdBy.getFirstName());
+			eobInfoModel.setDate(Constants.SDF_MYSL_DATE.format((eobInformation.getCreatedDate())));
+			eobInfoModel.setId(eobInformation.getId());		
+//			try {
+//				// set eob file path
+//				String fileName = claim.getClaimUuid() + new Date().getTime() + "." + eobInfoModel.getExtension();
+//				    URL url = new URL(eobInfoModel.getEobLink());
+//					FileUtils.copyURLToFile(url, new File(eobLinkFolder + File.separator + fileName), 60000, 60000);
+//					eobInformation.setEobFilePath(fileName);
+//					eobInformation = eobRepo.save(eobInformation);
+//					eobInfoModel
+//							.setEobPathLink(serverDomainLink + "/api/vieweoblink/" + eobInformation.getEobFilePath());
+//					eobInfoModel.setAttachByTeam(team.getName());
+//					eobInfoModel.setAttachBy(createdBy.getFirstName());
+//					eobInfoModel.setDate(Constants.SDF_MYSL_DATE.format((eobInformation.getCreatedDate())));
+//				
+//					eobInfoModel.setId(eobInformation.getId());		
+//			} catch (Exception e) {
+//				logger.error("Invalid File Format");
+//				eobInfoModel.setEobPathLink("Invalid Format");
+//				return null;
+//			}
 
 		}
 		return eobInfoModel;
@@ -812,7 +817,7 @@ public class ClaimSectionImpl {
 				RcmUser attachBy = userRepo.findByUuid(data.getCreatedBy().getUuid());
 				RcmTeam team = rcmTeamRepo.findById(data.getAttachByTeam().getId());
 				responseDto = new EOBDto();
-				responseDto.setEobPathLink(serverDomainLink + "/api/vieweoblink/" + data.getEobFilePath());
+				responseDto.setEobPathLink(data.getEobFilePath());
 				responseDto.setAttachBy(attachBy.getFirstName());
 				responseDto.setAttachByLastName(attachBy.getFirstName());
 				responseDto.setAttachByTeam(team.getDescription());

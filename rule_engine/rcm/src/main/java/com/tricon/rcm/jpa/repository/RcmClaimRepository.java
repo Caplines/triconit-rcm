@@ -287,7 +287,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
-			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge,prime_sec_submitted_total primeSecSubmittedTotal, "
 			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,rca.created_date pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance " + " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "

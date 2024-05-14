@@ -7,7 +7,6 @@ export class RelpaceAlphabetPipe implements PipeTransform {
 
   transform(value: any): any {
     let commaSeperatedValue: any = [];
-    console.log(value)
     if (value) {
       value = value.split(",");
       for (let i = 0; i < value.length; i++) {

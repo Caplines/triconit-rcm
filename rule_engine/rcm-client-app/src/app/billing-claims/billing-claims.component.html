@@ -1885,7 +1885,7 @@
                                                         *ngFor="let data of claimSectionModal['EOB'].data;let idx=index;">
                                                         <td>{{data.date|date}}</td>
                                                         <td> <a href="javascript:void(0);"
-                                                                (click)="viewLink(data.eobPathLink)">View PDF</a></td>
+                                                                (click)="viewLink(data.eobLink)">View Link</a></td>
                                                         <td>{{data.attachByTeam}}</td>
                                                         <td>{{data.attachBy}}</td>
                                                         <td
@@ -1923,14 +1923,14 @@
                                                 <div *ngIf="claimSectionModal['EOB']['errorMessage']" class="text-danger">{{claimSectionModal['EOB']['errorMessage']}}</div>
                                             </div>
 
-                                            <div class="pdf-viewer" *ngIf="pdfUrlSrc">
+                                            <div class="pdf-viewer" *ngIf="pdfUrlSrc && !isPdfError">
                                                 <div class="pdf-action-box">
-                                                    <div class="pdf-search-box">
+                                                    <!-- <div class="pdf-search-box">
                                                         <input type="text" class="form-control mx-2 "
                                                             [(ngModel)]="stringToSearch">
                                                         <button (click)="search()" class="btn btn-primary btn-sm">Search
                                                         </button>
-                                                    </div>
+                                                    </div> -->
                                                     <div class="zoom-action">
                                                         <button (click)="zoom_in()" class="btn btn-success"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" width="16"
@@ -1958,7 +1958,7 @@
                                                 </div>
 
                                                 <pdf-viewer style="display: block; min-height: 250px" [src]="pdfUrlSrc"
-                                                    [render-text]="true" [zoom]="zoom_to"></pdf-viewer>
+                                                    [render-text]="true" [zoom]="zoom_to" (error)="onError($event)"></pdf-viewer>
                                             </div>
                                         </div>
                                     </div>
