@@ -69,7 +69,7 @@ export class HeaderComponent implements OnInit {
     this.loginUserType = localStorage.getItem("loginAs");
     //  }
     this.loggedInUserName = localStorage.getItem("name");
-
+    this.isLoggedInAdmin = Utils.checkAdminLoginRole();
     if (this.roleData.length == 0) {
       this.getRoles();
     }
@@ -102,7 +102,6 @@ export class HeaderComponent implements OnInit {
       }
     })
     this.emailUrl = window.location.href;
-    this.isLoggedInAdmin = Utils.checkAdminLoginRole();
   }
 
   getRoles() {
@@ -156,7 +155,7 @@ export class HeaderComponent implements OnInit {
 
     localStorage.setItem("loginAs", this.loginUserType);
     Utils.clearLastPageVisited();
-    if (this.cwModel.roles.length != 1 && this.cwModel.companies.length != 1 && this.cwModel.teams.length != 1)
+    if (this.cwModel.roles != undefined && this.cwModel.roles.length != 1 && this.cwModel.companies.length != 1 && this.cwModel.teams.length != 1)
       this.modelElement.modal.style.display = "none";
     if (this.selectedTeam == '') {
       this.selectedTeam = '-1'
