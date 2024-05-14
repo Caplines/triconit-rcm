@@ -125,7 +125,7 @@ export default class Utils {
    }
    static checkAdminLoginRole() {
       let ls: any = localStorage;
-      if (ls.getItem('currentUser') && ls.getItem('loginAs').indexOf("Admin") > -1) {
+      if (ls.getItem('currentUser') && ls.getItem('loginAs') != undefined && ls.getItem('loginAs').indexOf("Admin") > -1) {
          return true;
       }
       return false;
