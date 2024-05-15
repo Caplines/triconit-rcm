@@ -336,8 +336,22 @@ setTopOnTotalRow(){
           isAllSelected = false;
           break;
         }
-      }
+      } 
       this.isFilterAllSelected.companyName = isAllSelected;
+      if (this.currentTeamName === "CDP" && this.cdpCategory === 'appeal' ) {
+        this.filteredItems = this.productionData.cdpForAppeal.filter((item: any) => {
+          return this.filteredCompanyName.some((checkbox: any) => {
+            return checkbox.checked && item.companyName == checkbox.companyName;
+          })
+        })
+      }
+      if (this.currentTeamName === "CDP" && this.cdpCategory === 'followUp') {
+        this.filteredItems = this.productionData.cdpForInsuranceFollowUp.filter((item: any) => {
+          return this.filteredCompanyName.some((checkbox: any) => {
+            return checkbox.checked && item.companyName == checkbox.companyName;
+          })
+        })
+      }
       this.filteredItems = this.productionData.filter((item: any) => {
         return this.filteredCompanyName.some((checkbox: any) => {
           return checkbox.checked && item.companyName == checkbox.companyName;
@@ -345,6 +359,8 @@ setTopOnTotalRow(){
       })
     }
   }
+  // productionData.cdpForAppeal
+  // productionData.cdpForInsuranceFollowUp;
 
   showFilterOptioncompanyName(data: any) {
     if (!this.productionData) return;

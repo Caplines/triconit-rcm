@@ -156,32 +156,32 @@ export class HeaderComponent implements OnInit {
     //debugger;
     //console.log(this.loginUserType);
 
-    if (this.userInfo.currentTeamId && this.loginUserType !== 'Admin') {
-      const currentUrl = window.location.pathname;
+    // if (this.userInfo.currentTeamId && this.loginUserType !== 'Admin') {
+    //   const currentUrl = window.location.pathname;
 
-      const teamId = Number(this.selectedTeam);
+    //   const teamId = Number(this.selectedTeam);
       
-      const team = this.appConstants.TEAMS_CONFIG.get(teamId);
-      console.log(team);
+    //   const team = this.appConstants.TEAMS_CONFIG.get(teamId);
+    //   console.log(team);
 
-      //console.log(team.name + team.id);
+    //   //console.log(team.name + team.id);
 
-      if (team.paths.includes(currentUrl)) {
-        this.newUrlAccessonProfileChange = true;
-        console.log(team.name + ' Has access to ' + currentUrl);
-        console.log(this.newUrlAccessonProfileChange);
-      }
-      else {
-        this.newUrlAccessonProfileChange = false;
-        console.log(team.name + ' Has no access to ' + currentUrl);
-        console.log(this.newUrlAccessonProfileChange);
-      }
-    }
-    else {
-      this.newUrlAccessonProfileChange = true;
-    }
-    // debugger;
-    console.log(this.newUrlAccessonProfileChange);
+    //   if (team.paths.includes(currentUrl)) {
+    //     this.newUrlAccessonProfileChange = true;
+    //     console.log(team.name + ' Has access to ' + currentUrl);
+    //     console.log(this.newUrlAccessonProfileChange);
+    //   }
+    //   else {
+    //     this.newUrlAccessonProfileChange = false;
+    //     console.log(team.name + ' Has no access to ' + currentUrl);
+    //     console.log(this.newUrlAccessonProfileChange);
+    //   }
+    // }
+    // else {
+    //   this.newUrlAccessonProfileChange = true;
+    // }
+    // // debugger;
+    // console.log(this.newUrlAccessonProfileChange);
 
     localStorage.setItem("loginAs", this.loginUserType);
     Utils.clearLastPageVisited();
