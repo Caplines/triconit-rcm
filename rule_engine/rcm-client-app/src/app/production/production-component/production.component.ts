@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation, HostListener } from '@angular/core';
 import Utils from '../../util/utils';
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
@@ -50,7 +50,11 @@ export class ProductionComponent implements OnInit {
   patientStatTotalConfig:any={statement1:0,statement2:0,statement3:0};
   patientCallTotalConfig:any={paymentPromised:0,paymentMade:0,wrongNo:0,notReadyToPay:0,statementRequested:0};
   paymentPostingTotalConfig:any={total:0,days:0,amountPosted:0};
-  
+  showFilteredDropdown: any = { 'officeName': false, 'companyName': false };
+  isFilterAllSelected: any = { 'officeName': false, 'companyName': false };
+  filteredCompanyName: any = [];
+  filteredItems: any = [];
+  filterName: any;
 
   constructor(private appService: ApplicationServiceService,private title:Title,private downloadService:DownLoadService,public constant:AppConstants) { 
      title.setTitle(Utils.defaultTitle + "Production");
@@ -83,10 +87,16 @@ export class ProductionComponent implements OnInit {
         this.fetchbtnDisable = false;
         if (this.currentTeamName === "AGING" || this.currentTeamName === 'CDP') {
           this.productionData = callback.data[0];
+          console.log(this.productionData);
+          this.showFilterOptioncompanyName(this.productionData);
+          this.filterCompanyName();
           this.countTotalForAgingCdp();
         }
          else {
           this.productionData = callback.data;
+          console.log(this.productionData);
+          this.showFilterOptioncompanyName(this.productionData);
+          this.filterCompanyName();
           this.countTotalForTeamExceptAgingCdp();
         }
         if (this.productionData.length == 0) {
@@ -288,7 +298,73 @@ setTopOnTotalRow(){
   this.cdpCategory = category;
  }
 
+  showHideFilteredDropdown(filterName: any) {
+    filterName == 'companyName' ? this.showFilteredDropdown.companyName = true : this.showFilteredDropdown.companyName = false;
+    this.filterName = filterName;
+  }
+
+  @HostListener('mouseleave') onMouseLeave(event: Event) {
+    if (event?.target) {
+      setTimeout(() => {
+        this.showFilteredDropdown[this.filterName] = false;
+      }, 500);
+    }
+  }
+
+  selectAll(event: any, filterProperty: any) {
+    if (filterProperty == "companyName") {
+      this.filteredCompanyName.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e['checked'] = false;
+        }
+      });
+      this.filterCompanyName("selectAll");
+    }
+  }
+
+  filterCompanyName(e?: any, filterProperty?: any) {
+    if (!this.productionData) return;
+    if (!e) {
+      this.filteredItems = JSON.parse(JSON.stringify(this.productionData));
+      this.isFilterAllSelected.companyName = true;
+    } else {
+      let isAllSelected: boolean = true;
+      for (let i = 0; i < this.filteredCompanyName.length; i++) {
+        if (this.filteredCompanyName[i].checked == false) {
+          isAllSelected = false;
+          break;
+        }
+      }
+      this.isFilterAllSelected.companyName = isAllSelected;
+      this.filteredItems = this.productionData.filter((item: any) => {
+        return this.filteredCompanyName.some((checkbox: any) => {
+          return checkbox.checked && item.companyName == checkbox.companyName;
+        })
+      })
+    }
+  }
+
+  showFilterOptioncompanyName(data: any) {
+    if (!this.productionData) return;
+    this.filteredCompanyName = JSON.parse(JSON.stringify(data));
+    const newArray: any = [];
+    const seencompanyNames: any = {};
+    this.filteredCompanyName.forEach((item: any) => {
+      if (!seencompanyNames.hasOwnProperty(item.companyName)) {
+        seencompanyNames[item.companyName] = true;
+        newArray.push({ 'checked': true, 'companyName': item.companyName });
+      }
+    });
+    this.filteredCompanyName = newArray;
+    console.log(newArray);
+    this.sortFilteredData(this.filteredCompanyName, 'companyName');
+  }
+
+  sortFilteredData(filterValue: any, sortBy: any) {
+    filterValue.sort((a: any, b: any) => {
+      return a[sortBy].localeCompare(b[sortBy]);
+    });
+  }
 }
-
-
-

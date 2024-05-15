@@ -83,7 +83,8 @@ export class AppConstants {
     public static BILLING_TEAM = 7;
     public static CDP_TEAM = 11;
     public CLOSED_CLAIM_STATUS = 30;
-    public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
+    public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims"];
+    // public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
 
 
     public TEAMS_ID_CONFIG = new Map<number, string>([
@@ -305,6 +306,22 @@ export class AppConstants {
         O: "Open",
         U: "Primary Open - Secondary Unsubmitted",
       };
+
+    public helpLinks: any = {
+        "/tool-update": "/tool-update",
+        "/claim-assignment": "/claim-assignment",
+        "/all-pendency": "/all-pendency",
+        "/list-of-claims": "/list-of-claims",
+        "/production": "/production",
+        "/search-claims": "/search-claims",
+        "/register": "/register",
+        "/user-setting": "/user-setting",
+        "/manage-office": "/manage-office",
+        "/users-status": "/users-status",
+        "/manage-client": "/manage-client",
+        "/manage-section": "/manage-section",
+        "/reconciliation": "/reconciliation"
+    };
     
       public requestRebillingRequirement:any=[
         {

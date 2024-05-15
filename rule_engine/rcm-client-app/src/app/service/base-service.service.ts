@@ -179,7 +179,7 @@ export class BaseService {
         if (error.status == 401) {
           Utils.logout();
         }
-        if (error.status == 500) {
+        if (error.status == 500 || error.status == 400) {
           callback(error);
         }
       },

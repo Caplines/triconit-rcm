@@ -50,6 +50,7 @@ export class HeaderComponent implements OnInit {
   issueClaimPageNum: any = 0;
   totalPages: number;
   emailUrl: any;
+  newUrlAccessonProfileChange:boolean;
 
   @ViewChild('modalElement') modalElementRef!: ElementRef;
   @Input() isClaimDetailPage: boolean = false;
@@ -152,6 +153,35 @@ export class HeaderComponent implements OnInit {
   }
 
   switchAccount() {
+    //debugger;
+    //console.log(this.loginUserType);
+
+    if (this.userInfo.currentTeamId && this.loginUserType !== 'Admin') {
+      const currentUrl = window.location.pathname;
+
+      const teamId = Number(this.selectedTeam);
+      
+      const team = this.appConstants.TEAMS_CONFIG.get(teamId);
+      console.log(team);
+
+      //console.log(team.name + team.id);
+
+      if (team.paths.includes(currentUrl)) {
+        this.newUrlAccessonProfileChange = true;
+        console.log(team.name + ' Has access to ' + currentUrl);
+        console.log(this.newUrlAccessonProfileChange);
+      }
+      else {
+        this.newUrlAccessonProfileChange = false;
+        console.log(team.name + ' Has no access to ' + currentUrl);
+        console.log(this.newUrlAccessonProfileChange);
+      }
+    }
+    else {
+      this.newUrlAccessonProfileChange = true;
+    }
+    // debugger;
+    console.log(this.newUrlAccessonProfileChange);
 
     localStorage.setItem("loginAs", this.loginUserType);
     Utils.clearLastPageVisited();
@@ -164,9 +194,11 @@ export class HeaderComponent implements OnInit {
     this.showPopup = false;
 
     if (this.selectedTeam != -1 && this.selectedRole != "ASSO") {
+      // window.location.href = window.location.pathname;
       window.location.href = "/claim-assignment";
     }
     else if (this.selectedRole == "ASSO") {
+      // window.location.href = window.location.pathname;
       window.location.href = "/list-of-claims";
     }
     else {
@@ -355,6 +387,7 @@ export class HeaderComponent implements OnInit {
 
 
   openHelp() {
+    console.log(this.appConstants.helpLinks[this.router.url]);
     if (window.location.pathname === "/tool-update") {   //curerntly help link is only available for Tool To Update Page.
       window.open(
         "https://docs.google.com/document/d/1VjkBGvwpUPlhQG0JAprO8moTleo0cEbFPCmaYIYa2CM/edit#heading=h.lfah6ew7mnj1",
