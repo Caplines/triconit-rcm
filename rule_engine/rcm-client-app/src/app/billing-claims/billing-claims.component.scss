@@ -540,3 +540,27 @@
 .attach-secondary-width{
     min-width: 148px;
 }
+
+.rsType-1 {
+    color: green;
+}
+
+.rsType-2 {
+    color: red;
+}
+
+.rsType-3 {
+    color: red;
+}
+
+.loader-save-data {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: block;
+    margin: 15px 0;
+    color: #FFF;
+    left: calc(50% - 5px);
+    box-sizing: border-box;
+    animation: shadowRolling 2s linear infinite;
+}
