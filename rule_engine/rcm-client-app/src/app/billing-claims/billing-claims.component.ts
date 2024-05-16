@@ -2282,10 +2282,31 @@ export class BillingClaimsComponent {
   }
   validate_RULE_ENGINE_VALIDATION() { return true; }
   validate_CLAIM_SUBMISSION() { return true; }
-  validate_SERVICE_LEVEL_INFORMATION() {
 
+  validate_SERVICE_LEVEL_INFORMATION() {
     let isSectionValidated = true;
-    // this.emptyFields["SERVICE_LEVEL_INFORMATION"] = {};
+    for(let i =0; i<1000; i++){
+      this.emptyFields["SERVICE_LEVEL_INFORMATION"+i] = {};
+      this.emptyFields["SERVICE_LEVEL_INFORMATION" + i]['btpReason'] =false;
+      this.emptyFields["SERVICE_LEVEL_INFORMATION" + i]['adjustmentReason'] = false;
+    }
+
+    this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { creditAdjustmentAmount: number, debitAdjustmentAmount: number, billToPatientAmount: number, adjustmentReason: string, btpReason: string }, index: number) => {
+
+      let heading = "SERVICE_LEVEL_INFORMATION"+index;
+      if ((obj.creditAdjustmentAmount > 0 || obj.debitAdjustmentAmount > 0) && 
+          (obj.adjustmentReason === '' || obj.adjustmentReason === null)) {
+        this.emptyFields[heading]['adjustmentReason'] = true;
+        isSectionValidated = false;
+      }
+
+      if (obj.billToPatientAmount > 0 && (obj.btpReason === '' || obj.btpReason === null)) {
+        this.emptyFields[heading]['btpReason'] = true;
+        isSectionValidated = false;
+      }
+
+    });
+    
     if (!this.sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt || !this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt) {
       isSectionValidated = false;
     }

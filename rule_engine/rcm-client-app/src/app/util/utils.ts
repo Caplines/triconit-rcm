@@ -222,7 +222,7 @@ export default class Utils {
 
    static setSession(data: any) {
       this.setRefreshToken(data);
-      this.setLocalStoragePhase2(data[1], data[3], data[1]);
+      this.setLocalStoragePhase2(data[1], data[3], data[2]);// data[2]
    }
 
    static isRegisterVisible() {

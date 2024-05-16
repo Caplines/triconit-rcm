@@ -1653,8 +1653,9 @@
                                                             <td>
                                                                 <select class="attach-secondary-width form-control"
                                                                     [(ngModel)]="data.adjustmentReason"
+                                                                    [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['adjustmentReason']}"
                                                                     [title]="data.adjustmentReason">
-                                                                    <option [value]="">Select
+                                                                    <option value="">Select
                                                                     </option>
                                                                     <option [value]="reason.reasonName"
                                                                         *ngFor="let reason of appConstants.adjustmentReason">
@@ -1668,8 +1669,9 @@
                                                                     (blur)="getTotalServiceLevelInfo()"> </td>
                                                             <td>
                                                                 <select class="attach-secondary-width form-control"
+                                                                    [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['btpReason']}"
                                                                     [(ngModel)]="data.btpReason">
-                                                                    <option [ngValue]="null" disabled>Select
+                                                                    <option value="">Select
                                                                     </option>
                                                                     <option [value]="reason.reasonName"
                                                                         *ngFor="let reason of appConstants.btpReason">
