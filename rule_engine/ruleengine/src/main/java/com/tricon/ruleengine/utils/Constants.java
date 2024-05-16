@@ -151,7 +151,12 @@ public class Constants {
 	public static final String RULE_ID_107="Codes compatible with quads";
 	public static final String RULE_ID_108="Ortho treatment not given";
 	public static final String RULE_ID_109="D9999 for above to $100";
-	
+	public static final String RULE_ID_110="Out of Network benefit";
+	public static final String RULE_ID_111="Adult medicaid Plans are limited to offices";
+	public static final String RULE_ID_113="Humana Medicare Exception for D0230";
+	public static final String RULE_ID_114="Fillings and Endo not paid on same tooth on same DOS";
+	public static final String RULE_ID_115="Dental Procedures and Nomenclature - D4381";
+	public static final String RULE_ID_116="D2934 in Chip plan";
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
 

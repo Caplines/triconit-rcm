@@ -79,6 +79,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -997,8 +998,10 @@ public class RuleEngineService {
 						status=ClaimStatusEnum.Pending_For_Review;
 						nextAction = ClaimStatusEnum.Need_to_Audit;
 					}
-					if (status!= null) rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), claimUUid);		
-					claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),assignedTeam, assignedBy);
+					if (status!= null) {
+						rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), claimUUid);		
+						claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),assignedTeam, assignedBy);
+					}
 				
 				}else {
 					List<RcmClaimAssignment> as =rcmClaimAssignmentRepo.findTotalEntiresinClaimAssignmentWithNullAssignedTo(claimUUid, teamId);
@@ -1017,6 +1020,68 @@ public class RuleEngineService {
 							+ teamId + " ");
 				}*/
 			}
+			//}
+			
+		}
+		}catch(Exception ex) {
+			ex.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	public boolean assignedClaimsByTeamWithNoActiveInClaimAssigments(RcmUser assignedBy,int teamId,String compmanyId)  {
+		
+		//Assign Unassigned Claims
+		try {
+			int currentStatusClosed=ClaimStatusEnum.Closed.getId();
+			int currentStatusVoided=ClaimStatusEnum.Voided.getId();
+		List<Object> claims =rcmClaimRepository.getValidClaimWithCompanyTeams(compmanyId,teamId,currentStatusClosed,currentStatusVoided);
+		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
+				.findByStatus(ClaimStatusEnum.Billing.getType());
+		RcmTeam assignedTeam  = rcmTeamRepo.findById(teamId);
+		Map<String,UserAssignOffice> usersOffices = new HashMap<>();
+		logger.info(claims.size()+"");
+		int ct=0;
+		for(Object c:claims) {
+			logger.info("MY COUNT--"+ (++ct));
+			Object s[] = (Object[]) c;
+			RcmClaims claim = rcmClaimRepository.findByClaimUuid(s[0].toString());
+			int recordCount = rcmClaimAssignmentRepo.countTotalActiveEntiresinClaimAssignment(s[0].toString());
+			if (recordCount == 0 && teamId == claim.getCurrentTeamId().getId()) {
+				UserAssignOffice assignedUser =	usersOffices.get(s[1].toString());
+				if (assignedUser == null) {  
+					assignedUser = userAssignOfficeRepo
+							.findByOfficeUuidAndTeamId(s[1].toString(), teamId);
+				   if (assignedUser!=null) usersOffices.put(s[1].toString(), assignedUser);
+				}
+				
+				if (assignedUser != null) {
+				 //Insert only then	
+					RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
+					
+					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
+							s[0].toString(), claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT);
+					rcmClaimAssignmentRepo.save(rcmAssigment);
+					ClaimStatusEnum status = null;
+					ClaimStatusEnum nextAction = null;
+					if (teamId == RcmTeamEnum.BILLING.getId()) {
+						status=ClaimStatusEnum.Pending_For_Billing;
+						nextAction= ClaimStatusEnum.Pending_For_Billing;
+					}
+					else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+						status=ClaimStatusEnum.Pending_For_Review;
+						nextAction = ClaimStatusEnum.Need_to_Audit;
+					}
+					if (status!= null) {
+						rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), s[0].toString());		
+						claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),assignedTeam, assignedBy);
+						}
+					
+				 }
+				}
+			
 			//}
 			
 		}
@@ -1084,7 +1149,9 @@ public class RuleEngineService {
 	public void reAssignClaimToUserByOffices(RcmCompany company,
 			int teamId,JwtUser jwtUser) {
 		
-		List<PendingClaimToReAssignDto> claimList= rcmClaimRepository.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(company.getUuid(),teamId);
+		int currentStatusClosed=ClaimStatusEnum.Closed.getId();
+		int currentStatusVoided=ClaimStatusEnum.Voided.getId();
+		List<PendingClaimToReAssignDto> claimList= rcmClaimRepository.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(company.getUuid(),teamId,currentStatusClosed,currentStatusVoided);
 		List<UserAssignOffice> userAssignOffices = new ArrayList<>();
 		RcmUser assignedBy= userRepo.findByUuid(jwtUser.getUuid()) ;
 		for(PendingClaimToReAssignDto cl:claimList) {
@@ -1112,7 +1179,7 @@ public class RuleEngineService {
 						Optional<RcmClaimAssignment> rcaOpt = rcmClaimAssignmentRepo.findById(cl.getClaimAssignmentId());
 						if (rcaOpt.isPresent()) {
 							RcmClaimAssignment rca = rcaOpt.get();
-							rca.setActive(false);
+							rca.setActive(true);
 							rca.setSystemComment("Claim taken back from Pendency Screen by :"+assignedBy.getEmail());
 							rcmClaimAssignmentRepo.save(rca);
 							

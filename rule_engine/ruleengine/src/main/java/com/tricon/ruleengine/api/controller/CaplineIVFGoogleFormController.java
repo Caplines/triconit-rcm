@@ -648,7 +648,7 @@ public class CaplineIVFGoogleFormController {
             @RequestParam(value = "dateCheckType", required = false) String  dateCheckType,
             @RequestParam(value = "team1", required = false,defaultValue = "0") int  team1,
             @RequestParam(value = "team2", required = false ,defaultValue = "0") int  team2,
-            @RequestParam(value = "office", required = true) String office, HttpServletRequest request,
+            @RequestParam(value = "office", required = false) String office, HttpServletRequest request,
 			HttpServletResponse response) {
 		//Example
 		/*

@@ -90,6 +90,12 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
    int findTotalEntiresinClaimAssignment(@Param("claim_id") String claimId);
 	
 	@Query(nativeQuery = true, value = "  "
+			+" SELECT count(*) FROM rcm_claim_assignment rca "
+			+" where rca.claim_id=:claim_id and  active is true")
+   int countTotalActiveEntiresinClaimAssignment(@Param("claim_id") String claimId);
+
+	
+	@Query(nativeQuery = true, value = "  "
 			+" SELECT * FROM rcm_claim_assignment rca "
 			+" where rca.claim_id=:claim_id and current_team_id=:teamId and assigned_to is null and active is true")
 	List<RcmClaimAssignment>findTotalEntiresinClaimAssignmentWithNullAssignedTo(@Param("claim_id") String claimId,@Param("teamId") int teamId);

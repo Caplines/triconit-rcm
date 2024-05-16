@@ -3,6 +3,7 @@ package com.tricon.ruleengine.dao;
 import java.util.List;
 
 import com.tricon.ruleengine.dto.RCMQuerySubData;
+import com.tricon.ruleengine.dto.RCMQuerySubData1;
 import com.tricon.ruleengine.dto.RcmClaimDto;
 import com.tricon.ruleengine.model.db.Office;
 
@@ -16,4 +17,7 @@ public interface RcmClaimDao {
 	//Is Patients assigned to our facility? 320 YES - 3
 	//Consent Form 319 Attached =2 , Not Available 3 Other 1
 	public List<RCMQuerySubData> getAuditQueryFieldsFromClaimData_2(String claimIds);
+	
+	//For NOTES
+	public List<RCMQuerySubData1> getAuditQueryFieldsFromClaimData_3(String claimIds);
 }

@@ -990,6 +990,163 @@ public class FreqencyUtils {
 		}
 		return mess;
 	}
+	
+	public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1, List<ServiceCodeIvfTimesFreqFieldDto> l2,
+			List<ServiceCodeIvfTimesFreqFieldDto> l3, List<ServiceCodeIvfTimesFreqFieldDto> l4,
+			List<ServiceCodeIvfTimesFreqFieldDto> l5, List<ServiceCodeIvfTimesFreqFieldDto> l6,List<ServiceCodeIvfTimesFreqFieldDto> l7,
+			String s1, String s2,
+			String s3, String s4, String s5, String s6, String s7, String tooth,int currentCount,boolean humana) {
+		int ct = currentCount;
+		int ti = 0;
+		int actualmax = -1;
+		Object[] mess = null;
+		Set<String> code = new HashSet<>();
+		Set<String> codeH = new HashSet<>();
+		Object c1[] = FreqencyUtils.getCountTimeServiceCode(l1, s1,0);
+		if (!((String) c1[5]).equals("")) {
+			code.add((String) c1[5]);
+			codeH.add((String) c1[8]);
+			
+		}
+
+		ct = ct + (Integer) c1[0];
+		ti = (Integer) c1[4];
+		if (ti > 0)
+			actualmax = ti;
+
+		Object[] c2 = FreqencyUtils.getCountTimeServiceCode(l2, s2,0);
+		if (!((String) c2[5]).equals("")) {
+			code.add((String) c2[5]);
+			codeH.add((String) c2[8]);
+		}
+
+		ct = ct + (Integer) c2[0];
+		ti = (Integer) c2[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c3 = FreqencyUtils.getCountTimeServiceCode(l3, s3,0);
+		if (!((String) c3[5]).equals("")) {
+			code.add((String) c3[5]);
+			codeH.add((String) c3[8]);
+		}
+		ct = ct + (Integer) c3[0];
+		ti = (Integer) c3[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c4 = FreqencyUtils.getCountTimeServiceCode(l4, s4,0);
+		if (!((String) c4[5]).equals("")) {
+			code.add((String) c4[5]);
+			codeH.add((String) c4[8]);
+		}
+
+		ct = ct + (Integer) c4[0];
+		ti = (Integer) c4[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c5 = FreqencyUtils.getCountTimeServiceCode(l5, s5,0);
+		if (!((String) c5[5]).equals("")) {
+			code.add((String) c5[5]);
+			codeH.add((String) c5[8]);
+		}
+
+		ct = ct + (Integer) c5[0];
+		ti = (Integer) c5[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+
+		Object[] c6 = FreqencyUtils.getCountTimeServiceCode(l6, s6,0);
+		if (!((String) c6[5]).equals("")) {
+			code.add((String) c6[5]);
+			codeH.add((String) c6[8]);
+		}
+
+		ct = ct + (Integer) c6[0];
+		ti = (Integer) c6[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+		
+		Object[] c7 = FreqencyUtils.getCountTimeServiceCode(l7, s7,0);
+		if (!((String) c7[5]).equals("")) {
+			code.add((String) c7[5]);
+			codeH.add((String) c7[8]);
+		}
+
+		ct = ct + (Integer) c7[0];
+		ti = (Integer) c7[4];
+		if ((ti > 0 && actualmax == -1) || (ti > 0 && actualmax > ti))
+			actualmax = ti;/// Set to minimum value
+		
+		
+		if ((actualmax > 0) && (ct > 0 && ct > actualmax)) {
+			Set<String> dos = new HashSet<>();
+			
+			String fl = "";
+			String fr = "";
+			String sur = "";
+
+			if (l1 != null) {
+				dos.add((String) c1[2]);
+				fl = fl + " " + (String) c1[3];
+				fr = fr + " " + (String) c1[6];
+				sur = sur + " " + (String) c1[7];
+
+			}
+			if (l2 != null) {
+				dos.add((String) c2[2]);
+				fl = fl + " " + (String) c2[3];
+				fr = fr + " " + (String) c2[6];
+				sur = sur + " " + (String) c2[7];
+
+			}
+			if (l3 != null) {
+				dos.add((String) c3[2]);
+				fl = fl + " " + (String) c3[3];
+				fr = fr + " " + (String) c3[6];
+				sur = sur + " " + (String) c3[7];
+
+			}
+			if (l4 != null) {
+				dos.add((String) c4[2]);
+				fl = fl + " " + (String) c4[3];
+				fr = fr + " " + (String) c4[6];
+				sur = sur + " " + (String) c4[7];
+
+			}
+			if (l5 != null) {
+				dos.add((String) c5[2]);
+				fl = fl + " " + (String) c5[3];
+				fr = fr + " " + (String) c5[6];
+				sur = sur + " " + (String) c5[7];
+
+			}
+			if (l6 != null) {
+				dos.add((String) c6[2]);
+				fl = fl + " " + (String) c6[3];
+				fr = fr + " " + (String) c6[6];
+				sur = sur + " " + (String) c6[7];
+
+			}
+			if (l7 != null) {
+				dos.add((String) c7[2]);
+				fl = fl + " " + (String) c7[3];
+				fr = fr + " " + (String) c7[6];
+				sur = sur + " " + (String) c7[7];
+
+			}
+			
+
+			// 3124 code ,TOOTH,DOS, TIMES
+			if (!sur.equals(""))
+				sur = "(" + sur + ")";
+			if (humana)mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,String.join(",", codeH) };
+			else mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,"" };
+
+		}
+		return mess;
+	}
 
 
 	private static Object [] CustumErrorData(List<ServiceCodeIvfTimesFreqFieldDto> l,String s,int actualmax,Set<String> code,Set<String> codeH,int ct,int ti) {
@@ -1454,6 +1611,9 @@ public class FreqencyUtils {
 					bw);
 
 			RuleEngineLogger.generateLogs(clazz, "Frequency- " + freq, Constants.rule_log_debug, bw);
+			if (freq == null ) {
+				continue;
+			}
 			if (historyD.getHistoryDos().equals("") || freq.equalsIgnoreCase("") || freq.equalsIgnoreCase("NF")
 					|| freq.equalsIgnoreCase("no frequency"))
 				continue;

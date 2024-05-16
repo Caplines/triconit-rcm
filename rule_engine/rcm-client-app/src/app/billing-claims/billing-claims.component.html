@@ -7,14 +7,14 @@
     <div class="container-fluid cldet" [ngClass]="{'for-hide-btn':claimRcm.assoicatedClaimUuid == null}">
         <div class="row">
             <div class="col-lg-12 pt-5">
-                <div class="page-heading">Claim Detail Page {{invalidClaim}}
+                <div class="page-heading claim-detail-fixed">Claim Detail Page {{invalidClaim}}
                     <button id="copyButton" class="btn btn-sm btn-info" (click)="copyUrl()"> Copy URL</button>
                     <small id="tooltip" class="ms-2" style="visibility:hidden;font-size: 12px !important;">URL
                         copied!</small>
                 </div>
                 <button *ngIf="claimSteps.length>0" type="button" (click)="hideSideBar()"
                     class="btn btn-primary claim-steps-btn" [ngClass]="{'toggle-claim-steps':toggleSideBar}"
-                    style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
+                    style="position: fixed; right: 15px; top: 75px; width: 130px; z-index:9999">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-text-right" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
@@ -82,7 +82,7 @@
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">DOS </label>
-                                            <div>{{claimRcm.dos | date: 'MMM dd, YYYY'}}</div>
+                                            <div>{{claimRcm.dos | date: 'MM/dd/YYYY'}}</div>
                                         </div>
                                         <div class="custom-row flexAlign">
                                             <label for="" class="">Billed Amount </label>
@@ -131,7 +131,7 @@
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">Patient DOB </label>
-                                            <div>{{claimRcm.patientDob | date: 'MMM dd, YYYY'}}</div>
+                                            <div>{{claimRcm.patientDob | date: 'MM/dd/YYYY'}}</div>
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">Subscriber Name </label>
@@ -143,13 +143,13 @@
                                             <div *ngIf="claimRcm.primary">
                                                 {{
                                                 claimRcm.primePolicyHolderDob | date:
-                                                'MMM dd, YYYY'
+                                                'MM/dd/YYYY'
                                                 }}
                                             </div>
                                             <div *ngIf="!claimRcm.primary">
                                                 {{
                                                 claimRcm.secPolicyHolderDob | date:
-                                                'MMM dd, YYYY'
+                                                'MM/dd/YYYY'
                                                 }}
                                             </div>
                                         </div>
@@ -323,7 +323,7 @@
                                                 <div *ngIf="claimRcm.ivDos!=null && claimRcm.ivDos!=''">
                                                     {{
                                                     claimRcm.ivDos |
-                                                    date: 'MMM dd, YYYY'
+                                                    date: 'MM/dd/YYYY'
                                                     }}
                                                 </div>
                                                 <div *ngIf="!(claimRcm.ivDos!=null && claimRcm.ivDos!='')">
@@ -336,7 +336,7 @@
                                                 <div *ngIf="claimRcm.tpDos!=null && claimRcm.tpDos!=''">
                                                     {{
                                                     claimRcm.tpDos |
-                                                    date: 'MMM dd, YYYY'
+                                                    date: 'MM/dd/YYYY'
                                                     }}
                                                 </div>
                                                 <div *ngIf="!(claimRcm.tpDos!=null && claimRcm.tpDos!='')">
@@ -386,7 +386,7 @@
                                                     <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                         <td>{{idx+1}}</td>
                                                         <td>{{rem.teamName}}</td>
-                                                        <td>{{rem.cd | date:'MMM dd, YYYY hh:mm:ss a':'UTC '+timeZone}}
+                                                        <td>{{rem.cd | date:'MM/dd/YYYY hh:mm:ss a':'UTC '+timeZone}}
                                                         </td>
                                                         <td>{{rem.comment}}</td>
                                                         <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}</td>
@@ -1885,7 +1885,7 @@
                                                 <tbody>
                                                     <tr
                                                         *ngFor="let data of claimSectionModal['EOB'].data;let idx=index;">
-                                                        <td>{{data.date|date}}</td>
+                                                        <td>{{data.date|date:' MM/dd/YYYY'}}</td>
                                                         <td> <a href="javascript:void(0);"
                                                                 (click)="viewLink(data.eobLink)">View Link</a></td>
                                                         <td>{{data.attachByTeam}}</td>
@@ -2335,7 +2335,7 @@
                                                         <td>{{idx+1}}</td>
                                                         <td>{{data.followByTeam}}</td>
                                                         <td>{{data.followByUser}}</td>
-                                                        <td>{{data.nextFollowUpDate|date}}</td>
+                                                        <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm:ss a':'UTC '+timeZone}}</td>
                                                         <td>{{data.modeOfFollowUp}}</td>
                                                         <td>{{data.refNumber}}</td>
                                                         <td>{{data.insuranceRepName}}</td>
@@ -2836,7 +2836,7 @@
                                                         <td>{{idx+1}}</td>
                                                         <td>{{data.createdBy}}</td>
                                                         <td>{{data.createdTeam}}</td>
-                                                        <td>{{data.date|date}}</td>
+                                                        <td>{{data.date|date :'MM/dd/YYYY hh:mm:ss a':'UTC '+timeZone}}</td>
                                                         <td>{{data.modeOfFollowUp}}</td>
                                                         <td>{{data.contact}}</td>
                                                         <td>{{data.desposition}}</td>
@@ -3398,7 +3398,7 @@
                                                         <td>{{idx+1}}</td>
                                                         <td>{{data.requestedBy}}</td>
                                                         <td>{{data.requestedRemarks}}</td>
-                                                        <td>{{data.dateOfRebiiling|date}}</td>
+                                                        <td>{{data.dateOfRebiiling|date :'MM/dd/YYYY'}}</td>
                                                         <td>{{data.rebillingServiceCodes}}</td>
                                                         <td>{{data?.rebillingRequirements}}</td>
                                                         <td>Yes</td>
@@ -3639,7 +3639,7 @@
                                                     [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['reasonRecreation']}">
                                                     <option [selected]="true" [value]="null">Select</option>
                                                     <option value="Rebilling Needed">Rebilling Needed</option>
-                                                    <option value="Code Change Needed">Code Change Needed</option>
+                                                    <option value="Code Change Needed">Need to fix walkout</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -4311,7 +4311,7 @@
                         <ul>
                             <ng-container *ngFor="let steps of claimSteps">
                                 <li class="done">
-                                    <span class="claimDate">{{steps.dt | date: 'MMM dd, YYYY'}}</span> {{steps.status}}
+                                    <span class="claimDate">{{steps.dt | date: 'MM/dd/YYYY'}}</span> {{steps.status}}
                                     <span class="teamname" *ngIf="steps.name==null">System</span>
                                     <span class="teamname" [ngClass]="{'last-child ':false}"
                                         *ngIf="steps.name!=null">{{steps.name}}</span>
@@ -4496,7 +4496,7 @@
                     <div class="modal-body">
                         <ul>
                             <li *ngFor="let note of viewNotesConfig.viewNotes;let idx=index;">{{note.createdBy}}
-                                {{note.createdDate}} : {{note.notes}}</li>
+                                {{note.createdDate |date :'MM/dd/YYYY'}} : {{note.notes}}</li>
                         </ul>
                     </div>
                     <div class="modal-footer justify-content-center">
