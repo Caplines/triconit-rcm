@@ -92,6 +92,7 @@ export class BillingClaimsComponent {
   finalsubmitcurrentstat: boolean = true;
   activeServiceCodeCount: number = 0;
   rebilledServiceCodeCount: number = 0;
+  isPdfError:boolean=false;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -474,7 +475,7 @@ export class BillingClaimsComponent {
           ths.fetchTLUsers();
           ths.fetchOtherTeams();
           ths.fetchAttachmentCount();
-          this.claimRcm.patientContactNo=this.claimRcm.patientContactNo+',-NO-DATA-'+',2356786545'
+          // this.claimRcm.patientContactNo=this.claimRcm.patientContactNo+',-NO-DATA-'+',2356786545'
           if (this.claimRcm.patientContactNo) {
             this.claimRcm.patientContactNo = this.claimRcm.patientContactNo.split(",").join(", ");
           }
@@ -1593,10 +1594,6 @@ export class BillingClaimsComponent {
     if ('/billing-claims/' + url != this.router.url) this.location.go(url);
   }
 
-  goToListofClaimsPage() {
-    window.location.href = "/list-of-claims";
-  }
-
   get isSuperAdmin() {
     return Utils.checkRoleSuperAdmin();
   }
@@ -2335,6 +2332,10 @@ export class BillingClaimsComponent {
       this.emptyFields['INSURANCE_FOLLOW_UP']['modeOfFollowUp'] = true;
       isSectionValidated = false;
     }
+    if (!this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'].refNumber) {
+      this.emptyFields['INSURANCE_FOLLOW_UP'].refNumber = true;
+      isSectionValidated = false;
+    }
 
     return isSectionValidated;
   }
@@ -2561,7 +2562,7 @@ export class BillingClaimsComponent {
           this.claimSectionModal['EOB']['pdfLink'] = '';
           if(res.data !== null) {
             this.claimSectionModal['EOB'].data.push(res.data);
-            this.pdfUrlSrc = res.data.eobPathLink;
+            this.pdfUrlSrc = res.data.eobLink;
             this.loader.EOB = false;
           } else {
             this.claimSectionModal['EOB']['errorMessage'] = 'Invalid Link.';
@@ -2580,6 +2581,7 @@ export class BillingClaimsComponent {
 
   viewLink(link: any) {
     this.pdfUrlSrc = link;
+    this.isPdfError=false;
   }
 
 
@@ -3584,6 +3586,14 @@ export class BillingClaimsComponent {
         this.hideSideBarDom = true;
       }
     }, 100);
+  }
+
+  onError(error: any) {
+    if(error!=null){
+      window.open(this.pdfUrlSrc, '_blank');
+      this.isPdfError=true;
+    }else
+    this.isPdfError=false;
   }
 
 }

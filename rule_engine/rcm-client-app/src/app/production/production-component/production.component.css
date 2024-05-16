@@ -148,13 +148,14 @@
     display: block;
   }
   
-  .table-inner-scrollbar {
+  .table-inner-scrollbar-prod {
     position: relative;
     overflow-y: auto;
     height: calc(100vh - 330px);
     min-width: 100%;
   }
-  .table-inner-scrollbar thead th {
+  
+  .table-inner-scrollbar-prod thead th {
     position: sticky;
     top: 0;
     z-index: 1;
@@ -162,7 +163,7 @@
     width: 33vw;
 }
 
-.table-inner-scrollbar tbody tr.totalRow {
+.table-inner-scrollbar-prod tbody tr.totalRow {
     position: sticky;
     top: 30px;
     z-index: 2;
@@ -256,4 +257,38 @@ a.arrow-down.selected {
 }
 .rangeWithFilter .rangeFilter label input {
     margin-right: 5px;
+}
+
+
+.filter-dropdown-menu{
+    display: flex;
+    min-width: 250px;
+    padding: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-dropdown-menu label{
+    width: 45%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.filter-dropdown-menu label input{
+    margin-right: 5px;
+}
+.filter-dropdown-menu label:first-child{
+    color: #dc3545;
+    font-weight: 700;
+    width: 100%;
+}
+.filter-dropdown-menu label:first-child input[type=checkbox] {
+    accent-color:#dc3545;
+}
+
+.filter-dropdown-menu .close{
+    position: absolute;
+    right: 7px;
+    top: 4px;
+    outline: none;
 }

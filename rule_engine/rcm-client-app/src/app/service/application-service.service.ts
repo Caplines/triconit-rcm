@@ -366,8 +366,10 @@ export class ApplicationServiceService extends BaseService {
 
   setPaddingRightContainer() {
     let m: any = document.getElementsByClassName("gray-bar");
-    if (m[0].clientHeight > 55) {
-      return this.setPaddingContainer = true;
+    if(m !== undefined && m.length > 0){ // On claim detail page gray bar is not shown.
+      if (m[0].clientHeight > 55) {
+        return this.setPaddingContainer = true;
+      }
     }
   }
 

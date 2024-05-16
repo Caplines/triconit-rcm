@@ -540,3 +540,53 @@
 .attach-secondary-width{
     min-width: 148px;
 }
+
+.rsType-1 {
+    color: green;
+}
+
+.rsType-2 {
+    color: red;
+}
+
+.rsType-3 {
+    color: red;
+}
+
+.loader-save-data {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: block;
+    margin: 15px 0;
+    color: #FFF;
+    left: calc(50% - 5px);
+    box-sizing: border-box;
+    animation: shadowRolling 2s linear infinite;
+}
+
+.claim-detail-fixed{
+    position: sticky;
+    top: 50px;
+    background: #f8f8f9;
+    z-index: 9999;
+    margin-left: -20px;
+    padding-left: 35px;
+    padding-top: 15px;
+    margin-top: -10px;
+    padding-bottom: 20px;
+}
+
+.attach-secondary{
+    display: inline-flex;
+    align-items: center;
+    margin-right: 50px;
+    font-weight: 700 !important;
+    color: #212529 !important;
+    white-space: nowrap;
+    input {
+        margin-right: 7px;
+    width: 15px;
+    height: 15px;
+    }
+  }

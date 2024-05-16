@@ -620,6 +620,25 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 
 				}
 				form.setHdto(hdto);
+				int x=0;
+				List<ToothHistoryDto> l1= new ArrayList<>();
+				List<ToothHistoryDto> l2= new ArrayList<>();
+				List<ToothHistoryDto> l3= new ArrayList<>();
+				
+				if(form.getHdto()!=null) {
+				for(ToothHistoryDto h:form.getHdto()) {
+					if (x==0)   l1.add(h);
+					if (x==1)   l2.add(h);
+					if (x==2) {
+						l3.add(h);
+						x=-1;
+					}
+					x++;
+				  }
+				}
+				form.setHdto1(l1);
+				form.setHdto2(l2);
+				form.setHdto3(l3);
 				if (form.getHistoryCount()==null)form.setHistoryCount(hdto.size()+"");
 				form.setHistory(null);
 			 }
@@ -712,6 +731,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				if (form.getImplants4()!=null)	form.setImplants4(form.getImplants4().replaceAll("\\$", ""));
 				
 				}
+				
 				CaplineIVFFormDtoToXML xml = new CaplineIVFFormDtoToXML();
 				String filePath = xml.convertToXML(form, XSLT_PATH);
 				File file = new File(filePath);

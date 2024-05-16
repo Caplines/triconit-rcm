@@ -1,6 +1,15 @@
 <div class=" navbar-dark sticky-top bg-dark">
     <div class="topbar">
-        <h1>Capline RCM</h1>
+        <h1 *ngIf="!isClaimDetailPage">Capline RCM</h1>
+        <ng-container *ngIf="isClaimDetailPage">
+            <div style="display: flex;">
+                <a class="backBtn" (click)="goToListofClaimsPage()"><img src="../../assets/img/arrow-back.png"
+                        [style]="{width:'16px'}"></a>
+                <h1>Capline RCM</h1>
+                <h5 *ngIf="isLoggedInAdmin" class="mx-2 text-danger">Admin Profile cannot access this page please switch
+                    back to User profile.</h5>
+            </div>
+        </ng-container>
 
         <div class=" px-3 dropBox">
 
@@ -50,7 +59,7 @@
 
     </div>
 
-    <div class="gray-bar">
+    <div class="gray-bar" *ngIf="!isClaimDetailPage">
         <ul>
             <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||staticUtil.checkAdmin() "><a
                     href="javascript:void(0);" [routerLink]="['/register']" routerLinkActive="active"

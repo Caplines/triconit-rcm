@@ -83,7 +83,8 @@ export class AppConstants {
     public static BILLING_TEAM = 7;
     public static CDP_TEAM = 11;
     public CLOSED_CLAIM_STATUS = 30;
-    public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
+    public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims"];
+    // public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
 
 
     public TEAMS_ID_CONFIG = new Map<number, string>([
@@ -305,6 +306,22 @@ export class AppConstants {
         O: "Open",
         U: "Primary Open - Secondary Unsubmitted",
       };
+
+    public helpLinks: any = {
+        "/tool-update": "/tool-update",
+        "/claim-assignment": "/claim-assignment",
+        "/all-pendency": "/all-pendency",
+        "/list-of-claims": "/list-of-claims",
+        "/production": "/production",
+        "/search-claims": "/search-claims",
+        "/register": "/register",
+        "/user-setting": "/user-setting",
+        "/manage-office": "/manage-office",
+        "/users-status": "/users-status",
+        "/manage-client": "/manage-client",
+        "/manage-section": "/manage-section",
+        "/reconciliation": "/reconciliation"
+    };
     
       public requestRebillingRequirement:any=[
         {
@@ -360,4 +377,111 @@ export class AppConstants {
             checked:false
         },
       ]
+
+
+      public btpReason: any = [
+        { reasonName: "Service not covered" },
+        { reasonName: "Benefit Maximum Met" },
+        { reasonName: "Benefits assigned to member" },
+        { reasonName: "COB Info Required" },
+        { reasonName: "Freqency Limitation & Coinsurance" },
+        { reasonName: "Frequency Limit & Deductibles" },
+        { reasonName: "Frequency Limitation" },
+        { reasonName: "Member Not Eligible" },
+        { reasonName: "Coinsurance applied" },
+        { reasonName: "Deductible applied" },
+        { reasonName: "Deductibles & Coinsurance" },
+        { reasonName: "Alternate Benefit Applied" },
+        { reasonName: "Provider Out of Network" },
+        { reasonName: "Provider not authorized for service" },
+        { reasonName: "Service Not Covered & Coinsurance" },
+        { reasonName: "Waiting Period" },
+        { reasonName: "Medical Necessity" },
+        { reasonName: "Accounts payment received" },
+        { reasonName: "Copay" },
+        { reasonName: "Coins+ Deductible+Freq Limit" },
+        { reasonName: "Coins+Deductible +Est 0" },
+        { reasonName: "Provider out of network+Ded+Coins" },
+        { reasonName: "Alt Benefit+Deductible+Coins" },
+        { reasonName: "Frequency limitation" },
+        { reasonName: "In Acc To Primary Eob" },
+        { reasonName: "Coins+Alt Benefit" },
+        { reasonName: "Estimated amount is $0+Deductible" },
+        { reasonName: "Coins+Deductible+Alt Benefit" },
+        { reasonName: "Provider Out Of Network+Coins" },
+        { reasonName: "Benefit Maxed Out" },
+        { reasonName: "Bundled Service Applied" },
+        { reasonName: "Appeal Upheld" },
+        { reasonName: "N/A" },
+        { reasonName: "Processed under Capitaion" },
+        { reasonName: "Medical Records (CRA) Missed" },
+        { reasonName: "Additional Info Needed" },
+        { reasonName: "Incorrect Billing" },
+        { reasonName: "Incorrect denial" },
+        { reasonName: "Incorrect Provider Info" },
+        { reasonName: "Untimely Filing" },
+        { reasonName: "Claim not on file" },
+        { reasonName: "Pre-auth unavailable" },
+        { reasonName: "Crown Not Paid" },
+        { reasonName: "Crown Not Walked Out" },
+        { reasonName: "Pre-auth Denied" },
+        { reasonName: "Duplicate Claim" },
+        { reasonName: "Patient Not Assigned To The Facility" },
+        { reasonName: "Provider is not PCD" },
+        { reasonName: "Incorrect Walkout" },
+    ];
+
+    public adjustmentReason: any = [
+        { reasonName: "Service not covered" },
+        { reasonName: "Benefit Maximum Met" },
+        { reasonName: "Benefits assigned to member" },
+        { reasonName: "COB Info Required" },
+        { reasonName: "Freqency Limitation & Coinsurance" },
+        { reasonName: "Frequency Limit & Deductibles" },
+        { reasonName: "Frequency Limitation" },
+        { reasonName: "Member Not Eligible" },
+        { reasonName: "Coinsurance applied" },
+        { reasonName: "Deductible applied" },
+        { reasonName: "Deductibles & Coinsurance" },
+        { reasonName: "Alternate Benefit Applied" },
+        { reasonName: "Provider Out of Network" },
+        { reasonName: "Provider not authorized for service" },
+        { reasonName: "Service Not Covered & Coinsurance" },
+        { reasonName: "Waiting Period" },
+        { reasonName: "Medical Necessity" },
+        { reasonName: "Accounts payment received" },
+        { reasonName: "Copay" },
+        { reasonName: "Coins+ Deductible+Freq Limit" },
+        { reasonName: "Coins+Deductible +Est 0" },
+        { reasonName: "Provider out of network+Ded+Coins" },
+        { reasonName: "Alt Benefit+Deductible+Coins" },
+        { reasonName: "Frequency limitation" },
+        { reasonName: "In Acc To Primary Eob" },
+        { reasonName: "Coins+Alt Benefit" },
+        { reasonName: "Estimated amount is $0+Deductible" },
+        { reasonName: "Coins+Deductible+Alt Benefit" },
+        { reasonName: "Provider Out Of Network+Coins" },
+        { reasonName: "Benefit Maxed Out" },
+        { reasonName: "Bundled Service Applied" },
+        { reasonName: "Appeal Upheld" },
+        { reasonName: "N/A" },
+        { reasonName: "Processed under Capitaion" },
+        { reasonName: "Medical Records (CRA) Missed" },
+        { reasonName: "Additional Info Needed" },
+        { reasonName: "Incorrect Billing" },
+        { reasonName: "Incorrect denial" },
+        { reasonName: "Incorrect Provider Info" },
+        { reasonName: "Untimely Filing" },
+        { reasonName: "Claim not on file" },
+        { reasonName: "Pre-auth unavailable" },
+        { reasonName: "Crown Not Paid" },
+        { reasonName: "Crown Not Walked Out" },
+        { reasonName: "Pre-auth Denied" },
+        { reasonName: "Duplicate Claim" },
+        { reasonName: "Patient Not Assigned To The Facility" },
+        { reasonName: "Need Primary EOB" },
+        { reasonName: "Incorrect Walkout" },
+        { reasonName: "Incorrect Fee Schedule" },
+
+    ];
 }

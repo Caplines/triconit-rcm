@@ -1837,20 +1837,47 @@
 				</table>
 				<table class="table table-striped" vertical-align="top">
 					<tr>
-						<td colspan="8" class="tableHeading" style="text-align: center;">Treatment History of the Patient</td>
+						<td colspan="11" class="tableHeading" style="text-align: center;">Treatment History of the Patient</td>
 					</tr>
 					<tr>
-						
-							<td colspan="2"class="darkYellow">ADA Code</td>
-							<td colspan="2"class="darkYellow">Tooth No.- Surface</td>
-							<td colspan="2"class="darkYellow">DOS</td>
-					
-					</tr>
-		
-					<tr *ngFor="let c of reportDataInd.hdto">
-						<td colspan="2"><span class="newff">{{c.historyCode}}</span></td>
-						<td colspan="2"><span class="newff">{{c.historyTooth}}</span></td>
-						<td colspan="2"><span class="newff">{{c.historyDos}}</span></td>
+						<td colspan="11" class="innerTableBox">
+							<table class="innerTable" vertical-align="top">
+								<tr>
+									<td class="darkYellow">ADA Code</td>
+									<td class="darkYellow">Tooth No.- Surface</td>
+									<td class="darkYellow">DOS</td>
+								</tr>
+								<tr *ngFor="let c of reportDataInd.hdto1">
+									<td><span class="newff">{{c.historyCode}}</span></td>
+									<td><span class="newff">{{c.historyTooth}}</span></td>
+									<td><span class="newff">{{c.historyDos}}</span></td>
+								</tr>
+							</table>
+							<table class="innerTable" vertical-align="top">
+								<tr>
+									<td class="darkYellow">ADA Code</td>
+									<td class="darkYellow">Tooth No.- Surface</td>
+									<td class="darkYellow">DOS</td>
+								</tr>
+								<tr *ngFor="let c of reportDataInd.hdto2">
+									<td><span class="newff">{{c.historyCode}}</span></td>
+									<td><span class="newff">{{c.historyTooth}}</span></td>
+									<td><span class="newff">{{c.historyDos}}</span></td>
+								</tr>
+							</table>
+							<table class="innerTable" vertical-align="top">
+								<tr>
+									<td class="darkYellow">ADA Code</td>
+									<td class="darkYellow">Tooth No.- Surface</td>
+									<td class="darkYellow">DOS</td>
+								</tr>
+								<tr *ngFor="let c of reportDataInd.hdto3">
+									<td><span class="newff">{{c.historyCode}}</span></td>
+									<td><span class="newff">{{c.historyTooth}}</span></td>
+									<td><span class="newff">{{c.historyDos}}</span></td>
+								</tr>
+							</table>
+						</td>
 					</tr>
 					<tr>
 						<td class="darkYellow">Comments For Office/LC3</td>

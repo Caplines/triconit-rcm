@@ -1,28 +1,20 @@
 <div class="sticky-top bg-dark">
     <div class="topbar">
-        <div style="display: flex;">
-            <a class="backBtn" (click)="goToListofClaimsPage()"><img src="../../assets/img/arrow-back.png"
-                    [style]="{width:'16px'}"></a>
-            <h1>Capline RCM</h1>
-            <h5 *ngIf="isLoggedInAdmin" class="mx-2 text-danger">Admin Profile cannot access this page please switch
-                back to User profile.</h5>
-        </div>
-        <app-feedback [emailUrl]="emailUrl"></app-feedback>
-
+        <app-header-component [isClaimDetailPage]="true"></app-header-component>
     </div>
 </div>
 <div [ngClass]="{'setPadding':appService.setPaddingContainer}">
     <div class="container-fluid cldet" [ngClass]="{'for-hide-btn':claimRcm.assoicatedClaimUuid == null}">
         <div class="row">
             <div class="col-lg-12 pt-5">
-                <div class="page-heading">Claim Detail Page {{invalidClaim}}
+                <div class="page-heading claim-detail-fixed">Claim Detail Page {{invalidClaim}}
                     <button id="copyButton" class="btn btn-sm btn-info" (click)="copyUrl()"> Copy URL</button>
                     <small id="tooltip" class="ms-2" style="visibility:hidden;font-size: 12px !important;">URL
                         copied!</small>
                 </div>
                 <button *ngIf="claimSteps.length>0" type="button" (click)="hideSideBar()"
                     class="btn btn-primary claim-steps-btn" [ngClass]="{'toggle-claim-steps':toggleSideBar}"
-                    style="position: absolute; right: 15px; top: 100px; width: 130px; z-index:999">
+                    style="position: fixed; right: 15px; top: 75px; width: 130px; z-index:9999">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                         class="bi bi-text-right" viewBox="0 0 16 16">
                         <path fill-rule="evenodd"
@@ -90,7 +82,7 @@
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">DOS </label>
-                                            <div>{{claimRcm.dos | date: 'MMM dd, YYYY'}}</div>
+                                            <div>{{claimRcm.dos | date: 'MM/dd/YYYY'}}</div>
                                         </div>
                                         <div class="custom-row flexAlign">
                                             <label for="" class="">Billed Amount </label>
@@ -139,7 +131,7 @@
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">Patient DOB </label>
-                                            <div>{{claimRcm.patientDob | date: 'MMM dd, YYYY'}}</div>
+                                            <div>{{claimRcm.patientDob | date: 'MM/dd/YYYY'}}</div>
                                         </div>
                                         <div class="custom-row">
                                             <label for="" class="">Subscriber Name </label>
@@ -151,13 +143,13 @@
                                             <div *ngIf="claimRcm.primary">
                                                 {{
                                                 claimRcm.primePolicyHolderDob | date:
-                                                'MMM dd, YYYY'
+                                                'MM/dd/YYYY'
                                                 }}
                                             </div>
                                             <div *ngIf="!claimRcm.primary">
                                                 {{
                                                 claimRcm.secPolicyHolderDob | date:
-                                                'MMM dd, YYYY'
+                                                'MM/dd/YYYY'
                                                 }}
                                             </div>
                                         </div>
@@ -331,7 +323,7 @@
                                                 <div *ngIf="claimRcm.ivDos!=null && claimRcm.ivDos!=''">
                                                     {{
                                                     claimRcm.ivDos |
-                                                    date: 'MMM dd, YYYY'
+                                                    date: 'MM/dd/YYYY'
                                                     }}
                                                 </div>
                                                 <div *ngIf="!(claimRcm.ivDos!=null && claimRcm.ivDos!='')">
@@ -344,7 +336,7 @@
                                                 <div *ngIf="claimRcm.tpDos!=null && claimRcm.tpDos!=''">
                                                     {{
                                                     claimRcm.tpDos |
-                                                    date: 'MMM dd, YYYY'
+                                                    date: 'MM/dd/YYYY'
                                                     }}
                                                 </div>
                                                 <div *ngIf="!(claimRcm.tpDos!=null && claimRcm.tpDos!='')">
@@ -394,7 +386,7 @@
                                                     <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                         <td>{{idx+1}}</td>
                                                         <td>{{rem.teamName}}</td>
-                                                        <td>{{rem.cd | date:'MMM dd, YYYY hh:mm:ss a':'UTC '+timeZone}}
+                                                        <td>{{rem.cd | date:'MM/dd/YYYY hh:mm:ss a':'UTC '+timeZone}}
                                                         </td>
                                                         <td>{{rem.comment}}</td>
                                                         <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}</td>
@@ -1665,7 +1657,7 @@
                                                                     <option [value]="">Select
                                                                     </option>
                                                                     <option [value]="reason.reasonName"
-                                                                        *ngFor="let reason of appConstants.claimInitialDenialReason">
+                                                                        *ngFor="let reason of appConstants.adjustmentReason">
                                                                         {{reason.reasonName}}</option>
                                                                 </select>
                                                             </td>
@@ -1680,7 +1672,7 @@
                                                                     <option [ngValue]="null" disabled>Select
                                                                     </option>
                                                                     <option [value]="reason.reasonName"
-                                                                        *ngFor="let reason of appConstants.claimInitialDenialReason">
+                                                                        *ngFor="let reason of appConstants.btpReason">
                                                                         {{reason.reasonName}}</option>
                                                                 </select>
                                                             </td>
@@ -1891,9 +1883,9 @@
                                                 <tbody>
                                                     <tr
                                                         *ngFor="let data of claimSectionModal['EOB'].data;let idx=index;">
-                                                        <td>{{data.date|date}}</td>
+                                                        <td>{{data.date|date:' MM/dd/YYYY'}}</td>
                                                         <td> <a href="javascript:void(0);"
-                                                                (click)="viewLink(data.eobPathLink)">View PDF</a></td>
+                                                                (click)="viewLink(data.eobLink)">View Link</a></td>
                                                         <td>{{data.attachByTeam}}</td>
                                                         <td>{{data.attachBy}}</td>
                                                         <td
@@ -1931,14 +1923,14 @@
                                                 <div *ngIf="claimSectionModal['EOB']['errorMessage']" class="text-danger">{{claimSectionModal['EOB']['errorMessage']}}</div>
                                             </div>
 
-                                            <div class="pdf-viewer" *ngIf="pdfUrlSrc">
+                                            <div class="pdf-viewer" *ngIf="pdfUrlSrc && !isPdfError">
                                                 <div class="pdf-action-box">
-                                                    <div class="pdf-search-box">
+                                                    <!-- <div class="pdf-search-box">
                                                         <input type="text" class="form-control mx-2 "
                                                             [(ngModel)]="stringToSearch">
                                                         <button (click)="search()" class="btn btn-primary btn-sm">Search
                                                         </button>
-                                                    </div>
+                                                    </div> -->
                                                     <div class="zoom-action">
                                                         <button (click)="zoom_in()" class="btn btn-success"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" width="16"
@@ -1966,7 +1958,7 @@
                                                 </div>
 
                                                 <pdf-viewer style="display: block; min-height: 250px" [src]="pdfUrlSrc"
-                                                    [render-text]="true" [zoom]="zoom_to"></pdf-viewer>
+                                                    [render-text]="true" [zoom]="zoom_to" (error)="onError($event)"></pdf-viewer>
                                             </div>
                                         </div>
                                     </div>
@@ -2007,7 +1999,7 @@
                                         id="CLAIM_LEVEL_INFORMATION">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="claim">Claim #</label>
+                                                <label for="claim">Claim # &nbsp;<span class="text-danger">*</span></label>
                                                 <input type="text" id="claim"
                                                     *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2018,7 +2010,7 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="claimDate">Claim Processing Date</label>
+                                                <label for="claimDate">Claim Processing Date<span class="text-danger">*</span></label>
                                                 <input type="date" id="claimDate"
                                                     *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2029,7 +2021,7 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="network">Network</label>
+                                                <label for="network">Network &nbsp;<span class="text-danger">*</span></label>
                                                 <select id="network" class="form-control"
                                                     *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2043,7 +2035,7 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="claimPassed">Claim Passed in First Go?</label>
+                                                <label for="claimPassed">Claim Passed in First Go? &nbsp;<span class="text-danger">*</span></label>
                                                 <select id="claimPassed" class="form-control"
                                                     *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2057,7 +2049,7 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="intialDenial">Initial Denial</label>
+                                                <label for="intialDenial">Initial Denial &nbsp;<span class="text-danger">*</span></label>
                                                 <select id="intialDenial" class="form-control"
                                                     *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2075,7 +2067,7 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number"
                                                 *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
-                                                <label for="noOfEstPayment">No. of Est. Payments</label>
+                                                <label for="noOfEstPayment">No. of Est. Payments &nbsp;<span class="text-danger">*</span></label>
                                                 <input type="text" id="noOfEstPayment"
                                                     *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2088,7 +2080,7 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number"
                                                 *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
-                                                <label for="paymentFrequency">Payment Frequency</label>
+                                                <label for="paymentFrequency">Payment Frequency &nbsp;<span class="text-danger">*</span></label>
                                                 <input type="text" id="paymentFrequency"
                                                     *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2100,7 +2092,7 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number"
                                                 *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
-                                                <label for="noOfPaymentReceived">No. of Payments Received</label>
+                                                <label for="noOfPaymentReceived">No. of Payments Received &nbsp;<span class="text-danger">*</span></label>
                                                 <input type="text" id="noOfPaymentReceived"
                                                     *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2341,7 +2333,7 @@
                                                         <td>{{idx+1}}</td>
                                                         <td>{{data.followByTeam}}</td>
                                                         <td>{{data.followByUser}}</td>
-                                                        <td>{{data.nextFollowUpDate|date}}</td>
+                                                        <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm:ss a':'UTC '+timeZone}}</td>
                                                         <td>{{data.modeOfFollowUp}}</td>
                                                         <td>{{data.refNumber}}</td>
                                                         <td>{{data.insuranceRepName}}</td>
@@ -2358,7 +2350,7 @@
 
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="modeOfFollowUp">Mode of Follow up</label>
+                                                        <label for="modeOfFollowUp">Mode of Follow up &nbsp;<span class="text-danger">*</span></label>
                                                         <select id="modeOfFollowUp" class="form-control"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['modeOfFollowUp']"
@@ -2371,7 +2363,7 @@
                                                 </div>
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="refNumber">Call Ref. #</label>
+                                                        <label for="refNumber">Call Ref. # &nbsp;<span class="text-danger">*</span></label>
                                                         <input type="text" id="refNumber"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['refNumber']"
@@ -2535,7 +2527,7 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="reason">Reason</label>
+                                                            <label for="reason">Reason &nbsp;<span class="text-danger">*</span></label>
                                                             <select id="reason" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['reason']"
@@ -2588,7 +2580,7 @@
                                                     *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2">
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="modeOfStatement">Mode of Statement</label>
+                                                            <label for="modeOfStatement">Mode of Statement &nbsp;<span class="text-danger">*</span></label>
                                                             <select id="modeOfStatement" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['modeOfStatement']"
@@ -2758,7 +2750,7 @@
 
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="modeOfPayment">Mode of Payment</label>
+                                                        <label for="modeOfPayment">Mode of Payment &nbsp;<span class="text-danger">*</span></label>
                                                         <select id="modeOfPayment" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment']"
@@ -2842,7 +2834,7 @@
                                                         <td>{{idx+1}}</td>
                                                         <td>{{data.createdBy}}</td>
                                                         <td>{{data.createdTeam}}</td>
-                                                        <td>{{data.date|date}}</td>
+                                                        <td>{{data.date|date :'MM/dd/YYYY hh:mm:ss a':'UTC '+timeZone}}</td>
                                                         <td>{{data.modeOfFollowUp}}</td>
                                                         <td>{{data.contact}}</td>
                                                         <td>{{data.desposition}}</td>
@@ -2857,7 +2849,7 @@
 
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="modeOfFollowUp">Mode of Follow up</label>
+                                                        <label for="modeOfFollowUp">Mode of Follow up &nbsp;<span class="text-danger">*</span></label>
                                                         <select id="modeOfFollowUp" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit')"
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['modeOfFollowUp']"
@@ -3001,7 +2993,7 @@
                                                     </div>
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="collectionType">Collection Type</label>
+                                                            <label for="collectionType">Collection Type &nbsp;<span class="text-danger">*</span></label>
                                                             <select id="collectionType" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['collectionType']"
@@ -3031,7 +3023,7 @@
                                                     </div>
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="modeOfPayment">Mode of Payment</label>
+                                                            <label for="modeOfPayment">Mode of Payment &nbsp;<span class="text-danger">*</span></label>
                                                             <select id="modeOfPayment" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['modeOfPayment']"
@@ -3071,7 +3063,7 @@
                                                     *ngIf="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3">
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="reason">Reason</label>
+                                                            <label for="reason">Reason &nbsp;<span class="text-danger">*</span></label>
                                                             <select id="reason" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['reason']"
@@ -3138,7 +3130,7 @@
                                         [ngClass]="{'show':!toggleTab['APPEAL']}" id="APPEAL">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="modeOfAppeal">Mode of Appeal</label>
+                                                <label for="modeOfAppeal">Mode of Appeal &nbsp;<span class="text-danger">*</span></label>
                                                 <select id="modeOfAppeal" class="form-control"
                                                     [disabled]="!checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                     [(ngModel)]="this.claimSectionModal.APPEAL['modeOfAppeal']"
@@ -3152,7 +3144,7 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="aiToolUsed">AI Tool Used?</label>
+                                                <label for="aiToolUsed">AI Tool Used? &nbsp;<span class="text-danger">*</span></label>
                                                 <select id="aiToolUsed" class="form-control"
                                                     [disabled]="!checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                     [(ngModel)]="this.claimSectionModal.APPEAL['aiToolUsed']"
@@ -3169,7 +3161,7 @@
 
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="claim">Appeal Document</label>
+                                                <label for="claim">Appeal Document &nbsp;<span class="text-danger">*</span></label>
                                                 <input type="text" id="claim"
                                                     [disabled]="!checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                     [(ngModel)]="this.claimSectionModal.APPEAL['appealDocument']"
@@ -3180,7 +3172,7 @@
 
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="claim">Remarks</label>
+                                                <label for="claim">Remarks &nbsp;<span class="text-danger">*</span></label>
                                                 <input type="text" id="claim"
                                                     [disabled]="!checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                     [(ngModel)]="this.claimSectionModal.APPEAL['remarks']"
@@ -3246,7 +3238,7 @@
                                         id="REQUEST_REBILLING">
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="reasonForRebilling">Reason for rebilling</label>
+                                                <label for="reasonForRebilling">Reason for rebilling &nbsp;<span class="text-danger">*</span></label>
                                                 <select id="reasonForRebilling" class="form-control" *ngIf="claimSectionModal?.REQUEST_REBILLING"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.REQUEST_REBILLING['reasonForRebilling']"
@@ -3273,7 +3265,7 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="remarks">Remarks</label>
+                                                <label for="remarks">Remarks &nbsp;<span class="text-danger">*</span></label>
                                                 <textarea id="remarks" *ngIf="claimSectionModal?.REQUEST_REBILLING"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.REQUEST_REBILLING['remarks']"
@@ -3284,7 +3276,7 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="rebillingRequirements">Requirements for
-                                                    Rebilling</label>
+                                                    Rebilling &nbsp;<span class="text-danger">*</span></label>
                                                 <span class="mutliselect"
                                                     [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['rebillingRequirements']}">
                                                     <ng-container
@@ -3301,7 +3293,7 @@
                                         <div class="col-sm-4 mb-2 d-flex">
                                             <label class="custom-row text-number" style="min-width: 160px;"
                                                 [ngClass]="{'text-danger':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['rebillingType'] }">Type
-                                                of Rebilling</label>
+                                                of Rebilling &nbsp;<span class="text-danger">*</span></label>
                                             <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
                                                 <label class="btn btn-light mx-0"
                                                     (click)="selectRebillingType('fullClaim')"
@@ -3404,7 +3396,7 @@
                                                         <td>{{idx+1}}</td>
                                                         <td>{{data.requestedBy}}</td>
                                                         <td>{{data.requestedRemarks}}</td>
-                                                        <td>{{data.dateOfRebiiling|date}}</td>
+                                                        <td>{{data.dateOfRebiiling|date :'MM/dd/YYYY'}}</td>
                                                         <td>{{data.rebillingServiceCodes}}</td>
                                                         <td>{{data?.rebillingRequirements}}</td>
                                                         <td>Yes</td>
@@ -3645,7 +3637,7 @@
                                                     [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['reasonRecreation']}">
                                                     <option [selected]="true" [value]="null">Select</option>
                                                     <option value="Rebilling Needed">Rebilling Needed</option>
-                                                    <option value="Code Change Needed">Code Change Needed</option>
+                                                    <option value="Code Change Needed">Need to fix walkout</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -3961,7 +3953,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
                                                         <label for="currentClaimStatusRcm">Current Claim
-                                                            Status
+                                                            Status<span class="text-danger">*</span>
                                                         </label>
                                                         <select id="currentClaimStatusRcm" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit')"
@@ -3979,7 +3971,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
                                                         <label for="currentClaimStatusEs">Current Claim status in
-                                                            ES</label>
+                                                            ES &nbsp;<span class="text-danger">*</span></label>
                                                         <select id="currentClaimStatusEs" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
@@ -4001,7 +3993,7 @@
 
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="nextAction">Next Action Required</label>
+                                                        <label for="nextAction">Next Action Required<span class="text-danger">*</span></label>
                                                         <select id="nextAction" class="form-control"
                                                             (change)="nextActionRequire($event)"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
@@ -4019,7 +4011,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
                                                         <label for="assignToTeam">Assign to
-                                                            Team</label>
+                                                            Team &nbsp;<span class="text-danger">*</span></label>
                                                         <select id="assignToTeam" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId']"
@@ -4033,7 +4025,7 @@
 
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="remarks">Remarks</label>
+                                                        <label for="remarks">Remarks &nbsp;<span class="text-danger">*</span></label>
                                                         <textarea type="date" id="remarks"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['remarks']"
@@ -4317,7 +4309,7 @@
                         <ul>
                             <ng-container *ngFor="let steps of claimSteps">
                                 <li class="done">
-                                    <span class="claimDate">{{steps.dt | date: 'MMM dd, YYYY'}}</span> {{steps.status}}
+                                    <span class="claimDate">{{steps.dt | date: 'MM/dd/YYYY'}}</span> {{steps.status}}
                                     <span class="teamname" *ngIf="steps.name==null">System</span>
                                     <span class="teamname" [ngClass]="{'last-child ':false}"
                                         *ngIf="steps.name!=null">{{steps.name}}</span>
@@ -4502,7 +4494,7 @@
                     <div class="modal-body">
                         <ul>
                             <li *ngFor="let note of viewNotesConfig.viewNotes;let idx=index;">{{note.createdBy}}
-                                {{note.createdDate}} : {{note.notes}}</li>
+                                {{note.createdDate |date :'MM/dd/YYYY'}} : {{note.notes}}</li>
                         </ul>
                     </div>
                     <div class="modal-footer justify-content-center">
