@@ -1922,7 +1922,7 @@ public class ClaimSectionImpl {
 						dtoSheet.setOfficeKey(String.valueOf(office.getKey()));
 						dtoSheet.setServiceCodes(serviceCodes);		
 						dtoSheet.setToothAndSurfaces(toothAndSurface);
-						dtoSheet.setClaimId(primaryClaim.getClaimId());
+						dtoSheet.setClaimId(primaryClaim.getClaimId().split(ClaimTypeEnum.P.getSuffix())[0]);
 						dtoSheet.setDos(Constants.SDF_MYSL_DATE.format(primaryClaim.getDos()!=null?primaryClaim.getDos():""));
 						dtoSheet.setPaitentDob(Constants.SDF_MYSL_DATE.format(primaryClaim.getPatientBirthDate()!=null?primaryClaim.getPatientBirthDate():""));
 						dtoSheet.setPatientName(primaryClaim.getPatientName());	

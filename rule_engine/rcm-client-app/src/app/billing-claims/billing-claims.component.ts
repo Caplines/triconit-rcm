@@ -475,7 +475,7 @@ export class BillingClaimsComponent {
           ths.fetchTLUsers();
           ths.fetchOtherTeams();
           ths.fetchAttachmentCount();
-          this.claimRcm.patientContactNo=this.claimRcm.patientContactNo+',-NO-DATA-'+',2356786545'
+          // this.claimRcm.patientContactNo=this.claimRcm.patientContactNo+',-NO-DATA-'+',2356786545'
           if (this.claimRcm.patientContactNo) {
             this.claimRcm.patientContactNo = this.claimRcm.patientContactNo.split(",").join(", ");
           }

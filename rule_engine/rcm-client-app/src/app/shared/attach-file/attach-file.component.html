@@ -168,7 +168,7 @@
                                 <td > <div class="fileEllipsis">{{file.file.name}}</div></td>
                                 <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedBy}}</td>
                                 <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedByTeam}}</td>
-                                <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedDate|date}}</td>
+                                <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedDate|date :'MM/dd/YYYY'}}</td>
                                 <td> <select class="form-control" style="width: 300px; margin-left: 15px;"
                                     name="type" disabled>
                                     <ng-container *ngFor="let item of constant.attachmentType">
