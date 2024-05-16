@@ -39,13 +39,13 @@ public class RcmTPDetail implements Serializable {
 	@Column(name = "description", length = 255)
 	private String description;
 
-	@Column(name = "est_insurance", length = 15)
+	@Column(name = "est_insurance", length = 20)
 	private String estInsurance;
 
-	@Column(name = "est_primary", length = 15)
+	@Column(name = "est_primary", length = 20)
 	private String estPrimary;
 
-	@Column(name = "fee", length = 15)
+	@Column(name = "fee", length = 20)
 	private String fee;
 
 	@Column(name = "id_es", length = 15)

@@ -674,6 +674,11 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " ass.active=1 and ass.assigned_to is not null and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and off.company_id=:companyId )")
 	List<String> getUnAsignedClaims(@Param("companyId") String companyId);
 	
+	@Query(nativeQuery = true, value = ""
+			+" select cl.claim_uuid,cl.office_id from rcm_claims cl inner join office off on off.uuid=cl.office_id "
+			+"  where cl.current_state=0 and cl.current_team_id=:teamId and off.company_id=:companyId "
+			+"  and (cl.current_status<>:currentStatusClosed and cl.current_status<>:currentStatusVoided) ")
+			List<Object> getValidClaimWithCompanyTeams(@Param("companyId") String companyId,@Param("teamId") int teamId ,@Param("currentStatusClosed")int currentStatusClosed,@Param("currentStatusVoided")int currentStatusVoided);
 	
 	/*@Query(nativeQuery = true, value = ""
 			+ " select cl.claim_uuid from rcm_claims cl inner join office off on off.uuid=cl.office_id and "
@@ -769,8 +774,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		"	select cl.claim_uuid claimUuid,rca.assigned_to claimAssignedTo,rca.id  claimAssignmentId,cl.office_id officeId from rcm_claims cl inner join office off on off.uuid=cl.office_id "+
 		"	inner join company com on com.uuid =off.company_id "+
 		"	inner join rcm_claim_assignment rca on rca.claim_id=cl.claim_uuid and rca.active is true  and rca.current_team_id =:teamId "+
-		"	where  com.uuid=:companyId and pending is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
-	List<PendingClaimToReAssignDto> fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(@Param("companyId") String companyId,@Param("teamId")  int teamId) ;
+		"	where  com.uuid=:companyId and (cl.current_status<>:currentStatusClosed and cl.current_status<>:currentStatusVoided) and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+	List<PendingClaimToReAssignDto> fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(@Param("companyId") String companyId,@Param("teamId")  int teamId, @Param("currentStatusClosed")int currentStatusClosed,@Param("currentStatusVoided")int currentStatusVoided) ;
 
 	@Query(value = "select cl.id as Id,cl.is_archive as IsArchive,cl.claim_id claimId,cl.issue,cl.source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "
 			+ "left join office off on off.uuid=cl.office_id "

@@ -35,6 +35,7 @@ import com.tricon.ruleengine.dto.CaplineIVFFormDto;
 import com.tricon.ruleengine.dto.CaplineIVFQueryFormDto;
 import com.tricon.ruleengine.dto.GoogleReportsRDDTO;
 import com.tricon.ruleengine.dto.RCMQuerySubData;
+import com.tricon.ruleengine.dto.RCMQuerySubData1;
 import com.tricon.ruleengine.dto.RcmClaimDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.exception.RuleEngineException;
@@ -851,6 +852,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		else d=d+"";
 		String data=(String) d;
 		data=data.replaceAll("\\\\u000", "-");
+		data=data.replaceAll("\n", " ");
 		PropertyDescriptor pd;
 		if (dataBean != null) {
 			Class<?> c2;
@@ -919,11 +921,13 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				
 				List<RCMQuerySubData> data1 = rcmClaimDao.getAuditQueryFieldsFromClaimData_1("'"+cls+"'");
 				List<RCMQuerySubData> data2 = rcmClaimDao.getAuditQueryFieldsFromClaimData_2("'"+cls+"'");
+				List<RCMQuerySubData1> data3 = rcmClaimDao.getAuditQueryFieldsFromClaimData_3("'"+cls+"'");
 				
 				for(Object o:data) {
 					if (o!=null) {
 						Object [] a=(Object []) o;
 						List<RCMQuerySubData> p1 =null;
+						List<RCMQuerySubData1> p2 =null;
 						if (data1!=null) {
 							p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Sedation Record Availibility")).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
@@ -943,6 +947,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 						    		else a[9]=a[9] +";"+ x.getService_code()+"="+x.getVal();
 						    	});
 						    }
+						    /*
 						    p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Provider Notes")).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
@@ -951,7 +956,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 						    		a[10]=a[10] + x.getService_code()+"="+x.getVal();
 						    		else a[10]=a[10] +";"+ x.getService_code()+"="+x.getVal();
 						    	});
-						    }
+						    }*/
 						    p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("CRA Form Availability")).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
@@ -962,8 +967,20 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 						    	});
 						    }
 						}
+						if (data3!=null) {
+							p2=data3.stream().filter(x->x.getClaim_id().equals(a[5].toString()) ).collect(Collectors.toList());
+						    if (p2!=null && p1.size()>0) {
+						    	p2.forEach(x->{
+						    		if (a[10]==null) a[10]="";
+						    		if (a[10].toString().length()==0)
+						    		a[10]=a[10] + x.getName();
+						    		else a[10]=a[10] +";"+ x.getName();
+						    	});
+						    }
+						}
                         if (data2!=null) {
-                        	p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 319).collect(Collectors.toList());
+                        	
+						    p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 319).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
 						    		if (a[12]==null) a[12]="";

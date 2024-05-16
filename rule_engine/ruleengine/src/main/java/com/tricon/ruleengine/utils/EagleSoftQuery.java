@@ -163,10 +163,10 @@ public class EagleSoftQuery {
 	public final static int  patient_insurance_query_CL_COUNT=8;
 
 	public final static String  preferance_fee_schedule_query="select p.patient_id,fs.fee_id,fs.name,p.fee_level_id from patient p, fee_schedule fs  "
-             + " where  p.patient_id  in ("+contstant_REP+") and "
+             + " where  p.patient_id  in ("+contstant_REP+")  "
              + " and fs.fee_id = p.fee_level_id"; 
      
-    public final static int  preferance_fee_schedule_query_CL_COUNT=3;
+    public final static int  preferance_fee_schedule_query_CL_COUNT=4;
     
 	//public final static String  policy_holder_schedule_query="select p.patient_id,amd.patient_first_name +' '+ amd.patient_last_name AS 'Policy Holder Name'"+
 	//		" from patient p, account_merge_data amd where p.prim_responsible_id = amd.account_patient_id and p.patient_id in ("+contstant_REP+")";

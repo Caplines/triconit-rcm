@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.tricon.ruleengine.dao.RcmClaimDao;
 import com.tricon.ruleengine.dto.OfficeDto;
 import com.tricon.ruleengine.dto.RCMQuerySubData;
+import com.tricon.ruleengine.dto.RCMQuerySubData1;
 import com.tricon.ruleengine.dto.RcmClaimDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Office;
@@ -118,6 +119,19 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
             		" else '' End as message_type"+
             		" FROM rcm_claim_rule_validation r where rule_id in (319,320) and claim_id in ("+claims+")";
 			cL=session.createSQLQuery(query).setResultTransformer(Transformers.aliasToBean(RCMQuerySubData.class)). list();
+		} finally {
+			closeSession(session);
+		}
+		return cL;
+	}
+	@Override
+	public List<RCMQuerySubData1> getAuditQueryFieldsFromClaimData_3(String claims) {
+		Session session = getSession();
+		List<RCMQuerySubData1> cL = null;
+		try {
+            String query="SELECT claim_id, note as name "+
+            		" FROM rcm_claim_notes r where claim_id in ("+claims+")";
+			cL=session.createSQLQuery(query).setResultTransformer(Transformers.aliasToBean(RCMQuerySubData1.class)). list();
 		} finally {
 			closeSession(session);
 		}
