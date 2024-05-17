@@ -801,9 +801,9 @@ public class ClaimSectionImpl {
 //				eobInfoModel.setEobPathLink("Invalid Format");
 //				return null;
 //			}
-
+			return eobInfoModel;
 		}
-		return eobInfoModel;
+		return null;
 	}
 
 	public List<EOBDto> fetchEOBInformation(PartialHeader partialHeader, String claimUuid)
