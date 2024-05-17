@@ -3,7 +3,6 @@
    version="1.0" >
 	<xsl:output method="html" indent="yes" encoding="UTF-8"  version="1.0"  />
 <xsl:template match="/caplineIVFFormDto">
-
 <html>
 <head>
     <meta charset="utf-8" />
@@ -65,6 +64,7 @@
         .red {
             background-color: #f00;
             color: #fff;
+            font-weight: 200;
         }
 
         .white {
@@ -188,11 +188,17 @@
           display: inline-block;
 
           padding:5px 10px;
+
+          .text-white{
+
+            color: #fff;
+          }
             }
     </style>
 </head>
 <body>
     <form>
+
         <table class="table" vertical-align="top">
             <tr>
                 <td colspan="10" class="tableHeading">Subscriber and Insurance Details</td>
@@ -200,75 +206,75 @@
             </tr>
             <tr>
                 <td class="width-15">Office Name</td>
-                <td class="width-7"><xsl:value-of select="basicInfo1"/></td>
+                <td class="width-7"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo1"/></xsl:call-template></td>
                 <td class="width-10">Patient Name </td>
-                <td class="width-7"><xsl:value-of select="basicInfo2"/></td>
+                <td class="width-7"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo2"/></xsl:call-template></td>
                 <td class="width-13">Insurance Name</td>
-                <td class="width-7"><xsl:value-of select="basicInfo3"/></td>
+                <td class="width-7"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo3"/></xsl:call-template></td>
                 <td class="width-7">Provider Name</td>
-                <td class="width-7"><xsl:value-of select="basicInfo19"/></td>
+                <td class="width-7"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo19"/></xsl:call-template></td>
                 <td class="width-15">Sec Provider Name</td>
-                <td class="width-7"><xsl:value-of select="secProviderName"/></td>
+                <td class="width-7"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="secProviderName"/></xsl:call-template></td>
                 <!-- <td class="width-5 borderNone"></td> -->
             </tr>
             <tr class="lightGray">
                 <td>Tax ID</td>
-                <td><xsl:value-of select="basicInfo4"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo4"/></xsl:call-template></td>
                 <td>Patient DOB</td>
-                <td class="white"><xsl:if test="string-length(basicInfo6) &gt; 9"><xsl:value-of select="concat(substring(basicInfo6,6,2),'/',substring(basicInfo6,9,2),'/',substring(basicInfo6,1,4))" /></xsl:if></td>
+                <td class="white"><xsl:if test="string-length(basicInfo6) &gt; 9"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="concat(substring(basicInfo6,6,2),'/',substring(basicInfo6,9,2),'/',substring(basicInfo6,1,4))" /></xsl:call-template></xsl:if></td>
                 <td>Insurance Contact</td>
-                <td><xsl:value-of select="basicInfo7"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo7"/></xsl:call-template></td>
                 <td>Provider Network</td>
                 <xsl:choose>
                      <xsl:when test="translate(policy3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'out'">
-                     <td class="red blackClr"><xsl:value-of select="policy3"/></td>
+                     <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy3"/></xsl:call-template></td>
                      </xsl:when>
                      <xsl:otherwise>
-                     <td class="blackClr"><xsl:value-of select="policy3"/></td>
+                     <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy3"/></xsl:call-template></td>
                      </xsl:otherwise>
                 </xsl:choose>   
                 <td>Sec Provider Network</td>
-                <td><xsl:value-of select="secProvNetwork"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="secProvNetwork"/></xsl:call-template></td>
                 <!-- <td class="borderNone"></td> -->
             </tr>
             <tr>
                 <td>ES/Patient ID</td>
-                <td><xsl:value-of select="basicInfo21"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo21"/></xsl:call-template></td>
                 <td>Policy Holder Name</td>
-                <td><xsl:value-of select="basicInfo5"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo5"/></xsl:call-template></td>
                 <td>Appointment Type</td>
-                <td><xsl:value-of select="basicInfo11"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo11"/></xsl:call-template></td>
                 <td>Plan w/ OON Benefits</td>
                 <xsl:choose>
                      <xsl:when test="oonbenfits = 'No' ">
-                     <td class="red blackClr"><xsl:value-of select="oonbenfits"/></td>
+                     <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="oonbenfits"/></xsl:call-template></td>
                      </xsl:when>
                      <xsl:otherwise>
-                     <td class="blackClr"><xsl:value-of select="oonbenfits"/></td>
+                     <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="oonbenfits"/></xsl:call-template></td>
                      </xsl:otherwise>
                 </xsl:choose>   
                 <td>Pt Assigned To Office</td>
                  <xsl:choose>
                      <xsl:when test="yesNoAssignToffice = 'No' ">
-                     <td class="red blackClr"><xsl:value-of select="yesNoAssignToffice"/></td>
+                     <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="yesNoAssignToffice"/></xsl:call-template></td>
                      </xsl:when>
                      <xsl:otherwise>
-                     <td class="blackClr"><xsl:value-of select="yesNoAssignToffice"/></td>
+                     <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="yesNoAssignToffice"/></xsl:call-template></td>
                      </xsl:otherwise>
                 </xsl:choose>   
                 <!-- <td class="borderNone"></td> -->
             </tr>
             <tr class="lightGray">
                 <td>Member ID/SSN</td>
-                <td><xsl:value-of select="basicInfo16"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo16"/></xsl:call-template></td>
                 <td>Policy Holder DOB</td>
-                <td class="white"><xsl:if test="string-length(basicInfo9) &gt; 9"><xsl:value-of select="concat(substring(basicInfo9,6,2),'/',substring(basicInfo9,9,2),'/',substring(basicInfo9,1,4))" /></xsl:if></td>
+                <td class="white"><xsl:if test="string-length(basicInfo9) &gt; 9"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="concat(substring(basicInfo9,6,2),'/',substring(basicInfo9,9,2),'/',substring(basicInfo9,1,4))" /></xsl:call-template></xsl:if></td>
                 <td>Appointment Date</td>
-                <td class="white"><xsl:if test="string-length(basicInfo17) &gt; 9"><xsl:value-of select="concat(substring(basicInfo17,6,2),'/',substring(basicInfo17,9,2),'/',substring(basicInfo17,1,4))" /></xsl:if></td>
+                <td class="white"><xsl:if test="string-length(basicInfo17) &gt; 9"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="concat(substring(basicInfo17,6,2),'/',substring(basicInfo17,9,2),'/',substring(basicInfo17,1,4))" /></xsl:call-template></xsl:if></td>
                 <td>Source</td>
-                <td><xsl:value-of select="basicInfo8"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo8"/></xsl:call-template></td>
                 <td>Ref #</td>
-                <td><xsl:value-of select="basicInfo12"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo12"/></xsl:call-template></td>
                 <!-- <td class="borderNone"></td> -->
             </tr>
 
@@ -284,28 +290,28 @@
 
             <tr>
                 <td class="width-15">Plan Type</td>
-                <td class="width-7"><xsl:value-of select="policy1"/></td>
+                <td class="width-7"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy1"/></xsl:call-template></td>
                 <td class="width-12">Group/Emp Name</td>
-                <td class="width-7"><xsl:value-of select="basicInfo10"/></td>
+                <td class="width-7"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo10"/></xsl:call-template></td>
                 <td class="width-13">Group <br/>Number <br/></td>
-                <td class="width-7"><xsl:value-of select="basicInfo14"/></td>
+                <td class="width-7"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo14"/></xsl:call-template></td>
                 <td class="width-7">Effective Date</td>
-                <td class="width-7"><xsl:if test="string-length(policy5) &gt; 9"><xsl:value-of select="concat(substring(policy5,6,2),'/',substring(policy5,9,2),'/',substring(policy5,1,4))" /></xsl:if></td>
+                <td class="width-7"><xsl:if test="string-length(policy5) &gt; 9"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="concat(substring(policy5,6,2),'/',substring(policy5,9,2),'/',substring(policy5,1,4))" /></xsl:call-template></xsl:if></td>
                 <td class="width-15">Termination Date</td>
-                <td class="width-7"><xsl:if test="string-length(policy2) &gt; 9"><xsl:value-of select="concat(substring(policy2,6,2),'/',substring(policy2,9,2),'/',substring(policy2,1,4))" /></xsl:if></td>
+                <td class="width-7"><xsl:if test="string-length(policy2) &gt; 9"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="concat(substring(policy2,6,2),'/',substring(policy2,9,2),'/',substring(policy2,1,4))" /></xsl:call-template></xsl:if></td>
                 <!-- <td class="width-5 borderNone"></td> -->
             </tr>
             <tr class="lightGray">
                 <td>Annual Max</td>
-                <td><xsl:value-of select="policy7"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy7"/></xsl:call-template></td>
                 <td>Individual Deductible</td>
-                <td><xsl:value-of select="policy9"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy9"/></xsl:call-template></td>
                 <td>Fee Schedule</td>
-                <td><xsl:value-of select="policy4"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy4"/></xsl:call-template></td>
                 <td>Fee of D0120</td>
-                <td><xsl:value-of select="policy18"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy18"/></xsl:call-template></td>
                 <td>Benefit Period Year</td>
-                <td class="white"><xsl:value-of select="policy6"/></td>
+                <td class="white"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy6"/></xsl:call-template></td>
                 <!-- <td class="borderNone"></td> -->
             </tr>
             <tr>
@@ -313,28 +319,28 @@
                 <td>Annual Max Remaining</td>
                  <xsl:choose>
                     <xsl:when test="number(policy8) &lt; 100">
-                    <td class="red blackClr"><xsl:value-of select="policy8"/></td>
+                    <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy8"/></xsl:call-template></td>
                     </xsl:when>
                      <xsl:when test="number(policy8) &gt;= 100 and number(policy8) &lt;=400" >
-                     <td class="yellow blackClr"><xsl:value-of select="policy8"/></td>
+                     <td class="yellow blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy8"/></xsl:call-template></td>
                      </xsl:when>
                      <xsl:otherwise>
-                     <td class="blackClr"><xsl:value-of select="policy8"/></td>
+                     <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy8"/></xsl:call-template></td>
                      </xsl:otherwise>
                 </xsl:choose>   
                 <td>Ind Ded Remaining</td>
-                <td><xsl:value-of select="policy10"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy10"/></xsl:call-template></td>
                 <td>Coverage Book</td>
-                <td><xsl:value-of select="policy16"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy16"/></xsl:call-template></td>
                 <td>Fee of D2391</td>
-                <td><xsl:value-of select="policy19"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy19"/></xsl:call-template></td>
                 <td>COB Status</td>
                 <xsl:choose>
                      <xsl:when test="translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'geha' or translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='fep' ">
                      <td class="blackClr"><xsl:text>Secondary</xsl:text></td>
                      </xsl:when>
                      <xsl:otherwise>
-                     <td class="blackClr"><xsl:value-of select="basicInfo15"/></td>
+                     <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="basicInfo15"/></xsl:call-template></td>
                      </xsl:otherwise>
                 </xsl:choose>   
                 <!-- <td class="borderNone"></td> -->
@@ -344,17 +350,17 @@
                 
 				<xsl:choose>
 				     <xsl:when test="policy15 = 'No' ">
-					 <td class="red blackClr"><xsl:value-of select="policy15"/></td>
+					 <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy15"/></xsl:call-template></td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					 <td class="blackClr"><xsl:value-of select="policy15"/></td>
+					 <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy15"/></xsl:call-template></td>
 					 </xsl:otherwise>
 				</xsl:choose>	 
 						  
                 <td>Pre- Auth Required</td>
 				<xsl:choose>
 				     <xsl:when test="policy15 = 'No' ">
-					 <td><xsl:value-of select="policy12"/></td>
+					 <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy12"/></xsl:call-template></td>
 					 </xsl:when>
 				     <xsl:otherwise>
 					 <xsl:choose>
@@ -369,10 +375,10 @@
 					 </xsl:otherwise>
 				</xsl:choose>
 				 <td>Dep Covered till Age</td>
-                 <td><xsl:value-of select="policy11"/></td>
+                 <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy11"/></xsl:call-template></td>
                
                 <td>Claims Filing Limit</td>
-                <td><xsl:value-of select="percentages12"/></td>
+                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="percentages12"/></xsl:call-template></td>
                 <td class="lightBrown">CRA Required</td>
 				<xsl:choose>
 					      <xsl:when test="policy17 = 'Refer to CRA Info for Medicaid Plans(RD2405)'">
@@ -452,10 +458,25 @@
                 
                 <xsl:choose>
 				     <xsl:when test="waitingPeriod4 != 'No' ">
-					  <td colspan="2" class="width-17 red blackClr"><xsl:value-of select="waitingPeriod4"/>		</td>
+                        <xsl:choose>
+                              <xsl:when test="percentages9='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="width-17 red ">
+                                    <xsl:value-of select="waitingPeriod4"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-15 dullBlue"><xsl:value-of select="waitingPeriod4"/>		</td>
+                        <xsl:choose>
+                              <xsl:when test="percentages9='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="red width-15 dullBlue"><xsl:value-of select="waitingPeriod4"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:otherwise>
 				</xsl:choose>
 				
@@ -472,10 +493,25 @@
                 
 				<xsl:choose>
 				     <xsl:when test="waitingPeriod1 != 'No' ">
-					  <td colspan="2" class="width-14 red blackClr"><xsl:value-of select="waitingPeriod1"/>		</td>
+					 <xsl:choose>
+                              <xsl:when test="percentages1='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="width-17 red">
+                                    <xsl:value-of select="waitingPeriod1"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-13 dullYellow"><xsl:value-of select="waitingPeriod1"/>		</td>
+					    <xsl:choose>
+                              <xsl:when test="percentages1='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="red width-15 dullBlue"><xsl:value-of select="waitingPeriod1"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -492,10 +528,25 @@
                 
 				<xsl:choose>
 				     <xsl:when test="waitingPeriod2 != 'No' ">
-					  <td colspan="2" class="width-12 red blackClr"><xsl:value-of select="waitingPeriod2"/>		</td>
+					 <xsl:choose>
+                              <xsl:when test="percentages3='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="width-17 red">
+                                    <xsl:value-of select="waitingPeriod2"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-15 dullRed"><xsl:value-of select="waitingPeriod2"/>		</td>
+					  <xsl:choose>
+                              <xsl:when test="percentages3='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="red width-15 dullBlue"><xsl:value-of select="waitingPeriod2"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -512,10 +563,25 @@
                 
 				<xsl:choose>
 				     <xsl:when test="percentages13 = 'Yes' ">
-					  <td colspan="2" class="width-16 red blackClr"><xsl:value-of select="percentages13"/>		</td>
+					  <xsl:choose>
+                              <xsl:when test="percentages9='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="width-17 red">
+                                    <xsl:value-of select="percentages13"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-16 dullBlue"><xsl:value-of select="percentages13"/>		</td>
+					 <xsl:choose>
+                              <xsl:when test="percentages9='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="red width-15 dullBlue"><xsl:value-of select="percentages13"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:otherwise>
 				</xsl:choose>	 
 			   
@@ -530,10 +596,25 @@
 				</xsl:choose>
 				<xsl:choose>
 				     <xsl:when test="percentages2 = 'Yes' ">
-					  <td colspan="2" class="width-16 red blackClr"><xsl:value-of select="percentages2"/>		</td>
+					  <xsl:choose>
+                              <xsl:when test="percentages1='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="width-17 red">
+                                    <xsl:value-of select="percentages2"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-16 dullYellow"><xsl:value-of select="percentages2"/>		</td>
+					  <xsl:choose>
+                              <xsl:when test="percentages1='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="red width-15 dullBlue"><xsl:value-of select="percentages2"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -548,10 +629,25 @@
 				</xsl:choose>
 				<xsl:choose>
 				     <xsl:when test="percentages4 = 'Yes' ">
-					  <td colspan="2" class="width-16 red blackClr"><xsl:value-of select="percentages4"/>		</td>
+					  <xsl:choose>
+                              <xsl:when test="percentages3='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="width-17 red">
+                                    <xsl:value-of select="percentages4"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red width-16 dullRed"><xsl:value-of select="percentages4"/>		</td>
+					 <xsl:choose>
+                              <xsl:when test="percentages3='0' ">
+                                   <td colspan="2" class="width-17 red"><xsl:text>NA</xsl:text></td>
+                               </xsl:when>
+                               <xsl:otherwise>
+                                    <td colspan="2" class="red width-15 dullBlue"><xsl:value-of select="percentages4"/></td>
+                               </xsl:otherwise>
+                           </xsl:choose>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
@@ -576,22 +672,22 @@
                 
 				<xsl:choose>
 				     <xsl:when test="prosthetics1 = 'Yes' ">
-					  <td colspan="2" class="red blackClr"><xsl:value-of select="prosthetics1"/></td>
+					  <td colspan="2" class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="prosthetics1"/></xsl:call-template></td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red dullRed"><xsl:value-of select="prosthetics1"/></td>
+					  <td colspan="2" class="red dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="prosthetics1"/></xsl:call-template></td>
 					 </xsl:otherwise>
 				</xsl:choose>
                 
             </tr>
             <tr>
                 <td class="dullBlue">D0120 (POE)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0120"/></td>
-                <td class="dullBlue"><xsl:value-of select="exams1"/></td> 
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0120"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="exams1"/></xsl:call-template></td> 
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4341 (SRP)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="perio1"/></td>
-                <td class="dullYellow"><xsl:value-of select="perio2"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perio1"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perio2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
 				<xsl:choose>
 				     <xsl:when test="prosthetics2 = 'No' ">
@@ -604,20 +700,20 @@
                
 				<xsl:choose>
 				     <xsl:when test="prosthetics2 = 'No' ">
-					  <td colspan="2" class="dullRed"><xsl:value-of select="prosthetics2"/>		</td>
+					  <td colspan="2" class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="prosthetics2"/>	</xsl:call-template>	</td>
 					 </xsl:when>
 				     <xsl:otherwise>
-					  <td colspan="2" class="red dullRed"><xsl:value-of select="prosthetics2"/>		</td>
+					  <td colspan="2" class="red dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="prosthetics2"/>	</xsl:call-template>	</td>
 					 </xsl:otherwise>
 				</xsl:choose>
             </tr>
             <tr>
                 <td class="dullBlue">D0140 (LOE)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0140"/></td>
-                <td class="dullBlue"><xsl:value-of select="exams2"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0140"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="exams2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">Quads Allowed / SRP </td>
-                <td class="dullYellow align-right" colspan="2"><xsl:value-of select="perio3"/></td>
+                <td class="dullYellow align-right" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perio3"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Buildups &amp; Crowns</td>
                 <td class="rowHeading width-7">Pct.	</td>
@@ -625,26 +721,26 @@
             </tr>
             <tr>
                 <td class="dullBlue">D0150 (COE)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0150"/></td>
-                <td class="dullBlue"><xsl:value-of select="exams4"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0150"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="exams4"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">Rest Recommended B/W Quads</td>
-                <td class="dullYellow" colspan="2"><xsl:value-of select="perio4"/></td>
+                <td class="dullYellow" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perio4"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D2950 (Core Buidup)</td>
-                <td class="dullRed width-7 align-right"><xsl:value-of select="posterior10"/></td>
-                <td class="dullRed"><xsl:value-of select="posterior11"/></td>
+                <td class="dullRed width-7 align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior10"/></xsl:call-template></td>
+                <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior11"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="dullBlue">Does Exams Share Freq? </td>
-                <td class="dullBlue" colspan="2"><xsl:value-of select="shareFr"/></td>
+                <td class="dullBlue" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="shareFr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4346(Gingivitis)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="perioMnt6"/></td>
-                <td class="dullYellow"><xsl:value-of select="perioMnt7"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perioMnt6"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perioMnt7"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">Crown Paid on Date</td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="prosthetics3"/></td>
+                <td class="dullRed" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="prosthetics3"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="rowHeading">Radiographs</td>
@@ -652,75 +748,77 @@
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4910(Perio Main)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="perioMnt1"/></td>
-                <td class="dullYellow"><xsl:value-of select="perioMnt2"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perioMnt1"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perioMnt2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D2740 (Porcelain)</td>
-                <td class="dullRed align-right"><xsl:value-of select="posterior4"/></td>
-                <td class="dullRed"><xsl:value-of select="posterior5"/></td>
+                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior4"/></xsl:call-template></td>
+                <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior5"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="dullBlue">D0220/30 (PAs)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="percentages11"/></td>
-                <td class="dullBlue"><xsl:value-of select="xrays2"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero">
+                <xsl:with-param name="value" select=" percentages11"/>
+                </xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value"  select="xrays2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Perio (Surgical)</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D2750 (Noble Metal)</td>
-                <td class="dullRed align-right"><xsl:value-of select="d2750"/></td>
-                <td class="dullRed"><xsl:value-of select="d2750fr"/></td>
+                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value"  select="d2750"/></xsl:call-template></td>
+                <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value"  select="d2750fr"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="dullBlue">D0210 (FMX)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="percentages16"/></td>
-                <td class="dullBlue"><xsl:value-of select="xrays4"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="percentages16"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="xrays4"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4381(Arestin)</td>
-                <td class="dullYellow"><xsl:value-of select="d4381"/></td>
-                <td class="dullYellow"><xsl:value-of select="d4381Freq"/></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d4381"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d4381Freq"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D2954 (Prefabricated)</td>
-                <td class="dullRed align-right"><xsl:value-of select="d2954"/></td>
-                <td class="dullRed"><xsl:value-of select="d2954fr"/></td>  
+                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d2954"/></xsl:call-template></td>
+                <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d2954fr"/></xsl:call-template></td>  
                 
             </tr>
             <tr>
                 <td class="dullBlue">D0330 (Pano)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="pano1"/></td>
-                <td class="dullBlue"><xsl:value-of select="d0330Freq"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="pano1"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0330Freq"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4249(Crown Len)</td>
-                <td class="dullYellow"><xsl:value-of select="oral1"/></td>
-                <td class="dullYellow"><xsl:value-of select="oral2"/></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="oral1"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="oral2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">Applicable to Downgrading</td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="posterior6"/></td>
+                <td class="dullRed" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior6"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="dullBlue">D0272/74 (BWXs)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="bwx"/></td>
-                <td class="dullBlue"><xsl:value-of select="xrays1"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="bwx"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="xrays1"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">VAPs</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                 <td class="dullRed">Downgraded to Code</td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="posterior17"/></td>
+                <td class="dullRed" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior17"/></xsl:call-template></td>
                
             </tr>
             <tr>
                 <td class="dullBlue">Does FMX &amp; PANO share Freq?</td>
-                <td class="dullBlue"  colspan="2"><xsl:value-of select="pano2"/></td>
+                <td class="dullBlue"  colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="pano2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D0431 (Cancer SCRN)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="d0431"/></td>
-                <td class="dullYellow align-right"><xsl:value-of select="d0431fr"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0431"/></xsl:call-template></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0431fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">No. of Crowns / Year </td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="crn1"/></td>  
+                <td class="dullRed" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="crn1"/></xsl:call-template></td>  
             </tr>
             <tr>
                 <td class="rowHeading">Prophylaxis</td>
@@ -728,8 +826,8 @@
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4999 (Unsp. Perio)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="d4999"/></td>
-                <td class="dullYellow align-right"><xsl:value-of select="d4999fr"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d4999"/></xsl:call-template></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d4999fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Bridges</td>
                 <td class="rowHeading">Pct.</td>
@@ -737,24 +835,24 @@
             </tr>
             <tr>
                 <td class="dullBlue">Roll Age for Prophylaxis</td>
-                <td class="dullBlue align-right" colspan="2"><xsl:value-of select="rollage"/></td>
+                <td class="dullBlue align-right" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="rollage"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D9630 (Peridex)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="d9630"/></td>
-                <td class="dullYellow align-right"><xsl:value-of select="d9630fr"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d9630"/></xsl:call-template></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d9630fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D6245/D6740</td>
-                <td class="dullRed align-right"><xsl:value-of select="bridges1"/></td>
-                <td class="dullRed"><xsl:value-of select="bridges2"/></td> 
+                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="bridges1"/></xsl:call-template></td>
+                <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="bridges2"/></xsl:call-template></td> 
             </tr>
             <tr>
                 <td class="dullBlue">D1120 (Child)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d1120"/></td>
-                <td class="dullBlue"><xsl:value-of select="prophy2"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d1120"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="prophy2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4921 (Gingival Irrig.)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="perioD4921"/></td>
-                <td class="dullYellow align-right"><xsl:value-of select="d4921Frequency"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perioD4921"/></xsl:call-template></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d4921Frequency"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Dentures</td>
                 <td class="rowHeading">Pct.</td>
@@ -762,16 +860,16 @@
             </tr>
             <tr>
                 <td class="dullBlue">D1110 (Adult)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d1110"/></td>
-                <td class="dullBlue"><xsl:value-of select="prophy1"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d1110"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="prophy1"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4266 (Tissue Regen)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="perioD4266"/></td>
-                <td class="dullYellow align-right"><xsl:value-of select="d4266Frequency"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perioD4266"/></xsl:call-template></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d4266Frequency"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D5110/20 (Complete)</td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="d511020Percentage"/></td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="dentures1"/></td>
+                <td class="dullRed" colspan="1"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d511020Percentage"/></xsl:call-template></td>
+                <td class="dullRed" colspan="1"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="dentures1"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="rowHeading">Flouride</td>
@@ -783,42 +881,42 @@
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D5130/40<br/> (Immediate)</td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="d513040Percentage"/></td>
-                <td class="dullRed"  colspan="2"><xsl:value-of select="d5130_40"/></td>
+                <td class="dullRed" colspan="1"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d513040Percentage"/></xsl:call-template></td>
+                <td class="dullRed"  colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d5130_40"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="dullBlue">Fluoride Covered till Age</td>
-                <td class="dullBlue align-right"  colspan="2"><xsl:value-of select="fluroide2"/></td>
+                <td class="dullBlue align-right"  colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="fluroide2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D2391 (Composites)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="posterior1"/></td>
-                <td class="dullYellow"><xsl:value-of select="posterior2"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior1"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed"><strong>D5820/21 (Interim)</strong></td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="d5810CPercentage"/></td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="d5810_c"/></td>
+                <td class="dullRed" colspan="1"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d5810CPercentage"/></xsl:call-template></td>
+                <td class="dullRed" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d5810_c"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="dullBlue">D1206 (w/ Varnish)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d1206"/></td>
-                <td class="dullBlue"><xsl:value-of select="fluroide1"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d1206"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="fluroide1"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">Downgraded to Amalgam (D2140)</td>
-                <td class="dullYellow"  colspan="2"><xsl:value-of select="posterior3"/></td>
+                <td class="dullYellow"  colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior3"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D5213/14/26/25 (Partial)</td>
-                <td class="dullRed" colspan="1"><xsl:value-of select="d5213142625"/></td>
-                <td class="dullRed" colspan="2"><xsl:value-of select="d5213142625fr"/></td>
+                <td class="dullRed" colspan="1"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d5213142625"/></xsl:call-template></td>
+                <td class="dullRed" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d5213142625fr"/></xsl:call-template></td>
                 
                
             </tr>
             <tr>
                 <td class="dullBlue">D1208 (w/o Varnish)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d1208"/></td>
-                <td class="dullBlue"><xsl:value-of select="fluroide3"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d1208"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="fluroide3"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">No. of Fillings / Year </td>
-                <td class="dullYellow"  colspan="2"><xsl:value-of select="fill1"/></td>
+                <td class="dullYellow"  colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="fill1"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Implants</td>
                 <td class="rowHeading">Pct.</td>
@@ -834,21 +932,21 @@
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                  <td class="dullRed">D6010</td>
-                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants1"/></td>
-                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants5"/></td>
+                <td class="dullRed align-right" colspan="1"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="implants1"/></xsl:call-template></td>
+                <td class="dullRed align-right" colspan="1"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="implants5"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="dullBlue">D1330 (Instructions)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d1330"/></td>
-                <td class="dullBlue align-right"><xsl:value-of select="d1330Freq"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d1330"/></xsl:call-template></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d1330Freq"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D7111/40 (Minor)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="extractions1"/></td>
-                <td class="dullYellow"><xsl:value-of select="extractions1fr"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="extractions1"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="extractions1fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D6065 (Porc./Ceramic)</td>
-                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants4"/></td>
-                <td class="dullRed align-right" colspan="1"><xsl:value-of select="implants7"/></td>
+                <td class="dullRed align-right" colspan="1"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="implants4"/></xsl:call-template></td>
+                <td class="dullRed align-right" colspan="1"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="implants7"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="rowHeading">Sealants</td>
@@ -856,8 +954,8 @@
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D7210-40 (Major)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="extractions2"/></td>
-                <td class="dullYellow"><xsl:value-of select="extractions2fr"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="extractions2"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="extractions2fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Oral Surgery</td>
                 <td class="rowHeading">Pct.</td>
@@ -865,62 +963,62 @@
             </tr>
             <tr>
                 <td class="dullBlue">D1351 (Per Tooth)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="sealantsD"/></td>
-                <td class="dullBlue"><xsl:value-of select="sealants1"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sealantsD"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sealants1"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D7250 (Wis Tooth)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="d7250"/></td>
-                <td class="dullYellow"><xsl:value-of select="d7250fr"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d7250"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d7250fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D7310 (4 &gt;= Tooth/Quad)</td>
-                <td class="dullRed align-right"><xsl:value-of select="d7310"/></td>
-                <td class="dullRed"><xsl:value-of select="oral6"/></td>
+                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d7310"/></xsl:call-template></td>
+                <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="oral6"/></xsl:call-template></td>
             </tr>
             <tr>
                <td class="dullBlue">Sealants Covered till Age</td>
-                <td class="dullBlue align-right" colspan="2"><xsl:value-of select="sealants2"/></td>
+                <td class="dullBlue align-right" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sealants2"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">
                    Max.# of Ext./Year
                 </td>
                 <!-- <td class="dullYellow"></td> -->
-                <td class="dullYellow" colspan="2"><xsl:value-of select="extr1"/></td>
+                <td class="dullYellow" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="extr1"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D7311 (1-3 Tooth/Quad)</td>
-                <td class="dullRed align-right"><xsl:value-of select="d7311"/></td>
-                <td class="dullRed"><xsl:value-of select="oral4"/></td> 
+                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d7311"/></xsl:call-template></td>
+                <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="oral4"/></xsl:call-template></td> 
             </tr>
             <tr>
                 <td class="dullBlue">Covered on Primary Molars</td>
-                <td class="red blackClr" colspan="2"><xsl:value-of select="sealants3"/></td>
+                <td class="red" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sealants3"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading">Endodontics</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D7953 (Bone Graft)</td>
-                <td class="dullRed align-right"><xsl:value-of select="d7953"/></td>
-                <td class="dullRed"><xsl:value-of select="dentures6"/></td>
+                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d7953"/></xsl:call-template></td>
+                <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="dentures6"/></xsl:call-template></td>
             </tr>
             <tr>
                 <td class="dullBlue">Covered on Pre-Molars</td>
-                <td class="red blackClr" colspan="2"><xsl:value-of select="sealants4"/></td> 
+                <td class="red" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sealants4"/></xsl:call-template></td> 
                 <td class="borderNone"></td>
                 <td class="dullYellow">D3310/20/30 (Endo)</td>
-                <td class="dullYellow"><xsl:value-of select="d3310"/></td>
-                <td class="dullYellow"><xsl:value-of select="d3310fr"/></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d3310"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d3310fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed" colspan="2">Bone Graft Covered with</td>
-                <td class="dullRed"><xsl:value-of select="dentures5"/></td>
+                <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="dentures5"/></xsl:call-template></td>
               
             </tr>
             <tr>
                 <td class="dullBlue">Covered on Permanent-Molars</td>
-                <td class="red blackClr" colspan="2"><xsl:value-of select="sealants5"/></td>
+                <td class="red" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sealants5"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D3220 (Pulpotomy)</td>
-                <td class="dullYellow"><xsl:value-of select="d3320"/></td>
-                <td class="dullYellow"><xsl:value-of select="d3320fr"/></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d3320"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d3320fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="rowHeading text-center" colspan="3">Ortho Criteria</td>
                 
@@ -935,21 +1033,21 @@
                 <td class="rowHeading">Freq</td>
                 <td class="borderNone"></td>
                 <td class="dullRed" colspan="2">Ortho Coverage (D8070/80/90)</td>
-                <td class="dullRed align-right"><xsl:value-of select="ortho1"/></td> 
+                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="ortho1"/></xsl:call-template></td> 
              
                
             </tr>
             <tr>
                 <td class="dullBlue">D9310</td>
-                <td class="dullBlue align-right"><xsl:value-of select="posterior8"/></td>
-                <td class="dullBlue align-right"><xsl:value-of select="posterior9"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior8"/></xsl:call-template></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior9"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D9944/45 (Hard/Soft)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="posterior7"/></td>
-                <td class="dullYellow"><xsl:value-of select="posterior19"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior7"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior19"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed" colspan="2">Ortho Maximum</td>
-                <td class="dullRed align-right"><xsl:value-of select="ortho2"/></td> 
+                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="ortho2"/></xsl:call-template></td> 
             </tr>
             <tr>
                 <xsl:choose>
@@ -975,8 +1073,8 @@
                 <xsl:choose>
                 <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D0350 (OFI)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0350"/></td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0350Freq"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0350"/></xsl:call-template></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0350Freq"/></xsl:call-template></td>
                 </xsl:when>
                 <xsl:otherwise>
                 <td class="borderNone"></td>
@@ -986,8 +1084,8 @@
                </xsl:choose>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D9230 (Nitrous)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="sedations1"/></td>
-                <td class="dullYellow"><xsl:value-of select="sedations1fr"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations1"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations1fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td colspan="3" class="borderNone"></td> 
             </tr>
@@ -995,8 +1093,8 @@
                 <xsl:choose>
                 <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D0160 (PFE)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="pedo1"/></td>
-                <td class="dullBlue align-right"><xsl:value-of select="d0160Freq"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="pedo1"/></xsl:call-template></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0160Freq"/></xsl:call-template></td>
                 </xsl:when>
                 <xsl:otherwise>
                 <td class="borderNone"></td>
@@ -1006,8 +1104,8 @@
                </xsl:choose>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D9248 (Sedation)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="sedations3"/></td>
-                <td class="dullYellow"><xsl:value-of select="sedations3fr"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations3"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations3fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td colspan="3" class="borderNone"></td> 
             </tr>
@@ -1015,8 +1113,8 @@
                 <xsl:choose>
                 <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D1510/16/17(SM)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d1510"/></td>
-                <td class="dullBlue align-right"><xsl:value-of select="d1510Freq"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d1510"/></xsl:call-template></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d1510Freq"/></xsl:call-template></td>
                 </xsl:when>
                 <xsl:otherwise>
                 <td class="borderNone"></td>
@@ -1026,8 +1124,8 @@
                  </xsl:choose>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D9910 (Desensitizing)</td>
-                <td class="dullYellow align-right"><xsl:value-of select="perioD9910"/></td>
-                <td class="dullYellow"><xsl:value-of select="d9910Frequency"/></td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perioD9910"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d9910Frequency"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td colspan="3" class="borderNone"></td> 
             </tr>
@@ -1035,8 +1133,8 @@
                 <xsl:choose>
                 <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D2930/34 (Primary SSC)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d2930"/></td>
-                <td class="dullBlue align-right"><xsl:value-of select="ssc1"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d2930"/></xsl:call-template></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="ssc1"/></xsl:call-template></td>
                 </xsl:when>
                 <xsl:otherwise>
                 <td class="borderNone"></td>
@@ -1050,8 +1148,8 @@
                 <xsl:choose>
                 <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
                 <td class="dullBlue">D2931 (Permanent SSC)</td>
-                <td class="dullBlue align-right"><xsl:value-of select="d2931"/></td>
-                <td class="dullBlue align-right"><xsl:value-of select="ssc2"/></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d2931"/></xsl:call-template></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="ssc2"/></xsl:call-template></td>
                 </xsl:when>
                 <xsl:otherwise>
                 <td class="borderNone"></td>
@@ -1122,19 +1220,18 @@
             </tr>  
             <tr>
                 <td class="historyBackground width-15">Benefits Verified by</td>
-                <td class="lightGray width-15"><xsl:value-of select="benefits"/></td>
+                <td class="lightGray width-15"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="benefits"/></xsl:call-template></td>
                 <td class="historyBackground width-15">Verfied on Date</td>
-                <td class="lightGray width-15"><xsl:if test="string-length(date) &gt; 9"><xsl:value-of select="concat(substring(date,6,2),'/',substring(date,9,2),'/',substring(date,1,4))" /></xsl:if></td>
+                <td class="lightGray width-15"><xsl:if test="string-length(date) &gt; 9"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="concat(substring(date,6,2),'/',substring(date,9,2),'/',substring(date,1,4))" /></xsl:call-template></xsl:if></td>
                 <td class="historyBackground width-15">IVF ID</td>
-                <td class="lightGray width-15"><xsl:value-of select="id"/></td>
+                <td class="lightGray width-15"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="id"/></xsl:call-template></td>
                 <td class="borderNone" colspan="7"></td>
                 
             </tr>  
         </table>
         <br/>
         <div class="historyCounts">
-                <strong>History Count:</strong><xsl:value-of select="historyCount"/>  
-                    
+                <strong>History Count:</strong><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="historyCount"/></xsl:call-template>   
         </div>
 		
     </form>
@@ -1159,5 +1256,17 @@
          <xsl:with-param name="text" select="$nextText"/>
       </xsl:apply-templates>
    </xsl:if>
+</xsl:template>
+
+<xsl:template name="replaceZero">
+  <xsl:param name="value"/>
+  <xsl:choose>
+    <xsl:when test="$value = '0'">
+      <xsl:text>NC</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>
+      <xsl:value-of select="$value"/>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 </xsl:stylesheet>

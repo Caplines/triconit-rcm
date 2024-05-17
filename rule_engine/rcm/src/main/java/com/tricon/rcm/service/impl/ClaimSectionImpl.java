@@ -1252,32 +1252,37 @@ public class ClaimSectionImpl {
 				if (patientStatement != null && patientStatement.isFinalSubmit()) {
 					responseDto = new RcmPatientStatementDto();
 					// set automated fields value StatementType,NextReviewDate,NextStatementDate
-					if (patientStatement.getStatementType()
-							.equals("" + PatientStatementTypeEnum.STATEMENT_1.getType())) {
-						int type = Integer.valueOf(patientStatement.getStatementType());
-						patientStatement.setStatementType(String.valueOf(type + 1));
-					} else if (patientStatement.getStatementType()
-							.equals("" + PatientStatementTypeEnum.STATEMENT_2.getType())) {
-						int type = Integer.valueOf(patientStatement.getStatementType());
-						patientStatement.setStatementType(String.valueOf(type + 1));
-					}
+					
+					if (StringUtils.isNoneBlank(patientStatement.getStatementType())) {
+						if (patientStatement.getStatementType()
+								.equals("" + PatientStatementTypeEnum.STATEMENT_1.getType())) {
+							int type = Integer.valueOf(patientStatement.getStatementType());
+							patientStatement.setStatementType(String.valueOf(type + 1));
+						} else if (patientStatement.getStatementType()
+								.equals("" + PatientStatementTypeEnum.STATEMENT_2.getType())) {
+							int type = Integer.valueOf(patientStatement.getStatementType());
+							patientStatement.setStatementType(String.valueOf(type + 1));
+						}
+						Calendar calendarForNextReviewDate = Calendar.getInstance();
+						Calendar calendarForNextStatementDate = Calendar.getInstance();
+						Date dateForNextReview = patientStatement.getNextReviewDate() != null
+								? patientStatement.getNextReviewDate()
+								: new Date();
+						Date dateForNextStatement = patientStatement.getNextStatementDate() != null
+								? patientStatement.getNextStatementDate()
+								: new Date();
 
-					Calendar calendarForNextReviewDate = Calendar.getInstance();
-					Calendar calendarForNextStatementDate = Calendar.getInstance();
-					Date dateForNextReview = patientStatement.getNextReviewDate() != null
-							? patientStatement.getNextReviewDate()
-							: new Date();
-					Date dateForNextStatement = patientStatement.getNextStatementDate() != null
-							? patientStatement.getNextStatementDate()
-							: new Date();
-					PatientStatementTypeEnum type = PatientStatementTypeEnum
-							.getPatientStatementTypeByType(Integer.parseInt(patientStatement.getStatementType()));
-					calendarForNextReviewDate.setTime(dateForNextReview);
-					calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, type.getDays());
-					patientStatement.setNextReviewDate(calendarForNextReviewDate.getTime());
-					calendarForNextStatementDate.setTime(dateForNextStatement);
-					calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, type.getDays());
-					patientStatement.setNextStatementDate(calendarForNextStatementDate.getTime());
+						PatientStatementTypeEnum type = PatientStatementTypeEnum
+								.getPatientStatementTypeByType(Integer.parseInt(patientStatement.getStatementType()));
+						calendarForNextReviewDate.setTime(dateForNextReview);
+						calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, type.getDays());
+						patientStatement.setNextReviewDate(calendarForNextReviewDate.getTime());
+						calendarForNextStatementDate.setTime(dateForNextStatement);
+						calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, type.getDays());
+						patientStatement.setNextStatementDate(calendarForNextStatementDate.getTime());
+					} else {
+						logger.error("Statement Type is missing,so automation failed");
+					}
 					
 					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
 							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
