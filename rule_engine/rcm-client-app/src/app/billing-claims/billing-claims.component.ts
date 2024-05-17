@@ -67,7 +67,7 @@ export class BillingClaimsComponent {
   mtype: string = '1';//Fail By Default.
   tlErrormsg = "";
   otherErrormsg = "";
-  loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false, EOB:false }
+  loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false, EOB: false, claimLevelInfo: false, insuranceFollowUpInfo: false, patientCommunicationSection: false, patientStaementInfo: false, patientPaymentInfo: false, collectionAgencyInfo: false, appealLevelinfo: false, serviceLevelInfo: false, insurancePaymentInfo: false }
   //ivfData:any=[];
   updatedIvfId: any;
   updatedTpId: any;
@@ -2036,16 +2036,15 @@ export class BillingClaimsComponent {
   saveClaimLevelinfo(isFinalSubmit: boolean) {
     this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'];
     if (!isFinalSubmit) {
+      this.loader.claimLevelInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
         finalSubmit: isFinalSubmit,
         claimInfoModel: this.claimSectionModal['CLAIM_LEVEL_INFORMATION']
       }
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          console.log(res);
-
-        }
+        this.showAlert(res, 'CLAIM_LEVEL_INFORMATION', '1');
+        this.loader.claimLevelInfo = false;
       })
     }
     return this.claimSectionModal['CLAIM_LEVEL_INFORMATION'];
@@ -2056,17 +2055,15 @@ export class BillingClaimsComponent {
     this.claimSectionModal['APPEAL']['sectionId'] = this.sectionIds['APPEAL']['sectionId'];
 
     if (!isFinalSubmit && this.validate_APPEAL()) {
-
+      this.loader.appealLevelinfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
         finalSubmit: isFinalSubmit,
         appealInfoModel: this.claimSectionModal['APPEAL']
       }
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          console.log(res);
-
-        }
+        this.showAlert(res, 'APPEAL', '1');
+        this.loader.appealLevelinfo = false;
       })
     }
     return this.claimSectionModal['APPEAL'];
@@ -2132,7 +2129,6 @@ export class BillingClaimsComponent {
 
 
   createSectionModal(sectionName: any) {
-    // debugger;
     if (sectionName === 'CLAIM_LEVEL_INFORMATION') {
       this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'];
       this.finalSaveClaimDataModel.claimInfoModel = this.saveClaimLevelinfo(true);
@@ -2526,17 +2522,15 @@ export class BillingClaimsComponent {
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'];  //converting into Number type using bitwise operator
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'];  //converting into Number type using bitwise operator
     if (!isFinalSubmit) {
-
+      this.loader.insurancePaymentInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
         finalSubmit: isFinalSubmit,
         paymentInformationInfoModel: this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']
       }
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          console.log(res);
-
-        }
+        this.showAlert(res, 'INSURANCE_PAYMENT_INFORMATION', '1');
+        this.loader.insurancePaymentInfo = false;
       })
     }
     return this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'];
@@ -2577,22 +2571,8 @@ export class BillingClaimsComponent {
           'extension': 'pdf'
         }
       };
-      this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        
-        if (res.status === 200) {
-          this.claimSectionModal['EOB']['pdfLink'] = '';
-          if(res.data !== null) {
-            this.claimSectionModal['EOB'].data.push(res.data);
-            this.pdfUrlSrc = res.data.eobLink;
-            this.loader.EOB = false;
-          } else {
-            this.claimSectionModal['EOB']['errorMessage'] = 'Invalid Link.';
-            this.loader.EOB = false;
-          }
-        } else {
-          this.claimSectionModal['EOB']['errorMessage'] = 'Failed to save';
-          this.loader.EOB = false;
-        }
+        this.appService.saveClaimLevelInfoSection(params, (res: any) => {
+        this.showAlert(res, 'EOB', '2');
         this.loader.EOB = false;
       })
     }
@@ -2804,6 +2784,7 @@ export class BillingClaimsComponent {
 
     if (!isFinal) {
       if (this.validate_SERVICE_LEVEL_INFORMATION()) {
+        this.loader.serviceLevelInfo = true;
         let params: any = {
           claimUuid: this.claimUUid,
           finalSubmit: isFinal,
@@ -2813,9 +2794,8 @@ export class BillingClaimsComponent {
           }
         };
         this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-          if (res.status) {
-            console.log(res);
-          }
+          this.showAlert(res, 'SERVICE_LEVEL_INFORMATION', '1');
+          this.loader.serviceLevelInfo = false;
         });
       }
     }
@@ -2989,20 +2969,17 @@ export class BillingClaimsComponent {
   }
 
   saveInsuranceFollowUpInfo(isFinal: boolean) {
-    //if (this.validate_SERVICE_LEVEL_INFORMATION()) {
     this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['sectionId'] = this.sectionIds['INSURANCE_FOLLOW_UP']['sectionId'];
     if (!isFinal && this.validate_INSURANCE_FOLLOW_UP()) {
+      this.loader.insuranceFollowUpInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
         rcmFollowUpInsuranceInfoModel: this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']
       };
       console.log(params);
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          this.clearInsuranceFollowUpSection();
-          this.claimSectionModal['INSURANCE_FOLLOW_UP'].data = [res.data, ... this.claimSectionModal['INSURANCE_FOLLOW_UP'].data];
-          console.log(res);
-        }
+        this.showAlert(res, 'INSURANCE_FOLLOW_UP', '2');
+        this.loader.insuranceFollowUpInfo = false;
       })
     }
     return this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'];
@@ -3012,6 +2989,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal['PATIENT_STATEMENT']['sectionId'] = this.sectionIds['PATIENT_STATEMENT']['sectionId'];
 
     if (!isFinal && this.validate_PATIENT_STATEMENT()) {
+      this.loader.patientStaementInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
         rcmPatientStatementInfoModel: this.claimSectionModal['PATIENT_STATEMENT']
@@ -3019,9 +2997,8 @@ export class BillingClaimsComponent {
       console.log(params);
 
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          console.log(res);
-        }
+        this.showAlert(res, 'PATIENT_STATEMENT', '1');
+        this.loader.patientStaementInfo = false;
       })
     }
     return this.claimSectionModal['PATIENT_STATEMENT'];
@@ -3031,15 +3008,15 @@ export class BillingClaimsComponent {
     this.claimSectionModal['PATIENT_PAYMENT']['sectionId'] = this.sectionIds['PATIENT_PAYMENT']['sectionId'];
 
     if (!isFinal && this.validate_PATIENT_PAYMENT()) {
+      this.loader.patientPaymentInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
         patientPaymentInfoModel: this.claimSectionModal['PATIENT_PAYMENT']
       };
 
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          console.log(res);
-        }
+        this.showAlert(res, 'PATIENT_PAYMENT', '1');
+        this.loader.patientPaymentInfo = false;
       })
     }
     return this.claimSectionModal['PATIENT_PAYMENT'];
@@ -3068,15 +3045,14 @@ export class BillingClaimsComponent {
   savePatientCommunicationSection(isFinal: boolean) {
     this.claimSectionModal['PATIENT_COMMUNICATION']['modal']['sectionId'] = this.sectionIds['PATIENT_COMMUNICATION']['sectionId'];
     if (!isFinal && this.validate_PATIENT_COMMUNICATION()) {
+      this.loader.patientCommunicationSection = true;
       let params: any = {
         claimUuid: this.claimUUid,
         patientCommunicationInfoModel: this.claimSectionModal['PATIENT_COMMUNICATION']['modal']
       };
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          this.claimSectionModal['PATIENT_COMMUNICATION'].data.push(res.data);
-          console.log(res);
-        }
+        this.showAlert(res, 'PATIENT_COMMUNICATION', '2');
+        this.loader.patientCommunicationSection = false;
       })
     }
     return this.claimSectionModal['PATIENT_COMMUNICATION']['modal'];
@@ -3537,15 +3513,14 @@ export class BillingClaimsComponent {
   saveCollectionAgencyInfo(isFinal: boolean) {
     this.claimSectionModal['COLLECTION_AGENCY']['sectionId'] = this.sectionIds['COLLECTION_AGENCY']['sectionId'];
     if (!isFinal && this.validate_COLLECTION_AGENCY()) {
+      this.loader.collectionAgencyInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
         collectionAgencyInfoModel: this.claimSectionModal['COLLECTION_AGENCY']
       };
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        if (res.status) {
-          // location.reload();
-          console.log(res);
-        }
+        this.showAlert(res, 'COLLECTION_AGENCY', '1');
+        this.loader.collectionAgencyInfo = false;
       })
     }
     return this.claimSectionModal['COLLECTION_AGENCY'];
@@ -3616,5 +3591,43 @@ export class BillingClaimsComponent {
     }else
     this.isPdfError=false;
   }
+
+  showAlert(response: any, sectionName: string, responseType: string) {
+    this.claimSectionModal[sectionName]['errorMessage'] = '';
+    if (response.status === 200) {
+      if (responseType === "2") {
+        if (sectionName === 'EOB') {
+          this.claimSectionModal['EOB']['pdfLink'] = '';
+          this.claimSectionModal['EOB'].data.push(response.data);
+          this.pdfUrlSrc = response.data.eobLink;
+        }
+        if (sectionName === 'INSURANCE_FOLLOW_UP') {
+          this.clearInsuranceFollowUpSection();
+          this.claimSectionModal['INSURANCE_FOLLOW_UP'].data = [response.data, ... this.claimSectionModal['INSURANCE_FOLLOW_UP'].data];
+        }
+        if (sectionName === 'PATIENT_COMMUNICATION') {
+          this.claimSectionModal['PATIENT_COMMUNICATION'].data.push(response.data);
+        }
+        this.claimSectionModal[sectionName]['errorMessage'] = 'Saved Successfully.';
+        this.claimSectionModal[sectionName]['rsType'] = '1';
+      }
+      if (responseType === "1") {
+        if (response.data === true) {
+          this.claimSectionModal[sectionName]['errorMessage'] = 'Saved Successfully.';
+          this.claimSectionModal[sectionName]['rsType'] = '1';
+        } else {
+          this.claimSectionModal[sectionName]['errorMessage'] = 'Failed to save.';
+          this.claimSectionModal[sectionName]['rsType'] = '2';
+        }
+      }
+      console.log(response);
+    } else {
+      this.claimSectionModal[sectionName]['errorMessage'] = 'Failed to save.';
+      this.claimSectionModal[sectionName]['rsType'] = '3';
+    }
+    setTimeout(() => {
+      this.claimSectionModal[sectionName]['errorMessage'] = '';
+    }, 2000);
+  };
 
 }

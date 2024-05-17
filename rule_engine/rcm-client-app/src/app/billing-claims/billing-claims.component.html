@@ -1833,13 +1833,23 @@
                                                 <label class="custom-control-label" for="customSwitch">BTP FLAG</label>
                                             </span>
                                         </div>
-                                        <div *ngIf="activeServiceCodeCount > 0 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()"
-                                            class="save-btn col-sm-12 my-2">
-                                            <button class="btn  btn-success" (click)="saveServiceLevelInfo(false)">
-                                                Save
-                                            </button>
+                                        <div class="col-md-4 mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <button class="btn btn-success mr-2" (click)="saveServiceLevelInfo(false)" [disabled]="loader.serviceLevelInfo || !this.sectionLevelInfoTotalConfig.reconcile"
+                                                    *ngIf="activeServiceCodeCount > 0 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                    Save
+                                                </button>
+                                                <div *ngIf="loader.serviceLevelInfo" class="mr-2">
+                                                    <div>
+                                                        <span class="loader-save-data"></span>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="claimSectionModal['SERVICE_LEVEL_INFORMATION']['errorMessage']"
+                                                    [ngClass]="'rsType-' + claimSectionModal['SERVICE_LEVEL_INFORMATION']['rsType']">
+                                                    {{claimSectionModal['SERVICE_LEVEL_INFORMATION']['errorMessage']}}
+                                                </div>
+                                            </div>
                                         </div>
-
                                     </div>
                                 </ng-container>
 
@@ -1922,7 +1932,10 @@
                                                         [disabled]="!claimSectionModal['EOB']['pdfLink']"
                                                         (click)="getPdfUrlAndSaveEOB(false)">Save</button>
                                                 </span>
-                                                <div *ngIf="claimSectionModal['EOB']['errorMessage']" class="text-danger">{{claimSectionModal['EOB']['errorMessage']}}</div>
+                                                <div *ngIf="claimSectionModal['EOB']['errorMessage']" 
+                                                    [ngClass]="'rsType-' + claimSectionModal['EOB']['rsType']">
+                                                    {{claimSectionModal['EOB']['errorMessage']}}
+                                                </div>
                                             </div>
 
                                             <div class="pdf-viewer" *ngIf="pdfUrlSrc && !isPdfError">
@@ -2104,9 +2117,20 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4 mb-2"></div>
-                                        <div class="col-md-4 mb-2">
-                                            <button class="btn btn-success" (click)="saveClaimLevelinfo(false)"
-                                                *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">Save</button>
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-success mr-2" (click)="saveClaimLevelinfo(false)" [disabled]="loader.claimLevelInfo"
+                                                *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                Save
+                                            </button>
+                                            <div *ngIf="loader.claimLevelInfo" class="mr-2">
+                                                <div>
+                                                    <span class="loader-save-data"></span>
+                                                </div>
+                                            </div>
+                                            <div *ngIf="claimSectionModal['CLAIM_LEVEL_INFORMATION']['errorMessage']"
+                                                [ngClass]="'rsType-' + claimSectionModal['CLAIM_LEVEL_INFORMATION']['rsType']">
+                                                {{claimSectionModal['CLAIM_LEVEL_INFORMATION']['errorMessage']}}
+                                            </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <!-- <button class="btn btn-outline-primary" (click)="checkSectionFieldValidation()">Final Submit</button> -->
@@ -2270,10 +2294,22 @@
                                         <div class="col-md-4 mb-2">
 
                                         </div>
-                                        <div class="col-md-4 mb-2"
-                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
-                                            <button class="btn btn-success"
-                                                (click)="saveInsurancePaymentInfo(false)">Save</button>
+                                        <div class="col-md-4 mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <button class="btn btn-success mr-2" (click)="saveInsurancePaymentInfo(false)" [disabled]="loader.insurancePaymentInfo"
+                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                    Save
+                                                </button>
+                                                <div *ngIf="loader.insurancePaymentInfo" class="mr-2">
+                                                    <div>
+                                                        <span class="loader-save-data"></span>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['errorMessage']"
+                                                    [ngClass]="'rsType-' + claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['rsType']">
+                                                    {{claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['errorMessage']}}
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
 
@@ -2421,7 +2457,7 @@
 
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="nextFollowUpDate">Date</label>
+                                                        <label for="nextFollowUpDate">Next Follow Up Date</label>
                                                         <input type="date" id="nextFollowUpDate"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']"
@@ -2444,10 +2480,23 @@
                                                 </div>
                                                 <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
-                                                    <button class="btn btn-success"
-                                                        (click)="saveInsuranceFollowUpInfo(false)">Save</button>
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <button class="btn btn-success mr-2" (click)="saveInsuranceFollowUpInfo(false)"
+                                                            [disabled]="loader.insuranceFollowUpInfo"
+                                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                            Save
+                                                        </button>
+                                                        <div *ngIf="loader.insuranceFollowUpInfo" class="mr-2">
+                                                            <div>
+                                                                <span class="loader-save-data"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div *ngIf="claimSectionModal['INSURANCE_FOLLOW_UP']['errorMessage']"
+                                                            [ngClass]="'rsType-' + claimSectionModal['INSURANCE_FOLLOW_UP']['rsType']">
+                                                            {{claimSectionModal['INSURANCE_FOLLOW_UP']['errorMessage']}}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -2653,10 +2702,24 @@
                                                 <div class="col-md-4 mb-2"
                                                     *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1">
                                                 </div>
-                                                <div class="col-md-4 mb-2"
-                                                    *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0 && (this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) && !allowOtherSaveWhileReqRebilling()">
-                                                    <button class="btn btn-success"
-                                                        (click)="savePatientStaementInfo(false)">Save</button>
+                       
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <button class="btn btn-success mr-2" (click)="savePatientStaementInfo(false)"
+                                                            [disabled]="loader.patientStaementInfo"
+                                                            *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0 && (this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) && !allowOtherSaveWhileReqRebilling()">
+                                                            Save
+                                                        </button>
+                                                        <div *ngIf="loader.patientStaementInfo" class="mr-2">
+                                                            <div>
+                                                                <span class="loader-save-data"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div *ngIf="claimSectionModal['PATIENT_STATEMENT']['errorMessage']"
+                                                            [ngClass]="'rsType-' + claimSectionModal['PATIENT_STATEMENT']['rsType']">
+                                                            {{claimSectionModal['PATIENT_STATEMENT']['errorMessage']}}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -2770,10 +2833,24 @@
                                                 </div>
 
                                                 <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2"
-                                                    *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
-                                                    <button class="btn btn-success"
-                                                        (click)="savePatientPaymentInfo(false)">Save</button>
+
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <button class="btn btn-success mr-2" (click)="savePatientPaymentInfo(false)"
+                                                            [disabled]="loader.patientPaymentInfo"
+                                                            *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                                            Save
+                                                        </button>
+                                                        <div *ngIf="loader.patientPaymentInfo" class="mr-2">
+                                                            <div>
+                                                                <span class="loader-save-data"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div *ngIf="claimSectionModal['PATIENT_PAYMENT']['errorMessage']"
+                                                            [ngClass]="'rsType-' + claimSectionModal['PATIENT_PAYMENT']['rsType']">
+                                                            {{claimSectionModal['PATIENT_PAYMENT']['errorMessage']}}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -2903,10 +2980,24 @@
                                                 </div>
                                                 <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
-                                                    <button class="btn btn-success"
-                                                        (click)="savePatientCommunicationSection(false)">Save</button>
+            
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <button class="btn btn-success mr-2" (click)="savePatientCommunicationSection(false)"
+                                                            [disabled]="loader.patientCommunicationSection"
+                                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                            Save
+                                                        </button>
+                                                        <div *ngIf="loader.patientCommunicationSection" class="mr-2">
+                                                            <div>
+                                                                <span class="loader-save-data"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div *ngIf="claimSectionModal['PATIENT_COMMUNICATION']['errorMessage']"
+                                                            [ngClass]="'rsType-' + claimSectionModal['PATIENT_COMMUNICATION']['rsType']">
+                                                            {{claimSectionModal['PATIENT_COMMUNICATION']['errorMessage']}}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -3091,10 +3182,24 @@
                                             </div>
 
                                             <div class="row">
-                                                <div class="col-sm-12"
-                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
-                                                    <button class="btn btn-success"
-                                                        (click)="saveCollectionAgencyInfo(false)">Save</button>
+            
+                                                <div class="col-md-4 mb-2">
+                                                    <div class="d-flex align-items-center">
+                                                        <button class="btn btn-success mr-2" (click)="saveCollectionAgencyInfo(false)"
+                                                            [disabled]="loader.collectionAgencyInfo"
+                                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                            Save
+                                                        </button>
+                                                        <div *ngIf="loader.collectionAgencyInfo" class="mr-2">
+                                                            <div>
+                                                                <span class="loader-save-data"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div *ngIf="claimSectionModal['COLLECTION_AGENCY']['errorMessage']"
+                                                            [ngClass]="'rsType-' + claimSectionModal['COLLECTION_AGENCY']['rsType']">
+                                                            {{claimSectionModal['COLLECTION_AGENCY']['errorMessage']}}
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -3186,10 +3291,23 @@
                                         <div class="col-md-4 mb-2">
 
                                         </div>
-                                        <div class="col-md-4 mb-2"
-                                            *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
-                                            <button class="btn btn-success"
-                                                (click)="saveAppealLevelinfo(false)">Save</button>
+        
+                                        <div class="col-md-4 mb-2">
+                                            <div class="d-flex align-items-center">
+                                                <button class="btn btn-success mr-2" (click)="saveAppealLevelinfo(false)" [disabled]="loader.appealLevelinfo"
+                                                    *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                    Save
+                                                </button>
+                                                <div *ngIf="loader.appealLevelinfo" class="mr-2">
+                                                    <div>
+                                                        <span class="loader-save-data"></span>
+                                                    </div>
+                                                </div>
+                                                <div *ngIf="claimSectionModal['APPEAL']['errorMessage']"
+                                                    [ngClass]="'rsType-' + claimSectionModal['APPEAL']['rsType']">
+                                                    {{claimSectionModal['APPEAL']['errorMessage']}}
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
 
