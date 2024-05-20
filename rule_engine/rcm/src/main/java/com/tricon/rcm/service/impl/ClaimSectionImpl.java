@@ -1191,15 +1191,6 @@ public class ClaimSectionImpl {
 			patientStatement.setTeam(team);
 			if (rcmPatientStatementInfoModel
 					.getButtonType() == Constants.NEED_TO_HOLD_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION) {
-				patientStatement.setStatus(rcmPatientStatementInfoModel.getStatus());
-				patientStatement.setAmountStatement(rcmPatientStatementInfoModel.getAmountStatement());
-				patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement());
-				patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
-				patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
-				patientStatement.setNextStatementDate(
-						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate()) ? null
-								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
-			} else {
 				patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
 				patientStatement.setReason(rcmPatientStatementInfoModel.getReason());
 				patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
@@ -1210,6 +1201,15 @@ public class ClaimSectionImpl {
 				patientStatement.setNextReviewDate(
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate()) ? null
 								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
+			} else {
+				patientStatement.setStatus(rcmPatientStatementInfoModel.getStatus());
+				patientStatement.setAmountStatement(rcmPatientStatementInfoModel.getAmountStatement());
+				patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement());
+				patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
+				patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
+				patientStatement.setNextStatementDate(
+						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate()) ? null
+								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
 			}
 			patientStatement = patientStatementRepo.save(patientStatement);
 			return patientStatement != null ? true : null;

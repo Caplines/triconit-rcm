@@ -1619,8 +1619,8 @@
                                                                     [ngClass]="{'text-danger':data.rebilledCodeStatus}"
                                                                     [title]="data.rebilledCodeStatus? 'Rebilled' :''">
                                                                     {{data.serviceCode}}</td>
-                                                                <td> {{data.tooth}}</td>
-                                                                <td> {{data.surface}}</td>
+                                                                <td> {{data.tooth==null || data.tooth === '' ? "N/A":data.tooth}}</td>
+                                                                <td> {{data.surface==null || data.surface === '' ?"N/A":data.surface}}</td>
                                                                 <td> {{data.fee}}</td>
                                                                 <td> {{data.estPrimary}}</td>
                                                                 <!-- <td class="row-grey"> {{data.surface}}</td> -->
@@ -2447,15 +2447,16 @@
                                                         <select id="nextFollowUpRequired" class="form-control"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpRequired']"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpRequired']}">
+                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpRequired']}"
+                                                            (ngModelChange)="onFollowUpChange($event)" >
                                                             <option value="">Select</option>
                                                             <option value="YES">Yes</option>
                                                             <option value="NO">No</option>
                                                         </select>
                                                     </div>
                                                 </div>
-
-                                                <div class="col-md-4 mb-2">
+                                             
+                                                <div class="col-md-4 mb-2" *ngIf="isNextFollowUpRequired">
                                                     <div class="custom-row text-number">
                                                         <label for="nextFollowUpDate">Next Follow Up Date</label>
                                                         <input type="date" id="nextFollowUpDate"
@@ -2478,9 +2479,9 @@
                                                                                     </textarea>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2"></div>
-                                                <div class="col-md-4 mb-2">
+                                                <!-- <div class="col-md-4 mb-2"></div>
+                                                <div class="col-md-4 mb-2"></div> -->
+                                                <div class="col-md-12 mb-2">
                                                     <div class="d-flex align-items-center">
                                                         <button class="btn btn-success mr-2" (click)="saveInsuranceFollowUpInfo(false)"
                                                             [disabled]="loader.insuranceFollowUpInfo"
@@ -2548,14 +2549,14 @@
                                                             <input type="radio" name="statement"
                                                                 class="form-check-input" [value]="1"
                                                                 [checked]="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"
-                                                                (change)="selectStatementBox(1)">Send Statement
+                                                                (change)="selectStatementBox(1)">Need to hold
                                                         </label>
                                                         <label class="btn btn-light" (click)="selectStatementBox(2)"
                                                             [ngClass]="{'active':claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2}">
                                                             <input type="radio" name="statement" [value]="2"
                                                                 class="form-check-input"
                                                                 [checked]="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2"
-                                                                (change)="selectStatementBox(2)">Need to hold
+                                                                (change)="selectStatementBox(2)">Send Statement
                                                         </label>
                                                     </div>
                                                 </div>

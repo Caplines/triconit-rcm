@@ -93,6 +93,7 @@ export class BillingClaimsComponent {
   activeServiceCodeCount: number = 0;
   rebilledServiceCodeCount: number = 0;
   isPdfError:boolean=false;
+  isNextFollowUpRequired:boolean=false;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -2982,6 +2983,7 @@ export class BillingClaimsComponent {
         this.loader.insuranceFollowUpInfo = false;
       })
     }
+    this.isNextFollowUpRequired=false;
     return this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'];
   }
 
@@ -3629,5 +3631,13 @@ export class BillingClaimsComponent {
       this.claimSectionModal[sectionName]['errorMessage'] = '';
     }, 2000);
   };
+
+  onFollowUpChange(event:any){
+    if(event=='YES'){
+      this.isNextFollowUpRequired=true;
+    }else{
+      this.isNextFollowUpRequired=false;
+    }
+  }
 
 }
