@@ -448,14 +448,14 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "us.uuid as uuid,us.first_name  as fName,us.last_name as lName,comp.name as companyName,count(distinct cast(assign.created_date as date))as disDate "
 			+ "from rcm_user us " + "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
 			+ "inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
-			+ "left join rcm_claim_assignment assign on us.uuid=assign.assigned_to "
+			+ "left join rcm_claim_assignment assign on us.uuid=assign.created_by "
 			+ "left join rcm_claims cl on cl.claim_uuid=assign.claim_id "
 			+ "inner join office off on off.uuid=cl.office_id "
 			+ "inner join company comp on comp.uuid=off.company_id  "
 			+ "where cmp.company_id in (:companyIds) and assign.created_by=us.uuid and cl.current_state="
 			+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "
-			+ "and  assign.active=false and assign.action_name = 'Reviewed' "
-			+ "and assign.System_comment='Claim Transfered To Team( From 3 to 7)' and assign.current_team_id=:teamId and rut.team_id=:teamId "
+			+ "and assign.action_name = 'Reviewed' " //and  assign.active=false 
+			+ "and assign.System_comment='Claim Transfered To Team( From 3 to 7)' and assign.current_team_id=7 and rut.team_id=:teamId "
 			+ "and  CAST(assign.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
 			+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') " + "group by us.uuid,comp.name")
 	List<ProductionDto> claimProductionForInternalAudit(@Param("companyIds") List<String> companyIds,
