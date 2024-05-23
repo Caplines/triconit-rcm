@@ -20,6 +20,7 @@ import Utils from '../util/utils';
 import { DownLoadService } from '../service/download.service';
 import { DatePipe } from '@angular/common';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
+import { PmlDatePicker } from '../shared/date-picker/datepicker-options';
 
 // import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 
@@ -383,7 +384,7 @@ export class BillingClaimsComponent {
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
     private claimService: ClaimService,
     private route: ActivatedRoute, private title: Title, private location: Location, private router: Router, private downloadService: DownLoadService,
-    public datepipe: DatePipe) {
+    public datepipe: DatePipe, public pmlDatePicker: PmlDatePicker) {
     this.claimRcm = { claimId: "" };
     title.setTitle(Utils.defaultTitle + "Claim Detail");
   }
@@ -398,6 +399,8 @@ export class BillingClaimsComponent {
       if (!this.isLoggedInAdmin) this.fetchClaimRights(this.claimUUid);
     });
     this.emailUrl = window.location.href;
+    this.hideSideBarDom = true;
+    this.toggleSideBar = true;
 
   }
 
@@ -800,7 +803,8 @@ export class BillingClaimsComponent {
         if (!ths.preAuthEnable(ths.sectionIds['CLAIM_SUBMISSION']['sectionId'], 'edit')) {
           ths.addErrorDisplay(document.getElementById("SUB_DET_PRENO"));
         }
-        ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
+        let SUB_DET_DT_1: any = document.getElementById("SUB_DET_DT").querySelectorAll(".pml_dp")[0];
+        ths.addErrorDisplay(SUB_DET_DT_1);
         //ths.addErrorDisplay(document.getElementById("SUB_DET_TI"));
         valid = false;
       } else {
@@ -840,9 +844,17 @@ export class BillingClaimsComponent {
         } else {
           ths.removeErrorDisplayKeyById('SUB_DET_PRENO');
         }
-        let SUB_DET_DT: any = document.getElementById("SUB_DET_DT");
-        if (SUB_DET_DT.value.trim() === '') {
-          ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
+        // let SUB_DET_DT: any = document.getElementById("SUB_DET_DT");
+        // debugger;
+        // if (SUB_DET_DT.value.trim() === '') {
+        //   ths.addErrorDisplay(document.getElementById("SUB_DET_DT"));
+        //   valid = false;
+        // }
+        let SUB_DET_DT_1: any = document.getElementById("SUB_DET_DT").querySelectorAll(".pml_dp")[0];
+
+        let SUB_DET_DT: any = SUB_DET_DT_1.value;
+        if (SUB_DET_DT.trim() === '') {
+          ths.addErrorDisplay(SUB_DET_DT_1)
           valid = false;
         }
         if (!ths.providerRefNoEnable()) {
@@ -1033,6 +1045,8 @@ export class BillingClaimsComponent {
             let prfMode = ths.claimRcm.preferredModeOfSubmission;
             ths.submissionDto.channel = prfMode;
           }
+        } else{
+          ths.submissionDto.esDate = this.convertStringToDateForDatePicker(ths.submissionDto.esDate);
         }
       }
     })
@@ -1964,10 +1978,42 @@ export class BillingClaimsComponent {
     this.appService.fetchClaimLevelInfoSection(this.claimUUid, (res: any) => {
       if (res && res.data) {
         this.claimSectionModal['CLAIM_LEVEL_INFORMATION'] = res.data;
-
+        // if (this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'] !== null) {
+        //   console.log(this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'])
+        //   this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']);
+        // }
+        if (this.claimSectionModal['CLAIM_LEVEL_INFORMATION'] !== null){
+          this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']);
+        }
       }
     })
   }
+
+  // convertStringToDateForDatePicker(dateString: string) {
+  //   if (dateString !== null || (dateString !== null && dateString !== '') ){
+  //     return new Date(dateString);
+  //   }
+  // }
+
+  convertStringToDateForDatePicker(dateString: string) {
+    if (dateString !== null && dateString !== '') {
+      return new Date(dateString);
+    }
+  }
+
+  // convertStringToDateForApiCall(dateString: string) {
+  //   if (dateString !== null || (dateString !== null && dateString !== '')) {
+  //     return this.datepipe.transform(dateString, 'yyyy-MM-dd');
+  //   }
+  // }
+
+  convertStringToDateForApiCall(dateString: string) {
+    if (dateString !== null && dateString !== '') {
+      return this.datepipe.transform(dateString, 'yyyy-MM-dd');
+    }
+  }
+
+
 
   fetchAppealSection() {
     this.appService.fetchAppealSection(this.claimUUid, (res: any) => {
@@ -1987,7 +2033,12 @@ export class BillingClaimsComponent {
     this.appService.fetchInsurancePaymentInfoSection(this.claimUUid, (res: any) => {
       if (res && res.data) {
         this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'] = res.data;
-
+        // console.log(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'])
+        if (this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'] !== null) {
+          this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']);
+          this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'] = this.convertStringToDateForDatePicker(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']);
+        }
+        // console.log(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'])
       }
     })
   }
@@ -2008,6 +2059,8 @@ export class BillingClaimsComponent {
       this.appService.fetchServiceLevelInfoSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data = res.data;
+
+         
           if (res.data != null && res.data.length > 0) {
             this.sectionLevelInfoTotalConfig.balanceFromEsBeforePosting = res.data[0].balanceFromEsBeforePosting;
             this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting = Number(res.data[0].balanceFromEsAfterPosting);
@@ -2017,6 +2070,12 @@ export class BillingClaimsComponent {
           }
 
           this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+            if(e.surface==null || e.surface==''){
+              e.surface='N/A';
+            }
+            if(e.tooth==null || e.tooth==''){
+              e.tooth='N/A';
+            }
             if (e.serviceCode != 'Undistributed') {
               this.activeServiceCodeCount++;
               if (e.rebilledCodeStatus) {
@@ -2041,7 +2100,11 @@ export class BillingClaimsComponent {
       let params: any = {
         claimUuid: this.claimUUid,
         finalSubmit: isFinalSubmit,
-        claimInfoModel: this.claimSectionModal['CLAIM_LEVEL_INFORMATION']
+        //claimInfoModel: this.claimSectionModal['CLAIM_LEVEL_INFORMATION']
+        claimInfoModel: {
+          ...this.claimSectionModal['CLAIM_LEVEL_INFORMATION'],
+          claimProcessingDate: this.convertStringToDateForApiCall(this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate'])
+        }
       }
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.showAlert(res, 'CLAIM_LEVEL_INFORMATION', '1');
@@ -2159,7 +2222,7 @@ export class BillingClaimsComponent {
       this.claimSectionModal['INSURANCE_FOLLOW_UP']['sectionId'] = this.sectionIds['INSURANCE_FOLLOW_UP']['sectionId'];
       this.finalSaveClaimDataModel.rcmFollowUpInsuranceInfoModel = this.saveInsuranceFollowUpInfo(true);
     }
-    else if (sectionName === 'PATIENT_STATEMENT' && this.claimRcm.btp != this.claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) {
+    else if (sectionName === 'PATIENT_STATEMENT') {
       this.claimSectionModal['PATIENT_STATEMENT']['sectionId'] = this.sectionIds['PATIENT_STATEMENT']['sectionId'];
       this.finalSaveClaimDataModel.rcmPatientStatementInfoModel = this.savePatientStaementInfo(true);
     }
@@ -2322,8 +2385,6 @@ export class BillingClaimsComponent {
     this.emptyFields["PATIENT_STATEMENT"] = {};
     let isSectionValidated = true;
     //The patient statemnt cycle will stop and be highlighted in some way when the patient payment becomes equal to the BTP Amount
-    if (this.claimRcm.btp != this.claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) {
-
       if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1) {
         if (this.claimSectionModal['PATIENT_STATEMENT']['reason'] === "") {
           this.emptyFields['PATIENT_STATEMENT']['reason'] = true;
@@ -2335,8 +2396,6 @@ export class BillingClaimsComponent {
           isSectionValidated = false;
         }
       }
-
-    }
     return isSectionValidated;
   }
 
@@ -2527,7 +2586,12 @@ export class BillingClaimsComponent {
       let params: any = {
         claimUuid: this.claimUUid,
         finalSubmit: isFinalSubmit,
-        paymentInformationInfoModel: this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']
+        // paymentInformationInfoModel: this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']
+        paymentInformationInfoModel: {
+          ...this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'],
+          checkCashDate: this.convertStringToDateForApiCall(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']),
+          amountDateReceivedInBank: this.convertStringToDateForApiCall(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'])
+        }
       }
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.showAlert(res, 'INSURANCE_PAYMENT_INFORMATION', '1');
@@ -2583,7 +2647,8 @@ export class BillingClaimsComponent {
 
   viewLink(link: any) {
     this.pdfUrlSrc = link;
-    this.isPdfError=false;
+    // this.isPdfError=true;
+    window.open(this.pdfUrlSrc, '_blank');
   }
 
 
@@ -2592,7 +2657,10 @@ export class BillingClaimsComponent {
       this.appService.fetchInsuranceFollowUpSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['INSURANCE_FOLLOW_UP'].data = res.data;
-          this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate'] =this.claimRcm.nextFollowUpDate;
+          this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate'] = this.claimRcm.nextFollowUpDate;
+          if (this.claimSectionModal['INSURANCE_FOLLOW_UP'] !== null) {
+            this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate']);
+          }
         }
       })
     }
@@ -2604,6 +2672,11 @@ export class BillingClaimsComponent {
       this.appService.fetchPatientStatementSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['PATIENT_STATEMENT'] = res.data;
+          if (this.claimSectionModal['PATIENT_STATEMENT'] !== null) {
+            this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate']);
+            this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate']);
+            this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate']);
+          }
           if (!res.data.modeOfStatement) {
             this.claimSectionModal['PATIENT_STATEMENT']['modeOfStatement'] = '';
           } if (!res.data.reason) {
@@ -2620,6 +2693,9 @@ export class BillingClaimsComponent {
       this.appService.fetchPatientPaymentSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['PATIENT_PAYMENT'] = res.data;
+          if (this.claimSectionModal['PATIENT_PAYMENT'] !== null) {
+            this.claimSectionModal['PATIENT_PAYMENT']['dateOfPayment'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_PAYMENT']['dateOfPayment']);
+          }
           if (!res.data.modeOfPayment) {
             this.claimSectionModal['PATIENT_PAYMENT']['modeOfPayment'] = '';
           } if (!res.data.postedInPMS) {
@@ -2975,7 +3051,11 @@ export class BillingClaimsComponent {
       this.loader.insuranceFollowUpInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
-        rcmFollowUpInsuranceInfoModel: this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']
+        rcmFollowUpInsuranceInfoModel: {
+          ...this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'],
+          nextFollowUpDate: this.convertStringToDateForApiCall(this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'])
+        }
+          
       };
       console.log(params);
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
@@ -2994,7 +3074,12 @@ export class BillingClaimsComponent {
       this.loader.patientStaementInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
-        rcmPatientStatementInfoModel: this.claimSectionModal['PATIENT_STATEMENT']
+        rcmPatientStatementInfoModel: {
+          ...this.claimSectionModal['PATIENT_STATEMENT'],
+          statementSendingDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate']),
+          nextReviewDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate']),
+          nextStatementDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate'])
+        }
       };
       console.log(params);
 
@@ -3013,7 +3098,10 @@ export class BillingClaimsComponent {
       this.loader.patientPaymentInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
-        patientPaymentInfoModel: this.claimSectionModal['PATIENT_PAYMENT']
+        patientPaymentInfoModel: {
+          ...this.claimSectionModal['PATIENT_PAYMENT'],
+          dateOfPayment: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_PAYMENT']['dateOfPayment'])
+        }
       };
 
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
@@ -3545,6 +3633,7 @@ export class BillingClaimsComponent {
   }
 
   nextActionRequire(e: any) {
+   this.validate_CURRENT_STATUS_AND_NEXT_ACTION();
     console.log(e.target.value);
     if (this.isCDP) {
       if (e.target.value === this.appConstants.Need_to_call_Insurance) {

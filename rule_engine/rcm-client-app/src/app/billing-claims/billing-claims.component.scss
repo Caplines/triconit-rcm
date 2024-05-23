@@ -590,3 +590,49 @@
     height: 15px;
     }
   }
+
+
+  .claimDatepicker {
+    width: 100%;
+    .datepicker-container {
+        width: 100%;
+        &:after {
+            content: "";
+            position: absolute;
+            background: url('../../assets/img/calendar-icon.png') no-repeat 1px 6px;
+            top:5px;
+            right: 6px;
+            width: 22px;
+            height: 22px;
+        }
+        input {
+            font-size: 14px;
+            height: 38px;
+            padding: .375rem .75rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff!important;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: .25rem;
+            width: 100%;
+ 
+        }
+        .calendar-container {
+            top: 40px!important;
+            width: 250px!important;
+        }
+    }
+    &.dp-disable {
+        pointer-events: none;
+        .pml_dp {
+        background-color: #E9ECEf!important;
+    }
+  }
+}
+ 
+.dp-disable {
+    pointer-events: none;
+}
+ 

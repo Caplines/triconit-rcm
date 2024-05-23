@@ -169,7 +169,7 @@ export interface ServiceLevelCodeModel {
 export interface SubmissionDetailModel {
 
 	claimUuid?: string;
-	esDate?: Date;
+	esDate?: any;
 	channel?: string;
 	attachmentSend?: boolean;
 	preauth?: boolean;

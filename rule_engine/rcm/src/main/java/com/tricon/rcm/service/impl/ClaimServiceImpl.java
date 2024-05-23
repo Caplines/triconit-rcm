@@ -2079,7 +2079,7 @@ public class ClaimServiceImpl {
 		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
 		try {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserType(companies, ct, instDB,partialHeader.getTeamId(),partialHeader.getJwtUser().getUuid(),currentStatusClosed);
+				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserType(companies, ct, instDB,partialHeader.getTeamId(),currentStatusClosed);
 				
 			}else {
 				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamType(companies, ct, instDB,partialHeader.getTeamId(),currentStatusClosed);

@@ -1344,11 +1344,19 @@
                                                     <td>Date of claim processing in PMS</td>
                                                     <td>
                                                         <div class="multi-input-row">
-                                                            <input class="form-control date-control" id="" rows="1"
+                                                            <!-- <input class="form-control date-control" id="" rows="1"
                                                                 id="SUB_DET_DT" placeholder="yyyy-mm-dd"
                                                                 (click)="removeErrorDisplayKeyById('SUB_DET_DT')"
                                                                 [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')"
-                                                                [(ngModel)]='submissionDto.esDate' type="date" />
+                                                                [(ngModel)]='submissionDto.esDate' type="date" /> -->
+                                                            <ngx-datepicker id="SUB_DET_DT" rows="1"
+                                                                (ngModelChange)="removeErrorDisplayKeyById('SUB_DET_DT')"
+                                                                disabled="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')"
+                                                                [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+                                                                [(ngModel)]='submissionDto.esDate'
+                                                                [ngClass]="{'dp-disable':isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')}"
+                                                                class="claimDatepicker date-control">
+                                                            </ngx-datepicker>
                                                             <!--<span class="and-space">&</span> <input class="form-control"
                                                 id="" rows="1" id="SUB_DET_TI"
                                                 (click)="removeErrorDisplayKeyById('SUB_DET_TI')"
@@ -1653,6 +1661,8 @@
                                                             <td>
                                                                 <select class="attach-secondary-width form-control"
                                                                     [(ngModel)]="data.adjustmentReason"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                     [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['adjustmentReason']}"
                                                                     [title]="data.adjustmentReason">
                                                                     <option value="">Select
@@ -1669,7 +1679,9 @@
                                                                     (blur)="getTotalServiceLevelInfo()"> </td>
                                                             <td>
                                                                 <select class="attach-secondary-width form-control"
-                                                                    [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['btpReason']}"
+                                                                (change)="validate_SERVICE_LEVEL_INFORMATION()"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['btpReason']}"
                                                                     [(ngModel)]="data.btpReason">
                                                                     <option value="">Select
                                                                     </option>
@@ -2026,12 +2038,19 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="claimDate">Claim Processing Date<span class="text-danger">*</span></label>
-                                                <input type="date" id="claimDate"
+                                                <ngx-datepicker id="claimDate" 
                                                     *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']"
-                                                    class="form-control"
-                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']}">
+                                                    [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+                                                    [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']" class="claimDatepicker"
+                                                    [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}">
+                                                </ngx-datepicker>
+                                                <!-- <input type="date" id="claimDate"
+                                                        *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']"
+                                                        class="form-control"
+                                                        [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']}"> -->
                                             </div>
                                         </div>
                                         <div class="col-md-4 mb-2">
@@ -2271,11 +2290,18 @@
                                                 <label for="checkCashDate"
                                                     *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Vcc'">Card
                                                     Run Date #</label>
-                                                <input type="date" id="checkCashDate"
+                                                <!-- <input type="date" id="checkCashDate"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']"
                                                     class="form-control"
-                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate']}">
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate']}"> -->
+                                                <ngx-datepicker id="checkCashDate"
+                                                    [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                    [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']" 
+                                                    class="claimDatepicker"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}">
+                                                </ngx-datepicker>
                                             </div>
                                         </div>
 
@@ -2283,11 +2309,18 @@
                                             <div class="custom-row text-number">
                                                 <label for="amountDateReceivedInBank">Date when Amount Received in
                                                     Bank</label>
-                                                <input type="date" id="amountDateReceivedInBank"
+                                                <!-- <input type="date" id="amountDateReceivedInBank"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
                                                     class="form-control"
-                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank']}">
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank']}"> -->
+                                                <ngx-datepicker id="amountDateReceivedInBank"
+                                                    [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                    [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+                                                    [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
+                                                    class="claimDatepicker"
+                                                    [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}">
+                                                </ngx-datepicker>
                                             </div>
                                         </div>
 
@@ -2459,11 +2492,19 @@
                                                 <div class="col-md-4 mb-2" *ngIf="isNextFollowUpRequired">
                                                     <div class="custom-row text-number">
                                                         <label for="nextFollowUpDate">Next Follow Up Date</label>
-                                                        <input type="date" id="nextFollowUpDate"
+                                                        <!-- <input type="date" id="nextFollowUpDate"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']"
                                                             class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate']}">
+                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate']}"> -->
+                                                            <ngx-datepicker id="nextFollowUpDate"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.allowEdit)"
+                                                                [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+                                                                [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']" 
+                                                                class='claimDatepicker {{!(checkForSectionAccess(sectionIds["INSURANCE_FOLLOW_UP"]["sectionId"],"edit") && claimRcm.allowEdit)?"db-disable":""}}'
+                                                                [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.allowEdit)}">
+                                                            </ngx-datepicker>
+                                                           
                                                     </div>
                                                 </div>
 
@@ -2595,11 +2636,18 @@
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="nextReviewDate">Next Review Date</label>
-                                                            <input type="date" id="nextReviewDate"
+                                                            <!-- <input type="date" id="nextReviewDate"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']"
                                                                 class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate']}">
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate']}"> -->
+                                                            <ngx-datepicker id="nextReviewDate"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']" 
+                                                                class="claimDatepicker"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}">
+                                                            </ngx-datepicker>
                                                         </div>
                                                     </div>
 
@@ -2607,11 +2655,18 @@
                                                         <div class="custom-row text-number">
                                                             <label for="statementSendingDate">Date of sending
                                                                 Statement</label>
-                                                            <input type="date" id="statementSendingDate"
+                                                            <!-- <input type="date" id="statementSendingDate"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
                                                                 class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}">
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}"> -->
+                                                            <ngx-datepicker id="statementSendingDate"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)"
+                                                                [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
+                                                                class="claimDatepicker"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}">
+                                                            </ngx-datepicker>
                                                         </div>
                                                     </div>
 
@@ -2681,11 +2736,18 @@
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="nextStatementDate">Next Statement Date</label>
-                                                            <input type="date" id="nextStatementDate"
+                                                            <!-- <input type="date" id="nextStatementDate"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']"
                                                                 class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate']}">
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate']}"> -->
+                                                            <ngx-datepicker id="nextStatementDate"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']"
+                                                                class="claimDatepicker"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}">
+                                                            </ngx-datepicker>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4 mb-2">
@@ -2708,7 +2770,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <button class="btn btn-success mr-2" (click)="savePatientStaementInfo(false)"
                                                             [disabled]="loader.patientStaementInfo"
-                                                            *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0 && (this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']) && !allowOtherSaveWhileReqRebilling()">
+                                                            *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0  && !allowOtherSaveWhileReqRebilling()">
                                                             Save
                                                         </button>
                                                         <div *ngIf="loader.patientStaementInfo" class="mr-2">
@@ -2767,11 +2829,18 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
                                                         <label for="dateOfPayment">Date of Payment</label>
-                                                        <input type="date" id="dateOfPayment"
+                                                        <!-- <input type="date" id="dateOfPayment"
                                                             [disabled]="!checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment']"
                                                             class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment']}">
+                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment']}"> -->
+                                                        <ngx-datepicker id="dateOfPayment"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
+                                                            [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+                                                            [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment']"
+                                                            class="claimDatepicker"
+                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit)}">
+                                                        </ngx-datepicker>
                                                     </div>
                                                 </div>
 
@@ -2783,7 +2852,7 @@
                                                             [disabled]="!checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']"
                                                             class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['amountCollectedClaims'],'is-valid':this.claimRcm.btp == claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']}">
+                                                            [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['amountCollectedClaims']}">
                                                     </div>
                                                 </div>
 
@@ -4076,7 +4145,7 @@
                                                         <label for="currentClaimStatusRcm">Current Claim
                                                             Status<span class="text-danger">*</span>
                                                         </label>
-                                                        <select id="currentClaimStatusRcm" class="form-control"
+                                                        <select id="currentClaimStatusRcm" (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit')"
                                                             [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm']"
                                                             [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusRcm']}">
@@ -4093,7 +4162,7 @@
                                                     <div class="custom-row text-number">
                                                         <label for="currentClaimStatusEs">Current Claim status in
                                                             ES &nbsp;<span class="text-danger">*</span></label>
-                                                        <select id="currentClaimStatusEs" class="form-control"
+                                                        <select id="currentClaimStatusEs" (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
                                                             [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusEs']}">
@@ -4133,7 +4202,7 @@
                                                     <div class="custom-row text-number">
                                                         <label for="assignToTeam">Assign to
                                                             Team &nbsp;<span class="text-danger">*</span></label>
-                                                        <select id="assignToTeam" class="form-control"
+                                                        <select id="assignToTeam" (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId']"
                                                             [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeamId']}">
@@ -4148,7 +4217,8 @@
                                                     <div class="custom-row text-number">
                                                         <label for="remarks">Remarks &nbsp;<span class="text-danger">*</span></label>
                                                         <textarea type="date" id="remarks"
-                                                            [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
+                                                        (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
+                                                        [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['remarks']"
                                                             class="form-control"
                                                             [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['remarks']}">
