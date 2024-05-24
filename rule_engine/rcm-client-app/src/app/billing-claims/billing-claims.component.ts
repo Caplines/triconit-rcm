@@ -2416,11 +2416,13 @@ export class BillingClaimsComponent {
       this.emptyFields['INSURANCE_FOLLOW_UP']['modeOfFollowUp'] = true;
       isSectionValidated = false;
     }
-    if (!this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'].refNumber) {
-      this.emptyFields['INSURANCE_FOLLOW_UP'].refNumber = true;
-      isSectionValidated = false;
-    }
 
+    if (this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['modeOfFollowUp'] =="Call") {
+      if (!this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'].refNumber) {
+        this.emptyFields['INSURANCE_FOLLOW_UP'].refNumber = true;
+        isSectionValidated = false;
+      }
+    }
     return isSectionValidated;
   }
 

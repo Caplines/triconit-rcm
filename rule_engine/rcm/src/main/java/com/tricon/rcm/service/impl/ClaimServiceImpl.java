@@ -5287,6 +5287,7 @@ public class ClaimServiceImpl {
 		RcmTeam team = rcmTeamRepo.findById(partialHeader.getTeamId());
 
 		for (Field field : CommonSectionsRequestBodyDto.class.getDeclaredFields()) {
+			// add ignore fields in if condition
 			if (field.getName().equals("claimUuid") || field.getName().equals("finalSubmit") || field.getName().equals("moveToNextTeam")) {
 				continue;
 			} else {
@@ -5329,6 +5330,7 @@ public class ClaimServiceImpl {
 		if (sectionRequestBody.isFinalSubmit() && allCheckValidation && allSectionAccess) {
 			response = null;
 			for (Field field : CommonSectionsRequestBodyDto.class.getDeclaredFields()) {
+				// add ignore fields in if condition
 				if (field.getName().equals("claimUuid") || field.getName().equals("finalSubmit")|| field.getName().equals("moveToNextTeam")) {
 					continue;
 				} else {

@@ -801,6 +801,7 @@ public class ClaimSectionImpl {
 //				eobInfoModel.setEobPathLink("Invalid Format");
 //				return null;
 //			}
+			logger.info("response->" + (eobInformation!=null?true:false));
 			return eobInfoModel;
 		}
 		return null;
@@ -1146,6 +1147,7 @@ public class ClaimSectionImpl {
 				rcmClaimRepository.save(claim);
 			}
 		}
+		logger.info("response->" + (followUpInformation!=null?true:false));
 		return rcmFollowUpInsuranceInfoModel;
 	}
 	
