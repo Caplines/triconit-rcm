@@ -1627,8 +1627,8 @@
                                                                     [ngClass]="{'text-danger':data.rebilledCodeStatus}"
                                                                     [title]="data.rebilledCodeStatus? 'Rebilled' :''">
                                                                     {{data.serviceCode}}</td>
-                                                                <td> {{data.tooth==null || data.tooth === '' ? "N/A":data.tooth}}</td>
-                                                                <td> {{data.surface==null || data.surface === '' ?"N/A":data.surface}}</td>
+                                                                <td> {{data.tooth==null || data.tooth === '' || data.tooth === 'NA' ? "N/A":data.tooth}}</td>
+                                                                <td> {{data.surface==null || data.surface === '' || data.surface === 'NA' ?"N/A":data.surface}}</td>
                                                                 <td> {{data.fee}}</td>
                                                                 <td> {{data.estPrimary}}</td>
                                                                 <!-- <td class="row-grey"> {{data.surface}}</td> -->
@@ -2243,7 +2243,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4 mb-2">
+                                        <div class="col-md-4 mb-2" *ngIf="checkDeliveredTo">
                                             <div class="custom-row text-number">
                                                 <label for="checkDeliverTo">Check Delivered To</label>
                                                 <input type="text" id="checkDeliverTo"
@@ -2327,7 +2327,7 @@
                                         <div class="col-md-4 mb-2">
 
                                         </div>
-                                        <div class="col-md-4 mb-2">
+                                        <div class="col-md-12 mb-2">
                                             <div class="d-flex align-items-center">
                                                 <button class="btn btn-success mr-2" (click)="saveInsurancePaymentInfo(false)" [disabled]="loader.insurancePaymentInfo"
                                                     *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
@@ -2723,7 +2723,7 @@
                                                         </select>
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4 mb-2">
+                                                    <!-- <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="status">Status</label>
                                                             <input type="text" id="status"
@@ -2732,7 +2732,7 @@
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="nextStatementDate">Next Statement Date</label>
@@ -2766,7 +2766,17 @@
                                                     *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1">
                                                 </div>
                        
-                                                <div class="col-md-4 mb-2">
+                                                <div class="col-md-12 mb-2">
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number" style="margin-left: -13px;">
+                                                            <label for="status">Status</label>
+                                                            <input type="text" id="status"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['status']"
+                                                                class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
+                                                        </div>
+                                                    </div>
                                                     <div class="d-flex align-items-center">
                                                         <button class="btn btn-success mr-2" (click)="savePatientStaementInfo(false)"
                                                             [disabled]="loader.patientStaementInfo"

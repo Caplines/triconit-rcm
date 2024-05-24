@@ -95,6 +95,7 @@ export class BillingClaimsComponent {
   rebilledServiceCodeCount: number = 0;
   isPdfError:boolean=false;
   isNextFollowUpRequired:boolean=false;
+  checkDeliveredTo=false;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -2070,10 +2071,10 @@ export class BillingClaimsComponent {
           }
 
           this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
-            if(e.surface==null || e.surface==''){
+            if(e.surface==null || e.surface=='' ||  e.surface=='NA'){
               e.surface='N/A';
             }
-            if(e.tooth==null || e.tooth==''){
+            if(e.tooth==null || e.tooth=='' || e.tooth=='NA'){
               e.tooth='N/A';
             }
             if (e.serviceCode != 'Undistributed') {
@@ -2384,6 +2385,12 @@ export class BillingClaimsComponent {
   validate_PATIENT_STATEMENT() {
     this.emptyFields["PATIENT_STATEMENT"] = {};
     let isSectionValidated = true;
+    //status is mandatory for all buttons
+    if (this.claimSectionModal['PATIENT_STATEMENT']['status'] === "") {
+      this.emptyFields['PATIENT_STATEMENT']['status'] = true;
+      isSectionValidated = false;
+    }
+
     //The patient statemnt cycle will stop and be highlighted in some way when the patient payment becomes equal to the BTP Amount
       if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1) {
         if (this.claimSectionModal['PATIENT_STATEMENT']['reason'] === "") {
@@ -3171,6 +3178,7 @@ export class BillingClaimsComponent {
   }
 
   clearCheckDeliverOtherThanModeCheck() {
+    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Check' ? this.checkDeliveredTo=true:this.checkDeliveredTo=false;
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' ? this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = '' : '';
   }
 

@@ -1189,6 +1189,7 @@ public class ClaimSectionImpl {
 			patientStatement.setCreatedBy(createdBy);
 			patientStatement.setFinalSubmit(finalSubmit);
 			patientStatement.setTeam(team);
+			patientStatement.setStatus(rcmPatientStatementInfoModel.getStatus());
 			if (rcmPatientStatementInfoModel
 					.getButtonType() == Constants.NEED_TO_HOLD_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION) {
 				patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
@@ -1202,7 +1203,6 @@ public class ClaimSectionImpl {
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate()) ? null
 								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
 			} else {
-				patientStatement.setStatus(rcmPatientStatementInfoModel.getStatus());
 				patientStatement.setAmountStatement(rcmPatientStatementInfoModel.getAmountStatement());
 				patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement());
 				patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
