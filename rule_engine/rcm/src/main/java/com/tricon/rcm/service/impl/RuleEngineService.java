@@ -1179,7 +1179,7 @@ public class RuleEngineService {
 						Optional<RcmClaimAssignment> rcaOpt = rcmClaimAssignmentRepo.findById(cl.getClaimAssignmentId());
 						if (rcaOpt.isPresent()) {
 							RcmClaimAssignment rca = rcaOpt.get();
-							rca.setActive(true);
+							rca.setActive(false);
 							rca.setSystemComment("Claim taken back from Pendency Screen by :"+assignedBy.getEmail());
 							rcmClaimAssignmentRepo.save(rca);
 							

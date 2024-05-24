@@ -498,7 +498,7 @@ public class ConnectAndReadSheets {
 					
 				} catch (Exception m) {
 					List<String> tooth=new ArrayList<>();
-					dto.setServiceCodes(tooth);
+					dto.setToothAndSurfaces(tooth);
 				}
 
 				list.add(dto);
