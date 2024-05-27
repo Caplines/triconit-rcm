@@ -305,7 +305,7 @@
                 <td>Annual Max</td>
                 <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy7"/></xsl:call-template></td>
                 <td>Individual Deductible</td>
-                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy9"/></xsl:call-template></td>
+                <td><xsl:value-of select="policy9"/></td>
                 <td>Fee Schedule</td>
                 <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy4"/></xsl:call-template></td>
                 <td>Fee of D0120</td>
@@ -329,7 +329,7 @@
                      </xsl:otherwise>
                 </xsl:choose>   
                 <td>Ind Ded Remaining</td>
-                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy10"/></xsl:call-template></td>
+                <td><xsl:value-of select="policy10"/></td>
                 <td>Coverage Book</td>
                 <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy16"/></xsl:call-template></td>
                 <td>Fee of D2391</td>
@@ -725,7 +725,7 @@
                 <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="exams4"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">Rest Recommended B/W Quads</td>
-                <td class="dullYellow" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perio4"/></xsl:call-template></td>
+                <td class="dullYellow" colspan="2"><xsl:value-of select="perio4"/></td>
                 <td class="borderNone"></td>
                 <td class="dullRed">D2950 (Core Buidup)</td>
                 <td class="dullRed width-7 align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior10"/></xsl:call-template></td>
@@ -835,7 +835,7 @@
             </tr>
             <tr>
                 <td class="dullBlue">Roll Age for Prophylaxis</td>
-                <td class="dullBlue align-right" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="rollage"/></xsl:call-template></td>
+                <td class="dullBlue align-right" colspan="2"><xsl:value-of select="rollage"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D9630 (Peridex)</td>
                 <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d9630"/></xsl:call-template></td>
@@ -886,7 +886,7 @@
             </tr>
             <tr>
                 <td class="dullBlue">Fluoride Covered till Age</td>
-                <td class="dullBlue align-right"  colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="fluroide2"/></xsl:call-template></td>
+                <td class="dullBlue align-right"  colspan="2"><xsl:value-of select="fluroide2"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D2391 (Composites)</td>
                 <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior1"/></xsl:call-template></td>
@@ -976,7 +976,7 @@
             </tr>
             <tr>
                <td class="dullBlue">Sealants Covered till Age</td>
-                <td class="dullBlue align-right" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sealants2"/></xsl:call-template></td>
+                <td class="dullBlue align-right" colspan="2"><xsl:value-of select="sealants2"/></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">
                    Max.# of Ext./Year
@@ -1047,7 +1047,7 @@
                 <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior19"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullRed" colspan="2">Ortho Maximum</td>
-                <td class="dullRed align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="ortho2"/></xsl:call-template></td> 
+                <td class="dullRed align-right"><xsl:value-of select="ortho2"/></td> 
             </tr>
             <tr>
                 <xsl:choose>
