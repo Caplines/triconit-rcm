@@ -1972,6 +1972,10 @@ public class ClaimServiceImpl {
 				final FreshClaimDataViewDto dataView = new FreshClaimDataViewDto();
 				BeanUtils.copyProperties(data, dataView);
 				dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction())!=null?ClaimStatusEnum.getById(data.getNextAction()).getType():"N/A");
+				//set es_status updated
+				if (data.getStatusESUpdated() == null) {
+					dataView.setStatusESUpdated(data.getStatusES());
+				}
 				listView.add(dataView);
 			});
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
@@ -1999,6 +2003,10 @@ public class ClaimServiceImpl {
 				final FreshClaimDataViewDto dataView = new FreshClaimDataViewDto();
 				BeanUtils.copyProperties(data, dataView);
 				dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction())!=null?ClaimStatusEnum.getById(data.getNextAction()).getType():"N/A");
+				//set es_status updated
+				if (data.getStatusESUpdated() == null) {
+					dataView.setStatusESUpdated(data.getStatusES());
+				}
 				listView.add(dataView);
 			});
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
@@ -3234,7 +3242,7 @@ public class ClaimServiceImpl {
 						pd.setBilledCount(pd.getBilledCount() + 1);
 					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.IN_PROCESS.getId()) {
 						pd.setBilledCount(pd.getBilledCount() + 1);
-					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Closed.getId()) {
+					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Case_Closed.getId()) {
 						pd.setClosedCount(pd.getClosedCount() + 1);
 					} else if (status.getCurrentClaimStatus() == ClaimStatusEnum.Voided.getId()) {
 						pd.setVoidedCount(pd.getVoidedCount() + 1);
@@ -4626,7 +4634,7 @@ public class ClaimServiceImpl {
 			return null;
 		}
 		
-		int currentStatusClosed=ClaimStatusEnum.Closed.getId();
+		int currentStatusClosed=ClaimStatusEnum.Case_Closed.getId();
 		int currentStatusVoided=ClaimStatusEnum.Voided.getId();
 		
 		if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
@@ -5269,13 +5277,13 @@ public class ClaimServiceImpl {
 			return false;
 		}
 		
-		if (isPrimary && claim.getCurrentStatus() == ClaimStatusEnum.Closed.getId()) {
+		if (isPrimary && claim.getCurrentStatus() == ClaimStatusEnum.Case_Closed.getId()) {
 			logger.error("Primary is open but current status is closed");
 			return false;
 		}
 
-		if (!isPrimary && (claim.getCurrentStatus() == ClaimStatusEnum.Closed.getId()
-				|| assoicatedClaimCurrentStatus != ClaimStatusEnum.Closed.getId())) {
+		if (!isPrimary && (claim.getCurrentStatus() == ClaimStatusEnum.Case_Closed.getId()
+				|| assoicatedClaimCurrentStatus != ClaimStatusEnum.Case_Closed.getId())) {
 			logger.error("Primary is closed or secondary is also closed");
 			return false;
 		}

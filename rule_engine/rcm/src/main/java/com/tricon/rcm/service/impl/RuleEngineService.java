@@ -1035,7 +1035,7 @@ public class RuleEngineService {
 		
 		//Assign Unassigned Claims
 		try {
-			int currentStatusClosed=ClaimStatusEnum.Closed.getId();
+			int currentStatusClosed=ClaimStatusEnum.Case_Closed.getId();
 			int currentStatusVoided=ClaimStatusEnum.Voided.getId();
 		List<Object> claims =rcmClaimRepository.getValidClaimWithCompanyTeams(compmanyId,teamId,currentStatusClosed,currentStatusVoided);
 		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
@@ -1149,7 +1149,7 @@ public class RuleEngineService {
 	public void reAssignClaimToUserByOffices(RcmCompany company,
 			int teamId,JwtUser jwtUser) {
 		
-		int currentStatusClosed=ClaimStatusEnum.Closed.getId();
+		int currentStatusClosed=ClaimStatusEnum.Case_Closed.getId();
 		int currentStatusVoided=ClaimStatusEnum.Voided.getId();
 		List<PendingClaimToReAssignDto> claimList= rcmClaimRepository.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(company.getUuid(),teamId,currentStatusClosed,currentStatusVoided);
 		List<UserAssignOffice> userAssignOffices = new ArrayList<>();

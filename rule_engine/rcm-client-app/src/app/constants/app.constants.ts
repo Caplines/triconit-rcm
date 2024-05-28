@@ -260,16 +260,16 @@ export class AppConstants {
     ];
 
     public claimStatusRcm: any = [
-        { name: "Pending For Review" },
+        { name: "Pending For Review by CDP" },
         { name: "Pending For Billing" },
-        { name: "Billed" },
-        { name: "In Process" },
-        { name: "Closed" },
+        { name: "Pending From Insurance" },           
+        { name: "Insurance Claim Closed" },    
+        { name: "Case Closed"},               
         { name: "Voided" },
-        { name: "Re-billing" },
-        { name: "Reviewed" },
-        { name: "Posted" },
-        { name: "Submitted" }
+        { name: "Insurance Claim in Process" },
+        { name: "Statement Sent" },              
+        { name: "Case sent to Collections" },  
+        { name: "Need to send Appeal" } 
     ];
 
 
@@ -300,11 +300,16 @@ export class AppConstants {
     public claimClosedId: number = 30;
 
     public statusESUpdated: any = {
-        C: "Closed",
-        E: "Unbilled (E)",
-        P: "Unbilled (P)",
-        O: "Open",
-        U: "Primary Open - Secondary Unsubmitted",
+        "C": "Closed",
+        "E": "Unbilled",
+        "P": "Unbilled",
+        "O": "Open",
+        "U": "Primary Open - Secondary Unsubmitted",
+        "Closed":"Closed",
+        "Unbilled":"Unbilled",
+        "Open":"Open",
+        "Billed":"Billed"
+
       };
 
     public helpLinks: any = {

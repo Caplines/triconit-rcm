@@ -380,6 +380,7 @@ export class BillingClaimsComponent {
   hideSideBarDom: boolean = false;
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
   isLoggedInAdmin: boolean = false;
+  isValidInput: boolean = false;
 
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -2077,6 +2078,12 @@ export class BillingClaimsComponent {
             if(e.tooth==null || e.tooth=='' || e.tooth=='NA'){
               e.tooth='N/A';
             }
+            if(e.fee==null || e.fee=='' || e.fee=='-1'){
+              e.fee='0';
+            }
+            if(e.estPrimary==null || e.estPrimary=='' || e.estPrimary=='-1'){
+              e.estPrimary='0';
+            }
             if (e.serviceCode != 'Undistributed') {
               this.activeServiceCodeCount++;
               if (e.rebilledCodeStatus) {
@@ -2353,9 +2360,17 @@ export class BillingClaimsComponent {
     }
 
     this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { creditAdjustmentAmount: number, debitAdjustmentAmount: number, billToPatientAmount: number, adjustmentReason: string, btpReason: string }, index: number) => {
-
-      let heading = "SERVICE_LEVEL_INFORMATION"+index;
-      if ((obj.creditAdjustmentAmount > 0 || obj.debitAdjustmentAmount > 0) && 
+      let heading = "SERVICE_LEVEL_INFORMATION" + index;
+ 
+      if (obj.creditAdjustmentAmount === 0 && obj.debitAdjustmentAmount === 0){
+        obj.adjustmentReason = '';
+      }
+ 
+      if (obj.billToPatientAmount === 0) {
+        obj.btpReason = '';
+      }
+ 
+      if ((obj.creditAdjustmentAmount > 0 || obj.debitAdjustmentAmount > 0) &&
           (obj.adjustmentReason === '' || obj.adjustmentReason === null)) {
         this.emptyFields[heading]['adjustmentReason'] = true;
         isSectionValidated = false;
@@ -2482,10 +2497,11 @@ export class BillingClaimsComponent {
         this.emptyFields["REQUEST_REBILLING"]['remarks'] = true;
         isSectionValidated = false;
       }
-      if (!this.claimSectionModal.REQUEST_REBILLING['rebillingRequirements'] || this.claimSectionModal.REQUEST_REBILLING['rebillingRequirements']?.length == 0) {
-        this.emptyFields["REQUEST_REBILLING"]['rebillingRequirements'] = true;
-        isSectionValidated = false;
-      }
+      //not mandatory for now
+      // if (!this.claimSectionModal.REQUEST_REBILLING['rebillingRequirements'] || this.claimSectionModal.REQUEST_REBILLING['rebillingRequirements']?.length == 0) {
+      //   this.emptyFields["REQUEST_REBILLING"]['rebillingRequirements'] = true;
+      //   isSectionValidated = false;
+      // }
 
       if (this.claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'partialClaim' && (!this.claimSectionModal.REQUEST_REBILLING['rebillingServiceCodes'] || this.claimSectionModal.REQUEST_REBILLING['rebillingServiceCodes']?.length == 0)) {
         this.emptyFields["REQUEST_REBILLING"]['rebillingServiceCodes'] = true;
@@ -2645,12 +2661,29 @@ export class BillingClaimsComponent {
           'extension': 'pdf'
         }
       };
+      let matchFound = false;
+      for (const e of this.claimSectionModal['EOB'].data) {
+        if (e.eobLink == params.eobInfoModel.eobLink) {
+          matchFound =true;
+        }
+      }
+
+      if (!matchFound) {
         this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        this.showAlert(res, 'EOB', '2');
+          this.showAlert(res, 'EOB', '2');
+          this.loader.EOB = false;
+        })
+      } else {
+        this.claimSectionModal['EOB']['errorMessage'] = 'Duplicate Link.';
+        this.claimSectionModal['EOB']['rsType'] = '2';
+        setTimeout(() => {
+          this.claimSectionModal['EOB']['errorMessage'] = '';
+        }, 2000);
+  
         this.loader.EOB = false;
-      })
+      }
     }
-    return this.claimSectionModal['EOB']['pdfLink'] || null;
+    //return this.claimSectionModal['EOB']['pdfLink'] || null;
 
   }
 
@@ -3405,16 +3438,20 @@ export class BillingClaimsComponent {
 
   selectActionToPerformRecreate(action: any) {
     this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = action;
+    this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid'] = false;
+    this.hideRecreateButton = false;
     this.emptyFields.RECREATE_CLAIM = {};
     if (action == 'attachSecondary') {
       this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'] = '';
 
-      this.validateNewClaimId();
+      this.validateNewClaimId(action);
+    } else if (action === '3' || action === '2') {
+      this.claimSectionModal.RECREATE_CLAIM['validationData'] = [];
     }
 
   }
 
-  validateNewClaimId() {
+  validateNewClaimId(action?: any) {
     this.loader['validationData'] = true;
     this.claimSectionModal.RECREATE_CLAIM.validationData = [];
     this.emptyFields.RECREATE_CLAIM = {};
@@ -3430,9 +3467,9 @@ export class BillingClaimsComponent {
         this.loader['validationData'] = false;
         this.claimSectionModal.RECREATE_CLAIM['validationData'] = res.data.validationResponse;
         this.claimSectionModal.RECREATE_CLAIM['newServiceCodes'] = res.data.serviceCodesNewClaim;
-        this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid'] = res.data.secondaryValid;
+        if (action && action === 'attachSecondary') this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid'] = res.data.secondaryValid;
         //this.claimSectionModal.RECREATE_CLAIM['claimFromSheet']['claimTypeS'] = 'Billing';
-        this.showOrHideRecreateButton();
+        if (action && action === '3') this.showOrHideRecreateButton();
         this.otherErrormsg = '';
         if (res.data?.serviceCodesNewClaim?.length == 0) {
           this.otherErrormsg = "No Service Codes Found";
@@ -3453,6 +3490,7 @@ export class BillingClaimsComponent {
   }
 
   saveRecreateNewClaim(isFinal: boolean) {
+    this.otherErrormsg = "";
     this.createModalForRecreateFullAndPartialClaim();
 
     //debugger;
@@ -3497,7 +3535,10 @@ export class BillingClaimsComponent {
 
       }
       else {
-        this.otherErrormsg = " Something went wrong";
+        this.otherErrormsg = "Fill all mandatory fields";
+        if (this.emptyFields.RECREATE_CLAIM['selectedServiceCodes'] = true) {
+          this.otherErrormsg += ". Service Codes not matched.";
+        }
       }
     }
 
@@ -3595,7 +3636,13 @@ export class BillingClaimsComponent {
   }
 
   clearSelectedRadioButtons() {
-    this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = null;
+    const input = this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'];
+    this.isValidInput = input.trim() !== '' ? true : false;
+    
+    if (this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'] === ''){
+      this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = null;
+    }
+    this.claimSectionModal.RECREATE_CLAIM['validationData'] = [];
   }
 
   selectCollectionTypeButton(type: any) {

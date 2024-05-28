@@ -463,7 +463,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	
 	@Query(nativeQuery = true, value = 
-            " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct claims.claim_uuid))/count(distinct cast(assign.updated_date as date)) as days ,"
+            " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/count(distinct cast(assign.updated_date as date)) as days ,"
 			+" us.uuid as uuid,us.first_name "
 			+" 	 as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
 			+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
@@ -503,7 +503,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				@Param("userId") String userId);
 
 	@Query(nativeQuery = true, value = 
-            " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct claims.claim_uuid))/count(distinct cast(assign.updated_date as date)) as days,"
+            " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/count(distinct cast(assign.updated_date as date)) as days,"
 			+" us.uuid as uuid,us.first_name "
 			+" 	 as fName,us.last_name as lName,comp.name as companyName from rcm_user us "
 			+"    inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
