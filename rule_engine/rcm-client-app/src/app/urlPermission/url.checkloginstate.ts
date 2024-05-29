@@ -12,7 +12,7 @@ export class CheckUserLoggedInState implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     console.log(localStorage.getItem('currentUser'));
    
-    
+    let roleAsso: any = localStorage.getItem("selected_roleName");
     if (localStorage.getItem('currentUser')) {
       let ut: any = localStorage.getItem('selected_teamId');//selected_roleName//selected_teamId
      if (ut!=null && ut!= "-1"){
@@ -30,10 +30,20 @@ export class CheckUserLoggedInState implements CanActivate {
      
          //return false;
      
-    } else{ 
-      return false;
-        
+    } else if (ut == '-1' && roleAsso=='REPORTING'){
+      let ntKey: Number = new Number(9).valueOf();
+      let team: any = this.appConstants.TEAMS_CONFIG.get(ntKey);
+      let teamM: TeamModel = (<TeamModel>team);
+
+      let ph = teamM.paths.find(x =>
+          x === window.location.pathname);
+      //in case wrong url is accessed
+      if (typeof ph == "undefined") {
+          window.location.href = teamM.defaultpath;
+          return false;
       }
+      return true;
+    }
     }else{
       if(state.url == "/login"){
         return true;

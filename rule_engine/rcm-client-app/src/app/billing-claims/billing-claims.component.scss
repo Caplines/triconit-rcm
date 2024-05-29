@@ -636,3 +636,19 @@
     pointer-events: none;
 }
  
+.currentAction{
+    padding-bottom: 10px;
+    padding-left: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    padding-top: 10px;
+    display: flex;
+    color: #333;
+
+    label {
+        font-size: 16px;
+        font-weight: 700;
+        color: #333;
+        margin-right: 5px;
+    }
+}

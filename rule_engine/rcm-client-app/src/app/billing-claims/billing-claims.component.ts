@@ -247,6 +247,9 @@ export class BillingClaimsComponent {
       noOfEstPayment: '',
       paymentFrequency: '',
       noOfPaymentReceived: '',
+      claimPassFirstGo:'',
+      initialDenial:'',
+      network:'',
     },
     APPEAL: {
       modeOfAppeal: '',

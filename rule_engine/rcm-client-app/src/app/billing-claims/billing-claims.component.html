@@ -46,6 +46,15 @@
                             </div>
                         </div>
                         <div class="detail-box">
+                            <div class="currentAction">
+                                <label for="" class="">Current Action Required :</label>
+                                <ng-container *ngIf="claimRcm.nextAction!=0; else oldNextActionID">
+                                    <div [innerHTML]="claimRcm.nextActionName"></div>
+                                </ng-container>
+                                <ng-template #oldNextActionID>
+                                    <div [innerHTML]="'N/A'"></div>
+                                </ng-template>
+                            </div>
                             <div class="detail-box-form">
                                 <!-- This section is for all Clients -->
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimDetails']}">
@@ -244,7 +253,7 @@
                                             </ng-template>
 
                                         </div>
-                                        <div class="custom-row">
+                                        <!-- <div class="custom-row">
                                             <label for="" class="">Current Action Required</label>
                                             <ng-container *ngIf="claimRcm.nextAction!=0; else oldNextActionID">
                                                 <div [innerHTML]="claimRcm.nextActionName"></div>
@@ -253,7 +262,7 @@
                                                 <div [innerHTML]="'N/A'"></div>
                                             </ng-template>
 
-                                        </div>
+                                        </div> -->
                                         <div class="custom-row">
                                             <label for="" class="">Assigned Team Role </label>
                                             <div [innerHTML]="claimRcm.assignedToRoleName"></div>
@@ -2051,7 +2060,7 @@
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['network']"
                                                     [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['network']}">
-                                                    <option selected="true" hidden="true">Select Network</option>
+                                                    <option value="">Select Network</option>
                                                     <option value="in">In</option>
                                                     <option value="out">Out</option>
                                                 </select>
@@ -2065,7 +2074,7 @@
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo']"
                                                     [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimPassFirstGo']}">
-                                                    <option selected="true" hidden="true">Select</option>
+                                                    <option value="">Select</option>
                                                     <option value="yes">Yes</option>
                                                     <option value="no">No</option>
                                                 </select>
@@ -2079,7 +2088,7 @@
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['initialDenial']"
                                                     [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['initialDenial']}">
-                                                    <option selected="true" hidden="true">Select</option>
+                                                    <option value="">Select</option>
                                                     <ng-container
                                                         *ngFor="let item of appConstants.claimInitialDenialReason">
                                                         <option [value]="item.reasonName">{{item.reasonName}}</option>

@@ -11,13 +11,13 @@ export class AppConstants {
 
     public TEAMS_CONFIG = new Map<Number, TeamModel>([
         [1, {
-            "id": 1, "name": "NA", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', '/tool-update', '/tool-update/issue-claims'], "defaultpath": "/register"
+            "id": 1, "name": "NA", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', '/tool-update', '/tool-update/issue-claims',"/reconciliation"], "defaultpath": "/register"
         }],
         [2, {
-            "id": 2, "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client'], "defaultpath": "/register"
+            "id": 2, "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client',"/reconciliation"], "defaultpath": "/register"
         }],
         [3, {
-            "id": 3, "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production", "/search-claims", '/tool-update/issue-claims'], "defaultpath": "/claim-assignment"
+            "id": 3, "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production", "/search-claims", '/tool-update/issue-claims',"/reconciliation"], "defaultpath": "/claim-assignment"
         }],
         [4, {
             "id": 4, "name": "LC3", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
@@ -29,7 +29,7 @@ export class AppConstants {
             "id": 6, "name": "Patient Calling", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [7, {
-            "id": 7, "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'], "defaultpath": "/claim-assignment"
+            "id": 7, "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims',"/reconciliation"], "defaultpath": "/claim-assignment"
         }],
         [8, {
             "id": 8, "name": "Super Admin", "paths": AppConstants.commonPath, "defaultpath": "/claim-assignment"
@@ -71,9 +71,9 @@ export class AppConstants {
             "id": 20, "name": "Aging", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
 
-        // [9,{
-        //     "name":"Reporting","paths":["/update-pass"],"defaultpath":"/update-pass"
-        // }],
+        [9,{
+            "id": 9, "name":"Reporting","paths":["/update-pass","/search-claims","/reconciliation","/tool-update",'/tool-update/issue-claims'],"defaultpath":"/tool-update"
+        }],
 
     ]);
 
@@ -83,7 +83,7 @@ export class AppConstants {
     public static BILLING_TEAM = 7;
     public static CDP_TEAM = 11;
     public CLOSED_CLAIM_STATUS = 30;
-    public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims"];
+    public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims","/reconciliation"];
     // public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
 
 
