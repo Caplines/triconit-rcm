@@ -91,7 +91,9 @@ export class OtherTeamsWorkComponent implements OnInit {
   ngOnInit(): void {
     this.clientName = localStorage.getItem("selected_clientName");
     this.currentTeamName = this.appConstants.teamData.find((e: any) => e.teamId == Utils.selectedTeam());
-    this.fetchClaims("Fresh");
+    this.tabSwitch.unSubmitted = false;
+    this.tabSwitch.submitted = true;
+    this.fetchClaims("submitted");
     this.fetchOtherTeams();
     this.showOrHideColumns(this.currentTeamName);
   }

@@ -1,0 +1,6 @@
+<ngx-datepicker id="datePick" #datePicker
+  [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
+  [(ngModel)]="inputDate"
+  (keydown)="removeReadonly($event)" 
+  (ngModelChange)="onSelectDate($event)">
+</ngx-datepicker>

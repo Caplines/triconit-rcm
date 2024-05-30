@@ -19,10 +19,16 @@
                             <div class="form-row withoutLink rangeWithFilter">
                                 <div class="date-range-box">
                                     <label>Select Date Range </label>
-                                    <input type="date" (change)="selectDate($event,'start')" class="form-control"
-                                        id="sDate">
-                                    <input type="date" (change)="selectDate($event,'end')" class="form-control"
-                                        id="eDate">
+                                    <app-date-picker id="startDate"
+                                        [inputDate]="selectedDate['startDate']"
+                                        [parentModel]="'start'"
+                                        (emitToParent)="receiveChildEvent($event)">
+                                    </app-date-picker>
+                                    <app-date-picker id="endDate"
+                                        [inputDate]="selectedDate['endDate']" 
+                                        [parentModel]="'end'"
+                                        (emitToParent)="receiveChildEvent($event)">
+                                    </app-date-picker>
                                     <button
                                         [ngClass]="{'disabled':!selectedDate.startDate || !selectedDate.endDate || !fetchbtnDisable,'btn-success':selectedDate.startDate && selectedDate.endDate}"
                                         type="button" class="btn rangeBtn" (click)="save()"><span *ngIf="loader.fetch"

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ViewEncapsulation, HostListener } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation, HostListener } from '@angular/core';
 import Utils from '../../util/utils';
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import { ApplicationServiceService } from 'src/app/service/application-service.service';
@@ -6,6 +6,8 @@ import { Title } from '@angular/platform-browser';
 import { DownLoadService } from 'src/app/service/download.service';
 import { AppConstants } from 'src/app/constants/app.constants';
 
+import { DatePipe } from '@angular/common';
+import { PmlDatePicker } from '../../shared/date-picker/datepicker-options';
 
 @Component({
   selector: 'app-production-component',
@@ -20,7 +22,7 @@ export class ProductionComponent implements OnInit {
   total:any=0;
   days:any=0;
   date:any;
-  selectedDate:any={'startDate':'','endDate':''};
+  selectedDate: any = {'startDate': null, 'endDate': null};
   loader:any= {'showLoader':false,'exportPDFLoader':false,'exportCSVLoader':false,'fetch':false};
   isDataAvailable:boolean=false;
   clientName:string='';
@@ -56,10 +58,9 @@ export class ProductionComponent implements OnInit {
   filteredItems: any = [];
   filterName: any;
 
-  constructor(private appService: ApplicationServiceService,private title:Title,private downloadService:DownLoadService,public constant:AppConstants) { 
-     title.setTitle(Utils.defaultTitle + "Production");
-     
-    }
+  constructor(private appService: ApplicationServiceService, private title: Title, private downloadService: DownLoadService, public constant: AppConstants, public datepipe: DatePipe, public pmlDatePicker: PmlDatePicker) {
+    title.setTitle(Utils.defaultTitle + "Production");
+  }
 
   ngOnInit(): void {
    
@@ -80,7 +81,7 @@ export class ProductionComponent implements OnInit {
   this.isDataAvailable=true;
   this.total=0;
   this.days=0;
-    this.appService.getProductionData({ "startDate": this.selectedDate.startDate, "endDate": this.selectedDate.endDate }, (callback: any) => {
+    this.appService.getProductionData({ "startDate": this.transformDate(this.selectedDate.startDate), "endDate": this.transformDate(this.selectedDate.endDate) }, (callback: any) => {
       if (callback.status == 200 && callback.data) {
         this.loader.showLoader = false;
         this.loader.fetch = false;
@@ -198,14 +199,39 @@ export class ProductionComponent implements OnInit {
       }
   }
 
- selectDate(event:any,from:any){
-  if(from == 'start') this.selectedDate.startDate = event.target.value ;
-  if(from=='end') this.selectedDate.endDate = event.target.value;
-  this.fetchbtnDisable=true;
-  console.log(this.selectedDate.startDate,this.selectedDate.endDate );
-  
-  
- }
+  transformDate(date: Date) {
+    return this.datepipe.transform(date, 'yyyy-MM-dd');
+  }
+
+  receiveChildEvent(event: any) {
+    if (event['action'] === 'changeDatePicker') {
+      if (event.model == 'startDate') {
+        if (event.value != null)
+          this.selectedDate['startDate'] = new Date(event.value);
+        else
+          this.selectedDate['startDate'] = null;
+      }
+      if (event.model == 'endDate') {
+        if (event.value != null)
+          this.selectedDate['endDate'] = new Date(event.value);
+        else
+          this.selectedDate['endDate'] = null;
+      }
+    }
+    this.selectDate();
+  }
+
+  selectDate() {
+    if (this.selectedDate.startDate && this.selectedDate.endDate) {
+      if (this.selectedDate.startDate.getTime() <= this.selectedDate.endDate.getTime()) {
+        this.fetchbtnDisable = true;
+      } else {
+        this.fetchbtnDisable = false;
+      }
+    } else {
+      this.fetchbtnDisable = true;
+    }
+  }
 
 exportToCsv() {
   this.loader.exportCSVLoader=true;
