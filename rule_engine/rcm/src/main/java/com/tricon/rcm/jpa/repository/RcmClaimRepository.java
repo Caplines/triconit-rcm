@@ -393,13 +393,14 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	// Constants.QUERY_FOR_RCMCALIM_1
 	@Query(nativeQuery = true, value = " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/count(distinct cast(rcsd.updated_date as date)) as days ,"
 			+ "us.uuid as uuid,us.first_name "
-			+ "as fName,us.last_name as lName,comp.name as companyName ,count(distinct rcsd.updated_date) as disDate  from rcm_user us "
-			+ "left join rcm_claims cl on cl.updated_by=us.uuid " + "inner join office off on off.uuid=cl.office_id "
+			+ "as fName,us.last_name as lName,comp.name as companyName ,count(distinct rcsd.updated_date) as disDate  "
+			+" from rcm_claims_submission_details rcsd inner join "
+			+ " rcm_user us on  rcsd.submitted_by=us.uuid  "
+			+ "left join rcm_claims cl on rcsd.claim_id=cl.claim_uuid  " + "inner join office off on off.uuid=cl.office_id "
 			+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid  and cmp.company_id=off.company_id "
 			+ "inner join company comp on comp.uuid=cmp.company_id "
 			+ "inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
-			+ "inner join rcm_claims_submission_details rcsd on rcsd.claim_id=cl.claim_uuid "
-			+ "and rcsd.submitted_by=us.uuid "
+			//+ "inner join rcm_claims_submission_details rcsd on rcsd.claim_id=cl.claim_uuid and rcsd.submitted_by=us.uuid "
 			// + "left join reports_claim rc on
 			// rc.claim_id=SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1)
 			// and rc.patient_id=cl.patient_id "
@@ -419,14 +420,15 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	// Constants.QUERY_FOR_RCMCALIM_1
 	@Query(nativeQuery = true, value = " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/count(distinct cast(rcsd.updated_date as date)) as days ,"
 			+ "us.uuid as uuid,us.first_name "
-			+ "as fName,us.last_name as lName,comp.name as companyName,count(distinct rcsd.updated_date) as disDate from rcm_user us "
-			+ "left join rcm_claims cl on cl.updated_by=us.uuid " + "inner join office off on off.uuid=cl.office_id "
+			+ "as fName,us.last_name as lName,comp.name as companyName,count(distinct rcsd.updated_date) as disDate "+
+			" from rcm_claims_submission_details rcsd inner join "+
+			" rcm_user us on  rcsd.submitted_by=us.uuid "
+			+ "left join rcm_claims cl on rcsd.claim_id=cl.claim_uuid " + "inner join office off on off.uuid=cl.office_id "
 			+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid  and cmp.company_id=off.company_id "
 			+ "inner join company comp on comp.uuid=cmp.company_id "
 			+ "inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
 			+ " left join rcm_user_assign_office assig on assig.user_id=us.uuid  and assig.team_id=:teamId and assig.user_id=:userId "
-			+ "inner join rcm_claims_submission_details rcsd on rcsd.claim_id=cl.claim_uuid "
-			+ "and rcsd.submitted_by=us.uuid "
+			//+ " inner join rcm_claims_submission_details rcsd on rcsd.claim_id=cl.claim_uuid and rcsd.submitted_by=us.uuid "
 			// + "left join reports_claim rc on
 			// rc.claim_id=SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1)
 			// and rc.patient_id=cl.patient_id "
