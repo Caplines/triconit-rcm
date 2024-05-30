@@ -35,6 +35,20 @@ export const ClaimAssingnmentActivate: CanActivateFn = (
 
         return true;
     }
+    else if (ut == '-1' && roleAsso=='REPORTING'){
+        let ntKey: Number = new Number(9).valueOf();
+        let team: any = appConstants.TEAMS_CONFIG.get(ntKey);
+        let teamM: TeamModel = (<TeamModel>team);
+
+        let ph = teamM.paths.find(x =>
+            x === window.location.pathname);
+        //in case wrong url is accessed
+        if (typeof ph == "undefined") {
+            window.location.href = teamM.defaultpath;
+            return false;
+        }
+        return true;
+    }
 
     router.navigate(['/login'], { queryParams: { returnUrl: window.location.pathname } });
     return false;

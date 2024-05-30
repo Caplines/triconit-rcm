@@ -29,12 +29,12 @@ public enum ClaimStatusEnum {
 	Need_to_Review(22,"Need to Review"),
 	Adjustment_Approval_Needed(23,"Adjustment Approval Needed"),
 	Need_to_Post(24,"Need to Post"),
-	Send_Statement(25,"Send Statement"),
+	Statement_SENT(25,"Statement Sent"),
 	Send_Text(26,"Send Text"),
 	No_Action_Needed(27,"No Action Needed"),
 	Need_to_send_To_IC_system(28,"Need to send to IC system"),
 	Need_to_Void(29,"Need to Void"),
-	Closed(30,"Closed"),
+	Case_Closed(30,"Case Closed"),
 	Voided(31,"Voided"),
 	Pending_For_Review(32,"Pending For Review"),
 	Pending_For_Billing(33,"Pending For Billing"),
@@ -44,7 +44,13 @@ public enum ClaimStatusEnum {
 	Reviewed(36, "Reviewed"),
 	Submitted(37,"Submitted"),
 	IN_PROCESS(38,"In Process"),
-	POSTED(40,"Posted");
+	POSTED(40,"Posted"),
+	Pending_For_Review_By_CDP(41,"Pending For Review by CDP"),
+	Pending_From_Insurance(42,"Pending From Insurance"),
+	Insurance_Claim_Closed(43,"Insurance Claim Closed"),
+	Insurance_Claim_in_Process(44,"Insurance Claim in Process"),
+	Need_to_send_Appeal(45,"Need to send Appeal"),
+	Case_sent_to_Collections(46,"Case sent to Collections");
 	
 	
 	final private int id;

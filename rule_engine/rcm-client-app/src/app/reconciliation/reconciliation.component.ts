@@ -29,7 +29,7 @@ export class ReconciliationComponent {
   toggleState: { [key: string]: boolean } = {};
 
   constructor(private _service: ApplicationServiceService) {
-    this.title.setTitle("RCM TOOL - Reconciliation");
+    this.title.setTitle("RCM Tool - Reconciliation");
   }
 
   ngOnInit() {

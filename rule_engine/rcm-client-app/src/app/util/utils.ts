@@ -310,4 +310,12 @@ export default class Utils {
    static isNotTeamPosting() {
       return <any>localStorage.getItem("selected_teamId") != 12 ? true : false;
    }
+
+   static isRoleReporting() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("REPORTING") > -1) {
+         return true;
+      }
+      return false;
+   }
 }

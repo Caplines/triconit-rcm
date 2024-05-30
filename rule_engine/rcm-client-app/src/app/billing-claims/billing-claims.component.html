@@ -46,6 +46,15 @@
                             </div>
                         </div>
                         <div class="detail-box">
+                            <div class="currentAction">
+                                <label for="" class="">Current Action Required :</label>
+                                <ng-container *ngIf="claimRcm.nextAction!=0; else oldNextActionID">
+                                    <div [innerHTML]="claimRcm.nextActionName"></div>
+                                </ng-container>
+                                <ng-template #oldNextActionID>
+                                    <div [innerHTML]="'N/A'"></div>
+                                </ng-template>
+                            </div>
                             <div class="detail-box-form">
                                 <!-- This section is for all Clients -->
                                 <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimDetails']}">
@@ -229,13 +238,13 @@
                                         </div>
 
                                         <div class="custom-row">
-                                            <label for="" class="">Team Assigned </label>
+                                            <label for="" class="">Assigned Team</label>
                                             <div [innerHTML]="claimRcm.currentTeam"></div>
                                             <!--[innerHTML]="getTeamName(claimRcm.currentTeam+'')">-->
                                         </div>
 
                                         <div class="custom-row">
-                                            <label for="" class="">Claim Status </label>
+                                            <label for="" class="">Current Claim Status</label>
                                             <ng-container *ngIf="claimRcm.currentStatus!=0; else oldClaimsID">
                                                 <div [innerHTML]="claimRcm.currentStatusName"></div>
                                             </ng-container>
@@ -244,8 +253,8 @@
                                             </ng-template>
 
                                         </div>
-                                        <div class="custom-row">
-                                            <label for="" class="">Next Action</label>
+                                        <!-- <div class="custom-row">
+                                            <label for="" class="">Current Action Required</label>
                                             <ng-container *ngIf="claimRcm.nextAction!=0; else oldNextActionID">
                                                 <div [innerHTML]="claimRcm.nextActionName"></div>
                                             </ng-container>
@@ -253,7 +262,7 @@
                                                 <div [innerHTML]="'N/A'"></div>
                                             </ng-template>
 
-                                        </div>
+                                        </div> -->
                                         <div class="custom-row">
                                             <label for="" class="">Assigned Team Role </label>
                                             <div [innerHTML]="claimRcm.assignedToRoleName"></div>
@@ -1629,8 +1638,8 @@
                                                                     {{data.serviceCode}}</td>
                                                                 <td> {{data.tooth==null || data.tooth === '' || data.tooth === 'NA' ? "N/A":data.tooth}}</td>
                                                                 <td> {{data.surface==null || data.surface === '' || data.surface === 'NA' ?"N/A":data.surface}}</td>
-                                                                <td> {{data.fee}}</td>
-                                                                <td> {{data.estPrimary}}</td>
+                                                                <td> {{data.fee==null || data.fee==='' || data.fee==='-1'?"0":data.fee}}</td>
+                                                                <td> {{data.estPrimary==null || data.estPrimary==='' || data.estPrimary==='-1'?"0":data.estPrimary}}</td>
                                                                 <!-- <td class="row-grey"> {{data.surface}}</td> -->
                                                             </ng-container>
                                                             <td> <input type="number"
@@ -1643,53 +1652,43 @@
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="data.paidAmount"
                                                                     (blur)="getTotalServiceLevelInfo()" /> </td>
-                                                            <td><input type="number"
-                                                                    class="attach-secondary-width form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                    [(ngModel)]="data.creditAdjustmentAmount"
-                                                                    (blur)="getTotalServiceLevelInfo()" /> </td>
-                                                            <td><input type="number"
-                                                                    class="attach-secondary-width form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                    [(ngModel)]="data.debitAdjustmentAmount"
-                                                                    (blur)="getTotalServiceLevelInfo()" /> </td>
+                                                                    <td><input type="number" (change)="validate_SERVICE_LEVEL_INFORMATION()" class="attach-secondary-width form-control"
+                                                                            [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                            [(ngModel)]="data.creditAdjustmentAmount" (blur)="getTotalServiceLevelInfo()" /> </td>
+                                                                    <td><input type="number" (change)="validate_SERVICE_LEVEL_INFORMATION()" class="attach-secondary-width form-control"
+                                                                            [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                            [(ngModel)]="data.debitAdjustmentAmount" (blur)="getTotalServiceLevelInfo()" /> </td>
                                                             <!-- <td> <input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="data.adjustmentAmount"
                                                                     (blur)="getTotalServiceLevelInfo()"> </td> -->
-                                                            <td>
-                                                                <select class="attach-secondary-width form-control"
-                                                                    [(ngModel)]="data.adjustmentReason"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                    (change)="validate_SERVICE_LEVEL_INFORMATION()"
-                                                                    [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['adjustmentReason']}"
-                                                                    [title]="data.adjustmentReason">
-                                                                    <option value="">Select
-                                                                    </option>
-                                                                    <option [value]="reason.reasonName"
-                                                                        *ngFor="let reason of appConstants.adjustmentReason">
-                                                                        {{reason.reasonName}}</option>
-                                                                </select>
-                                                            </td>
-                                                            <td> <input type="number"
-                                                                    class="attach-secondary-width form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                    [(ngModel)]="data.billToPatientAmount"
-                                                                    (blur)="getTotalServiceLevelInfo()"> </td>
-                                                            <td>
-                                                                <select class="attach-secondary-width form-control"
-                                                                (change)="validate_SERVICE_LEVEL_INFORMATION()"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['btpReason']}"
-                                                                    [(ngModel)]="data.btpReason">
-                                                                    <option value="">Select
-                                                                    </option>
-                                                                    <option [value]="reason.reasonName"
-                                                                        *ngFor="let reason of appConstants.btpReason">
-                                                                        {{reason.reasonName}}</option>
-                                                                </select>
-                                                            </td>
+                                                                    <td>
+                                                                        <select class="attach-secondary-width form-control" [(ngModel)]="data.adjustmentReason"
+                                                                            [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit) || (data.creditAdjustmentAmount <= 0 && data.debitAdjustmentAmount <= 0)"
+                                                                            (change)="validate_SERVICE_LEVEL_INFORMATION()"
+                                                                            [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['adjustmentReason']}"
+                                                                            [title]="data.adjustmentReason">
+                                                                            <option value="">Select
+                                                                            </option>
+                                                                            <option [value]="reason.reasonName" *ngFor="let reason of appConstants.adjustmentReason">
+                                                                                {{reason.reasonName}}</option>
+                                                                        </select>
+                                                                    </td>
+                                                                    <td> <input type="number" (change)="validate_SERVICE_LEVEL_INFORMATION()" class="attach-secondary-width form-control"
+                                                                            [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                            [(ngModel)]="data.billToPatientAmount" (blur)="getTotalServiceLevelInfo()"> </td>
+                                                                            <td>
+                                                                                <select class="attach-secondary-width form-control" (change)="validate_SERVICE_LEVEL_INFORMATION()"
+                                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit) || (data.billToPatientAmount <= 0)"
+                                                                                    [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['btpReason']}"
+                                                                                    [(ngModel)]="data.btpReason">
+                                                                                    <option value="">Select
+                                                                                    </option>
+                                                                                    <option [value]="reason.reasonName" *ngFor="let reason of appConstants.btpReason">
+                                                                                        {{reason.reasonName}}</option>
+                                                                                </select>
+                                                                            </td>
                                                             <td>
                                                                 <div class="form-check-inline">
                                                                     <input type="radio" class="form-check-input"
@@ -1799,7 +1798,7 @@
                                                         <td colspan="4"></td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="3">Enter Balance From ES Before Posting</td>
+                                                        <td colspan="3">Enter Balance From PMS Before Posting</td>
                                                         <td colspan="3"><input type="number"
                                                                 class="attach-secondary-width form-control"
                                                                 type="number" (blur)="updatBalanceFromESBeforePosting()"
@@ -1808,7 +1807,7 @@
                                                         </td>
                                                         <td colspan="11"></td>
                                                     <tr>
-                                                        <td colspan="3">Balance From ES After Posting</td>
+                                                        <td colspan="3">Balance From PMS After Posting</td>
                                                         <td colspan="3"> <input type="number"
                                                                 class="attach-secondary-width form-control"
                                                                 (change)="checkReconcileLogic()"
@@ -1899,7 +1898,7 @@
                                                         <th>EOB Link</th>
                                                         <th>Attached By Team</th>
                                                         <th>Attached By User</th>
-                                                        <th>Action
+                                                        <th>Remove EOB
                                                             <!-- <button class="btn btn-sm btn-danger" (click)="deleteAllEobLink()">Delete All Claims</button> -->
                                                         </th>
                                                     </tr>
@@ -1950,14 +1949,14 @@
                                                 </div>
                                             </div>
 
-                                            <div class="pdf-viewer" *ngIf="pdfUrlSrc && !isPdfError">
+                                            <!-- <div class="pdf-viewer" *ngIf="pdfUrlSrc && !isPdfError">
                                                 <div class="pdf-action-box">
-                                                    <!-- <div class="pdf-search-box">
+                                                    <div class="pdf-search-box">
                                                         <input type="text" class="form-control mx-2 "
                                                             [(ngModel)]="stringToSearch">
                                                         <button (click)="search()" class="btn btn-primary btn-sm">Search
                                                         </button>
-                                                    </div> -->
+                                                    </div>
                                                     <div class="zoom-action">
                                                         <button (click)="zoom_in()" class="btn btn-success"><svg
                                                                 xmlns="http://www.w3.org/2000/svg" width="16"
@@ -1986,7 +1985,7 @@
 
                                                 <pdf-viewer style="display: block; min-height: 250px" [src]="pdfUrlSrc"
                                                     [render-text]="true" [zoom]="zoom_to" (error)="onError($event)"></pdf-viewer>
-                                            </div>
+                                            </div> -->
                                         </div>
                                     </div>
                                 </ng-container>
@@ -2061,7 +2060,7 @@
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['network']"
                                                     [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['network']}">
-                                                    <option selected="true" hidden="true">Select Network</option>
+                                                    <option value="">Select Network</option>
                                                     <option value="in">In</option>
                                                     <option value="out">Out</option>
                                                 </select>
@@ -2075,7 +2074,7 @@
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo']"
                                                     [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimPassFirstGo']}">
-                                                    <option selected="true" hidden="true">Select</option>
+                                                    <option value="">Select</option>
                                                     <option value="yes">Yes</option>
                                                     <option value="no">No</option>
                                                 </select>
@@ -2089,7 +2088,7 @@
                                                     [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['initialDenial']"
                                                     [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['initialDenial']}">
-                                                    <option selected="true" hidden="true">Select</option>
+                                                    <option value="">Select</option>
                                                     <ng-container
                                                         *ngFor="let item of appConstants.claimInitialDenialReason">
                                                         <option [value]="item.reasonName">{{item.reasonName}}</option>
@@ -2234,7 +2233,7 @@
                                         </div>
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
-                                                <label for="amountPostedInEs">Amount Posted in ES</label>
+                                                <label for="amountPostedInEs">Amount Posted in PMS</label>
                                                 <input type="number" id="amountPostedInEs"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountPostedInEs']"
@@ -2455,20 +2454,21 @@
                                                 </div>
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="currentClaimStatus">Current Claim Status</label>
+                                                        <label for="currentClaimStatus">Insurance Claim Status</label>
                                                         <select id="currentClaimStatus" class="form-control"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus']"
                                                             [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus']}">
                                                             <option value="">Select</option>
-                                                            <option value="Pending For Review">Pending For Review</option>
-                                                            <option value="Pending For Billing">Pending For Billing</option>
-                                                            <option value="Billed">Billed</option>
+                                                            <option value="Need Additional Information">Need Additional Information</option>
+                                                            <option value="Denied">Denied</option>
+                                                            <option value="Paid">Paid</option>
                                                             <option value="In Process">In Process</option>
-                                                            <option value="Closed">Closed</option>
+                                                            <option value="Appeal Upheld">Appeal Upheld</option>
                                                             <option value="Voided">Voided</option>
-                                                            <option value="Pending For Rebilling">Pending For Rebilling</option>
+                                                            <option value="Appeal Needed">Appeal Needed</option>
                                                             <option value="Payment Promised">Payment Promised</option>
+                                                            <option value="EOB Not Generated">EOB Not Generated</option>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -2701,7 +2701,7 @@
                                                     </div>
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="amountStatement">Amount of Statement</label>
+                                                            <label for="amountStatement">Amount on Statement</label>
                                                             <input type="number" id="amountStatement"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['amountStatement']"
@@ -3476,9 +3476,8 @@
                                         <div class="col-md-4 mb-2">
                                             <div class="custom-row text-number">
                                                 <label for="rebillingRequirements">Requirements for
-                                                    Rebilling &nbsp;<span class="text-danger">*</span></label>
-                                                <span class="mutliselect"
-                                                    [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['rebillingRequirements']}">
+                                                    Rebilling </label>
+                                                <span class="mutliselect">
                                                     <ng-container
                                                         *ngIf="serviceLevelSectionMultiSelectConfig.rebillingRequirements.length>0">
                                                         <multi-select-dropdown
@@ -3808,80 +3807,72 @@
 
                                     <div *ngIf="loader['RECREATE_CLAIM']" class="loader-data"></div>
                                     <div *ngIf="!loader['RECREATE_CLAIM'] && !(activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount))"
-                                        class="form-row collapse" [ngClass]="{'show':!toggleTab['RECREATE_CLAIM']}"
-                                        id="RECREATE_CLAIM">
-
-                                        <div class="col-md-4 mb-2">
-                                            <div class="custom-row text-number">
-                                                <label for="newClaimId">Enter New Claim ID</label>
-                                                <input type="text" id="newClaimId"
-                                                    *ngIf="claimSectionModal?.RECREATE_CLAIM"
-                                                    [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                    [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']"
-                                                    class="form-control"
-                                                    [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['newClaimId']}"
-                                                    (change)="clearSelectedRadioButtons()">
-                                                <button class="btn btn-sm btn-success validate-btn"
-                                                    *ngIf="isPrimaryClaimClosed()"
-                                                    [disabled]="!claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']"
-                                                    (click)="validateNewClaimId()">Validate Claim</button>
+                                        class="form-row collapse" [ngClass]="{'show':!toggleTab['RECREATE_CLAIM']}" id="RECREATE_CLAIM">
+                                    
+                                        <ng-container
+                                            *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2 || claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3">
+                                            <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="newClaimId">Enter New Claim ID</label>
+                                                    <input type="text" id="newClaimId" *ngIf="claimSectionModal?.RECREATE_CLAIM"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']" class="form-control"
+                                                        [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['newClaimId']}"
+                                                        (change)="clearSelectedRadioButtons()">
+                                                    <button class="btn btn-sm btn-success validate-btn" *ngIf="isPrimaryClaimClosed()"
+                                                        [disabled]="!claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'] || !isValidInput"
+                                                        (click)="validateNewClaimId()">Validate Claim</button>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4 mb-2">
-                                            <div class="custom-row text-number">
-                                                <label for="reasonRecreation">Reason for Recreation</label>
-                                                <select id="reasonRecreation" class="form-control"
-                                                    *ngIf="claimSectionModal?.RECREATE_CLAIM"
-                                                    [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                    [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['reasonRecreation']"
-                                                    [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['reasonRecreation']}">
-                                                    <option [selected]="true" [value]="null">Select</option>
-                                                    <option value="Rebilling Needed">Rebilling Needed</option>
-                                                    <option value="Code Change Needed">Need to fix walkout</option>
-                                                </select>
+                                            <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="reasonRecreation">Reason for Recreation</label>
+                                                    <select id="reasonRecreation" class="form-control" *ngIf="claimSectionModal?.RECREATE_CLAIM"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['reasonRecreation']"
+                                                        [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['reasonRecreation']}">
+                                                        <option [selected]="true" [value]="null">Select</option>
+                                                        <option value="Rebilling Needed">Rebilling Needed</option>
+                                                        <option value="Code Change Needed">Need to fix walkout</option>
+                                                    </select>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-4 mb-2">
-                                            <div class="custom-row text-number">
-                                                <label for="recreationRemarks">Remarks</label>
-                                                <textarea id="recreationRemarks"
-                                                    *ngIf="claimSectionModal?.RECREATE_CLAIM"
-                                                    [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                    [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['recreationRemarks']"
-                                                    class="form-control" rows="1" cols="30"
-                                                    [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['recreationRemarks']}"></textarea>
+                                            <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="recreationRemarks">Remarks</label>
+                                                    <textarea id="recreationRemarks" *ngIf="claimSectionModal?.RECREATE_CLAIM"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['recreationRemarks']"
+                                                        class="form-control" rows="1" cols="30"
+                                                        [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['recreationRemarks']}">
+                                                    </textarea>
+                                                </div>
                                             </div>
-                                        </div>
-
+                                        </ng-container>
+                                    
+                                    
                                         <div class="col-sm-7 mb-3 d-flex">
                                             <label class="custom-row text-number" style="min-width: 160px;">Action to
                                                 Perform</label>
                                             <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
                                                 <label class="btn btn-light mx-0"
-                                                    (click)="selectActionToPerformRecreate('attachSecondary')"
                                                     [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'}">
-                                                    <input type="radio" name="action" class="form-check-input"
-                                                        [value]="'attachSecondary'"
+                                                    <input type="radio" name="action" class="form-check-input" [value]="'attachSecondary'"
                                                         [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'"
                                                         (change)="selectActionToPerformRecreate('attachSecondary')">Attach
                                                     Secondary
                                                 </label>
-                                                <ng-container
-                                                    *ngIf="this.claimSectionModal.RECREATE_CLAIM['newServiceCodes'] && this.claimSectionModal.RECREATE_CLAIM['newServiceCodes']?.length>0  ">
+                                                <ng-container>
                                                     <label class="btn btn-light"
-                                                        (click)="selectActionToPerformRecreate('2')"
                                                         [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2}">
-                                                        <input type="radio" name="action" [value]="'2'"
-                                                            class="form-check-input"
+                                                        <input type="radio" name="action" [value]="'2'" class="form-check-input"
                                                             [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2"
                                                             (change)="selectActionToPerformRecreate('2')">Recreate Full
                                                         Claim
                                                     </label>
                                                     <label class="btn btn-light"
-                                                        (click)="selectActionToPerformRecreate('3')"
                                                         [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3}">
-                                                        <input type="radio" name="action" [value]="'3'"
-                                                            class="form-check-input"
+                                                        <input type="radio" name="action" [value]="'3'" class="form-check-input"
                                                             [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3"
                                                             (change)="selectActionToPerformRecreate('3')">Recreate
                                                         Partially
@@ -3892,7 +3883,7 @@
                                         </div>
 
                                         <ng-container
-                                            *ngIf="claimSectionModal.RECREATE_CLAIM['validationData'].length>0 && this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3">
+                                            *ngIf="claimSectionModal.RECREATE_CLAIM['validationData'].length>0 && claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3">
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
                                                     <label for="desposition">Service Codes to Recreate</label>
@@ -3910,9 +3901,8 @@
                                         </ng-container>
 
                                         <div class="col-sm-5"></div>
-
-                                        <div *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid']"
-                                            class="table-responsive mb-3">
+                                    
+                                        <div *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid']" class="table-responsive mb-3">
                                             <table class="table">
                                                 <thead>
                                                     <tr>
@@ -3941,18 +3931,15 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td><input type="number"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="number" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryBlledAmount']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryBlledAmount']">
                                                         </td>
-                                                        <td><input type="date"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="date" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryClaimSubmissionDate']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryClaimSubmissionDate']">
                                                         </td>
-                                                        <td><input type="number"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="number" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['primaryPaid']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['primaryPaid']">
                                                         </td>
@@ -3960,28 +3947,23 @@
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['claimTypeS']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['claimTypeS']">
                                                         </td>
-                                                        <td><input type="text"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="text" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryClaimStatus']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryClaimStatus']">
                                                         </td>
-                                                        <td><input type="text"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="text" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['providerIdReport']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['providerIdReport']">
                                                         </td>
-                                                        <td><input type="number"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="number" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryEstAmount']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryEstAmount']">
                                                         </td>
-                                                        <td><input type="text"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="text" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryInsuranceCompany']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryInsuranceCompany']">
                                                         </td>
-                                                        <td><input type="text"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="text" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryInsuranceContactNo']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryInsuranceContactNo']">
                                                         </td>
@@ -4000,28 +3982,23 @@
                                                                 <option value="HMO MCR">HMO MCR</option>
                                                             </select>
                                                         </td>
-                                                        <td><input type="text"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="text" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryMemberId']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryMemberId']">
                                                         </td>
-                                                        <td><input type="text"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="text" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryInsuranceAddress']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryInsuranceAddress']">
                                                         </td>
-                                                        <td><input type="text"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="text" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryGroupNumber']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryGroupNumber']">
                                                         </td>
-                                                        <td><input type="text"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="text" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryPolicyHolder']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryPolicyHolder']">
                                                         </td>
-                                                        <td><input type="date"
-                                                                class="attach-secondary-width form-control"
+                                                        <td><input type="date" class="attach-secondary-width form-control"
                                                                 [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryPolicyHolderDob']"
                                                                 [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryPolicyHolderDob']">
                                                         </td>
@@ -4059,13 +4036,11 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        <tr
-                                                            *ngFor="let item of claimSectionModal.RECREATE_CLAIM.validationData;let idx=index;">
+                                                        <tr *ngFor="let item of claimSectionModal.RECREATE_CLAIM.validationData;let idx=index;">
                                                             <td>{{idx+1}}</td>
                                                             <td>{{item.ruleName}}</td>
                                                             <td [innerHTML]="item.message"></td>
-                                                            <td> <textarea
-                                                                    [readonly]="item.resultType == 'FAIL' && item.ruleId == 324"
+                                                            <td> <textarea [readonly]="item.resultType == 'FAIL' && item.ruleId == 324"
                                                                     [(ngModel)]="item.remarks" class="form-control"
                                                                     [class.is-invalid]="item.emptyRemarks"></textarea>
                                                             </td>
@@ -4171,7 +4146,7 @@
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
                                                         <label for="currentClaimStatusEs">Current Claim status in
-                                                            ES &nbsp;<span class="text-danger">*</span></label>
+                                                            PMS &nbsp;<span class="text-danger">*</span></label>
                                                         <select id="currentClaimStatusEs" (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
@@ -4210,8 +4185,7 @@
 
                                                 <div class="col-md-4 mb-2">
                                                     <div class="custom-row text-number">
-                                                        <label for="assignToTeam">Assign to
-                                                            Team &nbsp;<span class="text-danger">*</span></label>
+                                                        <label for="assignToTeam">Assign to Team</label>
                                                         <select id="assignToTeam" (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()" class="form-control"
                                                             [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId']"

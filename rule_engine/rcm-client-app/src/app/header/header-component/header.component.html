@@ -88,12 +88,9 @@
                     [routerLink]="['/manage-section']" routerLinkActive="active" #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/manage-section-green-icon.png':'../../assets/img/manage-section.png'" />Manage
                     Section</a></li>
-            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin')"><a href="javascript:void(0);"
-                    [routerLink]="['/reconciliation']" routerLinkActive="active" #rla="routerLinkActive"><img
-                        [src]="rla.isActive? '../../assets/img/reconciliation-green-icon.png':'../../assets/img/reconciliation.png'" />Reconciliation
-                </a></li>
+          
             <li
-                *ngIf="(currentTeamId == 7|| currentTeamId == 3) && (staticUtil.isRoleLead() || staticUtil.checkRoleSuperAdmin() ) ">
+                *ngIf="((currentTeamId == 7|| currentTeamId == 3) && (staticUtil.isRoleLead() || staticUtil.checkRoleSuperAdmin())) || staticUtil.isRoleReporting() ">
                 <a href="javascript:void(0);" [routerLink]="['/tool-update']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Upload
@@ -128,18 +125,22 @@
                     [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Other Team Work</a>
         </li> -->
             <li class="local"
-                *ngIf="!(userInfo.currentClientName != 'Smilepoint' && currentTeamId == 5) || userInfo.currentClientName == 'Smilepoint' ">
+            *ngIf="(loginUserType != 'Admin' && !staticUtil.isRoleReporting()) && (userInfo.currentClientName == 'Smilepoint' || currentTeamId != 5)">
                 <a href="javascript:void(0);" [routerLink]="['/production']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/production-green-icon.png':'../../assets/img/production-gray-icon.png'" />Production</a>
             </li>
             <li
-                *ngIf="((staticUtil.isRoleLead() || staticUtil.isRoleAsso() || staticUtil.checkRoleSuperAdmin()) && !(loginUserType== 'Admin'))">
+                *ngIf="((staticUtil.isRoleLead() || staticUtil.isRoleAsso() || staticUtil.isRoleReporting() || staticUtil.checkRoleSuperAdmin()) && !(loginUserType== 'Admin'))">
                 <a href="javascript:void(0);" [routerLink]="['/search-claims']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/search-claim.png':'../../assets/img/search-claim-gray.png'" />Search
                     Claims</a>
             </li>
+            <li><a href="javascript:void(0);"
+                [routerLink]="['/reconciliation']" routerLinkActive="active" #rla="routerLinkActive"><img
+                    [src]="rla.isActive? '../../assets/img/reconciliation-green-icon.png':'../../assets/img/reconciliation.png'" />Reconciliation
+            </a></li>
             <!-- <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/updatePassword-active.png':'../../assets/img/updatePassword.png'" />Update Password</a></li>  -->
         </ul>
 
