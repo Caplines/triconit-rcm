@@ -7,7 +7,6 @@ import { DatepickerModule } from 'ng2-datepicker';
   imports: [
     CommonModule,
     DatepickerModule
-    
   ],
   declarations: [DatePickerComponent],
   exports: [DatePickerComponent]
