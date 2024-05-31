@@ -1,10 +1,11 @@
-import { Component, Input, OnInit, EventEmitter, Output, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, Input, OnInit, EventEmitter, Output, ViewEncapsulation, ViewChild, AfterViewInit } from '@angular/core';
 import { PmlDatePicker } from '../datepicker-options';
 
 @Component({
   selector: 'app-date-picker',
   templateUrl: './date-picker.component.html',
-  styleUrls: ['./date-picker.component.scss']
+  styleUrls: ['./date-picker.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class DatePickerComponent implements OnInit, AfterViewInit {
 

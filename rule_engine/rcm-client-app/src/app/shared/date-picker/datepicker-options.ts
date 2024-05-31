@@ -9,7 +9,7 @@ export class PmlDatePicker {
     public DATE_PICKER_OPTIONS: DatepickerOptions = {
        // minYear: getYear(new Date()) - 30, // minimum available and selectable year
             // maxYear: getYear(new Date()) + 30, // maximum available and selectable year
-            placeholder: 'Select Date', // placeholder in case date model is null | undefined, example: 'Please pick a date'
+            placeholder: 'MM/dd/yyyy', // placeholder in case date model is null | undefined, example: 'Please pick a date'
             //format: 'LLLL do yyyy', // date format to display in input
             format: "MM/dd/yyyy",
             //format: "yyyy-MM-dd HH:mm",

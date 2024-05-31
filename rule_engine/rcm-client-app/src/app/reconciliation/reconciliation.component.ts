@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -6,10 +6,14 @@ import { Title } from '@angular/platform-browser';
 import { ApplicationServiceService } from '../service/application-service.service';
 import { ReconcilltationRequestModel } from '../models/reconcillation-request-model';
 import { ReconcilltationResponseModel } from '../models/reconcillation-request-model';
+import { DatePipe } from '@angular/common';
+import { PmlDatePicker } from '../shared/date-picker/datepicker-options';
+import { DatepickerModule } from 'ng2-datepicker';
+import { DatePickerModule } from '../shared/date-picker/date-picker/date-picker.module';
 @Component({
   selector: 'app-reconciliation',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, DatepickerModule, DatePickerModule],
   templateUrl: './reconciliation.component.html',
   styleUrls: ['./reconciliation.component.scss']
 })
@@ -19,16 +23,18 @@ export class ReconciliationComponent {
   
   reconcileResponseData: ReconcilltationResponseModel[] = [];
   reconcilltationRequestModel: ReconcilltationRequestModel = {
-    officeUuid: ''
+    officeUuid: '',
+    startDate: null,
+    endDate: null
   }
 
   loader: boolean = false;
   officeData: any = [];
   toggleLinks: boolean = false;
-  datesDiff: number = 1000000;
+  datesDiff: number = 1000;
   toggleState: { [key: string]: boolean } = {};
 
-  constructor(private _service: ApplicationServiceService) {
+  constructor(private _service: ApplicationServiceService, public datepipe: DatePipe, public pmlDatePicker: PmlDatePicker) {
     this.title.setTitle("RCM Tool - Reconciliation");
   }
 
@@ -72,7 +78,11 @@ export class ReconciliationComponent {
     this.loader = true;
     this.toggleState = {};
     this.reconcileResponseData = [];
-    this._service.fetchReconcileData(this.reconcilltationRequestModel, (res: any) => {
+    this._service.fetchReconcileData({
+      ...this.reconcilltationRequestModel,
+      startDate: this.transformDate(this.reconcilltationRequestModel.startDate),
+      endDate: this.transformDate(this.reconcilltationRequestModel.endDate)
+    }, (res: any) => {
       if (res.status === 200) {
         console.log(res.data);
         setTimeout(() => {
@@ -81,5 +91,29 @@ export class ReconciliationComponent {
         }, 0)
       }
     });
+  }
+
+  transformDate(date: Date) {
+    return this.datepipe.transform(date, 'yyyy-MM-dd');
+  }
+
+  receiveChildEvent(event: any) {
+    if (event['action'] === 'changeDatePicker') {
+      if (event.model == 'startDate') {
+        if (event.value != null){
+          this.reconcilltationRequestModel.startDate = new Date(event.value);
+        }
+        else
+          this.reconcilltationRequestModel.startDate = null;
+      }
+      if (event.model == 'endDate') {
+        if (event.value != null){
+          this.reconcilltationRequestModel.endDate = new Date(event.value);
+        }
+        else
+          this.reconcilltationRequestModel.endDate = null;
+      }
+    }
+    this.calculateDateDiff();
   }
 }
