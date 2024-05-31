@@ -93,9 +93,9 @@ export class BillingClaimsComponent {
   finalsubmitcurrentstat: boolean = true;
   activeServiceCodeCount: number = 0;
   rebilledServiceCodeCount: number = 0;
-  isPdfError:boolean=false;
-  isNextFollowUpRequired:boolean=false;
-  checkDeliveredTo=false;
+  isPdfError: boolean = false;
+  isNextFollowUpRequired: boolean = false;
+  checkDeliveredTo = false;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -247,9 +247,9 @@ export class BillingClaimsComponent {
       noOfEstPayment: '',
       paymentFrequency: '',
       noOfPaymentReceived: '',
-      claimPassFirstGo:'',
-      initialDenial:'',
-      network:'',
+      claimPassFirstGo: '',
+      initialDenial: '',
+      network: '',
     },
     APPEAL: {
       modeOfAppeal: '',
@@ -301,7 +301,7 @@ export class BillingClaimsComponent {
       data: [],
       modal: {
         modeOfFollowUp: '',
-        desposition:''
+        desposition: ''
       }
     },
     CURRENT_STATUS_AND_NEXT_ACTION: {
@@ -318,7 +318,7 @@ export class BillingClaimsComponent {
       data: [],
       modal: {
         rebillingStatus: true,
-        usedAI:''
+        usedAI: ''
       },
       dataModal: {}
     },
@@ -383,6 +383,7 @@ export class BillingClaimsComponent {
   hideSideBarDom: boolean = false;
   @ViewChild(PdfViewerComponent, { static: false }) private pdfViewer!: PdfViewerComponent;
   isLoggedInAdmin: boolean = false;
+  isLoggedInReporting: boolean = false;
   isValidInput: boolean = false;
 
 
@@ -398,10 +399,11 @@ export class BillingClaimsComponent {
     this.smilePoint = Utils.isSmilePoint();
     this.selectedTeam = Utils.selectedTeam();
     this.isLoggedInAdmin = Utils.checkAdminLoginRole();
+    this.isLoggedInReporting = Utils.checkReportingRole();
     this.clientName = localStorage.getItem("selected_clientName");
     this.route.paramMap.subscribe(params => {
       this.claimUUid = params.get('uuid') || '';
-      if (!this.isLoggedInAdmin) this.fetchClaimRights(this.claimUUid);
+      if (!this.isLoggedInAdmin && !this.isLoggedInReporting) this.fetchClaimRights(this.claimUUid);
     });
     this.emailUrl = window.location.href;
     this.hideSideBarDom = true;
@@ -1050,7 +1052,7 @@ export class BillingClaimsComponent {
             let prfMode = ths.claimRcm.preferredModeOfSubmission;
             ths.submissionDto.channel = prfMode;
           }
-        } else{
+        } else {
           ths.submissionDto.esDate = this.convertStringToDateForDatePicker(ths.submissionDto.esDate);
         }
       }
@@ -1987,7 +1989,7 @@ export class BillingClaimsComponent {
         //   console.log(this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'])
         //   this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']);
         // }
-        if (this.claimSectionModal['CLAIM_LEVEL_INFORMATION'] !== null){
+        if (this.claimSectionModal['CLAIM_LEVEL_INFORMATION'] !== null) {
           this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']);
         }
       }
@@ -2065,7 +2067,7 @@ export class BillingClaimsComponent {
         if (res && res.data) {
           this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data = res.data;
 
-         
+
           if (res.data != null && res.data.length > 0) {
             this.sectionLevelInfoTotalConfig.balanceFromEsBeforePosting = res.data[0].balanceFromEsBeforePosting;
             this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting = Number(res.data[0].balanceFromEsAfterPosting);
@@ -2075,17 +2077,17 @@ export class BillingClaimsComponent {
           }
 
           this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
-            if(e.surface==null || e.surface=='' ||  e.surface=='NA'){
-              e.surface='N/A';
+            if (e.surface == null || e.surface == '' || e.surface == 'NA') {
+              e.surface = 'N/A';
             }
-            if(e.tooth==null || e.tooth=='' || e.tooth=='NA'){
-              e.tooth='N/A';
+            if (e.tooth == null || e.tooth == '' || e.tooth == 'NA') {
+              e.tooth = 'N/A';
             }
-            if(e.fee==null || e.fee=='' || e.fee=='-1'){
-              e.fee='0';
+            if (e.fee == null || e.fee == '' || e.fee == '-1') {
+              e.fee = '0';
             }
-            if(e.estPrimary==null || e.estPrimary=='' || e.estPrimary=='-1'){
-              e.estPrimary='0';
+            if (e.estPrimary == null || e.estPrimary == '' || e.estPrimary == '-1') {
+              e.estPrimary = '0';
             }
             if (e.serviceCode != 'Undistributed') {
               this.activeServiceCodeCount++;
@@ -2356,25 +2358,25 @@ export class BillingClaimsComponent {
 
   validate_SERVICE_LEVEL_INFORMATION() {
     let isSectionValidated = true;
-    for(let i =0; i<1000; i++){
-      this.emptyFields["SERVICE_LEVEL_INFORMATION"+i] = {};
-      this.emptyFields["SERVICE_LEVEL_INFORMATION" + i]['btpReason'] =false;
+    for (let i = 0; i < 1000; i++) {
+      this.emptyFields["SERVICE_LEVEL_INFORMATION" + i] = {};
+      this.emptyFields["SERVICE_LEVEL_INFORMATION" + i]['btpReason'] = false;
       this.emptyFields["SERVICE_LEVEL_INFORMATION" + i]['adjustmentReason'] = false;
     }
 
     this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { creditAdjustmentAmount: number, debitAdjustmentAmount: number, billToPatientAmount: number, adjustmentReason: string, btpReason: string }, index: number) => {
       let heading = "SERVICE_LEVEL_INFORMATION" + index;
- 
-      if (obj.creditAdjustmentAmount === 0 && obj.debitAdjustmentAmount === 0){
+
+      if (obj.creditAdjustmentAmount === 0 && obj.debitAdjustmentAmount === 0) {
         obj.adjustmentReason = '';
       }
- 
+
       if (obj.billToPatientAmount === 0) {
         obj.btpReason = '';
       }
- 
+
       if ((obj.creditAdjustmentAmount > 0 || obj.debitAdjustmentAmount > 0) &&
-          (obj.adjustmentReason === '' || obj.adjustmentReason === null)) {
+        (obj.adjustmentReason === '' || obj.adjustmentReason === null)) {
         this.emptyFields[heading]['adjustmentReason'] = true;
         isSectionValidated = false;
       }
@@ -2385,7 +2387,7 @@ export class BillingClaimsComponent {
       }
 
     });
-    
+
     if (!this.sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt || !this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt) {
       isSectionValidated = false;
     }
@@ -2410,17 +2412,17 @@ export class BillingClaimsComponent {
     }
 
     //The patient statemnt cycle will stop and be highlighted in some way when the patient payment becomes equal to the BTP Amount
-      if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1) {
-        if (this.claimSectionModal['PATIENT_STATEMENT']['reason'] === "") {
-          this.emptyFields['PATIENT_STATEMENT']['reason'] = true;
-          isSectionValidated = false;
-        }
-      } else {
-        if (this.claimSectionModal['PATIENT_STATEMENT']['modeOfStatement'] === "") {
-          this.emptyFields['PATIENT_STATEMENT']['modeOfStatement'] = true;
-          isSectionValidated = false;
-        }
+    if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1) {
+      if (this.claimSectionModal['PATIENT_STATEMENT']['reason'] === "") {
+        this.emptyFields['PATIENT_STATEMENT']['reason'] = true;
+        isSectionValidated = false;
       }
+    } else {
+      if (this.claimSectionModal['PATIENT_STATEMENT']['modeOfStatement'] === "") {
+        this.emptyFields['PATIENT_STATEMENT']['modeOfStatement'] = true;
+        isSectionValidated = false;
+      }
+    }
     return isSectionValidated;
   }
 
@@ -2435,7 +2437,7 @@ export class BillingClaimsComponent {
       isSectionValidated = false;
     }
 
-    if (this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['modeOfFollowUp'] =="Call") {
+    if (this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['modeOfFollowUp'] == "Call") {
       if (!this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'].refNumber) {
         this.emptyFields['INSURANCE_FOLLOW_UP'].refNumber = true;
         isSectionValidated = false;
@@ -2667,7 +2669,7 @@ export class BillingClaimsComponent {
       let matchFound = false;
       for (const e of this.claimSectionModal['EOB'].data) {
         if (e.eobLink == params.eobInfoModel.eobLink) {
-          matchFound =true;
+          matchFound = true;
         }
       }
 
@@ -2682,7 +2684,7 @@ export class BillingClaimsComponent {
         setTimeout(() => {
           this.claimSectionModal['EOB']['errorMessage'] = '';
         }, 2000);
-  
+
         this.loader.EOB = false;
       }
     }
@@ -2961,8 +2963,8 @@ export class BillingClaimsComponent {
       "surface": "",
       "estPrimary": 0,
       "fee": 0,
-      "creditAdjustmentAmount":0,
-      "debitAdjustmentAmount":0,
+      "creditAdjustmentAmount": 0,
+      "debitAdjustmentAmount": 0,
       "snum": this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length + 1
     };
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.push(model);
@@ -3100,7 +3102,7 @@ export class BillingClaimsComponent {
           ...this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'],
           nextFollowUpDate: this.convertStringToDateForApiCall(this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'])
         }
-          
+
       };
       console.log(params);
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
@@ -3108,7 +3110,7 @@ export class BillingClaimsComponent {
         this.loader.insuranceFollowUpInfo = false;
       })
     }
-    this.isNextFollowUpRequired=false;
+    this.isNextFollowUpRequired = false;
     return this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'];
   }
 
@@ -3216,7 +3218,7 @@ export class BillingClaimsComponent {
   }
 
   clearCheckDeliverOtherThanModeCheck() {
-    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Check' ? this.checkDeliveredTo=true:this.checkDeliveredTo=false;
+    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Check' ? this.checkDeliveredTo = true : this.checkDeliveredTo = false;
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' ? this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = '' : '';
   }
 
@@ -3641,8 +3643,8 @@ export class BillingClaimsComponent {
   clearSelectedRadioButtons() {
     const input = this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'];
     this.isValidInput = input.trim() !== '' ? true : false;
-    
-    if (this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'] === ''){
+
+    if (this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'] === '') {
       this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] = null;
     }
     this.claimSectionModal.RECREATE_CLAIM['validationData'] = [];
@@ -3693,7 +3695,7 @@ export class BillingClaimsComponent {
   }
 
   nextActionRequire(e: any) {
-   this.validate_CURRENT_STATUS_AND_NEXT_ACTION();
+    this.validate_CURRENT_STATUS_AND_NEXT_ACTION();
     console.log(e.target.value);
     if (this.isCDP) {
       if (e.target.value === this.appConstants.Need_to_call_Insurance) {
@@ -3736,11 +3738,11 @@ export class BillingClaimsComponent {
   }
 
   onError(error: any) {
-    if(error!=null){
+    if (error != null) {
       window.open(this.pdfUrlSrc, '_blank');
-      this.isPdfError=true;
-    }else
-    this.isPdfError=false;
+      this.isPdfError = true;
+    } else
+      this.isPdfError = false;
   }
 
   showAlert(response: any, sectionName: string, responseType: string) {
@@ -3781,11 +3783,11 @@ export class BillingClaimsComponent {
     }, 2000);
   };
 
-  onFollowUpChange(event:any){
-    if(event=='YES'){
-      this.isNextFollowUpRequired=true;
-    }else{
-      this.isNextFollowUpRequired=false;
+  onFollowUpChange(event: any) {
+    if (event == 'YES') {
+      this.isNextFollowUpRequired = true;
+    } else {
+      this.isNextFollowUpRequired = false;
     }
   }
 

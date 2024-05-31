@@ -124,6 +124,7 @@ import com.tricon.rcm.dto.CommonSectionsRequestBodyDto;
 import com.tricon.rcm.dto.CredentialData;
 import com.tricon.rcm.dto.CredentialDataAnesthesia;
 import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
+import com.tricon.rcm.dto.Discrepancy;
 import com.tricon.rcm.dto.EobLink;
 import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
@@ -5546,8 +5547,7 @@ public class ClaimServiceImpl {
 		dataList.add(resposeDto);
 		//Secondary Unbilled - (Primary Unbilled or Primary Open)
 		resposeDto = new ReconciliationResponseDto();
-		resposeDto=  prepaireReconcillationDataPrimarySecondaryStatuses("Secondary Unbilled - (Primary Unbilled or Primary Open)" + 
-				" (Primary & secondary unbilled ) Or (Primary Open & Secondary Unbilled)", resposeDto, office, secondaryUnbilledClaims,1);
+		resposeDto=  prepaireReconcillationDataPrimarySecondaryStatuses("Secondary Unbilled (Primary Unbilled or Open)", resposeDto, office, secondaryUnbilledClaims,1);
 		dataList.add(resposeDto);
 		
 		resposeDto = new ReconciliationResponseDto();
@@ -5568,7 +5568,7 @@ public class ClaimServiceImpl {
 		
 		
 		resposeDto = new ReconciliationResponseDto();
-		resposeDto=  prepaireReconcillationDataPrimarySecondaryStatuses("Secondary Unbilled - (Primary Closed)", resposeDto, office, secondaryUnsubmittedClaims,2);
+		resposeDto=  prepaireReconcillationDataPrimarySecondaryStatuses("Secondary Unbilled (Primary Closed)", resposeDto, office, secondaryUnsubmittedClaims,2);
 		dataList.add(resposeDto);
 		
 	  return dataList;
@@ -5595,7 +5595,7 @@ public class ClaimServiceImpl {
 		passP = "'"+passP+"'";
 		System.out.println(passP);
 		
-		Set<String> foundClaims = new HashSet<>();
+		Set<Discrepancy> foundClaims = new HashSet<>();
 		//Set<String> commonClaims = new HashSet<>();
 		List<ReconcillationClaimDto> unArchsPUB=null;
 		List<ReconcillationClaimDto> unArchsSUB=null;
@@ -5615,63 +5615,139 @@ public class ClaimServiceImpl {
 		int inEs= datas.size();
         resposeDto.setClaimsES(inEs);
         //
-        Set<String> unArchsPUB1= new HashSet<>();
-        Set<String> unArchsSUB1= new HashSet<>();
-        
+        Set<Discrepancy> unArchsPUB1= new HashSet<>();
+        Set<Discrepancy> unArchsSUB1= new HashSet<>();
+        Discrepancy discrepancy=null;
         for(ReconcillationClaimDto x:unArchsPUB) {
-        	unArchsPUB1.add(x.getClaimId().split("_")[0]);
+        	discrepancy =new Discrepancy();
+			discrepancy.setClaimUUid(x.getClaimUuid());
+			discrepancy.setPatientId(x.getPatientId());
+			discrepancy.setPatientName(x.getPatientName());
+			discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+        	unArchsPUB1.add(discrepancy);
 		}
         for(ReconcillationClaimDto x:unArchsSUB) {
-        	unArchsSUB1.add(x.getClaimId().split("_")[0]);
+        	discrepancy =new Discrepancy();
+			discrepancy.setClaimUUid(x.getClaimUuid());
+			discrepancy.setPatientId(x.getPatientId());
+			discrepancy.setPatientName(x.getPatientName());
+			discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+        	unArchsSUB1.add(discrepancy);
 		}
         
-        Set<String> commonClaimsinES=CollectionUtils.intersection(unArchsPUB1, unArchsSUB1).stream().collect(Collectors.toSet());
-        Set<String> differences = new HashSet<>((CollectionUtils.removeAll(unArchsPUB1, unArchsSUB1)));
+        //Set<Discrepancy> commonClaimsinES=CollectionUtils.intersection(unArchsPUB1, unArchsSUB1).stream().collect(Collectors.toSet());
+        //Set<Discrepancy> differences = new HashSet<>((CollectionUtils.removeAll(unArchsPUB1, unArchsSUB1)));
+        Set<Discrepancy> commonClaimsinES=new HashSet<>();
+        Set<Discrepancy> differences = new HashSet<>();
         resposeDto.setClaimsRCM(commonClaimsinES.size());
+        //Create Common Claims
+        for(Discrepancy dis:unArchsPUB1 ) {
+        	Optional<Discrepancy> comon=unArchsSUB1.stream().filter(x->{
+        		return x.getClaimId().split("_")[0].equals(dis.getClaimId().split("_")[0]);
+        	}).findFirst();
+        	if (comon.isPresent()) {
+        		commonClaimsinES.add(dis);
+        	}else {
+        		differences.add(dis);
+        	}
+        }
+        for(Discrepancy dis:unArchsSUB1 ) {
+        	Optional<Discrepancy> comon=unArchsPUB1.stream().filter(x->{
+        		return x.getClaimId().split("_")[0].equals(dis.getClaimId().split("_")[0]);
+        	}).findFirst();
+        	if (comon.isPresent()) {
+        		
+        	}else {
+        		differences.add(dis);
+        	}
+        }
         
-        Set<String> discrepancies=new HashSet<>();
+        Set<Discrepancy> discrepancies=new HashSet<>();
         differences.forEach(data -> {
             Optional<ReconcillationClaimDto> dx =unArchsPUBFINAL.stream().filter(x->{
-            		return x.getClaimId().split("_")[0].equals(data);
+            		return x.getClaimId().split("_")[0].equals(data.getClaimId().split("_")[0]);
             	}).findFirst();
-            if (dx.isPresent()) 
-            	discrepancies.add(dx.get().getClaimId().split("_")[0]);
+            if (dx.isPresent()) {
+            	if (!claimUUidExistInList(discrepancies, data.getClaimUUid())) {
+            		Discrepancy ds= new Discrepancy();
+            		ds.setClaimUUid(data.getClaimUUid());
+            		ds.setPatientId(data.getPatientId());
+            		ds.setPatientName(data.getPatientName());
+            		ds.setClaimId(data.getClaimId().split("_")[0]);
+                	discrepancies.add(ds);
+            	}
+            }
+            	
             
             Optional<ReconcillationClaimDto> dx1 =unArchsSUBFINAL.stream().filter(x->{
-        		return x.getClaimId().split("_")[0].equals(data);
+        		return x.getClaimId().split("_")[0].equals(data.getClaimId().split("_")[0]);
         	}).findFirst();
-            if (dx1.isPresent()) 
-            	discrepancies.add(dx.get().getClaimId().split("_")[0]);
+            if (dx1.isPresent()) {
+            	Discrepancy ds= new Discrepancy();
+        		ds.setClaimUUid(dx1.get().getClaimUuid());
+        		ds.setPatientId(dx1.get().getPatientId());
+        		ds.setPatientName(dx1.get().getPatientName());
+        		ds.setClaimId(dx1.get().getClaimId().split("_")[0]);
+            	discrepancies.add(ds);
+            	//discrepancies.add(dx1.get().getClaimId().split("_")[0]);
+            	}
             
            
         });
        
         for(ReconcillationClaimDto x:unArchsPUB) {
-        	unArchsPUB1.add(x.getClaimId().split("_")[0]);
+        	Discrepancy ds= new Discrepancy();
+    		ds.setClaimUUid(x.getClaimUuid());
+    		ds.setPatientId(x.getPatientId());
+    		ds.setPatientName(x.getPatientName());
+    		ds.setClaimId(x.getClaimId().split("_")[0]);
+    		unArchsPUB1.add(ds);
+        	
 		}
        	
-		Set<String> uploadError=new HashSet<>();
+		Set<Discrepancy> uploadError=new HashSet<>();
 		for(ReconcillationClaimDto x:issueunArchs) {
-			uploadError.add(x.getClaimId().split("_")[0]);
-			foundClaims.add(x.getClaimId().split("_")[0]);
+			Discrepancy ds= new Discrepancy();
+    		ds.setClaimUUid(x.getClaimUuid());
+    		ds.setPatientId(x.getPatientId());
+    		ds.setPatientName(x.getPatientName());
+    		ds.setClaimId(x.getClaimId().split("_")[0]);
+			uploadError.add(ds);
+			foundClaims.add(ds);
 		}
 		
 		
 		
 		for(ReconcillationClaimDto x:archs) {
-			foundClaims.add(x.getClaimId().split("_")[0]);
-			if (x.getClaimId().indexOf("_arc_")>=0)discrepancies.add(x.getClaimId().split("_arc_")[1].split("_")[0]);
-			else discrepancies.add(x.getClaimId().split("_")[0]);
+			
+			
+			Discrepancy ds= new Discrepancy();
+    		ds.setClaimUUid(x.getClaimUuid());
+    		ds.setPatientId(x.getPatientId());
+    		ds.setPatientName(x.getPatientName());
+    		
+			if (x.getClaimId().indexOf("_arc_")>=0)ds.setClaimId(x.getClaimId().split("_arc_")[1].split("_")[0]);
+			else ds.setClaimId(x.getClaimId().split("_")[0]);
+			discrepancies.add(ds);
+			foundClaims.add(ds);
+			
 		}
 		
 		
 		for(ReconcillationClaimDto x:issuearchs) {
+			Discrepancy ds= new Discrepancy();
+    		ds.setClaimUUid(x.getClaimUuid());
+    		ds.setPatientId(x.getPatientId());
+    		ds.setPatientName(x.getPatientName());
+    		
 			if (x.getClaimId().indexOf("_arc_")>=0) {
-				uploadError.add(x.getClaimId().split("_arc_")[1].split("_")[0]);
+				ds.setClaimId(x.getClaimId().split("_arc_")[1].split("_")[0]);
 			}
 			else {
-				uploadError.add(x.getClaimId().split("_")[0]);
+				ds.setClaimId(x.getClaimId().split("_")[0]);
 			}
+			uploadError.add(ds);
+			
 		}
 		foundClaims.addAll(uploadError);
 		resposeDto.setClaimInUploadErrors(uploadError);
@@ -5683,7 +5759,7 @@ public class ClaimServiceImpl {
 		differences.forEach(data -> {
 			
             Optional<ReconcillationClaimDto> dx =unArchsPUBFINAL.stream().filter(x->{
-            		return x.getClaimId().split("_")[0].equals(data);
+            		return x.getClaimId().split("_")[0].equals(data.getClaimId().split("_")[0]);
             	}).findFirst();
             if (dx.isPresent()) {
             	com.tricon.rcm.dto.ReconcillationClaimDto q= new com.tricon.rcm.dto.ReconcillationClaimDto();
@@ -5693,7 +5769,7 @@ public class ClaimServiceImpl {
             }
             
             Optional<ReconcillationClaimDto> dx1 =unArchsSUBFINAL.stream().filter(x->{
-        		return x.getClaimId().split("_")[0].equals(data);
+        		return x.getClaimId().split("_")[0].equals(data.getClaimId().split("_")[0]);
         	}).findFirst();
             if (dx1.isPresent()) {
         	   com.tricon.rcm.dto.ReconcillationClaimDto q= new com.tricon.rcm.dto.ReconcillationClaimDto();
@@ -5707,7 +5783,7 @@ public class ClaimServiceImpl {
        	    }).findFirst();
            if (!dx2.isPresent()) {
         	   com.tricon.rcm.dto.ReconcillationClaimDto q= new com.tricon.rcm.dto.ReconcillationClaimDto();
-            	q.setClaimId(data);
+            	q.setClaimId(data.getClaimId());
             	discrepanciesAll.add(q);
            }
         });
@@ -5738,7 +5814,7 @@ public class ClaimServiceImpl {
 		pass = "'"+pass+"'";
 		System.out.println(pass);
 		
-		Set<String> foundClaims = new HashSet<>();
+		Set<Discrepancy> foundClaims = new HashSet<>();
 		List<ReconcillationClaimDto> unArchs=rcmClaimRepository.getClaimbyOfficeAndClaimIdsUnarchived(office.getUuid(), claims);
 		List<ReconcillationClaimDto> archs = rcmClaimRepository.getClaimbyOfficeAndClaimIdsArchived(office.getUuid(), pass);
 		List<ReconcillationClaimDto> issueunArchs=rcmClaimRepository.getClaimInIssueClaimByClaimIdAndOfficeUnarchived(office.getUuid(), claims);
@@ -5747,53 +5823,113 @@ public class ClaimServiceImpl {
         resposeDto.setClaimsES(inEs);
 		resposeDto.setClaimsRCM(unArchs.size());
 		
-		Set<String> uploadError=new HashSet<>();
+		Set<Discrepancy> uploadError=new HashSet<>();
+		Discrepancy discrepancy=null;
 		for(ReconcillationClaimDto x:issueunArchs) {
-			uploadError.add(x.getClaimId().split("_")[0]);
-			foundClaims.add(x.getClaimId().split("_")[0]);
+			discrepancy =new Discrepancy();
+			discrepancy.setClaimUUid(x.getClaimUuid());
+			discrepancy.setPatientId(x.getPatientId());
+			discrepancy.setPatientName(x.getPatientName());
+			discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+			uploadError.add(discrepancy);
+			foundClaims.add(discrepancy);
 		}
 		
-		Set<String> discrepancies=new HashSet<>();
-		
+		Set<Discrepancy> discrepancies=new HashSet<>();
 		for(ReconcillationClaimDto x:archs) {
-			foundClaims.add(x.getClaimId().split("_")[0]);
+			discrepancy =new Discrepancy();
+			discrepancy.setClaimUUid(x.getClaimUuid());
+			discrepancy.setPatientId(x.getPatientId());
+			discrepancy.setPatientName(x.getPatientName());
 			
-			if (x.getClaimId().indexOf("_arc_")>=0)discrepancies.add(x.getClaimId().split("_arc_")[1].split("_")[0]);
-			else discrepancies.add(x.getClaimId().split("_")[0]);
+			//
+			Discrepancy fund =new Discrepancy();
+			fund.setClaimUUid(x.getClaimUuid());
+			fund.setPatientId(x.getPatientId());
+			fund.setPatientName(x.getPatientName());
+			fund.setClaimId(x.getClaimId().split("_")[0]);
+			foundClaims.add(fund);
+			
+			if (x.getClaimId().indexOf("_arc_")>=0)discrepancy.setClaimId(x.getClaimId().split("_arc_")[1].split("_")[0]);
+			else discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+			discrepancies.add(discrepancy);
 			
 			
 		}
 		for(ReconcillationClaimDto x:unArchs) {
-			foundClaims.add(x.getClaimId().split("_")[0]);
+			Discrepancy fund =new Discrepancy();
+			fund.setClaimUUid(x.getClaimUuid());
+			fund.setPatientId(x.getPatientId());
+			fund.setPatientName(x.getPatientName());
+			fund.setClaimId(x.getClaimId().split("_")[0]);
+			foundClaims.add(fund);
+			discrepancy =new Discrepancy();
+			discrepancy.setClaimUUid(x.getClaimUuid());
+			discrepancy.setPatientId(x.getPatientId());
+			discrepancy.setPatientName(x.getPatientName());
+			
 			if (title.equals("Primary Unbilled")) {
-				if (x.getStatusEsUpdated()==null) discrepancies.add(x.getClaimId().split("_")[0]);
-				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Unbilled"))
-					discrepancies.add(x.getClaimId().split("_")[0]);
+				
+				if (x.getStatusEsUpdated()==null) {
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+				}
+				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Unbilled")){
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+					}
 			}else if (title.equals("Primary Open")) {
-				if (x.getStatusEsUpdated()==null) discrepancies.add(x.getClaimId().split("_")[0]);
-				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Billed"))
-					discrepancies.add(x.getClaimId().split("_")[0]);
+				if (x.getStatusEsUpdated()==null) {
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+				}
+				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Billed")) {
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+				}
+					
 			}else if (title.equals("Secondary Open")) {
-				if (x.getStatusEsUpdated()==null) discrepancies.add(x.getClaimId().split("_")[0]);
-				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Billed"))
-					discrepancies.add(x.getClaimId().split("_")[0]);
+				if (x.getStatusEsUpdated()==null) {
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+				}
+				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Billed")) {
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+				}
 			}else if (title.equals("Primary Closed")) {
-				if (x.getStatusEsUpdated()==null) discrepancies.add(x.getClaimId().split("_")[0]);
-				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Closed"))
-					discrepancies.add(x.getClaimId().split("_")[0]);
+				if (x.getStatusEsUpdated()==null) {
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+				}
+				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Closed")) {
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+				}
 			}else if (title.equals("Secondary Closed")) {
-				if (x.getStatusEsUpdated()==null) discrepancies.add(x.getClaimId().split("_")[0]);
-				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Closed"))
-					discrepancies.add(x.getClaimId().split("_")[0]);
+				if (x.getStatusEsUpdated()==null) {
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+				}
+				if (x.getStatusEsUpdated()!=null && !x.getStatusEsUpdated().equalsIgnoreCase("Closed")) {
+					discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+					discrepancies.add(discrepancy);
+				}
 			}
 			
 		}
 		for(ReconcillationClaimDto x:issuearchs) {
+			discrepancy =new Discrepancy();
+			discrepancy.setClaimUUid(x.getClaimUuid());
+			discrepancy.setPatientId(x.getPatientId());
+			discrepancy.setPatientName(x.getPatientName());
 			if (x.getClaimId().indexOf("_arc_")>=0) {
-				uploadError.add(x.getClaimId().split("_arc_")[1].split("_")[0]);
+				discrepancy.setClaimId(x.getClaimId().split("_arc_")[1].split("_")[0]);
+				uploadError.add(discrepancy);
 			}
 			else {
-				uploadError.add(x.getClaimId().split("_")[0]);
+				discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+				uploadError.add(discrepancy);
 			}
 		}
 		foundClaims.addAll(uploadError);
@@ -5805,7 +5941,7 @@ public class ClaimServiceImpl {
 		if (discrepancies.size()>0) {
 			discrepancies.forEach(data -> {
 	            Optional<ReconcillationClaimDto> dx =unArchs.stream().filter(x->{
-	            		return x.getClaimId().split("_")[0].equals(data);
+	            		return x.getClaimId().split("_")[0].equals(data.getClaimId().split("_")[0]);
 	            }).findFirst();
 	            if (dx.isPresent()) {
 	            	com.tricon.rcm.dto.ReconcillationClaimDto q= new com.tricon.rcm.dto.ReconcillationClaimDto();
@@ -5814,14 +5950,25 @@ public class ClaimServiceImpl {
 	            }
 	            else {
 	            	com.tricon.rcm.dto.ReconcillationClaimDto q= new com.tricon.rcm.dto.ReconcillationClaimDto();
-	            	q.setClaimId(data);
+	            	q.setClaimId(data.getClaimId());
 	            	discrepanciesAll.add(q);
 	            }
 	            
 	            });
 		}
 		//Set<String> notFound=new HashSet<>();
-		claimsOrignal.removeAll(foundClaims);
+		//claimsOrignal.removeAll(foundClaims);
+		List<String> claimsOrignalCpy=  new ArrayList<>();
+		for(String ori:claimsOrignal) {
+			
+			Optional<Discrepancy> comon=foundClaims.stream().filter(x->{
+        		return x.getClaimId().split("_")[0].equals(ori.split("_")[0]);
+        	}).findFirst();
+        	if (!comon.isPresent()) {
+        		claimsOrignalCpy.add(ori);
+        	}
+		}
+		claimsOrignal=claimsOrignalCpy;
 		
 		Set<String> tSet = new TreeSet<String>(claimsOrignal);
 		resposeDto.setDiscrepanciesAll(discrepanciesAll);
@@ -5881,5 +6028,14 @@ public class ClaimServiceImpl {
 			}
 		}
 		return dataList;
+	}
+	
+	private boolean claimUUidExistInList(Set<Discrepancy> discrepancies, String claimUUid) {
+		
+		Optional<Discrepancy> matchingObject = discrepancies.stream().
+			    filter(p -> p.getClaimUUid().equals(claimUUid)).
+			    findFirst();
+		if (matchingObject.isPresent()) return true;
+		else return false;
 	}
 }

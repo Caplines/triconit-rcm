@@ -352,6 +352,7 @@ public class RuleEngineService {
 											newClaimPCt++;
 										if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary))
 											newClaimSCt++;
+										System.out.println("ins : -->"+ins.getInsuranceType());
 										rcmInsuranceType = rcmInsuranceTypeRepo
 												.findById(ins.getInsuranceType().getId());
 										

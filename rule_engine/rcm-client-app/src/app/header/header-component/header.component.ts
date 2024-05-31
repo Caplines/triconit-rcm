@@ -50,11 +50,12 @@ export class HeaderComponent implements OnInit {
   issueClaimPageNum: any = 0;
   totalPages: number;
   emailUrl: any;
-  newUrlAccessonProfileChange:boolean;
+  newUrlAccessonProfileChange: boolean;
 
   @ViewChild('modalElement') modalElementRef!: ElementRef;
   @Input() isClaimDetailPage: boolean = false;
   isLoggedInAdmin: boolean = false;
+  isLoggedInReporting: boolean = false;
 
   constructor(private appSer: ApplicationServiceService, private router: Router, public appConstants: AppConstants) {
 
@@ -71,19 +72,20 @@ export class HeaderComponent implements OnInit {
     //  }
     this.loggedInUserName = localStorage.getItem("name");
     this.isLoggedInAdmin = Utils.checkAdminLoginRole();
+    this.isLoggedInReporting = Utils.checkReportingRole();
     if (this.roleData.length == 0) {
       this.getRoles();
     }
-      
-      if(Utils.getRolesFromLS()[0] === 'ROLE_ADMIN' && !this.userInfo.currentRoleName){
-          this.selectedClient= 'Smilepoint';
-          this.selectedRole = 'Admin';
-          this.btnDisabled = false;
 
-          // this.checkBtnDisabled();
-          setTimeout(() => {
-            this.switchAccount();
-          }, 1000);
+    if (Utils.getRolesFromLS()[0] === 'ROLE_ADMIN' && !this.userInfo.currentRoleName) {
+      this.selectedClient = 'Smilepoint';
+      this.selectedRole = 'Admin';
+      this.btnDisabled = false;
+
+      // this.checkBtnDisabled();
+      setTimeout(() => {
+        this.switchAccount();
+      }, 1000);
     }
 
     // if(this.userInfo.currentClientName && this.userInfo.currentTeamId != "-1"){
@@ -160,7 +162,7 @@ export class HeaderComponent implements OnInit {
     //   const currentUrl = window.location.pathname;
 
     //   const teamId = Number(this.selectedTeam);
-      
+
     //   const team = this.appConstants.TEAMS_CONFIG.get(teamId);
     //   console.log(team);
 

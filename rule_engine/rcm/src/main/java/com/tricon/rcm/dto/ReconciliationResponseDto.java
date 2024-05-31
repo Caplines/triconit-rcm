@@ -12,7 +12,7 @@ public class ReconciliationResponseDto {
 	private int claimsES;
 	private int claimsRCM;
 	private Set<String> claimsNotFoundRCM;
-	private Set<String> claimInUploadErrors;
-	private Set<String> discrepancies;
+	private Set<Discrepancy> claimInUploadErrors;
+	private Set<Discrepancy> discrepancies;
 	private Set<com.tricon.rcm.dto.ReconcillationClaimDto> discrepanciesAll;
 }

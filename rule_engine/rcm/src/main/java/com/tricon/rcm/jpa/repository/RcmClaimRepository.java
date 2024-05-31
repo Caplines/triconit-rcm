@@ -1095,7 +1095,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
-				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated "
+				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated,cl.patient_id as patientId,cl.patient_name as patientName "
 				+ " from  rcm_claims  cl where "
 				+ " cl.office_id=:officeId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED+" and cl.claim_id  REGEXP :claimsIds "
 				+ " " )//select * from rcm_claims where claim_id  REGEXP '_13767_P|P';
@@ -1104,7 +1104,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
-				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated from "
+				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated,cl.patient_id as patientId,cl.patient_name as patientName from "
 				+ " rcm_claims  cl where "
 				+ " cl.office_id=:officeId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in :claimsIds "
 				+ " " )
@@ -1113,7 +1113,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
-				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated from "
+				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated,cl.patient_id as patientId,cl.patient_name as patientName from "
 				+ " rcm_claims  cl where "
 				+ " cl.office_id=:officeId and status_es_updated=:statusEsUpdated and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in :claimsIds "
 				+ " " )
@@ -1122,7 +1122,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
-				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated from "
+				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated,cl.patient_id as patientId,cl.patient_name as patientName from "
 				+ " rcm_claims  cl where "
 				+ " cl.office_id=:officeId and status_es_updated in ('Unbilled','Open') and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in :claimsIds "
 				+ " " )
@@ -1132,7 +1132,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_id as claimUuid ,cl.resolved as currentState,"
-				+ "cl.is_archive as currentStatus "
+				+ "cl.is_archive as currentStatus,cl.issue as patientId,cl.issue as patientName "
 				+ " from  rcm_issue_claims  cl where "
 				+ " cl.office_id=:officeId and cl.resolved=false and is_archive=false and cl.claim_id in :claimsIds "
 				+ " " )
@@ -1141,7 +1141,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_id as claimUuid ,cl.resolved as currentState,"
-				+ "cl.is_archive as currentStatus"
+				+ "cl.is_archive as currentStatus,cl.issue as patientId,cl.issue as patientName "
 				+ " from  rcm_issue_claims  cl where "
 				+ " cl.office_id=:officeId and cl.resolved=false and is_archive=true and cl.claim_id REGEXP :claimsIds "
 				+ " " )//select * from rcm_claims where claim_id  REGEXP '_13767_P|P';

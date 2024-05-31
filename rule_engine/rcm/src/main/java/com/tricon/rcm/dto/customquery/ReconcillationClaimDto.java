@@ -7,5 +7,7 @@ public interface ReconcillationClaimDto {
 	int getCurrentState();//Archive /Unarchive
 	int getCurrentStatus(); 
 	String getStatusEsUpdated();//billed unbilled closed
+	String getPatientId();
+	String getPatientName();
 	
 }
