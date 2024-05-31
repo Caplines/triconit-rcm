@@ -32,6 +32,7 @@ export class ReconciliationComponent {
   toggleLinks: boolean = false;
   datesDiff: number = 1000;
   toggleState: { [key: string]: boolean } = {};
+  currentToggle: string = '';
 
   constructor(private _service: ApplicationServiceService, public datepipe: DatePipe, public pmlDatePicker: PmlDatePicker) {
     this.title.setTitle("RCM Tool - Reconciliation");
@@ -70,7 +71,20 @@ export class ReconciliationComponent {
   }
 
   toggleText(id: string) {
-    this.toggleState[id] = !this.toggleState[id];
+    if (this.currentToggle === id && this.toggleState[id]) {
+      this.toggleState[id] = false;
+      this.currentToggle = '';
+    } else {
+      if (this.currentToggle) {
+        this.toggleState[this.currentToggle] = false;
+      }
+      this.toggleState[id] = !this.toggleState[id];
+      if (this.toggleState[id]) {
+        this.currentToggle = id;
+      } else {
+        this.currentToggle = '';
+      }
+    }
   }
 
   getReconcileData() {

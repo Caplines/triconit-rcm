@@ -640,6 +640,10 @@ a.flex-center:hover {
     font-weight: 600;
     margin-bottom: 5px;
     margin-top: 5px;
+
+    #startDate , #endDate{
+    margin-right: 15px;
+    }
 }
 
 .date-range-box label {
@@ -647,6 +651,7 @@ a.flex-center:hover {
     color: #2d4047;
     margin-right: 10px;
     font-weight: 600;
+    margin-bottom: 0px;
 }
 
 .date-range-box input {

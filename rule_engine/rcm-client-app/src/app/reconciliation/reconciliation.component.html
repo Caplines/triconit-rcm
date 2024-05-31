@@ -59,7 +59,7 @@
                                         <span class="loader-data "></span>
                                     </td>
                                 </tr>
-                                <tr *ngFor="let data of reconcileResponseData">
+                                <tr *ngFor="let data of reconcileResponseData" [ngClass]="{'open-toggle': toggleState['discrepancies' + data.title] || toggleState['claimsNotFoundRCM' + data.title] || toggleState['claimInUploadErrors' + data.title]}">
                                     <td class="">{{data.office}}</td>
                                     <td class="alignCenter">{{data.title}}</td>
                                     <td class="alignCenter">{{data.claimsES}}</td>
@@ -74,11 +74,22 @@
                                                 </button>
                                             </div>
                                             <div class="toggle-scroll" *ngIf="toggleState['discrepancies' + data.title]">
-                                                <ng-container *ngFor="let link of data.discrepancies; let idx = index">
-                                                    <div>
-                                                        <a class="btn btn-link text-decoration-none fs-4" [href]="link">{{link}}</a>
-                                                    </div>
-                                                </ng-container>
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Patient Name</th>
+                                                            <th style="white-space: nowrap;">Patient Id</th>
+                                                            <th>Claim Id</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let link of data.discrepancies; let idx = index">
+                                                            <td>{{link.patientName}}</td>
+                                                            <td>{{link.patientId}}</td>
+                                                            <td><a class="btn btn-link text-decoration-none fs-4" target="_blank" href="billing-claims/{{link.claimUUid}}">{{link.claimId}}</a></td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </ng-container>
                                         <ng-template #noDiscrepancies>
@@ -94,12 +105,19 @@
                                                     <span class="discrepancies-text">{{data.claimsNotFoundRCM.length}}</span>
                                                 </button>
                                             </div>
-                                            <div class="toggle-scroll" *ngIf="toggleState['claimsNotFoundRCM' + data.title]">
-                                                <ng-container *ngFor="let item of data.claimsNotFoundRCM; let idx = index">
-                                                    <div>
-                                                        <span class="text-decoration-none fs-4">{{item}}</span>
-                                                    </div>
-                                                </ng-container>
+                                            <div class="toggle-scroll number-scroll" *ngIf="toggleState['claimsNotFoundRCM' + data.title]">
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="white-space: nowrap;">Claim Id</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let item of data.claimsNotFoundRCM; let idx = index">
+                                                            <td style="text-align: center;">{{item}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </ng-container>
                                         <ng-template #noclaimsFound>
@@ -116,11 +134,20 @@
                                                 </button>
                                             </div>
                                             <div class="toggle-scroll" *ngIf="toggleState['claimInUploadErrors' + data.title]">
-                                                <ng-container *ngFor="let item of data.claimInUploadErrors; let idx = index">
-                                                    <div>
-                                                        <span class="text-decoration-none fs-4">{{item}}</span>
-                                                    </div>
-                                                </ng-container>
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="white-space: nowrap;">Claim Id</th>
+                                                            <th style="white-space: nowrap;">Issue</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr *ngFor="let item of data.claimInUploadErrors; let idx = index">
+                                                            <td>{{item.claimId}}</td>
+                                                            <td>{{item.patientName}}</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </ng-container>
                                         <ng-template #noUploadErrors>
