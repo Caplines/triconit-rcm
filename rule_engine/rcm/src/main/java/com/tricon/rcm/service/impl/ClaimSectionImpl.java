@@ -1781,7 +1781,7 @@ public class ClaimSectionImpl {
 				partialHeader.getJwtUser().getUuid(), currentClaim.getClaimUuid(), true);
 		if (assign == null) {
 			logger.error("claim not assigned to this user");
-			data.add(new ValidateRecreateClaimResponseDto(0, "", "claim is not assigned to this user", Constants.FAIL));
+			data.add(new ValidateRecreateClaimResponseDto(0, "", "<b style=\"color:red\" class=\"error-message-api\">claim is not assigned to this user</b> ", Constants.FAIL));
 			response.setValidationResponse(data);
 			return response;
 		}
@@ -1798,7 +1798,9 @@ public class ClaimSectionImpl {
 		if (dto.getNewClaimId()!=null) {
 			if(currentClaimId[0].equals(dto.getNewClaimId())){
 				logger.error("current claim match with new claim");
-				return null;		
+				data.add(new ValidateRecreateClaimResponseDto(0, "", "<b style=\"color:red\" class=\"error-message-api\">Current claim match with new claim</b>", Constants.FAIL));
+				response.setValidationResponse(data);
+				return response;	
 			}			
 		newPrimaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.P.getSuffix(),office);
         secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);
@@ -1973,6 +1975,12 @@ public class ClaimSectionImpl {
 			// check for recreate partial claim
 			if (recreateClaimRequestInfoModel.getActionButtonType() == Constants.BUTTON_TYPE_RECREATE_PARTIAL_CLAIM) {
 				logger.info("Inside partial claim->>>>>>>>");
+				
+				if(recreateClaimRequestInfoModel.getNewClaimId().equals(currentClaimId[0])) {
+					logger.error("New claim id match with current claim id");
+					return "New claim id match with current claim id";
+				}
+				
 				List<String> existingServiceCodesForNewClaim = recreateClaimRequestInfoModel
 						.getExistingNewClaimServiceCodes().stream().distinct()
 						.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
@@ -2127,7 +2135,10 @@ public class ClaimSectionImpl {
 				RcmClaims newSecondaryClaim = null;
 				RcmClaims newLinkedClaim = null;
 				RcmClaims oldPrimary = null;
-
+				if(recreateClaimRequestInfoModel.getNewClaimId().equals(currentClaimId[0])) {
+					logger.error("New claim id match with current claim id");
+					return "New claim id match with current claim id";
+				}
 				if (("_" + currentClaimId[1]).equals(ClaimTypeEnum.S.getSuffix())) {
 					isPrimary = false;
 					newPrimaryClaim = rcmClaimRepository.findByClaimIdAndOffice(

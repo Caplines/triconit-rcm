@@ -23,4 +23,6 @@ export interface ClaimAssociateDetailModel {
     nextAction:string;
     followUpDate:Date;
 	dueBalance:number;
+    updatedDate:Date;
+    selectAging:boolean;
 }

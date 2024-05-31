@@ -32,4 +32,5 @@ public interface FreshClaimDataDto {
 	int getNextAction();
 	Date getFollowUpDate();
 	Float getDueBalance();
+	Date getUpdatedDate();
 }

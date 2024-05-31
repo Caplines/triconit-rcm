@@ -21,7 +21,7 @@ public enum RcmTeamEnum {
 	PATIENT_CALLING(6, "PATIENT_CALLING","Patient Calling", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
 	BILLING(7, "BILLING", "Billing",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),	
 	SUPER_ADMIN(8, "SUPER_ADMIN","Super Admin", new RcmRoleEnum[] {RcmRoleEnum.SUPER_ADMIN},false,false),
-	REPORTING(9,"REPORTING","Reporting",new RcmRoleEnum[] {RcmRoleEnum.REPORTING},false,false),
+	REPORTING(9,"REPORTING","Reporting",new RcmRoleEnum[] {RcmRoleEnum.REPORTING},true,false),
 	ORTHO(10,"ORTHO","Ortho",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	CDP(11,"CDP","CDP",new RcmRoleEnum[] {RcmRoleEnum.TL ,RcmRoleEnum.ASSO},true,true),
 	PAYMENT_POSTING(12,"PAYMENT_POSTING","Payment Posting",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),

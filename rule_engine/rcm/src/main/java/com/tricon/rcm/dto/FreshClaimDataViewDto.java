@@ -36,4 +36,5 @@ public class FreshClaimDataViewDto {
 	String nextAction;
 	Date followUpDate;
 	Float dueBalance;
+	Date updatedDate;
 }

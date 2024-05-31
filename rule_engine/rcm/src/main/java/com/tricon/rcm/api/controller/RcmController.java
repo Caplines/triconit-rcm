@@ -30,6 +30,7 @@ import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.ListOfClaimsCountsDto;
+import com.tricon.rcm.dto.ListOfClaimsDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.RcmArchiveClaimsDto;
 import com.tricon.rcm.dto.RcmClaimsServiceRuleValidationDto;
@@ -64,6 +65,7 @@ import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimRuleRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimSteps;
+import com.tricon.rcm.dto.customquery.ClaimTransferDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.CompanyIdAndNameDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
@@ -976,4 +978,53 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
+	@PostMapping(value = "/api/claim-transfer-to-aging")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> claimTransferFromPostingToAging(@RequestBody ClaimTransferDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		Object response = null;
+		if (dto.getClaimUuid() == null || dto.getClaimUuid().isEmpty() || !StringUtils.isNoneBlank(dto.getRemarks())) {
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		
+		if(partialHeader.getTeamId()!=RcmTeamEnum.PAYMENT_POSTING.getId()) {
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, "Only Payment Posting user will be allow", null));
+		}
+		try {
+			response = claimServiceImpl.transferClaimPostingToAging(dto, partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	
+	@PostMapping(value = "/api/tl-exist-by-claims")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	public ResponseEntity<?> checkAnyTLOrAssoExist(@RequestBody ListOfClaimsDto dto, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		RcmResponseMessageDto response = null;
+		if (dto == null || dto.getClaimUuids().isEmpty() || dto.getTeamId() == null) {
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		try {
+			response = claimServiceImpl.checkAnyTLOrAssoExist(dto, partialHeader);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 }

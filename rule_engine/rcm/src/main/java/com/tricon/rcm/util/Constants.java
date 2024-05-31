@@ -169,6 +169,8 @@ public class Constants {
 	public static final int BUTTON_TYPE_RECREATE_PARTIAL_CLAIM = 3;
 	
 	public static final int MAX_COMMENT_DATA_PER_PAGE=100;
+	
+	public static final int FROMPOSTINGTOAGING=RcmTeamEnum.AGING.getId();
     
     
 }

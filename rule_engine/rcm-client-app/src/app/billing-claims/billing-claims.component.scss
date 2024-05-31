@@ -592,6 +592,12 @@
   }
 
 
+  .is-invalid {
+      .pml_dp {
+          border-color: #dc3545 !important;
+      }
+  }
+
   .claimDatepicker {
     width: 100%;
     .datepicker-container {

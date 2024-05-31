@@ -238,7 +238,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeam(@Param("companyId") String companyId,
 			@Param("teamid") int teamid);
 	
-	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+	@Query(nativeQuery = true, value = " select off.name as officeName,rca.updated_date as updatedDate,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance,prime_sec_submitted_total primeSecSubmittedTotal "
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
@@ -283,7 +283,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeamInd(@Param("companyId") String companyId,
 			@Param("teamid") int teamid,@Param("userId") String userId);
 	
-	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+	@Query(nativeQuery = true, value = " select off.name as officeName,rca.updated_date as updatedDate,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "

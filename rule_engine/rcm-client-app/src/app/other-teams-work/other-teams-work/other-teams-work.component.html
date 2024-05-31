@@ -515,6 +515,15 @@
                                                         Assign to other team
                                                     </div>
                                                 </th>
+                                                
+                                                <th *ngIf="currentTeamName.unFormatedName == 'PAYMENT_POSTING' && tabValue == 'submitted'">
+                                                    <div class="d-flex">
+                                                        <span style="white-space: nowrap;">Select All <br> <input type="checkbox" checked="{{selectAllAging}}" (change)="selectAllClaimsToAging($event)"></span>
+                                                       
+                                                        <button type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()" style="margin-left: 15px;">
+                                                            <strong>Transfer to Aging</strong> </button>
+                                                    </div>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -535,7 +544,10 @@
                                                         <td [ngClass]="{'changeColor' : det.colorChange}">
                                                             {{det.officeName}}</td>
                                                         <td *ngIf="staticUtil.isNotTeamOffice()" class="noWrape"><a
-                                                                [ngClass]="{'changeColor' : det.colorChange}"
+                                                                [ngClass]="{
+                                                                    'changeColor': det.colorChange,
+                                                                    'checkDiffForPaymentPosting': det.diffForPaymentPosting
+                                                                  }" 
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>
                                                         <td *ngIf="staticUtil.isNotTeamOffice()"><a [ngClass]="{'changeColor' : det.colorChange}"
@@ -626,6 +638,19 @@
                                                                     (click)="openModalAndValidateFields(det)">Assign</button>
                                                             </div>
                                                         </td>
+                                                        <td *ngIf="currentTeamName.unFormatedName == 'PAYMENT_POSTING' && tabValue == 'submitted' ">
+                                                            <div class="dFlex nowrap-text">
+                                                                <ng-container *ngIf="det.diffForPaymentPosting;else myFlagFalse;">
+                                                                <label class="no-css-checkbox-container" >
+                                                                    <input type="checkbox" checked="{{det.selectAging}}"  (change)="selectTransferClaims($event,det)">
+                                                                    <div class="checkmark"></div>
+                                                                </label> &nbsp;
+                                                                </ng-container>
+                                                                <ng-template #myFlagFalse>
+                                                                    N/A
+                                                                </ng-template>
+                                                            </div>
+                                                        </td>
                                                     </tr>
                                                 </ng-container>
                                             </ng-container>
@@ -679,6 +704,28 @@
             </div>
         </div>
 
+    </div>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" *ngIf="showTransferClaimModal">
+    <div class="modal-dialog delete-modal" role="document">
+        <div class="modal-content">
+            <div class="modal-header flex-row">
+                <h4 class="modal-title w-100">Are you sure?</h4>
+                <button (click)="closeConfirmationModal()" type="button"
+                    class="btn btn-sm btn-ligt close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Do you really want to transfer the claims?</p><b>Enter Remarks</b>&nbsp;<span
+                class="text-danger">*</span><textarea class="form-control"
+                [(ngModel)]="selectedClaimsTransfer['remarks']" rows="2" style="width: 100%;"></textarea>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                    (click)="closeConfirmationModal()">Cancel</button>
+                <button type="button" [disabled]="selectedClaimsTransfer['remarks'].length==0" class="btn btn-danger" (click)="transferClaim()">Yes</button>
+            </div>
+        </div>
     </div>
 </div>
 

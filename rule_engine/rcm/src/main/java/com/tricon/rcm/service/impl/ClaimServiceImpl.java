@@ -85,6 +85,7 @@ import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.KeyValueDto;
 import com.tricon.rcm.dto.LinkedClaimResponseDto;
 import com.tricon.rcm.dto.ListOfClaimsCountsDto;
+import com.tricon.rcm.dto.ListOfClaimsDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PendencyDataCountDto;
 import com.tricon.rcm.dto.PendencyKeyValDto;
@@ -168,6 +169,7 @@ import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimRuleRemarksDto;
 import com.tricon.rcm.dto.customquery.ClaimRuleValidationDto;
 import com.tricon.rcm.dto.customquery.ClaimSteps;
+import com.tricon.rcm.dto.customquery.ClaimTransferDto;
 import com.tricon.rcm.dto.customquery.CompanyIdAndNameDto;
 import com.tricon.rcm.dto.customquery.DataPatientRuleDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
@@ -6037,5 +6039,61 @@ public class ClaimServiceImpl {
 			    findFirst();
 		if (matchingObject.isPresent()) return true;
 		else return false;
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	public Object transferClaimPostingToAging(ClaimTransferDto dto, PartialHeader partialHeader) throws Exception {
+		String message = "";
+		boolean validateClaimRight = checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),
+				partialHeader.getCompany().getUuid());
+		if (!validateClaimRight) {
+			return null;
+		}
+		List<String> claimUuids = dto.getClaimUuid();
+		Map<String, RcmOffice> officeCache = new HashMap<>();
+		for (String claimId : claimUuids) {
+			RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimId);
+			RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+			RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByAssignedToUuidAndClaimsClaimUuidAndActive(
+					partialHeader.getJwtUser().getUuid(), claimId, true);
+			if (assign == null) {
+				logger.error("Not assigned to user:" + partialHeader.getJwtUser().getEmail() + "");
+				continue;
+			}
+			String officeUuid = claim.getOffice().getUuid();
+			RcmOffice office = officeCache.computeIfAbsent(officeUuid, id -> officeRepo.findByUuid(id));
+			if (validateClaimRight) {
+				if (claim.getCurrentStatus() == ClaimStatusEnum.Case_Closed.getId()) {
+					logger.error("Claim Already Closed:"+claimId);
+				} else if (claim.getCurrentState() == Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
+					logger.error("Claim is Archived:"+claimId);
+				}
+
+				else if (assign.getCurrentTeamId().getId() == Constants.FROMPOSTINGTOAGING) {
+					logger.error("Claim is Already in Aging:"+claimId);
+				} else {
+					message = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
+							claim.getClaimUuid(), Constants.FROMPOSTINGTOAGING,dto.getRemarks(), claim, assign, user,
+							office, null, ClaimStatusEnum.SEND_TO_AGING.getType(),
+							ClaimStatusEnum.SEND_TO_AGING.getType(), ClaimStatusEnum.SEND_TO_AGING.getType());
+					
+					rcmClaimRepository.save(claim);
+				}
+			}
+		}
+		return message;
+	}
+
+	public RcmResponseMessageDto checkAnyTLOrAssoExist(ListOfClaimsDto dto, PartialHeader partialHeader)
+			throws Exception {
+		List<String> claims = dto.getClaimUuids();
+		RcmResponseMessageDto response = null;
+		for (String claim : claims) {
+			response = this.findTeamLeadExistForOtherTeams(new FindTLExistDto(dto.getTeamId(), claim),
+					partialHeader.getJwtUser());
+			if (!response.isResponseStatus())
+				break;
+		}
+		return response;
 	}
 }

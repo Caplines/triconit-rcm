@@ -50,7 +50,8 @@ public enum ClaimStatusEnum {
 	Insurance_Claim_Closed(43,"Insurance Claim Closed"),
 	Insurance_Claim_in_Process(44,"Insurance Claim in Process"),
 	Need_to_send_Appeal(45,"Need to send Appeal"),
-	Case_sent_to_Collections(46,"Case sent to Collections");
+	Case_sent_to_Collections(46,"Case sent to Collections"),
+	SEND_TO_AGING(47,"Send to Aging");
 	
 	
 	final private int id;

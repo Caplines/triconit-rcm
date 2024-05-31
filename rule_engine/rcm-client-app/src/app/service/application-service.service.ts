@@ -629,4 +629,12 @@ export class ApplicationServiceService extends BaseService {
     this.postData(param, this.httpUrl['fetch-reconcile-data'], callback);
   }
 
+  claimTransferToAging(params: any, callback: any) {
+    this.postData(params, this.httpUrl['claim-transfer-to-aging'], callback);
+  }
+
+  checkAnyTLOrAssoExist(params: any, callback: any) {
+    this.postData(params, this.httpUrl['verify-tl-exist'], callback);
+  }
+
 }

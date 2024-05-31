@@ -47,7 +47,8 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredAgeBracket: any = [];
   hasAttachedFilesWithRemark: boolean = false;
   alert: any = { 'alertMsg': '', 'showAlert': false };
-
+  showTransferClaimModal = false;
+  selectedClaimsTransfer:any = {"claimUuid":[],"reamrks":""};
   filteredInsuranceName: any = [];
   filteredInsuranceType: any = [];
   filteredClaimType: any = [];
@@ -72,7 +73,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   };
 
   showTooltipConfig:any={};
-
+  selectAllAging:any=null;
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -93,6 +94,7 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.currentTeamName = this.appConstants.teamData.find((e: any) => e.teamId == Utils.selectedTeam());
     this.tabSwitch.unSubmitted = false;
     this.tabSwitch.submitted = true;
+    this.tabValue='submitted';
     this.fetchClaims("submitted");
     this.fetchOtherTeams();
     this.showOrHideColumns(this.currentTeamName);
@@ -148,6 +150,7 @@ export class OtherTeamsWorkComponent implements OnInit {
         this.filterOptionLastTeam();
         this.showClaimIdWithDigits();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
+        this.checkDiffForPaymentPosting() ;
       }
     });
   }
@@ -962,5 +965,110 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   get staticUtil():any{
       return Utils;
+  }
+
+  checkDiffForPaymentPosting() {
+    let currentDate: any = new Date();
+    this.filteredItems.forEach((e: any) => {
+      if (e.updatedDate && this.currentTeamName.unFormatedName == 'PAYMENT_POSTING') {
+        let updateDate: any = new Date(e.updatedDate);
+        var diffDays: any = Math.floor((currentDate - updateDate) / (1000 * 60 * 60 * 24));
+        if (diffDays > 7) {
+          e.diffForPaymentPosting = true;
+        } else {
+          e.diffForPaymentPosting = false;
+        }
+      }
+    });
+  }
+
+  selectTransferClaims(event: any, data: any) {
+    let isSelected: boolean = event.target.checked;
+    if (isSelected) {
+      this.selectedClaimsTransfer.claimUuid.push(data.uuid);
+      data.selectAging = true;
+    } else {
+      this.selectedClaimsTransfer.claimUuid = this.selectedClaimsTransfer.claimUuid.filter((uuid: string) => uuid !== data.uuid);
+      this.selectAllAging = null;
+      data.selectAging = null;
+    }
+    let all: any = true;
+    this.filteredItems.forEach((x: any) => {
+      if (x.selectAging == null || x.selectAging == false) all = null;
+
+    });
+    this.selectAllAging = all;
+  }
+
+  transferClaimsConfirmModal() {
+    this.selectedClaimsTransfer.remarks=''
+    if (this.selectedClaimsTransfer.claimUuid.length > 0) {
+      this.showTransferClaimModal = true;
+    }
+    else{
+      this.errorMessage = "Please select at least one claim";
+      setTimeout(() => {
+        this.errorMessage = '';
+      }, 2000);
+    }
+  }
+
+
+  closeConfirmationModal() {
+    this.showTransferClaimModal = false;
+  }
+
+  transferClaim() {
+    if (this.selectedClaimsTransfer.claimUuid.length > 0) {
+      this.appService.checkAnyTLOrAssoExist({ "claimUuids": this.selectedClaimsTransfer.claimUuid, "teamId": AppConstants.AGING_ID }, (res: any) => {
+        if (res.data.responseStatus) {
+          this.appService.claimTransferToAging(this.selectedClaimsTransfer, (res: any) => {
+            if (res.status == 200) {
+              this.closeConfirmationModal();
+              this.alert.alertMsg = "Success";
+              this.alert.showAlert = true;
+              location.reload();
+            }
+            else {
+              this.errorMessage = 'Failed to Transfer the claims';
+              setTimeout(() => {
+                this.errorMessage = '';
+              },2000);
+            }
+          });
+        }
+        else {
+          this.closeConfirmationModal();
+          this.errorMessage = res.data.message;
+          setTimeout(() => {
+            this.errorMessage = '';
+          }, 2000);
+        }
+      });
+    }
+    else {
+      this.closeConfirmationModal();
+      this.errorMessage = "Please select at least one claim";
+      setTimeout(() => {
+        this.errorMessage = '';
+      },2000);
+    }
+  }
+
+  selectAllClaimsToAging(event: any) {
+    this.filteredItems.forEach((x: any) => {
+      x.selectAging = null;
+    });
+    let isSelected: boolean = event.target.checked;
+    if (isSelected) {
+      this.selectAllAging = true;
+      this.filteredItems.forEach((x: any) => {
+        this.selectedClaimsTransfer.claimUuid.push(x.uuid);
+        x.selectAging = true;
+      });
+    } else {
+      this.selectAllAging = null;
+      this.selectedClaimsTransfer.claimUuid = [];
+    }
   }
 }
