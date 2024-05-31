@@ -130,6 +130,13 @@ export default class Utils {
       }
       return false;
    }
+   static checkReportingRole() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('selected_roleName') && ls.getItem('selected_roleName')?.indexOf("REPORTING") > -1) {
+         return true;
+      }
+      return false;
+   }
 
    static checkRoleAdmin() {
       let ls: any = localStorage;
