@@ -11,4 +11,4 @@ import { DatepickerModule } from 'ng2-datepicker';
   declarations: [DatePickerComponent],
   exports: [DatePickerComponent]
 })
-export class DatePickerModule { }
+export class RcmDatePickerModule { }

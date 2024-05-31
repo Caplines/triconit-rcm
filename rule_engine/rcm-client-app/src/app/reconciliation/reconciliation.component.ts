@@ -8,12 +8,11 @@ import { ReconcilltationRequestModel } from '../models/reconcillation-request-mo
 import { ReconcilltationResponseModel } from '../models/reconcillation-request-model';
 import { DatePipe } from '@angular/common';
 import { PmlDatePicker } from '../shared/date-picker/datepicker-options';
-import { DatepickerModule } from 'ng2-datepicker';
-import { DatePickerModule } from '../shared/date-picker/date-picker/date-picker.module';
+import { RcmDatePickerModule } from '../shared/date-picker/date-picker/rcm-date-picker.module';
 @Component({
   selector: 'app-reconciliation',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, DatepickerModule, DatePickerModule],
+  imports: [CommonModule, FormsModule, RouterModule, RcmDatePickerModule],
   templateUrl: './reconciliation.component.html',
   styleUrls: ['./reconciliation.component.scss']
 })

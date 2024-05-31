@@ -8,8 +8,7 @@ import { ProductionComponent } from './production-component/production.component
 import { ProductionRoutingModule } from './production-routing.module';
 import { DateRangeModule } from '../shared/date-range-picker/date-range-picker.module';
 
-import { DatepickerModule } from 'ng2-datepicker';
-import { DatePickerModule } from '../shared/date-picker/date-picker/date-picker.module';
+import { RcmDatePickerModule } from '../shared/date-picker/date-picker/rcm-date-picker.module';
 
 @NgModule({
   declarations: [
@@ -19,8 +18,7 @@ import { DatePickerModule } from '../shared/date-picker/date-picker/date-picker.
     CommonModule,
     ProductionRoutingModule, FormsModule,
     DateRangeModule,
-    DatepickerModule,
-    DatePickerModule
+    RcmDatePickerModule
 
   ],
   providers: [AuthService],
