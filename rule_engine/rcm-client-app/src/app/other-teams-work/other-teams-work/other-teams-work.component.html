@@ -604,7 +604,7 @@
                                                         <!--  //api changes required -->
                                                         <td *ngIf="showColumns.nextActionRequired">{{det.nextAction}}</td>
                                                         <td *ngIf="showColumns.nextFollowUpDate">{{det.followUpDate==null?'N/A':det.followUpDate | date: 'MMM dd, YYYY'}}</td>
-                                                        <td *ngIf="showColumns.providerSpeciality">N/A</td>
+                                                        <td *ngIf="showColumns.providerSpeciality">{{det.providerSpeciality==null || det.providerSpeciality==='' ?'N/A':det.providerSpeciality}}</td>
                                                         <td *ngIf="showColumns.dueBalance">{{det.dueBalance==null?'$0.0':det.dueBalance| currency:'USD':true:'.0-0'}}</td>
                                                         <td *ngIf="showColumns.showAttach"><textarea name="{{det.uuid}}"
                                                                 class="form-control"

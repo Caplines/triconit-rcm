@@ -2160,6 +2160,15 @@ export class BillingClaimsComponent {
         let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
         //method names are creates using convention  validate_{sectioname}
         console.log(!isSectionVal);
+        if (methodName == 'validate_APPEAL' || methodName == 'validate_SERVICE_LEVEL_INFORMATION' || methodName == 'validate_CLAIM_LEVEL_INFORMATION'
+          || methodName == 'validate_INSURANCE_PAYMENT_INFORMATION' ||
+          methodName == 'validate_INSURANCE_FOLLOW_UP' || methodName == 'validate_PATIENT_STATEMENT'
+          || methodName == 'validate_PATIENT_COMMUNICATION'
+          || methodName == 'validate_PATIENT_PAYMENT'
+          || methodName == 'validate_COLLECTION_AGENCY'
+          || methodName == 'validate_REBILLING') {
+          isSectionVal = true;
+        }
         if (!isSectionVal) {
           ths.isSectionValidated = false;
         } else {
@@ -2172,7 +2181,6 @@ export class BillingClaimsComponent {
     }
     ths.claimEditModel = {};
     ths.claimEditModel.assignToTeam = ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'];
-    // debugger;
     if (this.claimEditModel.assignToTeam == -1) {
       alert('NO team Selected');
       return;
@@ -2364,24 +2372,25 @@ export class BillingClaimsComponent {
       this.emptyFields["SERVICE_LEVEL_INFORMATION" + i]['adjustmentReason'] = false;
     }
 
-    this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { creditAdjustmentAmount: number, debitAdjustmentAmount: number, billToPatientAmount: number, adjustmentReason: string, btpReason: string }, index: number) => {
+    this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { creditAdjustmentAmount: any, debitAdjustmentAmount: any, billToPatientAmount: any, adjustmentReason: string, btpReason: string }, index: number) => {
       let heading = "SERVICE_LEVEL_INFORMATION" + index;
-
-      if (obj.creditAdjustmentAmount === 0 && obj.debitAdjustmentAmount === 0) {
+      console.log('obj.creditAdjustmentAmount');
+      console.log(obj.creditAdjustmentAmount);
+      if ((obj.creditAdjustmentAmount===null || obj.creditAdjustmentAmount === 0) && (obj.debitAdjustmentAmount ===null ||obj.debitAdjustmentAmount === 0)) {
         obj.adjustmentReason = '';
       }
 
-      if (obj.billToPatientAmount === 0) {
+      if (obj.billToPatientAmount === null || obj.billToPatientAmount === 0) {
         obj.btpReason = '';
       }
 
-      if ((obj.creditAdjustmentAmount > 0 || obj.debitAdjustmentAmount > 0) &&
-        (obj.adjustmentReason === '' || obj.adjustmentReason === null)) {
+      if (((obj.creditAdjustmentAmount!=null && obj.creditAdjustmentAmount > 0) || (obj.debitAdjustmentAmount!=null && obj.debitAdjustmentAmount > 0)) &&
+        (obj.adjustmentReason === null || obj.adjustmentReason ==='')) {
         this.emptyFields[heading]['adjustmentReason'] = true;
         isSectionValidated = false;
       }
 
-      if (obj.billToPatientAmount > 0 && (obj.btpReason === '' || obj.btpReason === null)) {
+      if ((obj.billToPatientAmount!=null && obj.billToPatientAmount > 0 )&& (obj.btpReason === null || obj.btpReason === '')) {
         this.emptyFields[heading]['btpReason'] = true;
         isSectionValidated = false;
       }
