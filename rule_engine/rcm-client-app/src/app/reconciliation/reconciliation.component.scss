@@ -116,3 +116,221 @@
     position: relative;
     margin-right: 3px;
 }
+
+.modal-header>.modal-title {
+    font-size: 14px
+}
+
+.modal-body>.body-desc {
+    font-size: 14px
+}
+
+.modal-footer>.footer-title {
+    font-size: 12px
+}
+
+.modal-header>.modal-title,
+.modal-body>.body-desc,
+.modal-body>.photo-input,
+.modal-footer>.footer-title {
+    text-align: center
+}
+
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 1000;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+}
+
+/* Modal Content */
+.modal-content {
+    display: block;
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    max-width: 40%;
+    width: auto;
+    // max-height: 370px;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: -15px;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.wrapper {
+    margin: auto;
+    max-width: 640px;
+    padding-top: 0px;
+    text-align: center;
+}
+
+.modal {
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 9999;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 0px;
+    border: 1px solid #888;
+    max-width: 40%;
+}
+
+.modal-header {
+    padding-top: 10px;
+    padding-bottom: 5px;
+}
+
+.modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    text-align: left !important;
+    padding-top: 2px;
+}
+
+.delete-modal {
+    max-width: 70% !important;
+    margin: 0 auto !important;
+}
+
+/* The Close Button */
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.modal-backdrop.fade.show {
+    display: none;
+}
+
+.modal-backdrop.fade.modalShow {
+    display: block;
+}
+
+
+
+.modal-md {
+    max-width: 50%;
+
+    .modal-body {
+        max-height: 350px;
+        overflow-y: auto;
+        padding: 0px;
+        display: flex;
+        justify-content: center;
+    }
+
+    table {
+        thead {
+            position: sticky;
+            top: 0px;
+        }
+
+        th {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        th,
+        td {
+            &:first-child {
+                text-align: left;
+            }
+        }
+
+        tr:nth-child(odd) {
+            background-color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+    }
+}
+
+.modal-sm {
+    max-width: 30%;
+
+    .modal-body {
+        max-height: 350px;
+        overflow-y: auto;
+        padding: 0px;
+        display: flex;
+        justify-content: center;
+    }
+
+    table {
+        thead {
+            position: sticky;
+            top: 0px;
+        }
+
+        th {
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        th,
+        td {
+            &:first-child {
+                text-align: left;
+            }
+        }
+
+        tr:nth-child(odd) {
+            background-color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+    }
+}
