@@ -88,6 +88,8 @@
                                                                         <th>Patient Name</th>
                                                                         <th style="white-space: nowrap;">Patient Id</th>
                                                                         <th>Claim Id</th>
+                                                                        <th>Claim type</th>
+                                                                        <th>Archived</th>
                                                                     </tr>
                                                                 </thead>
                                                                 <tbody>
@@ -96,6 +98,8 @@
                                                                         <td>{{link.patientId}}</td>
                                                                         <td><a class="btn btn-link text-decoration-none fs-4" target="_blank"
                                                                                 href="billing-claims/{{link.claimUUid}}">{{link.claimId}}</a></td>
+                                                                        <td>{{link.primary ? 'Primary': 'Secondary'}}</td>
+                                                                        <td>{{link.archived}}</td>
                                                                     </tr>
                                                                 </tbody>
                                                             </table>
