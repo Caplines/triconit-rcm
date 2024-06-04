@@ -5624,6 +5624,12 @@ public class ClaimServiceImpl {
         	discrepancy =new Discrepancy();
 			discrepancy.setClaimUUid(x.getClaimUuid());
 			discrepancy.setPatientId(x.getPatientId());
+			discrepancy.setArchived(false);
+			if (x.getClaimId().endsWith("_P")) {
+				discrepancy.setPrimary(true);
+			}else {
+				discrepancy.setPrimary(false);
+			}
 			discrepancy.setPatientName(x.getPatientName());
 			discrepancy.setClaimId(x.getClaimId().split("_")[0]);
         	unArchsPUB1.add(discrepancy);
@@ -5632,6 +5638,12 @@ public class ClaimServiceImpl {
         	discrepancy =new Discrepancy();
 			discrepancy.setClaimUUid(x.getClaimUuid());
 			discrepancy.setPatientId(x.getPatientId());
+			discrepancy.setArchived(false);
+			if (x.getClaimId().endsWith("_P")) {
+				discrepancy.setPrimary(true);
+			}else {
+				discrepancy.setPrimary(false);
+			}
 			discrepancy.setPatientName(x.getPatientName());
 			discrepancy.setClaimId(x.getClaimId().split("_")[0]);
         	unArchsSUB1.add(discrepancy);
@@ -5674,7 +5686,9 @@ public class ClaimServiceImpl {
             		Discrepancy ds= new Discrepancy();
             		ds.setClaimUUid(data.getClaimUUid());
             		ds.setPatientId(data.getPatientId());
-            		ds.setPatientName(data.getPatientName());
+            		ds.setArchived(data.isArchived());
+            		ds.setPrimary(data.isPrimary());
+        			ds.setPatientName(data.getPatientName());
             		ds.setClaimId(data.getClaimId().split("_")[0]);
                 	discrepancies.add(ds);
             	}
@@ -5690,6 +5704,13 @@ public class ClaimServiceImpl {
         		ds.setPatientId(dx1.get().getPatientId());
         		ds.setPatientName(dx1.get().getPatientName());
         		ds.setClaimId(dx1.get().getClaimId().split("_")[0]);
+        		ds.setArchived(false);
+    			if (dx1.get().getClaimId().endsWith("_P")) {
+    				ds.setPrimary(true);
+    			}else {
+    				ds.setPrimary(false);
+    			}
+        		
             	discrepancies.add(ds);
             	//discrepancies.add(dx1.get().getClaimId().split("_")[0]);
             	}
@@ -5703,6 +5724,12 @@ public class ClaimServiceImpl {
     		ds.setPatientId(x.getPatientId());
     		ds.setPatientName(x.getPatientName());
     		ds.setClaimId(x.getClaimId().split("_")[0]);
+    		ds.setArchived(false);
+			if (x.getClaimId().endsWith("_P")) {
+				ds.setPrimary(true);
+			}else {
+				ds.setPrimary(false);
+			}
     		unArchsPUB1.add(ds);
         	
 		}
@@ -5727,7 +5754,12 @@ public class ClaimServiceImpl {
     		ds.setClaimUUid(x.getClaimUuid());
     		ds.setPatientId(x.getPatientId());
     		ds.setPatientName(x.getPatientName());
-    		
+    		ds.setArchived(true);
+			if (x.getClaimId().endsWith("_P")) {
+				ds.setPrimary(true);
+			}else {
+				ds.setPrimary(false);
+			}
 			if (x.getClaimId().indexOf("_arc_")>=0)ds.setClaimId(x.getClaimId().split("_arc_")[1].split("_")[0]);
 			else ds.setClaimId(x.getClaimId().split("_")[0]);
 			discrepancies.add(ds);
@@ -5843,17 +5875,29 @@ public class ClaimServiceImpl {
 			discrepancy.setClaimUUid(x.getClaimUuid());
 			discrepancy.setPatientId(x.getPatientId());
 			discrepancy.setPatientName(x.getPatientName());
-			
+			discrepancy.setArchived(true);
 			//
 			Discrepancy fund =new Discrepancy();
 			fund.setClaimUUid(x.getClaimUuid());
 			fund.setPatientId(x.getPatientId());
 			fund.setPatientName(x.getPatientName());
 			fund.setClaimId(x.getClaimId().split("_")[0]);
+			fund.setArchived(false);
+			if (x.getClaimId().endsWith("_P")) {
+				fund.setPrimary(true);
+			}else {
+				fund.setPrimary(false);
+			}
 			foundClaims.add(fund);
 			
 			if (x.getClaimId().indexOf("_arc_")>=0)discrepancy.setClaimId(x.getClaimId().split("_arc_")[1].split("_")[0]);
 			else discrepancy.setClaimId(x.getClaimId().split("_")[0]);
+			
+			if (x.getClaimId().endsWith("_P")) {
+				discrepancy.setPrimary(true);
+			}else {
+				discrepancy.setPrimary(false);
+			}
 			discrepancies.add(discrepancy);
 			
 			
@@ -5864,12 +5908,23 @@ public class ClaimServiceImpl {
 			fund.setPatientId(x.getPatientId());
 			fund.setPatientName(x.getPatientName());
 			fund.setClaimId(x.getClaimId().split("_")[0]);
+			if (x.getClaimId().endsWith("_P")) {
+				fund.setPrimary(true);
+			}else {
+				fund.setPrimary(false);
+			}
+			fund.setArchived(true);
 			foundClaims.add(fund);
 			discrepancy =new Discrepancy();
 			discrepancy.setClaimUUid(x.getClaimUuid());
 			discrepancy.setPatientId(x.getPatientId());
 			discrepancy.setPatientName(x.getPatientName());
-			
+			if (x.getClaimId().endsWith("_P")) {
+				discrepancy.setPrimary(true);
+			}else {
+				discrepancy.setPrimary(false);
+			}
+			discrepancy.setArchived(false);
 			if (title.equals("Primary Unbilled")) {
 				
 				if (x.getStatusEsUpdated()==null) {

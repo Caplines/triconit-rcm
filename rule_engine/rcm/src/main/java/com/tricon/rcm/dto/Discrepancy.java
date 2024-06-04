@@ -9,4 +9,6 @@ public class Discrepancy {
 	String claimUUid;
 	String patientName;
 	String patientId;
+	boolean primary;
+	boolean archived;
 }
