@@ -1110,6 +1110,8 @@ public class ClaimSectionImpl {
 				}			
 				BeanUtils.copyProperties(serviceData, responseData);
 				responseData.setRebilledCodeStatus(serviceData.isRebilledStatus());
+				responseData.setAdjustmentReason(serviceData.getAdjustmentReason()==null?"":serviceData.getAdjustmentReason());
+				responseData.setBtpReason(serviceData.getBtpReason()==null?"":serviceData.getBtpReason());
 				data.add(responseData);
 			}
 		}
@@ -1781,9 +1783,9 @@ public class ClaimSectionImpl {
 				partialHeader.getJwtUser().getUuid(), currentClaim.getClaimUuid(), true);
 		if (assign == null) {
 			logger.error("claim not assigned to this user");
-			data.add(new ValidateRecreateClaimResponseDto(0, "", "<b style=\"color:red\" class=\"error-message-api\">claim is not assigned to this user</b> ", Constants.FAIL));
-			response.setValidationResponse(data);
-			return response;
+			//data.add(new ValidateRecreateClaimResponseDto(0, "", "<b style=\"color:red\" class=\"error-message-api\">claim is not assigned to this user</b> ", Constants.FAIL));
+			//response.setValidationResponse(data);
+			return null;
 		}
 
 		String currentClaimId[] = currentClaim.getClaimId().split("_");
@@ -1798,9 +1800,9 @@ public class ClaimSectionImpl {
 		if (dto.getNewClaimId()!=null) {
 			if(currentClaimId[0].equals(dto.getNewClaimId())){
 				logger.error("current claim match with new claim");
-				data.add(new ValidateRecreateClaimResponseDto(0, "", "<b style=\"color:red\" class=\"error-message-api\">Current claim match with new claim</b>", Constants.FAIL));
-				response.setValidationResponse(data);
-				return response;	
+				//data.add(new ValidateRecreateClaimResponseDto(0, "", "<b style=\"color:red\" class=\"error-message-api\">Current claim match with new claim</b>", Constants.FAIL));
+				//response.setValidationResponse(data);
+				return null;	
 			}			
 		newPrimaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.P.getSuffix(),office);
         secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(dto.getNewClaimId()+ClaimTypeEnum.S.getSuffix(),office);

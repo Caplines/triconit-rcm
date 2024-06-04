@@ -139,7 +139,7 @@
                         [src]="rla.isActive? '../../assets/img/search-claim.png':'../../assets/img/search-claim-gray.png'" />Search
                     Claims</a>
             </li>
-            <li><a href="javascript:void(0);" [routerLink]="['/reconciliation']" routerLinkActive="active"
+            <li *ngIf="(loginUserType!='Admin')"><a href="javascript:void(0);" [routerLink]="['/reconciliation']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/reconciliation-green-icon.png':'../../assets/img/reconciliation.png'" />Reconciliation
                 </a></li>

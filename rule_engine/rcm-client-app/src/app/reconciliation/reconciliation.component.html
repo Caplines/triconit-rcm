@@ -73,23 +73,39 @@
                                                     <span class="discrepancies-text">{{data.discrepancies.length}}</span>
                                                 </button>
                                             </div>
-                                            <div class="toggle-scroll" *ngIf="toggleState['discrepancies' + data.title]">
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Patient Name</th>
-                                                            <th style="white-space: nowrap;">Patient Id</th>
-                                                            <th>Claim Id</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr *ngFor="let link of data.discrepancies; let idx = index">
-                                                            <td>{{link.patientName}}</td>
-                                                            <td>{{link.patientId}}</td>
-                                                            <td><a class="btn btn-link text-decoration-none fs-4" target="_blank" href="billing-claims/{{link.claimUUid}}">{{link.claimId}}</a></td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                            <div class="modal" tabindex="-1" role="dialog" *ngIf="toggleState['discrepancies' + data.title]">
+                                                <div class="modal-dialog delete-modal" role="document">
+                                                    <div class="modal-content modal-md">
+                                                        <div class="modal-header flex-row">
+                                                            <h4 class="modal-title w-100">Discrepancies Found</h4>
+                                                            <button (click)="toggleText('discrepancies' + data.title)" type="button"
+                                                                class="btn btn-sm btn-ligt close">&times;</button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <table>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th>Patient Name</th>
+                                                                        <th style="white-space: nowrap;">Patient Id</th>
+                                                                        <th>Claim Id</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr *ngFor="let link of data.discrepancies; let idx = index">
+                                                                        <td>{{link.patientName}}</td>
+                                                                        <td>{{link.patientId}}</td>
+                                                                        <td><a class="btn btn-link text-decoration-none fs-4" target="_blank"
+                                                                                href="billing-claims/{{link.claimUUid}}">{{link.claimId}}</a></td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="modal-footer justify-content-center">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                                (click)="toggleText('discrepancies' + data.title)">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </ng-container>
                                         <ng-template #noDiscrepancies>
@@ -105,19 +121,34 @@
                                                     <span class="discrepancies-text">{{data.claimsNotFoundRCM.length}}</span>
                                                 </button>
                                             </div>
-                                            <div class="toggle-scroll number-scroll" *ngIf="toggleState['claimsNotFoundRCM' + data.title]">
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th style="white-space: nowrap;">Claim Id</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr *ngFor="let item of data.claimsNotFoundRCM; let idx = index">
-                                                            <td style="text-align: center;">{{item}}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                            <div class="modal" tabindex="-1" role="dialog" *ngIf="toggleState['claimsNotFoundRCM' + data.title]">
+                                                <div class="modal-dialog delete-modal" role="document">
+                                                    <div class="modal-content modal-sm">
+                                                        <div class="modal-header flex-row">
+                                                            <h4 class="modal-title w-100">Claims Not Found in RCM Tool</h4>
+                                                            <button (click)="toggleText('claimsNotFoundRCM' + data.title)" type="button"
+                                                                class="btn btn-sm btn-ligt close">&times;</button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <table>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="text-align: center;">Claim Id</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr *ngFor="let item of data.claimsNotFoundRCM; let idx = index">
+                                                                        <td style="text-align: center;">{{item}}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="modal-footer justify-content-center">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                                (click)="toggleText('claimsNotFoundRCM' + data.title)">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </ng-container>
                                         <ng-template #noclaimsFound>
@@ -133,21 +164,36 @@
                                                     <span class="discrepancies-text">{{data.claimInUploadErrors.length}}</span>
                                                 </button>
                                             </div>
-                                            <div class="toggle-scroll" *ngIf="toggleState['claimInUploadErrors' + data.title]">
-                                                <table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th style="white-space: nowrap;">Claim Id</th>
-                                                            <th style="white-space: nowrap;">Issue</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr *ngFor="let item of data.claimInUploadErrors; let idx = index">
-                                                            <td>{{item.claimId}}</td>
-                                                            <td>{{item.patientName}}</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
+                                            <div class="modal" tabindex="-1" role="dialog" *ngIf="toggleState['claimInUploadErrors' + data.title]">
+                                                <div class="modal-dialog delete-modal" role="document">
+                                                    <div class="modal-content modal-md">
+                                                        <div class="modal-header flex-row">
+                                                            <h4 class="modal-title w-100">Claim in Upload Errors</h4>
+                                                            <button (click)="toggleText('claimInUploadErrors' + data.title)" type="button"
+                                                                class="btn btn-sm btn-ligt close">&times;</button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <table>
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th style="white-space: nowrap;">Claim Id</th>
+                                                                        <th style="white-space: nowrap;">Issue</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <tr *ngFor="let item of data.claimInUploadErrors; let idx = index">
+                                                                        <td>{{item.claimId}}</td>
+                                                                        <td>{{item.patientName}}</td>
+                                                                    </tr>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                        <div class="modal-footer justify-content-center">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                                                                (click)="toggleText('claimInUploadErrors' + data.title)">Close</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </ng-container>
                                         <ng-template #noUploadErrors>

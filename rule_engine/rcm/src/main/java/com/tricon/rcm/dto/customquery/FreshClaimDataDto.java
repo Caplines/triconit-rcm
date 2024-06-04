@@ -33,4 +33,6 @@ public interface FreshClaimDataDto {
 	Date getFollowUpDate();
 	Float getDueBalance();
 	Date getUpdatedDate();
+	
+	String getProviderSpeciality();
 }

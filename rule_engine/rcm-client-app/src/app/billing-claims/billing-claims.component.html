@@ -1619,7 +1619,7 @@
                                                             <!--<th>Reconciliation</th>-->
                                                             <!-- <th>BTP Flag</th> -->
                                                             <ng-container *ngIf="!smilePoint">
-                                                                <th></th>
+                                                                <th style="border-left:1px solid #ccc">Action</th>
                                                             </ng-container>
                                                         </tr>
                                                     </thead>
@@ -1684,13 +1684,13 @@
                                                                         class="attach-secondary-width form-control"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.creditAdjustmentAmount"
-                                                                        (blur)="getTotalServiceLevelInfo()" /> </td>
+                                                                        (blur)="getTotalServiceLevelInfo()"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()"/> </td>
                                                                 <td><input type="number"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         class="attach-secondary-width form-control"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.debitAdjustmentAmount"
-                                                                        (blur)="getTotalServiceLevelInfo()" /> </td>
+                                                                        (blur)="getTotalServiceLevelInfo()"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()" /> </td>
                                                                 <!-- <td> <input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -1715,7 +1715,7 @@
                                                                         class="attach-secondary-width form-control"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.billToPatientAmount"
-                                                                        (blur)="getTotalServiceLevelInfo()"> </td>
+                                                                        (blur)="getTotalServiceLevelInfo()"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()"> </td>
                                                                 <td>
                                                                     <select class="attach-secondary-width form-control"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
@@ -1769,7 +1769,7 @@
                                                                 </div>
                                                             </td> -->
                                                                 <ng-container *ngIf="!smilePoint">
-                                                                    <td *ngIf="!last">
+                                                                    <td *ngIf="!last"  style="border-left:1px solid #ccc">
                                                                         <!-- <button class="btn btn-sm btn-danger"(click)="removeSectionLevelRow(idx)">-</button> -->
                                                                         <span (click)="removeSectionLevelRow(idx)"
                                                                             style="cursor:pointer;">
@@ -1793,7 +1793,7 @@
                                                                             </svg>
                                                                         </span>
                                                                     </td>
-                                                                    <td *ngIf="last">
+                                                                    <td *ngIf="last"  style="border-left:1px solid #ccc">
 
                                                                         <span (click)="addNewSectionLevelField()"
                                                                             style="cursor:pointer;">
@@ -4279,7 +4279,7 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="currentClaimStatusRcm">Current Claim
+                                                            <label for="currentClaimStatusRcm">Claim
                                                                 Status<span class="text-danger">*</span>
                                                             </label>
                                                             <select id="currentClaimStatusRcm"
@@ -4299,7 +4299,7 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="currentClaimStatusEs">Current Claim status in
+                                                            <label for="currentClaimStatusEs">Claim status in
                                                                 PMS &nbsp;<span class="text-danger">*</span></label>
                                                             <select id="currentClaimStatusEs"
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"

@@ -25,4 +25,5 @@ export interface ClaimAssociateDetailModel {
 	dueBalance:number;
     updatedDate:Date;
     selectAging:boolean;
+    providerSpeciality:string;
 }

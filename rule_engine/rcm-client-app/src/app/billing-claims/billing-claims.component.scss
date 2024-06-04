@@ -170,11 +170,14 @@
     margin-bottom: 53px;
     border-radius: 10px;
     margin-top: 43px;
-    right: -6px;
-    position: relative;
+    right: 5px;
+    position: fixed;
     padding-top: 45px;
     transition: all 0.3s;
     min-width: 260px;
+    overflow-y: auto;
+    height: calc(100% - 160px);
+    scrollbar-width: thin;
 }
 
 .steps-taken ul {
