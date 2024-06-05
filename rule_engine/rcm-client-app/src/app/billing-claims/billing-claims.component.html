@@ -1559,7 +1559,7 @@
                                     </div>
                                     <!-- NEW PHASE SECTION START HERE-->
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['SERVICE_LEVEL_INFORMATION']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
                                             <a data-toggle="collapse" aria-expanded="false"
@@ -1911,7 +1911,7 @@
                                     </ng-container>
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['EOB']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['EOB']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="EOB"
                                                 class="text-danger">
@@ -2039,7 +2039,7 @@
                                     </ng-container>
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['CLAIM_LEVEL_INFORMATION']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['CLAIM_LEVEL_INFORMATION']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="CLAIM_LEVEL_INFORMATION"
@@ -2219,7 +2219,7 @@
                                     </ng-container>
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['INSURANCE_PAYMENT_INFORMATION']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['INSURANCE_PAYMENT_INFORMATION']}">
                                             <a data-toggle="collapse" aria-expanded="false"
@@ -2413,7 +2413,7 @@
 
                                     <!--AGING Insurance Follow-Up Details START-->
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['INSURANCE_FOLLOW_UP']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['INSURANCE_FOLLOW_UP']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="INSURANCE_FOLLOW_UP"
@@ -2620,7 +2620,7 @@
                                     <!-- Patient Statement START-->
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['PATIENT_STATEMENT']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['PATIENT_STATEMENT']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="PATIENT_STATEMENT"
@@ -2881,7 +2881,7 @@
                                     <!-- Patient Payment START-->
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['PATIENT_PAYMENT']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['PATIENT_PAYMENT']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="PATIENT_PAYMENT"
@@ -3025,7 +3025,7 @@
                                     <!-- Patient Communication START-->
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['PATIENT_COMMUNICATION']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['PATIENT_COMMUNICATION']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="PATIENT_COMMUNICATION"
@@ -3180,7 +3180,7 @@
                                     <!-- Collection Agency START-->
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['COLLECTION_AGENCY']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['COLLECTION_AGENCY']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="COLLECTION_AGENCY"
@@ -3389,7 +3389,7 @@
                                     <!-- Appeal START-->
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['APPEAL']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['APPEAL']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="APPEAL"
@@ -3507,7 +3507,7 @@
                                     <!-- Request Rebilling START-->
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['REQUEST_REBILLING']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="REQUEST_REBILLING"
@@ -3662,7 +3662,7 @@
                                     <!-- REBILLING START-->
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['REBILLING']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['REBILLING']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="REBILLING"
@@ -3888,7 +3888,7 @@
                                     <!-- NEED TO CREATE REBLIING START-->
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['RECREATE_CLAIM']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view')">
 
                                         <div class="bold-b-text collapsed
                                     " [ngClass]="{'collapsed':toggleTab['RECREATE_CLAIM']}">
@@ -4243,7 +4243,7 @@
                                     <!-- Current Status and next action required START-->
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && !checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
                                             <a data-toggle="collapse" aria-expanded="false"

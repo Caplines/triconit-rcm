@@ -105,136 +105,163 @@ export class BillingClaimsComponent {
     'SECTION_CLAIM_DETAIL': {
       sectionId: 1,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'LINKS_RELATED_DOCUMENTS': {
       sectionId: 2,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'REMARKS_BY_OTHER': {
       sectionId: 3,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'REBILLED_CLAIM': {
       sectionId: 4,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'CLAIM_LEVEL_VALIDATION_AUTO': {
       sectionId: 5,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'CLAIM_LEVEL_VALIDATION_MANUAL': {
       sectionId: 6,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'SERVICE_LEVEL_VALIDATION_AUTO': {
       sectionId: 7,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'SERVICE_LEVEL_VALIDATION_MANUAL': {
       sectionId: 8,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'RULE_ENGINE_VALIDATION': {
       sectionId: 9,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     }, 'CLAIM_SUBMISSION': {
       sectionId: 10,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'SERVICE_LEVEL_INFORMATION': {
       sectionId: 11,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'EOB': {
       sectionId: 12,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'CLAIM_LEVEL_INFORMATION': {
       sectionId: 13,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'INSURANCE_PAYMENT_INFORMATION': {
       sectionId: 14,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'PATIENT_STATEMENT': {
       sectionId: 15,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'ASSIGN_TO_OTHER': {
       sectionId: 16,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'INSURANCE_FOLLOW_UP': {
       sectionId: 17,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'RECREATE_CLAIM': {
       sectionId: 18,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: false,
+      hideOnNoAccess: true
     },
     'APPEAL': {
       sectionId: 19,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'PATIENT_PAYMENT': {
       sectionId: 20,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'PATIENT_COMMUNICATION': {
       sectionId: 21,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'COLLECTION_AGENCY': {
       sectionId: 22,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'REQUEST_REBILLING': {
       sectionId: 23,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'REBILLING': {
       sectionId: 24,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'NEED_TO_CALL_INSURANCE': {
       sectionId: 25,
       isNewSection: true,
-      isWorkDone: false
+      isWorkDone: false,
+      hideOnNoAccess: true
     },
     'CURRENT_STATUS_AND_NEXT_ACTION': {
       sectionId: 26,
       isNewSection: true,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     },
     'ATTACHMENT': {
       sectionId: 27,
       isNewSection: false,
-      isWorkDone: true
+      isWorkDone: true,
+      hideOnNoAccess: true
     }
   };
 
