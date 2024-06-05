@@ -291,7 +291,6 @@ export class AppConstants {
         { name: "Send Text" },
         { name: "No Action Needed" },
         { name: "Need to send to IC system" },
-        { name: "Need to Void" },
         { name: "Need to Post" },
         { name: "Pending For Billing" },
         { name: "Need to Audit" }

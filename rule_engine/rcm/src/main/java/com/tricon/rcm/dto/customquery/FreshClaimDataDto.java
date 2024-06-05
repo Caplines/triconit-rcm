@@ -35,4 +35,6 @@ public interface FreshClaimDataDto {
 	Date getUpdatedDate();
 	
 	String getProviderSpeciality();
+	
+	String getClaimStatus();
 }

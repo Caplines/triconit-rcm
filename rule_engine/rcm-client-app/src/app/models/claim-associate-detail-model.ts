@@ -26,4 +26,5 @@ export interface ClaimAssociateDetailModel {
     updatedDate:Date;
     selectAging:boolean;
     providerSpeciality:string;
+    claimStatus:string;
 }

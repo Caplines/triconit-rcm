@@ -3470,7 +3470,7 @@ export class BillingClaimsComponent {
     const claimId = this.claimRcm.claimId.split('_')[0];
     this.validateRecreateClaimErrMsg = "";
     if (this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'] === claimId) {
-      this.validateRecreateClaimErrMsg = 'The claim ID entered is the same as the current claim ID. Please enter a different one.';
+      this.validateRecreateClaimErrMsg = ' (The claim ID entered is the same as the current claim ID. Please enter a different one)';
       this.loader['validationData'] = false;
       return;
     }

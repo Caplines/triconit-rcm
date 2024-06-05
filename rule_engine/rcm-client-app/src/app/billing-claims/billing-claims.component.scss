@@ -477,7 +477,15 @@
     background-color: lightgray !important;
 }
 .notes-modal{
+   
     display: block !important;
+    .modal-content{
+        padding: 0px;
+        .close{
+            font-size: 25px;
+        }
+    }
+    
 }
 
 .pdf-viewer {

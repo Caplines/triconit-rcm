@@ -1976,9 +1976,9 @@ public class ClaimServiceImpl {
 				BeanUtils.copyProperties(data, dataView);
 				dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction())!=null?ClaimStatusEnum.getById(data.getNextAction()).getType():"N/A");
 				//set es_status updated
-				if (data.getStatusESUpdated() == null) {
-					dataView.setStatusESUpdated(data.getStatusES());
-				}
+//				if (data.getStatusESUpdated() == null) {
+//					dataView.setStatusESUpdated(data.getStatusES());
+//				}
 				listView.add(dataView);
 			});
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
@@ -2007,9 +2007,9 @@ public class ClaimServiceImpl {
 				BeanUtils.copyProperties(data, dataView);
 				dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction())!=null?ClaimStatusEnum.getById(data.getNextAction()).getType():"N/A");
 				//set es_status updated
-				if (data.getStatusESUpdated() == null) {
-					dataView.setStatusESUpdated(data.getStatusES());
-				}
+//				if (data.getStatusESUpdated() == null) {
+//					dataView.setStatusESUpdated(data.getStatusES());
+//				}
 				listView.add(dataView);
 			});
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {

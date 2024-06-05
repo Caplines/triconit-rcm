@@ -5,6 +5,7 @@ import java.util.Optional;
 
 public enum ClaimStatusEnum {
 
+	//Make same entry in rcm_claim_status_type table
 	Billing(1, "Billing"), 
 	ReBilling(2, "Re-billing"),
 	Need_to_Audit(3,"Need to Audit"),
@@ -22,7 +23,7 @@ public enum ClaimStatusEnum {
 	Review(15, "Review"),
 	Billed(16, "Billed"),
 	Claim_Uploaded(17, "Claim Uploaded"),
-	Need_To_void(18,"Need to void"),
+	SEND_TO_AGING(18,"Send to Aging"),
 	EOB_Required(19,"EOB Required"),
 	Need_to_call_Insurance(20,"Need to Call Insurance"),
 	Need_to_Follow_up_on_Appeal(21,"Need to Follow up on Appeal"),
@@ -50,8 +51,7 @@ public enum ClaimStatusEnum {
 	Insurance_Claim_Closed(43,"Insurance Claim Closed"),
 	Insurance_Claim_in_Process(44,"Insurance Claim in Process"),
 	Need_to_send_Appeal(45,"Need to send Appeal"),
-	Case_sent_to_Collections(46,"Case sent to Collections"),
-	SEND_TO_AGING(47,"Send to Aging");
+	Case_sent_to_Collections(46,"Case sent to Collections");
 	
 	
 	final private int id;

@@ -450,7 +450,7 @@
                                             </ng-container>
                                         </div>
                                     </ng-container>
-                                    <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['additionalRebilled']}">
+                                    <!-- <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['additionalRebilled']}">
                                         <a data-toggle="collapse" aria-expanded="false">
                                             Additional Requirements for Rebilled
                                             Claim
@@ -459,8 +459,8 @@
                                             <a href="javascript:void(0)"
                                                 [ngClass]="{'close':toggleTab['additionalRebilled']}"></a>
                                         </div>
-                                    </div>
-                                    <div *ngIf="loader.rebilledClaims" class="loader-data"></div>
+                                    </div> -->
+                                    <!-- <div *ngIf="loader.rebilledClaims" class="loader-data"></div>
                                     <div *ngIf="!loader.rebilledClaims" class="form-row  collapse "
                                         [ngClass]="{'show':!toggleTab['additionalRebilled']}" id="rebilledClaims">
                                         <div class="table-responsive">
@@ -481,7 +481,7 @@
                                                 Data Not Found
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                     <ng-container *ngIf="smilePoint">
                                         <ng-container *ngIf="actionButtons && (isBilling || isInternalAudit)">
                                             <a (click)="reval()"
@@ -4852,18 +4852,19 @@
             <div class="modal-dialog" role="document">
                 <div class="modal-content">
                     <div class="modal-header flex-row">
-                        <h4 class="modal-title w-100">Request Rebilling</h4>
+                        <h4 class="modal-title w-100 text-center">Request Rebilling</h4>
                         <button (click)="closeReqRebillingModal()" type="button"
-                            class="btn btn-sm btn-ligt close">&times;</button>
+                            class="btn close">&times;</button>
                     </div>
                     <div class="modal-body">
-                        <h5>Are you sure you want to rebillied ?</h5>
+                        <h5>Are you sure that you want to request rebilling?</h5>
                     </div>
                     <div class="modal-footer justify-content-center">
+                        <button type="button" class="btn btn-success" 
+                            (click)="saveRequestBillingInfo(false)">Rebilled</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal"
                             (click)="closeReqRebillingModal()">Cancel</button>
-                        <button type="button" class="btn btn-outline-danger"
-                            (click)="saveRequestBillingInfo(false)">Rebilled</button>
+                       
                     </div>
                 </div>
             </div>

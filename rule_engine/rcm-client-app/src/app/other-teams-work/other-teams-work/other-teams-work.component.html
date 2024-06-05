@@ -598,8 +598,11 @@
                                                         </td>
                                                         <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}"
                                                             class="alignRight">{{currentTeamName?.teamName}}</td>
-                                                        <td *ngIf="showColumns.currentStatus">
+                                                        <!-- <td *ngIf="showColumns.currentStatus">
                                                             {{det.statusES ? (appConstants.statusESUpdated[det.statusES]==null?det.statusES:appConstants.statusESUpdated[det.statusES]) : det.statusESUpdated ?  appConstants.statusESUpdated[det.statusESUpdated] : 'N/A'  }}
+                                                        </td> -->
+                                                        <td *ngIf="showColumns.currentStatus">
+                                                            {{det.claimStatus==null || det.claimStatus==='' ?'N/A':det.claimStatus}}
                                                         </td>
                                                         <!--  //api changes required -->
                                                         <td *ngIf="showColumns.nextActionRequired">{{det.nextAction}}</td>

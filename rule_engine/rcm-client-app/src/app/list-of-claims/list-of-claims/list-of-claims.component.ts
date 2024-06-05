@@ -952,4 +952,9 @@ export class ListOfClaimsComponent implements OnInit {
     }
   }
 
+  get staticUtil():any {
+
+    return Utils;
+  }
+
 }
