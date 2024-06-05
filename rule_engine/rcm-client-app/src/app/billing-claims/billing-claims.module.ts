@@ -16,7 +16,7 @@ import { MultiSelectDropdownModule } from "../shared/multi-select-dropdown/multi
 import { FeedbackModule } from 'src/app/shared/feedback/feedback.module';
 import { HeaderComponent } from '../header/header-component/header.component';
 import { DatepickerModule } from 'ng2-datepicker';
-
+import { RcmDatePickerModule } from '../shared/date-picker/date-picker/rcm-date-picker.module';
 
 @NgModule({
   declarations: [BillingClaimsComponent],
@@ -30,7 +30,8 @@ import { DatepickerModule } from 'ng2-datepicker';
     MultiSelectDropdownModule,
     FeedbackModule,
     HeaderComponent,
-    DatepickerModule
+    DatepickerModule,
+    RcmDatePickerModule
   ],
   providers: [ApplicationServiceService, ClaimService, DownLoadService, DatePipe],
   exports: [BillingClaimsComponent],

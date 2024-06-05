@@ -2087,20 +2087,21 @@
                                                 <div class="custom-row text-number">
                                                     <label for="claimDate">Claim Processing Date<span
                                                             class="text-danger">*</span></label>
-                                                    <ngx-datepicker id="claimDate"
-                                                        *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                        [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
-                                                        [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']"
-                                                        class="claimDatepicker"
-                                                        [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}">
-                                                    </ngx-datepicker>
                                                     <!-- <input type="date" id="claimDate"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']}"> -->
+
+                                                    <app-date-picker id="claimDate" 
+                                                        *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION" class="claimDatepicker"
+                                                        [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                        [inputDate]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']"
+                                                        (emitToParent)="receiveChildEventdate($event)" 
+                                                        (ngModelChange)="onSelectDate($event)">
+                                                    </app-date-picker>
+
                                                 </div>
                                             </div>
                                             <div class="col-md-4 mb-2">

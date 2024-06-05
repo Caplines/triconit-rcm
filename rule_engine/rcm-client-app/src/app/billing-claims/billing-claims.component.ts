@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Component, ViewChild, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -413,6 +413,7 @@ export class BillingClaimsComponent {
   isLoggedInReporting: boolean = false;
   isValidInput: boolean = false;
   validateRecreateClaimErrMsg = '';
+  @Output() emitToChild = new EventEmitter();
 
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -2136,7 +2137,7 @@ export class BillingClaimsComponent {
 
   saveClaimLevelinfo(isFinalSubmit: boolean) {
     this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['sectionId'] = this.sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'];
-    if (!isFinalSubmit) {
+    if (!isFinalSubmit && this.validate_CLAIM_LEVEL_INFORMATION()) {
       this.loader.claimLevelInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
@@ -3836,4 +3837,18 @@ export class BillingClaimsComponent {
     }
   }
 
+  receiveChildEventdate(event: any) {
+    if (event['action'] === 'changeDatePicker') {
+      if (event.model == 'claimDate') {
+        if (event.value != null)
+          this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate'] = new Date(event.value);
+        else
+          this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate'] = null;
+      }
+    }
+  }
+
+  onSelectDate(date: any) {
+    this.emitToChild.emit(date);
+  }
 }
