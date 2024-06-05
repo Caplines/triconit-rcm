@@ -385,6 +385,7 @@ export class BillingClaimsComponent {
   isLoggedInAdmin: boolean = false;
   isLoggedInReporting: boolean = false;
   isValidInput: boolean = false;
+  validateRecreateClaimErrMsg = '';
 
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -3466,7 +3467,15 @@ export class BillingClaimsComponent {
   }
 
   validateNewClaimId(action?: any) {
+    const claimId = this.claimRcm.claimId.split('_')[0];
+    this.validateRecreateClaimErrMsg = "";
+    if (this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId'] === claimId) {
+      this.validateRecreateClaimErrMsg = 'The claim ID entered is the same as the current claim ID. Please enter a different one.';
+      this.loader['validationData'] = false;
+      return;
+    }
     this.loader['validationData'] = true;
+    this.validateRecreateClaimErrMsg = "";
     this.claimSectionModal.RECREATE_CLAIM.validationData = [];
     this.emptyFields.RECREATE_CLAIM = {};
     let params: any = {

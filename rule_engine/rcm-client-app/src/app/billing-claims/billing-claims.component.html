@@ -3910,6 +3910,7 @@
                                             [ngClass]="{'collapsed':toggleTab['RECREATE_CLAIM'] || activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)}">
                                             <a data-toggle="collapse" aria-expanded="false">
                                                 Claim Recreation in PMS
+                                                <span class="text-danger" *ngIf="validateRecreateClaimErrMsg">{{validateRecreateClaimErrMsg}}</span>
                                                 <ng-container
                                                     *ngIf="activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)">
                                                     - <span [ngClass]="{'text-danger':true}"> No Service Codes left to
@@ -4228,7 +4229,7 @@
 
                                             <div class="col-md-4 mb-2"
                                                 *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != null && ((checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit) && !hideRecreateButton) && isPrimaryClaimClosed()">
-                                                <button class="btn btn-success" (click)="saveRecreateNewClaim(false)">
+                                                <button class="btn btn-success" (click)="saveRecreateNewClaim(false)" *ngIf="!validateRecreateClaimErrMsg">
                                                     {{claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen']
                                                     ?
                                                     'Recreate and Rebill' : 'Recreate'}}</button>
