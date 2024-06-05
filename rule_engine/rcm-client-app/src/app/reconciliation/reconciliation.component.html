@@ -67,10 +67,8 @@
                                     <td class="alignCenter">
                                         <ng-container *ngIf="data.discrepancies.length > 0; else noDiscrepancies">
                                             <div class="d-flex justify-content-center">
-                                                <button (click)="toggleText('discrepancies' + data.title)" class="btn btn-link text-decoration-none fixedButtonWidth">
-                                                    <i *ngIf="!toggleState['discrepancies' + data.title]" class="arrow-right"></i>
-                                                    <i *ngIf="toggleState['discrepancies' + data.title]" class="arrow-down"></i>
-                                                    <span class="discrepancies-text">{{data.discrepancies.length}}</span>
+                                                <button (click)="toggleText('discrepancies' + data.title)" class="btn btn-link text-decoration-none">
+                                                    <span class="discrepancies-text" [style.color]="data.discrepancies.length > 0 ? 'red' : 'black'">{{data.discrepancies.length}}</span>
                                                 </button>
                                             </div>
                                             <div class="modal" tabindex="-1" role="dialog" *ngIf="toggleState['discrepancies' + data.title]">
@@ -119,10 +117,8 @@
                                     <td class="alignCenter">
                                         <ng-container *ngIf="data.claimsNotFoundRCM.length > 0; else noclaimsFound">
                                             <div class="d-flex justify-content-center">
-                                                <button (click)="toggleText('claimsNotFoundRCM' + data.title)" class="btn btn-link text-decoration-none fixedButtonWidth">
-                                                    <i *ngIf="!toggleState['claimsNotFoundRCM' + data.title]" class="arrow-right"></i>
-                                                    <i *ngIf="toggleState['claimsNotFoundRCM' + data.title]" class="arrow-down"></i>
-                                                    <span class="discrepancies-text">{{data.claimsNotFoundRCM.length}}</span>
+                                                <button (click)="toggleText('claimsNotFoundRCM' + data.title)" class="btn btn-link text-decoration-none">
+                                                    <span class="discrepancies-text" [style.color]="data.claimsNotFoundRCM.length > 0 ? 'red' : 'black'">{{data.claimsNotFoundRCM.length}}</span>
                                                 </button>
                                             </div>
                                             <div class="modal" tabindex="-1" role="dialog" *ngIf="toggleState['claimsNotFoundRCM' + data.title]">
@@ -162,10 +158,8 @@
                                     <td class="alignCenter">
                                         <ng-container *ngIf="data.claimInUploadErrors.length > 0; else noUploadErrors">
                                             <div class="d-flex justify-content-center">
-                                                <button (click)="toggleText('claimInUploadErrors' + data.title)" class="btn btn-link text-decoration-none fixedButtonWidth">
-                                                    <i *ngIf="!toggleState['claimInUploadErrors' + data.title]" class="arrow-right"></i>
-                                                    <i *ngIf="toggleState['claimInUploadErrors' + data.title]" class="arrow-down"></i>
-                                                    <span class="discrepancies-text">{{data.claimInUploadErrors.length}}</span>
+                                                <button (click)="toggleText('claimInUploadErrors' + data.title)" class="btn btn-link text-decoration-none">
+                                                    <span class="discrepancies-text" [style.color]="data.claimInUploadErrors.length > 0 ? 'red' : 'black'">{{data.claimInUploadErrors.length}}</span>
                                                 </button>
                                             </div>
                                             <div class="modal" tabindex="-1" role="dialog" *ngIf="toggleState['claimInUploadErrors' + data.title]">
