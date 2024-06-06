@@ -1887,7 +1887,7 @@
                                                     <button class="btn btn-success mr-2"
                                                         (click)="saveServiceLevelInfo(false)"
                                                         [disabled]="loader.serviceLevelInfo || !this.sectionLevelInfoTotalConfig.reconcile"
-                                                        *ngIf="activeServiceCodeCount > 0 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                        *ngIf="activeServiceCodeCount >=1 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                                         Save
                                                     </button>
                                                     <div *ngIf="loader.serviceLevelInfo" class="mr-2">

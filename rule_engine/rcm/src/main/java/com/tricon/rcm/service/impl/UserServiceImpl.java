@@ -125,6 +125,7 @@ public class UserServiceImpl {
 
 	/**
 	 * This api fetches all teamName of loginUser's teamId only exclude loginUser TeamId
+	 * Repoting user will not consider for this api
 	 * @param partialHeader
 	 * @return
 	 */
@@ -142,7 +143,8 @@ public class UserServiceImpl {
 				teams.removeIf(x -> x.getTeamId() == partialHeader.getTeamId());
 			}*/
        	teams = masterService.getTeams();
-		teams.removeIf(x -> x.getTeamId() == partialHeader.getTeamId());
+       	teams.removeIf(x->x.getTeamId()==RcmTeamEnum.REPORTING.getId());
+       	teams.removeIf(x -> x.getTeamId() == partialHeader.getTeamId());
 			return teams;
 		}
 		

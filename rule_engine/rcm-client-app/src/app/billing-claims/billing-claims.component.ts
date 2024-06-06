@@ -2984,6 +2984,7 @@ export class BillingClaimsComponent {
 
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.splice(this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length - 1, 0, model);
 
+    this.activeServiceCodeCount=this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length;
   }
 
   addUndistributedSectionLevelField() {
@@ -3011,6 +3012,7 @@ export class BillingClaimsComponent {
   removeSectionLevelRow(idx: any) {
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.splice(idx, 1);
     this.getTotalServiceLevelInfo();
+    this.activeServiceCodeCount--;
   }
 
   viewFullNotes(notes: any) {
