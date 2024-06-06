@@ -1372,19 +1372,13 @@
                                                         <td>Date of claim processing in PMS</td>
                                                         <td>
                                                             <div class="multi-input-row">
-                                                                <!-- <input class="form-control date-control" id="" rows="1"
-                                                                id="SUB_DET_DT" placeholder="yyyy-mm-dd"
-                                                                (click)="removeErrorDisplayKeyById('SUB_DET_DT')"
-                                                                [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')"
-                                                                [(ngModel)]='submissionDto.esDate' type="date" /> -->
-                                                                <ngx-datepicker id="SUB_DET_DT" rows="1"
-                                                                    (ngModelChange)="removeErrorDisplayKeyById('SUB_DET_DT')"
-                                                                    disabled="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')"
-                                                                    [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
-                                                                    [(ngModel)]='submissionDto.esDate'
-                                                                    [ngClass]="{'dp-disable':isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')}"
-                                                                    class="claimDatepicker date-control">
-                                                                </ngx-datepicker>
+                                                                <app-date-picker id="SUB_DET_DT" rows="1" 
+                                                                    class="claimDatepicker date-control"
+                                                                    [inputDate]="submissionDto.esDate" 
+                                                                    (emitToParent)="receiveChildEventdate($event)"
+                                                                    (ngModelChange)="onSelectDate($event)"
+                                                                    [ngClass]="{'dp-disable':isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')}">
+                                                                </app-date-picker>
                                                                 <!--<span class="and-space">&</span> <input class="form-control"
                                                 id="" rows="1" id="SUB_DET_TI"
                                                 (click)="removeErrorDisplayKeyById('SUB_DET_TI')"

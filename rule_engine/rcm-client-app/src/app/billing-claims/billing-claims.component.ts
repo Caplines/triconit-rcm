@@ -3839,6 +3839,13 @@ export class BillingClaimsComponent {
 
   receiveChildEventdate(event: any) {
     if (event['action'] === 'changeDatePicker') {
+      if (event.model == 'SUB_DET_DT') {
+        this.removeErrorDisplayKeyById('SUB_DET_DT');
+        if (event.value != null)
+          this.submissionDto.esDate = new Date(event.value);
+        else
+          this.submissionDto.esDate = null;
+      }
       if (event.model == 'claimDate') {
         if (event.value != null)
           this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate'] = new Date(event.value);
