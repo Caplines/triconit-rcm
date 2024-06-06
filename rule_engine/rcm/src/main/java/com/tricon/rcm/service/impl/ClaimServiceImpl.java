@@ -2125,26 +2125,56 @@ public class ClaimServiceImpl {
 			if (secondaries.size()>0)primaries.addAll(secondaries);
 			RemoteLietStatusCount counts = null;
 			AssignFreshClaimLogsImplDto dFA = null;
-			
+			Map<String, RcmOffice> officeCache = new HashMap<>();
+			Map<String, RcmCompany> companyCache = new HashMap<>();
+			Map<String, UserAssignOffice> userAssignCache = new HashMap<>();
+			Map<String, RcmUser> rcmUserCache = new HashMap<>();
 			for(String off:offices) {
 				
 			List<AssignFreshClaimLogsDto> x =	primaries.stream().filter(e -> e.getOfficeUuid().equals(off))
 					.collect(Collectors.toList());
-				AssignFreshClaimLogsDto minValue1 = x.stream().filter(e -> e.getOpdt()!=null).max(Comparator.comparing(v -> v.getOpdt())).get();
-				AssignFreshClaimLogsDto minValue2 = x.stream().filter(e -> e.getOpdos()!=null).max(Comparator.comparing(v -> v.getOpdos())).get();
+			if (x.isEmpty()) continue;
+			AssignFreshClaimLogsDto minValue1=null;
+			AssignFreshClaimLogsDto minValue2=null;
+			Optional<AssignFreshClaimLogsDto> minValue1Opt = x.stream().filter(e -> e.getOpdt()!=null).max(Comparator.comparing(v -> v.getOpdt()));
+			Optional<AssignFreshClaimLogsDto> minValue2Opt = x.stream().filter(e -> e.getOpdos()!=null).max(Comparator.comparing(v -> v.getOpdos()));
+			if (minValue1Opt.isPresent()) {
+				 minValue1 = minValue1Opt.get();
+				 minValue2 = minValue2Opt.get();
+			}
 			dFA = new AssignFreshClaimLogsImplDto();
-			dFA.setOfficeName(minValue1.getOfficeName());
-			dFA.setAssignedUser(minValue1.getAssignedUser());
-			dFA.setCount(x.size());
-			dFA.setFName(minValue1.getFName());
-			dFA.setLName(minValue1.getLName());
-			dFA.setCompanyName(minValue1.getCompanyName());
-			dFA.setOfficeUuid(minValue1.getOfficeUuid());
+			RcmOffice office = officeCache.computeIfAbsent(off, id -> officeRepo.findByUuid(id));
+			RcmCompany company = companyCache.computeIfAbsent(office.getCompany().getUuid(), id -> rcmCompanyRepo.findByUuid(id));
+			dFA.setOfficeName(office.getName());
+			if (minValue1!=null) {
+				dFA.setAssignedUser(minValue1.getAssignedUser());
+				dFA.setFName(minValue1.getFName());
+				dFA.setLName(minValue1.getLName());
+			}
+			else {
+				if (userAssignCache.get(office.getUuid())== null) {
+					UserAssignOffice  uaf=userAssignOfficeRepo.findByOfficeUuidAndTeamId(office.getUuid(),partialHeader.getTeamId());
+					userAssignCache.put(office.getUuid(),uaf);
+				}
+				UserAssignOffice uaf=userAssignCache.get(office.getUuid());
+				if (uaf!= null) {
+					dFA.setAssignedUser(uaf.getUser().getUuid());
+					RcmUser user = rcmUserCache.computeIfAbsent(uaf.getUser().getUuid(), id -> userRepo.findByUuid(id));
+					dFA.setFName(user.getFirstName());
+					dFA.setLName(user.getLastName());
+				}
+				
+			}
+			if (minValue1!=null)dFA.setCount(x.size());
+			else dFA.setCount(0);
+			
+			dFA.setCompanyName(company.getName());
+			dFA.setOfficeUuid(office.getUuid());
 
-			dFA.setOpdtd(minValue1.getOpdt()==null?"0":minValue1.getOpdt());
-			dFA.setOpdosd(minValue2.getOpdos()==null?"0":minValue2.getOpdos());
+			if (minValue1!=null)dFA.setOpdtd(minValue1.getOpdt()==null?"0":minValue1.getOpdt());
+			if (minValue2!=null)dFA.setOpdosd(minValue2.getOpdos()==null?"0":minValue2.getOpdos());
 			//BeanUtils.copyProperties(logD, dF);
-			counts = remoteLiteMap.get(minValue1.getOfficeName());
+			if (minValue1!=null)counts = remoteLiteMap.get(office.getName());
 			if (counts != null) {
 				dFA.setRemoteLiteRejections(counts.getRejectedCount());
 			}
@@ -2156,7 +2186,7 @@ public class ClaimServiceImpl {
 			n.printStackTrace();
 		}
 		
-		Collections.sort(finalList, (o1, o2) -> (o1.getCompanyName().compareTo(o2.getCompanyName())));
+		Collections.sort(finalList, (o1, o2) -> ( o1.getCompanyName().compareTo(o2.getCompanyName())));
 		
 		return finalList;
 	}

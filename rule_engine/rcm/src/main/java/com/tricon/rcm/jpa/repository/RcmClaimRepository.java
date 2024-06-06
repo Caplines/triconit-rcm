@@ -349,14 +349,16 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " DATEDIFF(NOW(), cl.dos) as 'opdos',0 as remoteLiteRejections, "
 			+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName,assig.team_id as assignTeamId "
 			+ " from  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
+			+"  and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+"" 
+		    + " and cl.rcm_insurance_type in :inst   "
+		    + " and cl.claim_status_type_id in :status and cl.current_team_id=:teamId and " 
+		    + "  (cl.status_es_updated not in (:currentStatusClosed)  or  cl.status_es_updated is null) "
+			
 			+ "  inner join company cmp on cmp.uuid=off.company_id  "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where off.company_id in (:companyIds) and off.active is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
-			+ " and cl.rcm_insurance_type in :inst   "
-			+ "  and cl.claim_status_type_id in :status and cl.current_team_id=:teamId and "
-			+ "  (cl.status_es_updated not in (:currentStatusClosed)  or  cl.status_es_updated is null) order by companyName ")
+			+ "  where off.company_id in (:companyIds) and off.active is true  order by companyName ")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUserType(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId,@Param("currentStatusClosed")String currentStatusClosed);
 
@@ -367,14 +369,17 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " DATEDIFF(NOW(), cl.dos) as 'opdos',0 as remoteLiteRejections, "
 			+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName,assig.team_id as assignTeamId "
 			+ " from  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
+			
+            + " and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
+			+ " and cl.rcm_insurance_type in :inst   "
+			+ "  and cl.claim_status_type_id in :status and cl.current_team_id=:teamId  and "
+			+ "  (cl.status_es_updated not in (:currentStatusClosed)  or  cl.status_es_updated is null)"
+			
 			+ "  inner join company cmp on cmp.uuid=off.company_id  "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId"
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where off.company_id in (:companyIds) and off.active is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
-			+ " and cl.rcm_insurance_type in :inst   "
-			+ "  and cl.claim_status_type_id in :status and cl.current_team_id=:teamId  and "
-			+ "  (cl.status_es_updated not in (:currentStatusClosed)  or  cl.status_es_updated is null) order by companyName")
+			+ "  where off.company_id in (:companyIds) and off.active is true order by companyName")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamType(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId,@Param("currentStatusClosed")String currentStatusClosed);
 	
