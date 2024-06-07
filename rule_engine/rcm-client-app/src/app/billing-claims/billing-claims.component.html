@@ -2301,11 +2301,15 @@
                                             <div class="col-md-4 mb-2" *ngIf="checkDeliveredTo">
                                                 <div class="custom-row text-number">
                                                     <label for="checkDeliverTo">Check Delivered To</label>
-                                                    <input type="text" id="checkDeliverTo"
+                                                    <select class="form-control"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit) || this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' "
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo']"
-                                                        class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkDeliverTo']}">
+                                                        <option value="">Select</option>
+                                                        <option value="Office">Office</option>
+                                                        <option value="Central">Central</option>
+                                                        <option value="Patient">Patient</option>
+                                                    </select>
                                                 </div>
                                             </div>
 

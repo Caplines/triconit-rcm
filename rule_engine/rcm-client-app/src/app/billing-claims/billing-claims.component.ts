@@ -2076,6 +2076,7 @@ export class BillingClaimsComponent {
         }
         // console.log(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'])
       }
+      this.clearCheckDeliverOtherThanModeCheck();
     })
   }
 
