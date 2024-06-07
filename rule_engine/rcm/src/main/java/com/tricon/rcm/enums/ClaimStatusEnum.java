@@ -51,7 +51,22 @@ public enum ClaimStatusEnum {
 	Insurance_Claim_Closed(43,"Insurance Claim Closed"),
 	Insurance_Claim_in_Process(44,"Insurance Claim in Process"),
 	Need_to_send_Appeal(45,"Need to send Appeal"),
-	Case_sent_to_Collections(46,"Case sent to Collections");
+	Case_Sent_To_Collections(46,"Case sent to Collections"),
+	Claim_Denied(47,"Claim Denied"),
+	Payment_Promised(48,"Payment Promised"),
+	Appeal_In_Process(49,"Appeal in Process"),
+	Appeal_Rejected(50,"Appeal Rejected"),
+	Claim_not_on_File(51,"Claim not on File"),
+	Paid_In_Full(52,"Paid in full"),
+	Partial_Paid(53,"Partial paid"),
+	Claim_Incorrectly_Denied(54,"Claim Incorrectly Denied"),
+	Claim_On_Hold(55,"Claim on Hold"),
+	Claim_Incorrectly_Processed(56,"Claim Incorrectly Processed"),
+	Processed_Under_Capitation(57,"Processed Under Capitation"),
+	Amount_Recouped_For_Some_Other_Claim(58,"Amount Recouped For Some Other Claim"),
+	Claim_Processed_In_PMS_But_Not_Billed(59,"Claim Processed in PMS but not billed"),
+	Payment_Issued_To_Patient(60,"Payment Issued to Patient"),
+	EOB_Requested(61,"EOB Requested");
 	
 	
 	final private int id;

@@ -47,7 +47,7 @@ public class RcmCollectionAgency extends BaseAuditEntity implements java.io.Seri
 	@Column(name = "remarks", columnDefinition = "text")
 	private String remarks;
 	
-	@Column(name = "mode_of_payment",length=10)
+	@Column(name = "mode_of_payment",length=100)
 	private String modeOfPayment;
 	
 	@Column(name = "amount_received")

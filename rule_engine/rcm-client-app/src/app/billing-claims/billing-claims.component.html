@@ -2270,8 +2270,9 @@
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentMode']}">
                                                         <option value="">Select</option>
                                                         <option value="Check">Check</option>
-                                                        <option value="Eft">EFT</option>
-                                                        <option value="Vcc">VCC</option>
+                                                        <option value="EFT">EFT</option>
+                                                        <option value="VCC">VCC</option>
+                                                        <option value="VCC">Recoupment</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -2489,6 +2490,7 @@
                                                                 <option value="">Select</option>
                                                                 <option value="Call">Call</option>
                                                                 <option value="Web">Web</option>
+                                                                <option value="Email">Email</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -2696,9 +2698,15 @@
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['reason']"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['reason']}">
                                                                     <option value="">Select</option>
-                                                                    <option value="Check">Check</option>
-                                                                    <option value="Eft">EFT</option>
-                                                                    <option value="Vcc">VCC</option>
+                                                                    <option value="Review Required">Review Required</option>
+                                                                    <option value="Pending with Financing Option Team">Pending with Financing Option Team</option>
+                                                                    <option value="Ortho Patient">Ortho Patient</option>
+                                                                    <option value="ACH Defaulter Patient">ACH Defaulter Patient</option>
+                                                                    <option value="Multistep Production">Multistep Production</option>
+                                                                    <option value="Statements Not Required - Balance Less than $25">Statements Not Required - Balance Less than $25</option>
+                                                                    <option value="Pending with Office">Pending with Office</option>
+                                                                    <option value="Statements Not Required - Broken Appointment">Statements Not Required - Broken Appointment</option>
+                                                                    <option value="Statements Not Required - Patient Passed Away">Statements Not Required - Patient Passed Away</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -2978,14 +2986,19 @@
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment']"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['modeOfPayment']}">
                                                                 <option value="">Select</option>
-                                                                <option value="Patient_Payment_Mode">Patient Payment
-                                                                    Mode
-                                                                </option>
                                                                 <option value="Patient_Credit">Patient Credit</option>
                                                                 <option value="Family_Credit">Family Credit</option>
-                                                                <option value="Card">Card</option>
+                                                                <option value="Debit Card">Debit Card</option>
                                                                 <option value="Check">Check</option>
                                                                 <option value="Cash">Cash</option>
+                                                                <option value="Credit Card">Credit Card</option>
+                                                                <option value="Financing (ACH)">Financing (ACH)</option>
+                                                                <option value="Financing (Others)">Financing (Others)</option>
+                                                                <option value="Collection Agency">Collection Agency</option>
+                                                                <option value="Revenue Well">Revenue Well</option>
+                                                                <option value="Rectangle Health">Rectangle Health</option>
+                                                                <option value="Podium">Podium</option>
+                                                                <option value="E-Delivery">E-Delivery</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -3098,7 +3111,8 @@
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_COMMUNICATION'] && emptyFields['PATIENT_COMMUNICATION']['modeOfFollowUp']}">
                                                                 <option value="">Select</option>
                                                                 <option value="Call">Call</option>
-                                                                <option value="Web">Web</option>
+                                                                <option value="Text">Text</option>
+                                                                <option value="Email">Email</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -3121,15 +3135,9 @@
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['desposition']"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_COMMUNICATION'] && emptyFields['PATIENT_COMMUNICATION']['desposition']}">
                                                                 <option value="">Select</option>
-                                                                <option value="Voice Mail Left">Voice Mail Left</option>
-                                                                <option value="Payment Promised">Payment Promised
-                                                                </option>
-                                                                <option value="Payment Made">Payment Made</option>
-                                                                <option value="Wrong No">Wrong No</option>
-                                                                <option value="Not Ready To Pay">Not Ready To Pay
-                                                                </option>
-                                                                <option value="Statement Requested">Statement Requested
-                                                                </option>
+                                                                <option [value]="reason.reasonName"
+                                                                            *ngFor="let reason of appConstants.desposition">
+                                                                            {{reason.reasonName}}</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -3294,9 +3302,9 @@
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['modeOfPayment']"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['modeOfPayment']}">
                                                                     <option value="">Select</option>
-                                                                    <option value="Eaglesoft">Eaglesoft</option>
-                                                                    <option value="Mail">Mail</option>
-                                                                    <option value="Email">Email</option>
+                                                                    <option value="Collection Agency - Check">Collection Agency - Check</option>
+                                                                    <option value="Collection Agency - EFT">Collection Agency - EFT</option>
+                                                                    <option value="Direct Patient Payment">Direct Patient Payment</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -3327,7 +3335,7 @@
                                                 <div class="row">
                                                     <ng-container
                                                         *ngIf="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3">
-                                                        <div class="col-md-4 mb-2">
+                                                        <div class="col-md-8 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="reason">Reason &nbsp;<span
                                                                         class="text-danger">*</span></label>
@@ -3336,13 +3344,12 @@
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['reason']"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['reason']}">
                                                                     <option value="">Select</option>
-                                                                    <option value="Eaglesoft">Eaglesoft</option>
-                                                                    <option value="Mail">Mail</option>
-                                                                    <option value="Email">Email</option>
+                                                                    <option value="Received Payment Before Collection Efforts">Received Payment Before Collection Efforts</option>
+                                                                    <option value="Other">Other</option>
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-4 mb-2">
+                                                        <div class="col-md-8 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="remarks">Remarks</label>
                                                                 <textarea type="text" id="remarks"
@@ -3423,9 +3430,10 @@
                                                         [(ngModel)]="this.claimSectionModal.APPEAL['modeOfAppeal']"
                                                         [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['modeOfAppeal']}">
                                                         <option value="">Select</option>
-                                                        <option value="portal">Portal</option>
-                                                        <option value="fax">Fax</option>
-                                                        <option value="mail">Mail</option>
+                                                        <option value="Portal">Portal</option>
+                                                        <option value="Fax">Fax</option>
+                                                        <option value="Mail">Mail</option>
+                                                        <option value="Email">Email</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -3554,9 +3562,7 @@
                                                         [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['reasonForRebilling']}">
                                                         <option value="">Select</option>
                                                         <option value="COB Info Required">COB Info Required</option>
-                                                        <option value="Medical Necessity">Medical Necessity</option>
-                                                        <option value="Additional Info Needed">Additional Info Needed
-                                                        </option>
+                                                        <option value="Additional Info Needed">Additional Info Needed</option>
                                                         <option value="Claim not on file">Claim not on file</option>
                                                         <option value="Need Primary EOB">Need Primary EOB</option>
                                                     </select>
@@ -3755,7 +3761,7 @@
                                                                 [(ngModel)]="this.claimSectionModal.REBILLING['modal']['reasonForRebilling']"
                                                                 [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['reasonForRebilling']}">
                                                                 <ng-container
-                                                                    *ngFor="let item of appConstants.claimInitialDenialReason">
+                                                                    *ngFor="let item of appConstants.reasonForRebilling">
                                                                     <option
                                                                         [selected]="claimSectionModal.REBILLING['modal']['reasonForRebilling'] == item.reasonName"
                                                                         [value]="item.reasonName">{{item.reasonName}}
