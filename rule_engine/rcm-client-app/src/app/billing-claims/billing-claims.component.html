@@ -2272,7 +2272,7 @@
                                                         <option value="Check">Check</option>
                                                         <option value="EFT">EFT</option>
                                                         <option value="VCC">VCC</option>
-                                                        <option value="VCC">Recoupment</option>
+                                                        <option value="Recoupment">Recoupment</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -2322,10 +2322,13 @@
                                                         *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Check'">Check
                                                         #</label>
                                                     <label for="checkNumber"
-                                                        *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Eft'">EFT
+                                                        *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'EFT'">EFT
                                                         #</label>
                                                     <label for="checkNumber"
-                                                        *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Vcc'">Transaction
+                                                        *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'VCC'">Transaction
+                                                        #</label>
+                                                    <label for="checkNumber"
+                                                        *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Recoupment'">Recoupment
                                                         #</label>
                                                     <input type="text" id="checkNumber"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2344,10 +2347,12 @@
                                                         *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Check'">Check
                                                         Cash Date #</label>
                                                     <label for="checkCashDate"
-                                                        *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Eft'">EFT
+                                                        *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'EFT'">EFT
                                                         Date #</label>
                                                     <label for="checkCashDate"
-                                                        *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Vcc'">Card
+                                                        *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'VCC'">Card
+                                                        Run Date #</label>
+                                                    <label for="checkCashDate" *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Recoupment'">Recoupment
                                                         Run Date #</label>
                                                     <!-- <input type="date" id="checkCashDate"
                                                     [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
