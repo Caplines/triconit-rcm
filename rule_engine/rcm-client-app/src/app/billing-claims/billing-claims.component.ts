@@ -3855,6 +3855,60 @@ export class BillingClaimsComponent {
         else
           this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate'] = null;
       }
+      if (event.model == 'checkCashDate') {
+        if (event.value != null)
+          this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'] = new Date(event.value);
+        else
+          this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'] = null;
+      }
+      if (event.model == 'amountDateReceivedInBank') {
+        if (event.value != null)
+          this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'] = new Date(event.value);
+        else
+          this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'] = null;
+      }
+      if (event.model == 'nextFollowUpDate') {
+        if (event.value != null)
+          this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = new Date(event.value);
+        else
+          this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = null;
+      }
+      if (event.model == 'nextReviewDate') {
+        if (event.value != null)
+          this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate'] = new Date(event.value);
+        else
+          this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate'] = null;
+      }
+      if (event.model == 'statementSendingDate') {
+        if (event.value != null)
+          this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate'] = new Date(event.value);
+        else
+          this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate'] = null;
+      }
+      if (event.model == 'nextStatementDate') {
+        if (event.value != null)
+          this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate'] = new Date(event.value);
+        else
+          this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate'] = null;
+      }
+      if (event.model == 'dateOfPayment') {
+        if (event.value != null)
+          this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment'] = new Date(event.value);
+        else
+          this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment'] = null;
+      }
+      if (event.model == "secondaryClaimSubmissionDate") {
+        if (event.value != null) 
+          this.claimSectionModal.RECREATE_CLAIM["claimFromSheet"]["secondaryClaimSubmissionDate"] = new Date(event.value);
+        else 
+          this.claimSectionModal.RECREATE_CLAIM["claimFromSheet"]["secondaryClaimSubmissionDate"] = null;
+      }
+      if (event.model == "secondaryPolicyHolderDob") {
+        if (event.value != null) 
+          this.claimSectionModal.RECREATE_CLAIM["claimFromSheet"]["secondaryPolicyHolderDob"] = new Date(event.value);
+        else 
+          this.claimSectionModal.RECREATE_CLAIM["claimFromSheet"]["secondaryPolicyHolderDob"] = null;
+      }
     }
   }
 

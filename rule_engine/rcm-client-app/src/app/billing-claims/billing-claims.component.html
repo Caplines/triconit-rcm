@@ -2359,13 +2359,13 @@
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']"
                                                     class="form-control"
                                                     [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate']}"> -->
-                                                    <ngx-datepicker id="checkCashDate"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                        [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
-                                                        [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']"
+                                                    <app-date-picker id="checkCashDate" 
                                                         class="claimDatepicker"
-                                                        [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}">
-                                                    </ngx-datepicker>
+                                                        [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                        [inputDate]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']"
+                                                        (emitToParent)="receiveChildEventdate($event)" 
+                                                        (ngModelChange)="onSelectDate($event)">
+                                                    </app-date-picker>
                                                 </div>
                                             </div>
 
@@ -2378,13 +2378,13 @@
                                                     [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
                                                     class="form-control"
                                                     [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank']}"> -->
-                                                    <ngx-datepicker id="amountDateReceivedInBank"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                        [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
-                                                        [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
+                                                    <app-date-picker id="amountDateReceivedInBank" 
                                                         class="claimDatepicker"
-                                                        [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}">
-                                                    </ngx-datepicker>
+                                                        [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                        [inputDate]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
+                                                        (emitToParent)="receiveChildEventdate($event)" 
+                                                        (ngModelChange)="onSelectDate($event)">
+                                                    </app-date-picker>
                                                 </div>
                                             </div>
 
@@ -2574,14 +2574,13 @@
                                                             [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']"
                                                             class="form-control"
                                                             [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate']}"> -->
-                                                            <ngx-datepicker id="nextFollowUpDate"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.allowEdit)"
-                                                                [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
-                                                                [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']"
-                                                                class='claimDatepicker {{!(checkForSectionAccess(sectionIds["INSURANCE_FOLLOW_UP"]["sectionId"],"edit") && claimRcm.allowEdit)?"db-disable":""}}'
-                                                                [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.allowEdit)}">
-                                                            </ngx-datepicker>
-
+                                                            <app-date-picker id="nextFollowUpDate" 
+                                                                class="claimDatepicker"
+                                                                [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                                [inputDate]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']"
+                                                                (emitToParent)="receiveChildEventdate($event)" 
+                                                                (ngModelChange)="onSelectDate($event)">
+                                                            </app-date-picker>
                                                         </div>
                                                     </div>
 
@@ -2728,13 +2727,13 @@
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate']}"> -->
-                                                                <ngx-datepicker id="nextReviewDate"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                    [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
-                                                                    [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']"
+                                                                <app-date-picker id="nextReviewDate" 
                                                                     class="claimDatepicker"
-                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}">
-                                                                </ngx-datepicker>
+                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                                    [inputDate]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']"
+                                                                    (emitToParent)="receiveChildEventdate($event)" 
+                                                                    (ngModelChange)="onSelectDate($event)">
+                                                                </app-date-picker>
                                                             </div>
                                                         </div>
 
@@ -2747,13 +2746,13 @@
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}"> -->
-                                                                <ngx-datepicker id="statementSendingDate"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)"
-                                                                    [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
-                                                                    [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
+                                                                <app-date-picker id="statementSendingDate" 
                                                                     class="claimDatepicker"
-                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}">
-                                                                </ngx-datepicker>
+                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                                    [inputDate]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
+                                                                    (emitToParent)="receiveChildEventdate($event)" 
+                                                                    (ngModelChange)="onSelectDate($event)">
+                                                                </app-date-picker>
                                                             </div>
                                                         </div>
 
@@ -2830,13 +2829,13 @@
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate']}"> -->
-                                                                <ngx-datepicker id="nextStatementDate"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                    [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
-                                                                    [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']"
+                                                                <app-date-picker id="nextStatementDate" 
                                                                     class="claimDatepicker"
-                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}">
-                                                                </ngx-datepicker>
+                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                                    [inputDate]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']"
+                                                                    (emitToParent)="receiveChildEventdate($event)" 
+                                                                    (ngModelChange)="onSelectDate($event)">
+                                                                </app-date-picker>
                                                             </div>
                                                         </div>
                                                         <div class="col-md-4 mb-2">
@@ -2936,13 +2935,13 @@
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment']"
                                                             class="form-control"
                                                             [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment']}"> -->
-                                                            <ngx-datepicker id="dateOfPayment"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit)"
-                                                                [options]="pmlDatePicker.DATE_PICKER_OPTIONS"
-                                                                [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment']"
+                                                            <app-date-picker id="dateOfPayment" 
                                                                 class="claimDatepicker"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit)}">
-                                                            </ngx-datepicker>
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                                [inputDate]="this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment']" 
+                                                                (emitToParent)="receiveChildEventdate($event)"
+                                                                (ngModelChange)="onSelectDate($event)">
+                                                            </app-date-picker>
                                                         </div>
                                                     </div>
 
@@ -3607,6 +3606,7 @@
                                                         <ng-container
                                                             *ngIf="serviceLevelSectionMultiSelectConfig.rebillingRequirements.length>0">
                                                             <multi-select-dropdown
+                                                                class="multiselect"
                                                                 [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
                                                                 [inputConfig]="{'requiredRequestedReBilling':serviceLevelSectionMultiSelectConfig.rebillingRequirements,'isDetailPage':true}"
                                                                 (emitToParent)="receiveChildrenEvent($event)">
@@ -3653,6 +3653,7 @@
                                                             <ng-container
                                                                 *ngIf="serviceLevelSectionMultiSelectConfig.serviceCodesList.length>0">
                                                                 <multi-select-dropdown
+                                                                    class="multiselect"
                                                                     [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
                                                                     [inputConfig]="{'serviceCodes':serviceLevelSectionMultiSelectConfig.serviceCodesList,'isDetailPage':true}"
                                                                     (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
@@ -3833,6 +3834,7 @@
                                                                     <span class="mutliselect"
                                                                         [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['selectedRebillingServiceCodes']}">
                                                                         <multi-select-dropdown
+                                                                            class="multiselect"
                                                                             [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
                                                                             [inputConfig]="{'reBillingServiceCodes':claimSectionModal.REBILLING['modal']?.serviceCodesForMultiSelect,'isDetailPage':true}"
                                                                             (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
@@ -3851,6 +3853,7 @@
                                                                     <span class="mutliselect"
                                                                         [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['selectedRebillingRequirements']}">
                                                                         <multi-select-dropdown
+                                                                            class="multiselect"
                                                                             [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
                                                                             [inputConfig]="{'requiredReBilling':claimSectionModal.REBILLING['modal'].requirementsForMultiSelect,'isDetailPage':true}"
                                                                             (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
@@ -4048,6 +4051,7 @@
                                                             <span class="mutliselect"
                                                                 [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['serviceCodesServiceLevel']}">
                                                                 <multi-select-dropdown
+                                                                    class="multiselect"
                                                                     [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
                                                                     [inputConfig]="{'recreateServiceCodes':claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'],'isDetailPage':true}"
                                                                     (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
@@ -4094,10 +4098,14 @@
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryBlledAmount']"
                                                                     [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryBlledAmount']">
                                                             </td>
-                                                            <td><input type="date"
-                                                                    class="attach-secondary-width form-control"
-                                                                    [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryClaimSubmissionDate']"
-                                                                    [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryClaimSubmissionDate']">
+                                                            <td>
+                                                                <app-date-picker id="secondaryClaimSubmissionDate" 
+                                                                    class="claimDatepicker dpWidth"
+                                                                    [ngClass]="{'is-invalid':claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryClaimSubmissionDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
+                                                                    [inputDate]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryClaimSubmissionDate']"
+                                                                    (emitToParent)="receiveChildEventdate($event)" 
+                                                                    (ngModelChange)="onSelectDate($event)">
+                                                                </app-date-picker>
                                                             </td>
                                                             <td><input type="number"
                                                                     class="attach-secondary-width form-control"
@@ -4169,10 +4177,14 @@
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryPolicyHolder']"
                                                                     [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryPolicyHolder']">
                                                             </td>
-                                                            <td><input type="date"
-                                                                    class="attach-secondary-width form-control"
-                                                                    [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryPolicyHolderDob']"
-                                                                    [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryPolicyHolderDob']">
+                                                            <td>
+                                                                <app-date-picker id="secondaryPolicyHolderDob" 
+                                                                    class="claimDatepicker dpWidth"
+                                                                    [ngClass]="{'is-invalid':claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryPolicyHolderDob'], 'dp-disable':!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
+                                                                    [inputDate]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryPolicyHolderDob']"
+                                                                    (emitToParent)="receiveChildEventdate($event)" 
+                                                                    (ngModelChange)="onSelectDate($event)">
+                                                                </app-date-picker>
                                                             </td>
                                                             <!-- <td><input type="text" class="form-control-sm" [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['serviceCodes']"></td>    -->
                                                             <!-- <td><input type="text" class="form-control-sm" [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['toothAndSurfaces']"></td> -->

@@ -648,7 +648,20 @@
     }
   }
 }
- 
+
+.multiselect {
+.detail-page-service-codes .drop-toggle,
+    .detail-page-required-rebilling .drop-toggle {
+        background-color: #E9ECEf !important;
+    }
+}
+
+.dpWidth {
+    .pml_dp{
+        min-width: 150px;
+    }
+}
+
 .dp-disable {
     pointer-events: none;
 }
