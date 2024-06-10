@@ -2972,14 +2972,16 @@ export class BillingClaimsComponent {
       "adjustmentReason": "",
       "billToPatientAmount": 0,
       "adjustmentAmount": 0,
+      "creditAdjustmentAmount": 0,
+      "debitAdjustmentAmount": 0,
       "paidAmount": 0,
       "allowedAmount": 0,
       "serviceCode": "",
       "action": '',
       "tooth": "",
       "surface": "",
-      "estPrimary": "",
-      "fee": "",
+      "estPrimary": "0",
+      "fee": "0",
       "snum": this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length
     };
 

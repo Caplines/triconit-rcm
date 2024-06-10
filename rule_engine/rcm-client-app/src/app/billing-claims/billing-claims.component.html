@@ -2424,7 +2424,7 @@
                                             [ngClass]="{'collapsed':toggleTab['INSURANCE_FOLLOW_UP']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="INSURANCE_FOLLOW_UP"
                                                 class="text-danger">
-                                                Insurance Follow-Up Details (Access to this section of the RCM Tool is
+                                                Insurance Follow Up Details (Access to this section of the RCM Tool is
                                                 restricted for you)
                                             </a>
                                             <div class="down-icon" (click)="showHide('INSURANCE_FOLLOW_UP')">
@@ -2439,7 +2439,7 @@
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['INSURANCE_FOLLOW_UP']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="INSURANCE_FOLLOW_UP">
-                                                Insurance Follow-Up Details
+                                                Insurance Follow Up Details
                                             </a>
                                             <div class="down-icon" (click)="showHide('INSURANCE_FOLLOW_UP')">
                                                 <a href="javascript:void(0)"
@@ -3343,7 +3343,7 @@
                                                 <div class="row">
                                                     <ng-container
                                                         *ngIf="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3">
-                                                        <div class="col-md-8 mb-2">
+                                                        <div class="col-md mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="reason">Reason &nbsp;<span
                                                                         class="text-danger">*</span></label>
@@ -3357,7 +3357,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md-8 mb-2">
+                                                        <div class="col-md mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="remarks">Remarks</label>
                                                                 <textarea type="text" id="remarks"
@@ -3730,7 +3730,7 @@
                                                             <td>{{data.dateOfRebiiling|date :'MM/dd/YYYY'}}</td>
                                                             <td>{{data.rebillingServiceCodes}}</td>
                                                             <td>{{data?.rebillingRequirements}}</td>
-                                                            <td>Yes</td>
+                                                            <td>{{data.usedAI}}</td>
                                                             <td>{{data.rebillingRemarks}}</td>
                                                         </tr>
                                                     </tbody>
@@ -3753,6 +3753,7 @@
                                                         <div class="custom-row text-number">
                                                             <label for="usedAI">Used AI?</label>
                                                             <select class="form-control"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.REBILLING['modal']['usedAI']"
                                                                 [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['usedAI']}">
                                                                 <option value="">Select</option>
@@ -4380,7 +4381,8 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="assignToTeam">Assign to Team</label>
+                                                            <label for="assignToTeam">Assign to Team  &nbsp;<span
+                                                                class="text-danger">*</span></label>
                                                             <select id="assignToTeam"
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 class="form-control"
@@ -4898,7 +4900,7 @@
                     </div>
                     <div class="modal-footer justify-content-center">
                         <button type="button" class="btn btn-success" 
-                            (click)="saveRequestBillingInfo(false)">Rebilled</button>
+                            (click)="saveRequestBillingInfo(false)">Rebill</button>
                         <button type="button" class="btn btn-danger" data-dismiss="modal"
                             (click)="closeReqRebillingModal()">Cancel</button>
                        
