@@ -1726,6 +1726,7 @@
                                                                 <td>
                                                                     <div class="form-check-inline">
                                                                         <input type="radio" class="form-check-input"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                             id="post" name="action{{idx}}" value="Post"
                                                                             [(ngModel)]="data.action">
                                                                         <label class="form-check-label" for="post">Post
@@ -1733,6 +1734,7 @@
                                                                     </div>
                                                                     <div class="form-check-inline">
                                                                         <input type="radio" [checked]="data.action"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                             id="assign" class="form-check-input"
                                                                             name="action{{idx}}" value="Assign"
                                                                             [(ngModel)]="data.action">
@@ -2517,7 +2519,8 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="insuranceRepName">Insurance Rep. Name</label>
+                                                            <label for="insuranceRepName">Insurance Rep. Name&nbsp;<span
+                                                                class="text-danger">*</span></label>
                                                             <input type="text" id="insuranceRepName"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['insuranceRepName']"
@@ -2664,17 +2667,19 @@
                                                         <div class="btn-group btn-group-toggle d-flex"
                                                             style="width:85%;" data-toggle="buttons">
                                                             <label class="btn btn-light mx-0"
-                                                                (click)="selectStatementBox(1)"
+                    
                                                                 [ngClass]="{'active':claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1}">
                                                                 <input type="radio" name="statement"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     class="form-check-input" [value]="1"
                                                                     [checked]="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"
                                                                     (change)="selectStatementBox(1)">Need to hold
                                                             </label>
-                                                            <label class="btn btn-light" (click)="selectStatementBox(2)"
+                                                            <label class="btn btn-light"
                                                                 [ngClass]="{'active':claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2}">
                                                                 <input type="radio" name="statement" [value]="2"
                                                                     class="form-check-input"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [checked]="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2"
                                                                     (change)="selectStatementBox(2)">Send Statement
                                                             </label>
@@ -3230,26 +3235,29 @@
                                                         <div class="btn-group btn-group-toggle d-flex"
                                                             data-toggle="buttons">
                                                             <label class="btn btn-light mx-0"
-                                                                (click)="selectCollectionTypeButton(1)"
+                                                               
                                                                 [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1}">
                                                                 <input type="radio" name="statement"
-                                                                    class="form-check-input" [value]="1"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                class="form-check-input" [value]="1"
                                                                     [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1">Send
                                                                 to Collection | Edit Collection Details
                                                             </label>
                                                             <label class="btn btn-light"
-                                                                (click)="selectCollectionTypeButton(2)"
+                                                             
                                                                 [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 2}">
                                                                 <input type="radio" name="statement" [value]="2"
                                                                     class="form-check-input"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 2">Post
                                                                 Amount Received Through Collection
                                                             </label>
                                                             <label class="btn btn-light"
-                                                                (click)="selectCollectionTypeButton(3)"
+                                                               
                                                                 [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3}">
                                                                 <input type="radio" name="statement" [value]="3"
                                                                     class="form-check-input"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3">
                                                                 Withdraw From Collections
                                                             </label>
@@ -3622,7 +3630,6 @@
                                                     of Rebilling &nbsp;<span class="text-danger">*</span></label>
                                                 <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
                                                     <label class="btn btn-light mx-0"
-                                                        (click)="selectRebillingType('fullClaim')"
                                                         [ngClass]="{'active':claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'fullClaim'}">
                                                         <input type="radio" name="statement" class="form-check-input"
                                                             [value]="'fullClaim'"
@@ -3631,7 +3638,6 @@
                                                             (change)="selectRebillingType('fullClaim')">Full Claim
                                                     </label>
                                                     <label class="btn btn-light"
-                                                        (click)="selectRebillingType('partialClaim')"
                                                         [ngClass]="{'active':claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'partialClaim'}">
                                                         <input type="radio" name="statement" [value]="'partialClaim'"
                                                             class="form-check-input"
@@ -3693,7 +3699,7 @@
                                     </ng-container>
 
                                     <ng-container
-                                        *ngIf="claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
+                                        *ngIf="claimRcm.rebilledStatus && !claimRcm.pending && (checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view') || checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view'))">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REBILLING']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="REBILLING">
                                                 Rebilling
@@ -3707,6 +3713,7 @@
                                         <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                         <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                             [ngClass]="{'show':!toggleTab['REBILLING']}">
+                                            <ng-container  *ngIf="checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view')">
                                             <div class="table-responsive" style="max-height: 508px;">
                                                 <table class="table table-striped">
                                                     <thead>
@@ -3736,6 +3743,8 @@
                                                     </tbody>
                                                 </table>
                                             </div>
+                                          </ng-container>
+                                          <ng-container  *ngIf="checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                             <div class="container-fluid pdf-viewer-container my-3">
                                                 <div class="current-billing-heading">Current Rebilling</div>
                                                 <div class="row">
@@ -3906,7 +3915,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-
+                                         </ng-container>
                                         </div>
                                     </ng-container>
 
@@ -3954,7 +3963,44 @@
                                         <div *ngIf="!loader['RECREATE_CLAIM'] && !(activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount))"
                                             class="form-row collapse" [ngClass]="{'show':!toggleTab['RECREATE_CLAIM']}"
                                             id="RECREATE_CLAIM">
-
+                                            <div class="col-sm-8 mb-3 d-flex">
+                                                <label class="custom-row text-number" style="min-width: 160px;">Action
+                                                    to
+                                                    Perform</label>
+                                                <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
+                                                    <label class="btn btn-light mx-0"
+                                                        [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'}">
+                                                        <input type="radio" name="action" class="form-check-input"
+                                                            [value]="'attachSecondary'"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'"
+                                                            (change)="selectActionToPerformRecreate('attachSecondary')">Attach
+                                                        Secondary
+                                                    </label>
+                                                    <ng-container>
+                                                        <label class="btn btn-light"
+                                                            [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2}">
+                                                            <input type="radio" name="action" [value]="'2'"
+                                                                class="form-check-input"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2"
+                                                                (change)="selectActionToPerformRecreate('2')">Recreate
+                                                            Full
+                                                            Claim
+                                                        </label>
+                                                        <label class="btn btn-light"
+                                                            [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3}">
+                                                            <input type="radio" name="action" [value]="'3'"
+                                                                class="form-check-input"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3"
+                                                                (change)="selectActionToPerformRecreate('3')">Recreate
+                                                            Partially
+                                                        </label>
+                                                    </ng-container>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-4 mb-3 d-flex"></div>
                                             <ng-container
                                                 *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2 || claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3">
                                                 <div class="col-md-4 mb-2">
@@ -4003,44 +4049,7 @@
                                             </ng-container>
 
 
-                                            <div class="col-sm-7 mb-3 d-flex">
-                                                <label class="custom-row text-number" style="min-width: 160px;">Action
-                                                    to
-                                                    Perform</label>
-                                                <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
-                                                    <label class="btn btn-light mx-0"
-                                                        [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'}">
-                                                        <input type="radio" name="action" class="form-check-input"
-                                                            [value]="'attachSecondary'"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                            [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'"
-                                                            (change)="selectActionToPerformRecreate('attachSecondary')">Attach
-                                                        Secondary
-                                                    </label>
-                                                    <ng-container>
-                                                        <label class="btn btn-light"
-                                                            [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2}">
-                                                            <input type="radio" name="action" [value]="'2'"
-                                                                class="form-check-input"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2"
-                                                                (change)="selectActionToPerformRecreate('2')">Recreate
-                                                            Full
-                                                            Claim
-                                                        </label>
-                                                        <label class="btn btn-light"
-                                                            [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3}">
-                                                            <input type="radio" name="action" [value]="'3'"
-                                                                class="form-check-input"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3"
-                                                                (change)="selectActionToPerformRecreate('3')">Recreate
-                                                            Partially
-                                                        </label>
-                                                    </ng-container>
-
-                                                </div>
-                                            </div>
+                                      
 
                                             <ng-container
                                                 *ngIf="claimSectionModal.RECREATE_CLAIM['validationData'].length>0 && claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3">
@@ -4062,7 +4071,7 @@
                                                 </div>
                                             </ng-container>
 
-                                            <div class="col-sm-5"></div>
+                                            <!-- <div class="col-sm-5"></div> -->
 
                                             <div *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid']"
                                                 class="table-responsive mb-3">
@@ -4271,7 +4280,7 @@
                                                     {{claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen']
                                                     ?
                                                     'Recreate and Rebill' : 'Recreate'}}</button>
-                                                <span class="text-danger" *ngIf="otherErrormsg">{{otherErrormsg}}</span>
+                                                <span class="text-danger " style="margin-left: 10px;" *ngIf="otherErrormsg">{{otherErrormsg}}</span>
                                             </div>
                                         </div>
                                     </ng-container>

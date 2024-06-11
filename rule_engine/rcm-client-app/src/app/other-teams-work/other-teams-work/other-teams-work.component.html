@@ -26,7 +26,9 @@
                                         [disabled]="filteredItems.length==0">
                                         <img src="../../assets/img/xls.png" /></button><span
                                         *ngIf="loader.exportCSVLoader" class="spinner-border text-success mx-1"></span>
-                                </div>
+                                        <button *ngIf="currentTeamName.unFormatedName == 'PAYMENT_POSTING' && tabValue == 'submitted'" type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()" style="margin-left: 15px;">
+                                            <strong>Transfer to Aging</strong> </button>
+                                    </div>
                             </div>
                             <ng-container *ngIf="errorMessage">
                                 <div class="inner-container">
@@ -447,7 +449,7 @@
 
                                                 <th *ngIf="staticUtil.isNotTeamOffice()">
                                                     <div class="dFlex">
-                                                        Current Team
+                                                        Team Assigned
                                                     </div>
                                                 </th>
                                                 <th *ngIf="showColumns.currentStatus">
@@ -457,7 +459,7 @@
                                                 </th>
                                                 <th *ngIf="showColumns.nextActionRequired">
                                                     <div class="dFlex">
-                                                        Next Action Required
+                                                        Current Action Required
                                                     </div>
                                                 </th>
                                                 <th *ngIf="showColumns.nextFollowUpDate">
@@ -516,12 +518,25 @@
                                                     </div>
                                                 </th>
                                                 
-                                                <th *ngIf="currentTeamName.unFormatedName == 'PAYMENT_POSTING' && tabValue == 'submitted'">
+                                                <th [ngStyle]="{'z-index':showTooltipConfig['transferToAging'] ? 999999 : 99}" *ngIf="currentTeamName.unFormatedName == 'PAYMENT_POSTING' && tabValue == 'submitted'">
                                                     <div class="d-flex">
-                                                        <span style="white-space: nowrap;">Select All <br> <input type="checkbox" checked="{{selectAllAging}}" (change)="selectAllClaimsToAging($event)"></span>
+                                                        <span>Select for Aging Team 
+                                                        <ng-container *ngIf="showTooltipConfig['transferToAging']">
+                                                            <div class="tooltip-backdrop" ></div>
+                                                        </ng-container>
+
+                                                        <input type="checkbox" checked="{{selectAllAging}}" (change)="selectAllClaimsToAging($event)" style=" vertical-align: sub;"></span>
                                                        
-                                                        <button type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()" style="margin-left: 15px;">
-                                                            <strong>Transfer to Aging</strong> </button>
+                                                        <!-- <button type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()" style="margin-left: 15px;">
+                                                            <strong>Transfer to Aging</strong> </button> -->
+                                                            <div class="tooltip2" >
+                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('transferToAging');" />
+                                                                <span class="tooltiptext"  style="width: 327px;left: -80%;"  *ngIf="showTooltipConfig['transferToAging']">
+                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['transferToAging']=false;">×</span>
+                                                                       <input type="checkbox" style="margin-left: -18px;">&nbsp;Eligible for sending to Aging Team.<br>
+                                                                       <img src="../../assets/img/lock-icon.png"/>&nbsp;Not eligible for sending to Aging Team.
+                                                                </span>
+                                                            </div>
                                                     </div>
                                                 </th>
                                             </tr>
@@ -650,7 +665,7 @@
                                                                 </label> &nbsp;
                                                                 </ng-container>
                                                                 <ng-template #myFlagFalse>
-                                                                    N/A
+                                                                    <img style="margin-left: -4px;" src="../../assets/img/lock-icon.png"/>
                                                                 </ng-template>
                                                             </div>
                                                         </td>
@@ -714,19 +729,21 @@
     <div class="modal-dialog delete-modal" role="document">
         <div class="modal-content">
             <div class="modal-header flex-row">
-                <h4 class="modal-title w-100">Are you sure?</h4>
+                <h4 class="modal-title w-100">Confirm Bulk Send to Aging</h4>
                 <button (click)="closeConfirmationModal()" type="button"
                     class="btn btn-sm btn-ligt close">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Do you really want to transfer the claims?</p><b>Enter Remarks</b>&nbsp;<span
+                <p>Are you sure you want to send the selected claims to the Aging Team?</p>
+                <b>Enter Remarks</b>&nbsp;<span
                 class="text-danger">*</span><textarea class="form-control"
                 [(ngModel)]="selectedClaimsTransfer['remarks']" rows="2" style="width: 100%;"></textarea>
             </div>
             <div class="modal-footer justify-content-center">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal"
+                <button type="button" [disabled]="selectedClaimsTransfer['remarks'].length==0" class="btn btn-success" (click)="transferClaim()">Yes</button>
+                <button type="button" class="btn btn-danger" data-dismiss="modal"
                     (click)="closeConfirmationModal()">Cancel</button>
-                <button type="button" [disabled]="selectedClaimsTransfer['remarks'].length==0" class="btn btn-danger" (click)="transferClaim()">Yes</button>
+               
             </div>
         </div>
     </div>

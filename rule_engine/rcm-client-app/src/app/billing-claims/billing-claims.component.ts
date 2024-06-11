@@ -2475,10 +2475,22 @@ export class BillingClaimsComponent {
       this.emptyFields['INSURANCE_FOLLOW_UP']['modeOfFollowUp'] = true;
       isSectionValidated = false;
     }
+    if (this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['currentClaimStatus'] === "") {
+      this.emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpRequired'] === "") {
+      this.emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpRequired'] = true;
+      isSectionValidated = false;
+    }
 
     if (this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['modeOfFollowUp'] == "Call") {
       if (!this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'].refNumber) {
         this.emptyFields['INSURANCE_FOLLOW_UP'].refNumber = true;
+        isSectionValidated = false;
+      }
+      if (!this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'].insuranceRepName) {
+        this.emptyFields['INSURANCE_FOLLOW_UP'].insuranceRepName = true;
         isSectionValidated = false;
       }
     }
