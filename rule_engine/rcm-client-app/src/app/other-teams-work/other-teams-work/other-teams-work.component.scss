@@ -84,6 +84,7 @@ a.arrow-down.selected {
     overflow-y: auto;
     height: calc(100vh - 220px);
     min-width: 100%;
+    overflow-x :hidden;
 }
 
 .table-inner-scrollbar thead th {
@@ -100,6 +101,7 @@ a.arrow-down.selected {
             .filter-dropdown-menu {
                 width: 280px;
                 line-height: normal;
+                margin-top: 14px;
 
                 label {
                     align-items: baseline;
@@ -162,6 +164,18 @@ a.arrow-down.selected {
     right: 0px;
     top: 14px;
     outline: none;
+}
+
+// .insuranceName .dropdown-menu {
+//     left: -95px !important;
+// }
+
+// .insuranceType .dropdown-menu {
+//     left: -97px !important;
+// }
+
+.claimType .dropdown-menu {
+    left: -197px !important;
 }
 
 .modal-header>.modal-title {

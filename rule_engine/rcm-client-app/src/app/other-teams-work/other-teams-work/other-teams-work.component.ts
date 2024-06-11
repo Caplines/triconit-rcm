@@ -20,11 +20,11 @@ export class OtherTeamsWorkComponent implements OnInit {
   expandCollapse: boolean = true;
   isSorted: any = {};
   loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
-  showFilteredDropdown: any = { 'officeName': false, 'insuranceName': false, insuranceType: false, claimType: false, lastTeam: false };
+  showFilteredDropdown: any = { 'officeName': false, 'insuranceName': false, insuranceType: false, claimType: false, lastTeam: false, 'currentTeam': false, 'currentStatus': false, 'nextActionRequired': false, 'providerSpeciality': false };
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
-  isFilterAllSelected: any = { 'officeName': false, 'ageBracket': false, 'insuranceName': false, 'insuranceType': false, claimType: false, lastTeam: false };
+  isFilterAllSelected: any = { 'officeName': false, 'ageBracket': false, 'insuranceName': false, 'insuranceType': false, claimType: false, lastTeam: false, 'currentTeam': false, 'currentStatus': false, 'nextActionRequired': false, 'providerSpeciality': false };
   clientName: string = '';
   isFilterValueExist: boolean = false;
   fliterName: string = '';
@@ -53,6 +53,9 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredInsuranceType: any = [];
   filteredClaimType: any = [];
   filteredLastTeam: any = [];
+  filteredCurrentStatus: any = [];
+  filteredNextActionRequired: any = [];
+  filteredProviderSpeciality: any = [];
   tabSwitch: any = { 'submitted': false, 'unSubmitted': true };
   tabValue: any;
   showColumns: any = { "currentStatus": false, "nextActionRequired": false, "nextFollowUpDate": false, "providerSpeciality": false, "dueBalance": false, "showAttach": false };
@@ -148,6 +151,9 @@ export class OtherTeamsWorkComponent implements OnInit {
         this.filterOptionInsuranceType();
         this.filterOptionClaimType();
         this.filterOptionLastTeam();
+        this.filterOptionCurrentStatus();
+        this.filterOptionNextActionRequired();
+        this.filterOptionProviderSpeciality();
         this.showClaimIdWithDigits();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
         this.checkDiffForPaymentPosting() ;
@@ -193,6 +199,9 @@ export class OtherTeamsWorkComponent implements OnInit {
         }
         ele['insuranceName'] = ele.primaryInsurance;
         ele['insuranceType'] = ele.prName;
+        ele['currentStatus'] = ele.claimStatus;
+        ele['nextActionRequired'] = ele.nextAction;
+        ele['providerSpeciality'] = ele.providerSpeciality;
       })
     });
     this.sortFiltereData(this.filteredOfficeName);
@@ -295,6 +304,21 @@ export class OtherTeamsWorkComponent implements OnInit {
         return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredCurrentStatus.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['currentStatus']) === item['currentStatus'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredNextActionRequired.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['nextActionRequired']) === item['nextActionRequired'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredProviderSpeciality.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
+      });
+    });
   }
 
   addOrRemoveFilterAgeBracket() {
@@ -313,6 +337,21 @@ export class OtherTeamsWorkComponent implements OnInit {
         return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredCurrentStatus.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['currentStatus']) === item['currentStatus'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredNextActionRequired.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['nextActionRequired']) === item['nextActionRequired'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredProviderSpeciality.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
+      });
+    });
   }
 
   addOrRemoveInsuranceName() {
@@ -329,6 +368,21 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredInsuranceType.some((checkbox: any) => {
         return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredCurrentStatus.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['currentStatus']) === item['currentStatus'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredNextActionRequired.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['nextActionRequired']) === item['nextActionRequired'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredProviderSpeciality.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
       });
     });
   }
@@ -393,6 +447,36 @@ export class OtherTeamsWorkComponent implements OnInit {
         }
       });
       this.filterLastTeam("lastTeam");
+    }
+    else if (filterProperty == "currentStatus") {
+      this.filteredCurrentStatus.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterCurrentStatus("currentStatus");
+    }
+    else if (filterProperty == "nextActionRequired") {
+      this.filteredNextActionRequired.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterNextActionRequired("nextActionRequired");
+    }
+    else if (filterProperty == "providerSpeciality") {
+      this.filteredProviderSpeciality.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterProviderSpeciality("providerSpeciality");
     }
   }
 
@@ -755,6 +839,30 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filterInsuranceType();
   }
 
+  async filterOptionCurrentStatus() {
+    this.filteredCurrentStatus = await this.claimDetail.map((e: any) => { return { currentStatus: e.claimStatus, checked: true } });
+    if (this.filteredCurrentStatus.length > 1) {
+      this.filteredCurrentStatus = this.removeDuplicateValues(this.filteredCurrentStatus, 'currentStatus');
+    }
+    this.filterCurrentStatus();
+  }
+
+  async filterOptionNextActionRequired() {
+    this.filteredNextActionRequired = await this.claimDetail.map((e: any) => { return { nextActionRequired: e.nextAction, checked: true } });
+    if (this.filteredNextActionRequired.length > 1) {
+      this.filteredNextActionRequired = this.removeDuplicateValues(this.filteredNextActionRequired, 'nextActionRequired');
+    }
+    this.filterNextActionRequired();
+  }
+
+  async filterOptionProviderSpeciality() {
+    this.filteredProviderSpeciality = await this.claimDetail.map((e: any) => { return { providerSpeciality: e.providerSpeciality, checked: true } });
+    if (this.filteredProviderSpeciality.length > 1) {
+      this.filteredProviderSpeciality = this.removeDuplicateValues(this.filteredProviderSpeciality, 'providerSpeciality');
+    }
+    this.filterProviderSpeciality();
+  }
+
   removeDuplicateValues(filterValue: any, property: any) {
     let newArray: any = [];
     let uniqueObject: any = {};
@@ -792,6 +900,72 @@ export class OtherTeamsWorkComponent implements OnInit {
     }
   }
 
+  filterCurrentStatus(e?: any, filterProperty?: any) {
+    if (!e) {
+      this.filteredItems = this.claimDetail;
+      this.isFilterAllSelected.currentStatus = true;
+    } else {
+      let isAllSelected: boolean = true;
+      for (let i = 0; i < this.filteredCurrentStatus.length; i++) {
+        if (this.filteredCurrentStatus[i].checked == false) {
+          isAllSelected = false;
+          break;
+        }
+      }
+      this.isFilterAllSelected.currentStatus = isAllSelected;
+      this.filteredItems = this.claimDetail.filter((item: any) => {
+        return this.filteredCurrentStatus.some((checkbox: any) => {
+          return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+        });
+      });
+      this.addOrRemoveCurrentStatus();
+    }
+  }
+
+  filterNextActionRequired(e?: any, filterProperty?: any) {
+    if (!e) {
+      this.filteredItems = this.claimDetail;
+      this.isFilterAllSelected.nextActionRequired = true;
+    } else {
+      let isAllSelected: boolean = true;
+      for (let i = 0; i < this.filteredNextActionRequired.length; i++) {
+        if (this.filteredNextActionRequired[i].checked == false) {
+          isAllSelected = false;
+          break;
+        }
+      }
+      this.isFilterAllSelected.nextActionRequired = isAllSelected;
+      this.filteredItems = this.claimDetail.filter((item: any) => {
+        return this.filteredNextActionRequired.some((checkbox: any) => {
+          return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+        });
+      });
+      this.addOrRemoveNextActionRequired();
+    }
+  }
+
+  filterProviderSpeciality(e?: any, filterProperty?: any) {
+    if (!e) {
+      this.filteredItems = this.claimDetail;
+      this.isFilterAllSelected.providerSpeciality = true;
+    } else {
+      let isAllSelected: boolean = true;
+      for (let i = 0; i < this.filteredProviderSpeciality.length; i++) {
+        if (this.filteredProviderSpeciality[i].checked == false) {
+          isAllSelected = false;
+          break;
+        }
+      }
+      this.isFilterAllSelected.providerSpeciality = isAllSelected;
+      this.filteredItems = this.claimDetail.filter((item: any) => {
+        return this.filteredProviderSpeciality.some((checkbox: any) => {
+          return checkbox.checked && checkbox[filterProperty] === item[filterProperty];
+        });
+      });
+      this.addOrRemoveProviderSpeciality();
+    }
+  }
+
   addOrRemoveInsuranceType() {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredAgeBracket.some((checkbox: any) => {
@@ -806,6 +980,120 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredOfficeName.some((checkbox: any) => {
         return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredCurrentStatus.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['currentStatus']) === item['currentStatus'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredNextActionRequired.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['nextActionRequired']) === item['nextActionRequired'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredProviderSpeciality.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
+      });
+    });
+  }
+
+  addOrRemoveCurrentStatus() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceName']) === item['insuranceName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredNextActionRequired.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['nextActionRequired']) === item['nextActionRequired'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredProviderSpeciality.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
+      });
+    });
+  }
+
+  addOrRemoveNextActionRequired() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceName']) === item['insuranceName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredCurrentStatus.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['currentStatus']) === item['currentStatus'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredProviderSpeciality.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
+      });
+    });
+  }
+
+  addOrRemoveProviderSpeciality() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceName']) === item['insuranceName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['officeName']) === item['officeName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredCurrentStatus.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['currentStatus']) === item['currentStatus'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredNextActionRequired.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['nextActionRequired']) === item['nextActionRequired'];
       });
     });
   }
@@ -862,6 +1150,21 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredInsuranceType.some((checkbox: any) => {
         return (checkbox.checked && checkbox['insuranceType']) === item['insuranceType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredCurrentStatus.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['currentStatus']) === item['currentStatus'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredNextActionRequired.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['nextActionRequired']) === item['nextActionRequired'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredProviderSpeciality.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
       });
     });
   }
@@ -923,6 +1226,21 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredClaimType.some((checkbox: any) => {
         return (checkbox.checked && checkbox['claimType']) === item['claimType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredCurrentStatus.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['currentStatus']) === item['currentStatus'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredNextActionRequired.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['nextActionRequired']) === item['nextActionRequired'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredProviderSpeciality.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
       });
     });
   }
