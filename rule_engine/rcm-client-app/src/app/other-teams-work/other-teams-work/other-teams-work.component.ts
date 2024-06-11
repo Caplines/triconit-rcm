@@ -1065,8 +1065,10 @@ export class OtherTeamsWorkComponent implements OnInit {
     if (isSelected) {
       this.selectAllAging = true;
       this.filteredItems.forEach((x: any) => {
+        if(x.diffForPaymentPosting){
         this.selectedClaimsTransfer.claimUuid.push(x.uuid);
         x.selectAging = true;
+        }
       });
     } else {
       this.selectAllAging = null;
