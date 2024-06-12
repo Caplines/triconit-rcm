@@ -512,3 +512,13 @@ h1 {
         color: #000;
     }
   }
+
+.filterDropdown {
+    thead {
+        th {
+            .dFlex {
+                min-height: 62px;
+            }
+        }
+    }
+}
