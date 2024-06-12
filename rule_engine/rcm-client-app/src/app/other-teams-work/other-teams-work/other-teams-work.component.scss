@@ -93,6 +93,10 @@ a.arrow-down.selected {
     z-index: 1;
     border-top: 0px !important;
     width: 20vw;
+
+    .dFlex {
+        min-height: 42px;
+    }
 }
 
 .table-inner-scrollbar {
@@ -164,18 +168,6 @@ a.arrow-down.selected {
     right: 0px;
     top: 14px;
     outline: none;
-}
-
-// .insuranceName .dropdown-menu {
-//     left: -95px !important;
-// }
-
-// .insuranceType .dropdown-menu {
-//     left: -97px !important;
-// }
-
-.claimType .dropdown-menu {
-    left: -197px !important;
 }
 
 .modal-header>.modal-title {
