@@ -172,5 +172,6 @@ public class Constants {
 	
 	public static final int FROMPOSTINGTOAGING=RcmTeamEnum.AGING.getId();
     
+	public static final int CLAIM_CLOSED =30;
     
 }

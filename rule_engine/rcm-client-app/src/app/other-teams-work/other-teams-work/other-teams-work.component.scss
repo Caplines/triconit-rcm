@@ -458,9 +458,9 @@ h1 {
     color: rgb(0, 0, 0) !important;
 }
 
-.checkDiffForPaymentPosting{
-    color:#0a7a1d !important;
-}
+// .checkDiffForPaymentPosting{
+//     background-color: #e6f6fb !important;
+// }
 
 .modal {
     display: block; /* Hidden by default */
@@ -511,4 +511,12 @@ h1 {
   }
   .modal-backdrop.fade.modalShow{
     display: block;
+  }
+
+  .blueBgBackground {
+    background-color: #e6f6fb !important;
+
+    td {
+        color: #000;
+    }
   }

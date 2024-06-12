@@ -607,7 +607,7 @@
                                                 
                                                 <th [ngStyle]="{'z-index':showTooltipConfig['transferToAging'] ? 999999 : 99}" *ngIf="currentTeamName.unFormatedName == 'PAYMENT_POSTING' && tabValue == 'submitted'">
                                                     <div class="d-flex">
-                                                        <span>Select for Aging Team 
+                                                        <span>Select for Aging Team <br>
                                                         <ng-container *ngIf="showTooltipConfig['transferToAging']">
                                                             <div class="tooltip-backdrop" ></div>
                                                         </ng-container>
@@ -642,13 +642,13 @@
                                                         <td colspan="7" class="text-center"><span
                                                                 class="loader-data "></span> </td>
                                                     </tr>
-                                                    <tr>
+                                                    <tr  [ngClass]="{'blueBgBackground': det.diffForPaymentPosting}">
                                                         <td [ngClass]="{'changeColor' : det.colorChange}">
                                                             {{det.officeName}}</td>
                                                         <td *ngIf="staticUtil.isNotTeamOffice()" class="noWrape"><a
                                                                 [ngClass]="{
-                                                                    'changeColor': det.colorChange,
-                                                                    'checkDiffForPaymentPosting': det.diffForPaymentPosting
+                                                                    'changeColor': det.colorChange
+                                                                   
                                                                   }" 
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.newClaimId|claimIdPipe}}</a></td>

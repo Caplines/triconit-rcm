@@ -1327,13 +1327,18 @@ public class ClaimSectionImpl {
 			RcmTeam team, boolean finalSubmit, String clientName) {
 		CurrentClaimStatusAndNextAction currentClaimStatusAndNextActionData = null;
 		RcmTeam assignToTeam=rcmTeamRepo.findById(nextActionReequiredInfoModel.getAssignToTeamId());
+		
+		//assign to team is null when claim is closed
 		if(assignToTeam==null) {
-			logger.error("Invalid team");
-			return null;
+			if(!nextActionReequiredInfoModel.getCurrentClaimStatusRcm().equals(ClaimStatusEnum.Case_Closed.getType())){
+				logger.error("Invalid team");
+				return null;
+			}
 		}
-		if(assignToTeam.getId()==team.getId() ) {
+		
+		if(assignToTeam!=null && assignToTeam.getId()==team.getId()) {
 			if (assignToTeam.getId()==RcmTeamEnum.CDP.getId() && nextActionReequiredInfoModel.getNextAction().equalsIgnoreCase(ClaimStatusEnum.Need_to_call_Insurance.getType())) {
-				logger.info("Team cabe assign to logged user team in case of CDP and Need  to call Insurance");
+				logger.info("Team can be assign to logged user team in case of CDP and Need  to call Insurance");
 			}else {
 				logger.error("Team not assign to logged user team");
 				return null;	

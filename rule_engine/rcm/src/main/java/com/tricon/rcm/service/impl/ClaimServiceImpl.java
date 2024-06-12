@@ -2059,8 +2059,6 @@ public class ClaimServiceImpl {
 
 		List<Integer> ct = dto.getClaimType();
 		List<String> inst = dto.getInsuranceType();
-		String currentStatusClosed=ClaimStatusSearchEnum.STATUS_CLOSED.getStatus();
-		
 		if (dto.getClaimType() == null) {
 			ct = new ArrayList<>();
 			ct.add(ClaimStatusEnum.Billing.getId());
@@ -2090,10 +2088,10 @@ public class ClaimServiceImpl {
 		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
 		try {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserType(companies, ct, instDB,partialHeader.getTeamId(),currentStatusClosed);
+				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserType(companies, ct, instDB,partialHeader.getTeamId());
 				
 			}else {
-				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamType(companies, ct, instDB,partialHeader.getTeamId(),currentStatusClosed);
+				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamType(companies, ct, instDB,partialHeader.getTeamId());
 					
 			}
 			List<AssignFreshClaimLogsDto> primaries=new ArrayList<>();
@@ -4671,11 +4669,11 @@ public class ClaimServiceImpl {
 		int currentStatusVoided=ClaimStatusEnum.Voided.getId();
 		
 		if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-            count =rcmClaimRepository.allPendencyCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid(),currentStatusClosed,currentStatusVoided);
-			date =rcmClaimRepository.allPendencyDateCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid(),currentStatusClosed,currentStatusVoided);
+            count =rcmClaimRepository.allPendencyCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid(),currentStatusClosed);
+			date =rcmClaimRepository.allPendencyDateCountForUser(company.getUuid(),teamId,partialHeader.getJwtUser().getUuid(),currentStatusClosed);
 		}else {
-			count =rcmClaimRepository.allPendencyCount(company.getUuid(),currentStatusClosed,currentStatusVoided);
-			date =rcmClaimRepository.allPendencyDateCount(company.getUuid(),currentStatusClosed,currentStatusVoided);
+			count =rcmClaimRepository.allPendencyCount(company.getUuid(),currentStatusClosed);
+			date =rcmClaimRepository.allPendencyDateCount(company.getUuid(),currentStatusClosed);
 		}
 		//dto.setCount(count);
 		//dto.setDateCount(date);

@@ -71,8 +71,30 @@ public class RcmClaimLogServiceImpl {
 			return "Claim is Archived";
 		}
 		
+		RcmTeam lastTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
+		if (assignToTeam == -1) {
+			claim.setUpdatedBy(user);
+			claim.setLastWorkTeamId(lastTeam);
+			claimCycleService.createNewClaimCycleWithOldStatus(claim, lastTeam, user, newCycleStatus, nextAction);
+			claim.setUpdatedDate(new Date());
+			if (newCycleStatus != null) {
+				ClaimStatusEnum sta = ClaimStatusEnum.getByType(newCycleStatus);
+				if (sta != null) {
+					claim.setCurrentStatus(sta.getId());
+				}
+			}
+			if (nextAction != null) {
+				ClaimStatusEnum act = ClaimStatusEnum.getByType(nextAction);
+				if (act != null) {
+					claim.setNextAction(act.getId());
+				}
+			}
+			rcmClaimRepository.save(claim);
+			return "Same team";
+		}
+		
 		  RcmTeam assignTeam = rcmTeamRepo.findById(assignToTeam);
-		  RcmTeam lastTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
+		 
 		  RcmTeam oldTeam = assign.getCurrentTeamId();
 		  RcmUser oldRcmUser = assign.getAssignedTo();
 		  

@@ -96,6 +96,7 @@ export class BillingClaimsComponent {
   isPdfError: boolean = false;
   isNextFollowUpRequired: boolean = false;
   checkDeliveredTo = false;
+  showAssignToTeam=true;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -2210,36 +2211,52 @@ export class BillingClaimsComponent {
       return;
     }
     ths.claimEditModel = {};
+    let isClaimClosed = false;
     ths.claimEditModel.assignToTeam = ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'];
-    if (this.claimEditModel.assignToTeam == -1) {
-      alert('NO team Selected');
-      return;
-    }
-    this.isOtherTLExist(this.finalerror, (res: any) => {
-      if (res) {
-
-        if (ths.isSectionValidated && ths.checkIfOldSectionAccessWhileFinalSave()) {
-          //First Save OLD Data Then Save New data.
-          let type = "";
-          if (ths.claimRcm.currentTeamId === AppConstants.BILLING_TEAM) type = "submitafterpending";
-          else if (ths.claimRcm.currentTeamId === AppConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
-          else type = "assignafterpendingnot_bill_internal";
+    if (this.claimEditModel.assignToTeam == -1 && ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] === "Case Closed") {
+      isClaimClosed = true;
+      if (ths.isSectionValidated && ths.checkIfOldSectionAccessWhileFinalSave()) {
+        //First Save OLD Data Then Save New data.
+        let type = "";
+        if (ths.claimRcm.currentTeamId === AppConstants.BILLING_TEAM) type = "submitafterpending";
+        else if (ths.claimRcm.currentTeamId === AppConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
+        else type = "assignafterpendingnot_bill_internal";
+        ths.finalsubmitcurrentstat = false;
+        ths.saveClaim(type, true);
+      } else {
+        if (ths.isSectionValidated && save) {
           ths.finalsubmitcurrentstat = false;
-          ths.saveClaim(type, true);
-
-        } else {
-          if (ths.isSectionValidated && save) {
-            ths.finalsubmitcurrentstat = false;
-            ths.finalSaveSection(moveToNextTeam, showResponseStatus);
-          }
+          ths.finalSaveSection(moveToNextTeam, showResponseStatus);
         }
-
       }
-    });
+    } else {
+      if (this.claimEditModel.assignToTeam == -1) {
+        alert('NO team Selected');
+        return;
+      }
+    }
+    if (!isClaimClosed) {
+      this.isOtherTLExist(this.finalerror, (res: any) => {
+        if (res) {
+          if (ths.isSectionValidated && ths.checkIfOldSectionAccessWhileFinalSave()) {
+            //First Save OLD Data Then Save New data.
+            let type = "";
+            if (ths.claimRcm.currentTeamId === AppConstants.BILLING_TEAM) type = "submitafterpending";
+            else if (ths.claimRcm.currentTeamId === AppConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
+            else type = "assignafterpendingnot_bill_internal";
+            ths.finalsubmitcurrentstat = false;
+            ths.saveClaim(type, true);
 
+          } else {
+            if (ths.isSectionValidated && save) {
+              ths.finalsubmitcurrentstat = false;
+              ths.finalSaveSection(moveToNextTeam, showResponseStatus);
+            }
+          }
 
-
-
+        }
+      });
+    }
   }
 
 
@@ -2592,8 +2609,15 @@ export class BillingClaimsComponent {
     let isSectionValidated = true;
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"] = {};
     if (this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeamId == -1) {
-      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"]['assignToTeamId'] = true;
-      isSectionValidated = false;
+      if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] == 'Case Closed'){
+        isSectionValidated = true;
+        this.showAssignToTeam=false;
+
+      } else {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"]['assignToTeamId'] = true;
+        isSectionValidated = false;
+        this.showAssignToTeam=true;
+      }
     }
     if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction) {
       this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
@@ -2612,7 +2636,6 @@ export class BillingClaimsComponent {
       this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusEs = true;
       isSectionValidated = false;
     }
-
     return isSectionValidated;
   }
   validate_ATTACHMENT() {

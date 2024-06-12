@@ -66,7 +66,24 @@ public enum ClaimStatusEnum {
 	Amount_Recouped_For_Some_Other_Claim(58,"Amount Recouped For Some Other Claim"),
 	Claim_Processed_In_PMS_But_Not_Billed(59,"Claim Processed in PMS but not billed"),
 	Payment_Issued_To_Patient(60,"Payment Issued to Patient"),
-	EOB_Requested(61,"EOB Requested");
+	EOB_Requested(61,"EOB Requested"),
+	Need_to_Void_Partial_Claim(62,"Need to Void Partial Claim"),
+	Need_to_Void_Full_Claim(63,"Need to Void Full Claim"),
+	Need_to_Follow_Up(64,"Need to Follow up"),
+	Need_to_Call_Insurance_For_Follow_UP(65,"Need to Call Insurance for Follow up"),
+	Need_to_Adjust_Post_Approval(66,"Need to Adjust post Approval"),
+	Need_to_Send_Statement(67,"Need to Send Statement"),
+	Need_to_Send_Text_to_Patient_For_Payment(68,"Need to Send Text to Patient for Payment"),
+	Need_to_Send_to_Collections(69,"Need to send to Collections"),
+	Need_to_Call_Insurance_For_EOB(70,"Need to Call Insurance for EOB"),
+	Need_to_Check_Payment_Status(71,"Need to Check Payment Status"),
+	Need_to_Check_Claim_Status_On_Web(72,"Need to Check Claim Status on Web"),
+	Need_to_Bill_Secondary_Insurance(73,"Need to Bill Secondary Insurance"),
+	Need_Additional_Information_For_Claim(74,"Need Additional Information For Claim"),
+	Need_to_Follow_Up_For_Void_Request(75,"Need to follow up for Void Request"),
+	Need_to_Get_Provider_Credentialed(76,"Need to get Provider Credentialed"),
+	Need_to_Call_Insurance_For_reprocessing(77,"Need to call Insurance for reprocessing");
+	
 	
 	
 	final private int id;

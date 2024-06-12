@@ -106,7 +106,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=1 "
 			+ " where claims.first_worked_team_id=:teamid and claims.last_work_team_id is null and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-			+ " and ( claims.status_es_updated not in ('Closed') or  claims.status_es_updated is null) "
+			+ " and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and (primary_status = "+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+" )  "
 		
 			+ " union "
@@ -130,7 +130,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=true  "
 			+ " where claims.first_worked_team_id<>:teamid  and claims.last_work_team_id!=:teamid and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
-			+ " and ( claims.status_es_updated not in ('Closed') or  claims.status_es_updated is null) "
+			+ " and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and (primary_status = "+Constants.Primary_Status_Primary+" or primary_status = "+Constants.Primary_Status_Primary_submit+" ))a order by ust-claimAge,primeSecSubmittedTotal asc  "
 						
@@ -156,7 +156,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and rca.assigned_to=:userid and rca.active=1  and pending=true"
-			+ " and ( claims.status_es_updated not in ('Closed') or  claims.status_es_updated is null) and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
 			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc ")
 	List<FreshClaimDataDto> fetchFreshClaimDetailsInd(@Param("companyId") String companyId, @Param("teamid") int teamid,@Param("userid") String userId);
 	
@@ -188,7 +189,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + "  and rca.active=true "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-			+ " and ( claims.status_es_updated not in ('Closed') or  claims.status_es_updated is null) "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBilling(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
@@ -210,7 +211,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + " and  rca.active=1"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-			+ " and ( claims.status_es_updated not in ('Closed') or  claims.status_es_updated is null)"
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " order by ust-claimAge,primeSecSubmittedTotal asc ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamInternalAudit(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
@@ -233,7 +234,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
 			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId " + " and pending=true "
-			+"  and ( claims.status_es_updated not in ('Closed') or  claims.status_es_updated is null) "
+			+"  and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 					+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
 	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeam(@Param("companyId") String companyId,
@@ -256,7 +257,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
 			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId " + " and pending=false "
-			+ " and ( claims.status_es_updated not in ('Closed') or  claims.status_es_updated is null) "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 					+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
 	List<FreshClaimDataDto> fetchSubmittedClaimDetailsOtherTeam(@Param("companyId") String companyId,
@@ -279,7 +280,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and ( claims.status_es_updated not in ('Closed') or  claims.status_es_updated is null) "
+			+ "  where claims.current_team_id=:teamid and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ "  and off.company_id=:companyId and rca.assigned_to=:userId and pending=true "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED +" order by ust-claimAge asc "
 			+ "")
@@ -303,7 +304,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId and rca.assigned_to=:userId and pending=false "
-			+ " and ( claims.status_es_updated not in ('Closed') or  claims.status_es_updated is null) "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED +" order by ust-claimAge asc "
 			+ "")
 	List<FreshClaimDataDto> fetchSubmittedClaimDetailsOtherTeamInd(@Param("companyId") String companyId,
@@ -352,15 +353,14 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+"  and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+"" 
 		    + " and cl.rcm_insurance_type in :inst   "
 		    + " and cl.claim_status_type_id in :status and cl.current_team_id=:teamId and " 
-		    + "  (cl.status_es_updated not in (:currentStatusClosed)  or  cl.status_es_updated is null) "
-			
+		    + "  cl.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ "  inner join company cmp on cmp.uuid=off.company_id  "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId "
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
 			+ "  where off.company_id in (:companyIds) and off.active is true  order by companyName ")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUserType(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
-			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId,@Param("currentStatusClosed")String currentStatusClosed);
+			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 
 	
 	@Query(nativeQuery = true, value = " SELECT  cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"
@@ -373,15 +373,14 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
             + " and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
 			+ " and cl.rcm_insurance_type in :inst   "
 			+ "  and cl.claim_status_type_id in :status and cl.current_team_id=:teamId  and "
-			+ "  (cl.status_es_updated not in (:currentStatusClosed)  or  cl.status_es_updated is null)"
-			
+			+ "  cl.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ "  inner join company cmp on cmp.uuid=off.company_id  "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId"
 			+ "  left join rcm_user us on us.uuid=assig.user_id "
 			+ "  where off.company_id in (:companyIds) and off.active is true order by companyName")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamType(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
-			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId,@Param("currentStatusClosed")String currentStatusClosed);
+			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 	
 	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
 			+ " count(Case When claim_status_type_id in :status and pending is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
@@ -704,35 +703,35 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "select count(concat(rt.name,off.name)) as count,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
 			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
 			" inner join company cmp on cmp.uuid=off.company_id" + 
-			" where (rc.current_status<>:currentStatusClosed and rc.current_status<>:currentStatusVoided) and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cmp.uuid=:companyId " + 
+			" where rc.current_status<>:currentStatusClosed  and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cmp.uuid=:companyId " + 
 			" group by rc.office_id,rt.name ")
-	List<AllPendencyDto> allPendencyCount(@Param("companyId") String companyId, @Param("currentStatusClosed")int currentStatusClosed,@Param("currentStatusVoided")int currentStatusVoided);
+	List<AllPendencyDto> allPendencyCount(@Param("companyId") String companyId, @Param("currentStatusClosed")int currentStatusClosed);
 	
 	@Query(nativeQuery = true, value = ""
 			+ "select count(concat(rt.name,off.name)) as count,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
 			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
 			" inner join company cmp on cmp.uuid=off.company_id" + 
 			" inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "+
-			" where (rc.current_status<>:currentStatusClosed and rc.current_status<>:currentStatusVoided) and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cmp.uuid=:companyId " + 
+			" where rc.current_status<>:currentStatusClosed and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cmp.uuid=:companyId " + 
 			" group by rc.office_id,rt.name ")
-	List<AllPendencyDto> allPendencyCountForUser(@Param("companyId") String companyId,@Param("teamId") int teamId,@Param("userId") String userId, @Param("currentStatusClosed")int currentStatusClosed,@Param("currentStatusVoided")int currentStatusVoided);
+	List<AllPendencyDto> allPendencyCountForUser(@Param("companyId") String companyId,@Param("teamId") int teamId,@Param("userId") String userId, @Param("currentStatusClosed")int currentStatusClosed);
 	
 	@Query(nativeQuery = true, value = ""
 			+ "select min(rc.dos) minDate,min(cast(rc.created_date as Date)) dt,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
 			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
 			" inner join company cmp on cmp.uuid=off.company_id" + 
-			" where (rc.current_status<>:currentStatusClosed and rc.current_status<>:currentStatusVoided) and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cmp.uuid=:companyId " + 
+			" where rc.current_status<>:currentStatusClosed  and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cmp.uuid=:companyId " + 
 			" group by rc.office_id,rt.name ")
-	List<AllPendencyDateDto> allPendencyDateCount(@Param("companyId") String companyId, @Param("currentStatusClosed")int currentStatusClosed,@Param("currentStatusVoided")int currentStatusVoided);
+	List<AllPendencyDateDto> allPendencyDateCount(@Param("companyId") String companyId, @Param("currentStatusClosed")int currentStatusClosed);
 	
 	@Query(nativeQuery = true, value = ""
 			+ "select min(rc.dos) minDate,min(cast(rc.created_date as Date)) dt,rt.name as teamName,off.name as officeName,rt.id as teamId from rcm_claims rc " + 
 			" inner join office off on off.uuid=rc.office_id inner join rcm_team rt on rt.id=rc.current_team_id " + 
 			" inner join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId and assig.user_id=:userId "+
 			" inner join company cmp on cmp.uuid=off.company_id" + 
-			" where (rc.current_status<>:currentStatusClosed and rc.current_status<>:currentStatusVoided) and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cmp.uuid=:companyId " + 
+			" where rc.current_status<>:currentStatusClosed and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cmp.uuid=:companyId " + 
 			" group by rc.office_id,rt.name ")
-	List<AllPendencyDateDto> allPendencyDateCountForUser(@Param("companyId") String companyId,@Param("teamId") int teamId, @Param("userId") String userId ,@Param("currentStatusClosed")int currentStatusClosed,@Param("currentStatusVoided")int currentStatusVoided);
+	List<AllPendencyDateDto> allPendencyDateCountForUser(@Param("companyId") String companyId,@Param("teamId") int teamId, @Param("userId") String userId ,@Param("currentStatusClosed")int currentStatusClosed);
 	
 	@Query(nativeQuery = true, value = ""
 			+ " select distinct rc.claim_id as claimId,rc.office_id as officeId,rc.claim_uuid as claimUUid  from rcm_claims rc inner join office off on off.uuid=rc.office_id "

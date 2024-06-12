@@ -4388,7 +4388,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-4 mb-2">
+                                                    <div class="col-md-4 mb-2" *ngIf="showAssignToTeam">
                                                         <div class="custom-row text-number">
                                                             <label for="assignToTeam">Assign to Team  &nbsp;<span
                                                                 class="text-danger">*</span></label>
@@ -4419,7 +4419,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4 mb-2"></div>
-                                                    <div class="col-md-4 mb-2">
+                                                    <div class="col-md-12 mb-2">
                                                         <button *ngIf="(claimRcm.currentTeamId == 3 || claimRcm.currentTeamId == 4 || 
                                     claimRcm.currentTeamId == 5 || claimRcm.currentTeamId == 6 ||
                                     claimRcm.currentTeamId == 7 || claimRcm.currentTeamId == 10 ||
@@ -4436,7 +4436,7 @@
                                                         <!-- <button class="btn btn-success" (click)="saveNextActionRequiredSection(false)"
                                                     [hidden]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)">Save</button> -->
                                                     </div>
-                                                    <div class="col-md-4 mb-2 alert fade show text-center"
+                                                    <div class="col-md-12 mb-2 alert fade show text-center"
                                                         *ngIf="finalerror.showAlertPopup"
                                                         [ngClass]="{'alert-success': !this.finalerror.isError,'alert-danger':this.finalerror.isError}"
                                                         role="alert">
@@ -4622,7 +4622,7 @@
                                 <div class="action-buttons aftersubmission"
                                     *ngIf="!claimRcm.pending  && actionButtons  && selectedTeam== claimRcm.currentTeamId">
 
-                                    <button *ngIf="claimRcm.currentState==0 && selectedTeam== claimRcm.currentTeamId"
+                                    <button *ngIf="claimRcm.currentState==0 && selectedTeam== claimRcm.currentTeamId && claimRcm.currentStatus!=30"
                                         type="button" class="btn btn-success" [disabled]="inSave"
                                         (click)="saveClaim('assigntl',false)">
                                         Assign to
