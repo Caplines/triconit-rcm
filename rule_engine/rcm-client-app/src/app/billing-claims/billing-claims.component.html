@@ -792,7 +792,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="3"
                                                                                 (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(false,rule.srNo);"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="!staticUtil.isInternalAudit() || makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
                                                                             Not Available
                                                                         </label>
                                                                         <!-- <label class="btn btn-light"
@@ -822,7 +822,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="2"
                                                                                 (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="!staticUtil.isInternalAudit() || makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
                                                                             Attached
                                                                         </label>
                                                                     </div>
@@ -835,7 +835,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="1"
                                                                                 (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="!staticUtil.isInternalAudit() || makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
                                                                             Other
                                                                         </label>
                                                                     </div>
@@ -1638,11 +1638,11 @@
                                                                     <td><input type="text"
                                                                             class="attach-secondary-width form-control"
                                                                             [(ngModel)]="data.fee"
-                                                                            (blur)="getTotalServiceLevelInfo()"></td>
+                                                                            (blur)="getTotalServiceLevelInfo(true)"></td>
                                                                     <td><input type="text"
                                                                             class="attach-secondary-width form-control"
                                                                             [(ngModel)]="data.estPrimary"
-                                                                            (blur)="getTotalServiceLevelInfo()"> </td>
+                                                                            (blur)="getTotalServiceLevelInfo(true)"> </td>
                                                                     <!-- <td><input type="text"
                                                                         class="attach-secondary-width form-control"
                                                                         [(ngModel)]="data.surface"> </td> -->
@@ -1667,24 +1667,24 @@
                                                                         class="attach-secondary-width form-control"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.allowedAmount"
-                                                                        (blur)="getTotalServiceLevelInfo()" /></td>
+                                                                        (blur)="getTotalServiceLevelInfo(true)" /></td>
                                                                 <td><input type="number"
                                                                         class="attach-secondary-width form-control"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.paidAmount"
-                                                                        (blur)="getTotalServiceLevelInfo()" /> </td>
+                                                                        (blur)="getTotalServiceLevelInfo(true)" /> </td>
                                                                 <td><input type="number"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         class="attach-secondary-width form-control"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.creditAdjustmentAmount"
-                                                                        (blur)="getTotalServiceLevelInfo()"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()"/> </td>
+                                                                        (blur)="getTotalServiceLevelInfo(true)"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()"/> </td>
                                                                 <td><input type="number"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         class="attach-secondary-width form-control"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.debitAdjustmentAmount"
-                                                                        (blur)="getTotalServiceLevelInfo()"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()" /> </td>
+                                                                        (blur)="getTotalServiceLevelInfo(true)"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()" /> </td>
                                                                 <!-- <td> <input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -1709,7 +1709,7 @@
                                                                         class="attach-secondary-width form-control"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.billToPatientAmount"
-                                                                        (blur)="getTotalServiceLevelInfo()"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()"> </td>
+                                                                        (blur)="getTotalServiceLevelInfo(true)"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()"> </td>
                                                                 <td>
                                                                     <select class="attach-secondary-width form-control"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
@@ -2485,7 +2485,7 @@
                                                 </table>
                                             </div>
                                             <div class="pdf-viewer-container my-3">
-                                                <div class="my-1"><strong>Current Insurance Follow-Up
+                                                <div class="my-1"><strong>Current Insurance Follow Up
                                                         Information</strong>
                                                 </div>
                                                 <div class="row">
@@ -2555,7 +2555,7 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="nextFollowUpRequired">Next Follow-up
+                                                            <label for="nextFollowUpRequired">Next Follow Up
                                                                 Required</label>
                                                             <select id="nextFollowUpRequired" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2589,7 +2589,7 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="followUpRemarks">Enter Your Follow up
+                                                            <label for="followUpRemarks">Enter Your Follow Up
                                                                 Remarks</label>
                                                             <textarea type="date" id="followUpRemarks"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2742,15 +2742,15 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-md-4 mb-2">
+                                                        <!-- <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="statementSendingDate">Date of sending
                                                                     Statement</label>
-                                                                <!-- <input type="date" id="statementSendingDate"
+                                                                <input type="date" id="statementSendingDate"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
                                                                 class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}"> -->
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}">
                                                                 <app-date-picker id="statementSendingDate" 
                                                                     class="claimDatepicker"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
@@ -2759,7 +2759,7 @@
                                                                     (ngModelChange)="onSelectDate($event)">
                                                                 </app-date-picker>
                                                             </div>
-                                                        </div>
+                                                        </div> -->
 
 
                                                         <div class="col-md-4 mb-2">
@@ -2852,6 +2852,24 @@
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementNotes']}">
                                                                                                                                                         </textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4 mb-2">
+                                                            <div class="custom-row text-number">
+                                                                <label for="statementSendingDate">Date of sending
+                                                                    Statement</label>
+                                                                <!-- <input type="date" id="statementSendingDate"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
+                                                                class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}"> -->
+                                                                <app-date-picker id="statementSendingDate" 
+                                                                    class="claimDatepicker"
+                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                                    [inputDate]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
+                                                                    (emitToParent)="receiveChildEventdate($event)" 
+                                                                    (ngModelChange)="onSelectDate($event)">
+                                                                </app-date-picker>
                                                             </div>
                                                         </div>
                                                     </ng-container>
@@ -3116,7 +3134,7 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="modeOfFollowUp">Mode of Follow up &nbsp;<span
+                                                            <label for="modeOfFollowUp">Mode of Follow Up &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <select id="modeOfFollowUp" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -4577,7 +4595,7 @@
                                         [disabled]="inSave" (click)="saveClaim('latter',false)">
                                         Save For Later Processing
                                     </button>
-                                    <button *ngIf="claimRcm.pending  && selectedTeam== claimRcm.currentTeamId"
+                                    <button *ngIf="claimRcm.allowEdit && claimRcm.pending  && selectedTeam== claimRcm.currentTeamId"
                                         type="button" class="btn btn-success" [disabled]="inSave"
                                         (click)="saveClaim('assigntl',false)">
                                         Assign to
@@ -4611,7 +4629,7 @@
                                         Other Team
                                     </button>
                                     <button
-                                        *ngIf="claimRcm.pending && claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
+                                        *ngIf="claimRcm.allowEdit && claimRcm.pending && claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
                                         type="button" class="btn btn-success" [disabled]="inSave"
                                         (click)="openArchivedModal()">
                                         Archive

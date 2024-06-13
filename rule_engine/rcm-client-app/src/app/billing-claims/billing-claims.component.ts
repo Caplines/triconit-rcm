@@ -2100,6 +2100,7 @@ export class BillingClaimsComponent {
 
 
           if (res.data != null && res.data.length > 0) {
+            this.isBtpFlagTrue = res.data[0].flag;
             this.sectionLevelInfoTotalConfig.balanceFromEsBeforePosting = res.data[0].balanceFromEsBeforePosting;
             this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting = Number(res.data[0].balanceFromEsAfterPosting);
           }
@@ -2130,7 +2131,7 @@ export class BillingClaimsComponent {
             this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount + e.allowedAmount;
           })
 
-          this.getTotalServiceLevelInfo();
+          this.getTotalServiceLevelInfo(false);
           this.getAllServiceCodes();
         }
       })
@@ -3049,7 +3050,7 @@ export class BillingClaimsComponent {
 
   removeSectionLevelRow(idx: any) {
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.splice(idx, 1);
-    this.getTotalServiceLevelInfo();
+    this.getTotalServiceLevelInfo(true);
     this.activeServiceCodeCount--;
   }
 
@@ -3066,7 +3067,7 @@ export class BillingClaimsComponent {
     this.checkReconcileLogic();
   }
 
-  getTotalServiceLevelInfo() {
+  getTotalServiceLevelInfo(overrideBtp:boolean) {
     this.clearTotalValues();
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
       // this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount + +e.allowedAmount;
@@ -3078,7 +3079,8 @@ export class BillingClaimsComponent {
       this.sectionLevelInfoTotalConfig.creditAdjustmentAmount = this.sectionLevelInfoTotalConfig.creditAdjustmentAmount + +e.creditAdjustmentAmount;
       this.sectionLevelInfoTotalConfig.debitAdjustmentAmount = this.sectionLevelInfoTotalConfig.debitAdjustmentAmount + +e.debitAdjustmentAmount;
     });
-    this.sectionLevelInfoTotalConfig.billToPatientAmount > 0 ? this.isBtpFlagTrue = true : this.isBtpFlagTrue = false;
+    if(overrideBtp){
+    this.sectionLevelInfoTotalConfig.billToPatientAmount > 0 ? this.isBtpFlagTrue = true : this.isBtpFlagTrue = false;}
     this.addDecimalInTotalServiceValue();
     this.getTotalPaidAmt();
     this.getTotalAllowedAmt();
@@ -3952,4 +3954,11 @@ export class BillingClaimsComponent {
   onSelectDate(date: any) {
     this.emitToChild.emit(date);
   }
+  
+  get staticUtil():any {
+
+    return Utils;
+  }
 }
+
+

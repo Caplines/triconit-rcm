@@ -488,7 +488,7 @@
 
                                                 <th *ngIf="showColumns.nextActionRequired">
                                                     <div class="dFlex">
-                                                        Next Action Required <div class="dropdown">
+                                                        Current Action Required<div class="dropdown">
                                                             <img (click)="showHideFilteredDropdown('nextActionRequired')" src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
@@ -816,7 +816,7 @@
     <div class="modal-dialog delete-modal" role="document">
         <div class="modal-content">
             <div class="modal-header flex-row">
-                <h4 class="modal-title w-100">Confirm Bulk Send to Aging</h4>
+                <span class="modal-title w-100 text-center" >Confirm Bulk Send to Aging</span>
                 <button (click)="closeConfirmationModal()" type="button"
                     class="btn btn-sm btn-ligt close">&times;</button>
             </div>
@@ -827,7 +827,7 @@
                 [(ngModel)]="selectedClaimsTransfer['remarks']" rows="2" style="width: 100%;"></textarea>
             </div>
             <div class="modal-footer justify-content-center">
-                <button type="button" [disabled]="selectedClaimsTransfer['remarks'].length==0" class="btn btn-success" (click)="transferClaim()">Yes</button>
+                <button type="button" [disabled]="selectedClaimsTransfer['remarks'].length==0" class="btn btn-success" (click)="transferClaim()">Send to Aging</button>
                 <button type="button" class="btn btn-danger" data-dismiss="modal"
                     (click)="closeConfirmationModal()">Cancel</button>
                

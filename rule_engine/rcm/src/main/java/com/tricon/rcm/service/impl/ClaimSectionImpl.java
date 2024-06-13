@@ -1074,6 +1074,8 @@ public class ClaimSectionImpl {
 			for (RcmServiceLevelInformation list : listOfServiceLevelDto) {
 				responseData = new ServiceLevelRequestBodyDto();
 				BeanUtils.copyProperties(list, responseData);
+				responseData.setAdjustmentReason(list.getAdjustmentReason()==null?"":list.getAdjustmentReason());
+				responseData.setBtpReason(list.getBtpReason()==null?"":list.getBtpReason());
 				data.add(responseData);
 			}
 
@@ -1199,10 +1201,6 @@ public class ClaimSectionImpl {
 				patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
 				patientStatement.setReason(rcmPatientStatementInfoModel.getReason());
 				patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
-				patientStatement.setStatementSendingDate(
-						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getStatementSendingDate()) ? null
-								: Constants.SDF_MYSL_DATE
-										.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
 				patientStatement.setNextReviewDate(
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate()) ? null
 								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
@@ -1214,6 +1212,10 @@ public class ClaimSectionImpl {
 				patientStatement.setNextStatementDate(
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate()) ? null
 								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
+				patientStatement.setStatementSendingDate(
+						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getStatementSendingDate()) ? null
+								: Constants.SDF_MYSL_DATE
+										.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
 			}
 			patientStatement = patientStatementRepo.save(patientStatement);
 			return patientStatement != null ? true : null;
@@ -1239,7 +1241,7 @@ public class ClaimSectionImpl {
 		if (sectionAccess) {
 			if (patientStatement == null) {
 				responseDto = new RcmPatientStatementDto();
-				// set automated fields value StatementType sefault
+				// set automated fields value StatementType default
 				// 1,NextReviewDate,NextStatementDate
 				responseDto.setStatementType(String.valueOf(1));
 				responseDto.setButtonType(1);

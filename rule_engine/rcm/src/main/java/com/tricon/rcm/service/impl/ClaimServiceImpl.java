@@ -1984,9 +1984,9 @@ public class ClaimServiceImpl {
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				 //Need to get Claim remark in of non billing and internal audit
 				
-//				 listView.forEach(data->{
-//					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-//				 });
+				 listView.forEach(data->{
+					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+				 });
 				 
 				 this.populateClaimListWithComments(listView, teamId);
 			 }
@@ -2015,9 +2015,9 @@ public class ClaimServiceImpl {
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				 //Need to get Claim remark in of non billing and internal audit
 				
-//				 listView.forEach(data->{
-//					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-//				 });
+				 listView.forEach(data->{
+					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+				 });
 				 this.populateClaimListWithComments(listView, teamId);
 			 }
 		}
@@ -6157,8 +6157,8 @@ public class ClaimServiceImpl {
 				} else {
 					message = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
 							claim.getClaimUuid(), Constants.FROMPOSTINGTOAGING,dto.getRemarks(), claim, assign, user,
-							office, null, ClaimStatusEnum.SEND_TO_AGING.getType(),
-							ClaimStatusEnum.SEND_TO_AGING.getType(), ClaimStatusEnum.SEND_TO_AGING.getType());
+							office, null, ClaimStatusEnum.Billed.getType(),
+							ClaimStatusEnum.Need_to_Follow_Up.getType(), ClaimStatusEnum.Need_to_Follow_Up.getType());
 					
 					rcmClaimRepository.save(claim);
 				}
