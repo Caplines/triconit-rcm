@@ -1849,10 +1849,10 @@
                                                         </tr>
                                                         <tr>
                                                             <td colspan="3">Enter Balance From PMS Before Posting&nbsp;<span class="text-danger">*</span></td>
-                                                            <td colspan="3"><input type="number"
+                                                            <td colspan="3"><input type="number" id="SERVICE_LEVEL_INFORMATION_EsBeforePosting"
                                                                     class="attach-secondary-width form-control"
                                                                     type="number"
-                                                                    [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'] && emptyFields['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['balanceFromEsBeforePosting']}"
+                                                                    [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'] && emptyFields['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting']}"
                                                                     (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                     (blur)="updatBalanceFromESBeforePosting()"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2516,7 +2516,7 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="modeOfFollowUp">Mode of Follow up &nbsp;<span
+                                                            <label for="modeOfFollowUp">Mode of Follow Up &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <select id="modeOfFollowUp" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"

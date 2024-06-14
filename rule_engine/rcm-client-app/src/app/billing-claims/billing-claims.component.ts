@@ -2413,6 +2413,7 @@ export class BillingClaimsComponent {
   validate_CLAIM_SUBMISSION() { return true; }
 
   validate_SERVICE_LEVEL_INFORMATION() {
+    this.emptyFields['SERVICE_LEVEL_INFORMATION'] = {};
     let isSectionValidated = true;
     for (let i = 0; i < 1000; i++) {
       this.emptyFields["SERVICE_LEVEL_INFORMATION" + i] = {};
@@ -2473,13 +2474,16 @@ export class BillingClaimsComponent {
         this.emptyFields[heading]['action'] = true;
         isSectionValidated = false;
       }
-
-      if (obj.balanceFromEsBeforePosting === null || obj.balanceFromEsBeforePosting === "") {
-        // this.emptyFields[heading]['balanceFromEsBeforePosting'] = true;
-        this.emptyFields['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] = true;
-        isSectionValidated = false;
-      }
     });
+
+    let SERVICE_LEVEL_INFORMATION_EsBeforePosting: any = document.getElementById('SERVICE_LEVEL_INFORMATION_EsBeforePosting')
+
+    if (this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] === null || 
+        this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] === "" || 
+        SERVICE_LEVEL_INFORMATION_EsBeforePosting.value === "") {
+      this.emptyFields['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] = true;
+      isSectionValidated = false;
+    }
 
     if (!this.sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt || !this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt) {
       isSectionValidated = false;
