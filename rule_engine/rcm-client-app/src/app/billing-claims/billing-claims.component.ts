@@ -4006,6 +4006,18 @@ export class BillingClaimsComponent {
 
     return Utils;
   }
+
+  accessIcon(sectionId: any) {
+
+    const hasEditAccess = this.checkForSectionAccess(sectionId, 'edit');
+    const hasViewAccess = this.checkForSectionAccess(sectionId, 'view');
+
+    if (hasEditAccess && this.claimRcm.allowEdit) {
+      return "cl-det-pencil";
+    } else if (hasViewAccess) {
+      return "cl-det-eye";
+    }
+  }
 }
 
 
