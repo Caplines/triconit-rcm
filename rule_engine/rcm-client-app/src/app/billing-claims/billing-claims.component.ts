@@ -2338,10 +2338,10 @@ export class BillingClaimsComponent {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimPassFirstGo = true;
       isSectionValidated = false;
     }
-    if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].initialDenial) {
-      this.emptyFields["CLAIM_LEVEL_INFORMATION"].initialDenial = true;
-      isSectionValidated = false;
-    }
+    // if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].initialDenial) {
+    //   this.emptyFields["CLAIM_LEVEL_INFORMATION"].initialDenial = true;
+    //   isSectionValidated = false;
+    // }
     /*if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusEs) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimStatusEs = true;
       isSectionValidated = false;
@@ -2370,10 +2370,10 @@ export class BillingClaimsComponent {
       this.emptyFields["APPEAL"].aiToolUsed = true;
       isSectionValidated = false;
     }
-    if (!this.claimSectionModal["APPEAL"].appealDocument) {
-      this.emptyFields["APPEAL"].appealDocument = true;
-      isSectionValidated = false;
-    }
+    // if (!this.claimSectionModal["APPEAL"].appealDocument) {
+    //   this.emptyFields["APPEAL"].appealDocument = true;
+    //   isSectionValidated = false;
+    // }
     if (!this.claimSectionModal["APPEAL"].remarks) {
       this.emptyFields["APPEAL"].remarks = true;
       isSectionValidated = false;
@@ -2525,6 +2525,22 @@ export class BillingClaimsComponent {
       this.emptyFields["PATIENT_PAYMENT"]['modeOfPayment'] = true;
       isSectionValidated = false;
     }
+    if (!this.claimSectionModal['PATIENT_PAYMENT']['dateOfPayment']) {
+      this.emptyFields["PATIENT_PAYMENT"]['dateOfPayment'] = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal['PATIENT_PAYMENT']['amountCollectedClaims']) {
+      this.emptyFields["PATIENT_PAYMENT"]['amountCollectedClaims'] = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal['PATIENT_PAYMENT']['postedInPMS']) {
+      this.emptyFields["PATIENT_PAYMENT"]['postedInPMS'] = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal['PATIENT_PAYMENT']['dueBalanceInPMS']) {
+      this.emptyFields["PATIENT_PAYMENT"]['dueBalanceInPMS'] = true;
+      isSectionValidated = false;
+    }
 
     return isSectionValidated;
   }
@@ -2533,6 +2549,18 @@ export class BillingClaimsComponent {
     this.emptyFields["PATIENT_COMMUNICATION"] = {};
     if (!this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].modeOfFollowUp) {
       this.emptyFields["PATIENT_COMMUNICATION"]['modeOfFollowUp'] = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].contact) {
+      this.emptyFields["PATIENT_COMMUNICATION"]['contact'] = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].desposition) {
+      this.emptyFields["PATIENT_COMMUNICATION"]['desposition'] = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].remarks) {
+      this.emptyFields["PATIENT_COMMUNICATION"]['remarks'] = true;
       isSectionValidated = false;
     }
     return isSectionValidated;
@@ -2553,7 +2581,26 @@ export class BillingClaimsComponent {
       this.emptyFields["COLLECTION_AGENCY"]['reason'] = true;
       isSectionValidated = false;
     }
-
+    if (this.claimSectionModal["COLLECTION_AGENCY"]['buttonType'] == 1 && !this.claimSectionModal["COLLECTION_AGENCY"]['debtNumber']) {
+      this.emptyFields["COLLECTION_AGENCY"]['debtNumber'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal["COLLECTION_AGENCY"]['buttonType'] == 2 && !this.claimSectionModal["COLLECTION_AGENCY"]['amountReceived']) {
+      this.emptyFields["COLLECTION_AGENCY"]['amountReceived'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal["COLLECTION_AGENCY"]['buttonType'] == 2 && !this.claimSectionModal["COLLECTION_AGENCY"]['commisionCharged']) {
+      this.emptyFields["COLLECTION_AGENCY"]['commisionCharged'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal["COLLECTION_AGENCY"]['buttonType'] == 2 && !this.claimSectionModal["COLLECTION_AGENCY"]['netAmountReceived']) {
+      this.emptyFields["COLLECTION_AGENCY"]['netAmountReceived'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal["COLLECTION_AGENCY"]['buttonType'] == 3 && !this.claimSectionModal["COLLECTION_AGENCY"]['remarks']) {
+      this.emptyFields["COLLECTION_AGENCY"]['remarks'] = true;
+      isSectionValidated = false;
+    }
     return isSectionValidated;
   }
   validate_REQUEST_REBILLING() {

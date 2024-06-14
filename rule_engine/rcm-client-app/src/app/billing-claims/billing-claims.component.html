@@ -2133,8 +2133,7 @@
                                             </div>
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
-                                                    <label for="intialDenial">Initial Denial &nbsp;<span
-                                                            class="text-danger">*</span></label>
+                                                    <label for="intialDenial">Initial Denial</label>
                                                     <select id="intialDenial" class="form-control"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2952,7 +2951,8 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="dateOfPayment">Date of Payment</label>
+                                                            <label for="dateOfPayment">Date of Payment &nbsp;<span
+                                                                class="text-danger">*</span></label>
                                                             <!-- <input type="date" id="dateOfPayment"
                                                             [disabled]="!checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && !this.claimRcm.allowEdit"
                                                             [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment']"
@@ -2971,7 +2971,8 @@
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="amountCollectedClaims">Amount Collected against
-                                                                this claim</label>
+                                                                this claim &nbsp;<span
+                                                                class="text-danger">*</span></label>
                                                             <input type="number" id="amountCollectedClaims"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']"
@@ -2982,7 +2983,8 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="postedInPMS">Posted in PMS?</label>
+                                                            <label for="postedInPMS">Posted in PMS? &nbsp;<span
+                                                                class="text-danger">*</span></label>
                                                             <select id="postedInPMS" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['postedInPMS']"
@@ -2999,7 +3001,8 @@
                                                         <div class="custom-row text-number">
                                                             <label for="dueBalanceInPMS">Due Balance After Payment
                                                                 Posted in
-                                                                PMS</label>
+                                                                PMS &nbsp;<span
+                                                                class="text-danger">*</span></label>
                                                             <input type="text" id="dueBalanceInPMS"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['dueBalanceInPMS']"
@@ -3149,7 +3152,8 @@
                                                     </div>
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="contact">Phone Number / Email</label>
+                                                            <label for="contact" style="min-width: 147px;">Phone Number / Email&nbsp;<span
+                                                                class="text-danger">*</span></label>
                                                             <input type="text" id="contact"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['contact']"
@@ -3160,7 +3164,8 @@
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="desposition">Desposition</label>
+                                                            <label for="desposition">Desposition &nbsp;<span
+                                                                class="text-danger">*</span></label>
                                                             <select id="modeOfFollowUp" class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['desposition']"
@@ -3174,7 +3179,8 @@
                                                     </div>
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="remarks">Remarks</label>
+                                                            <label for="remarks">Remarks &nbsp;<span
+                                                                class="text-danger">*</span></label>
                                                             <textarea type="date" id="remarks"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['remarks']"
@@ -3253,9 +3259,9 @@
                                                         <div class="btn-group btn-group-toggle d-flex"
                                                             data-toggle="buttons">
                                                             <label class="btn btn-light mx-0"
-                                                               
                                                                 [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1}">
                                                                 <input type="radio" name="statement"
+                                                                (click)="selectCollectionTypeButton(1)"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 class="form-check-input" [value]="1"
                                                                     [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1">Send
@@ -3266,6 +3272,7 @@
                                                                 [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 2}">
                                                                 <input type="radio" name="statement" [value]="2"
                                                                     class="form-check-input"
+                                                                    (click)="selectCollectionTypeButton(2)"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 2">Post
                                                                 Amount Received Through Collection
@@ -3275,6 +3282,7 @@
                                                                 [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3}">
                                                                 <input type="radio" name="statement" [value]="3"
                                                                     class="form-check-input"
+                                                                    (click)="selectCollectionTypeButton(3)"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3">
                                                                 Withdraw From Collections
@@ -3288,7 +3296,8 @@
                                                         *ngIf="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1">
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
-                                                                <label for="debtNumber">Debt#</label>
+                                                                <label for="debtNumber">Debt# &nbsp;<span
+                                                                    class="text-danger">*</span></label>
                                                                 <input type="text" id="debtNumber"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['debtNumber']"
@@ -3318,7 +3327,8 @@
                                                         *ngIf="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 2">
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
-                                                                <label for="amountReceived">Amount Received</label>
+                                                                <label for="amountReceived">Amount Received &nbsp;<span
+                                                                    class="text-danger">*</span></label>
                                                                 <input type="number" id="amountReceived"
                                                                     (blur)="calculateNetAmtReceived()"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -3344,7 +3354,8 @@
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
-                                                                <label for="commisionCharged">Commision Charged</label>
+                                                                <label for="commisionCharged">Commision Charged &nbsp;<span
+                                                                    class="text-danger">*</span></label>
                                                                 <input type="number" id="commisionCharged"
                                                                     (blur)="calculateNetAmtReceived()"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -3356,7 +3367,8 @@
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="netAmountReceived">Net Amount
-                                                                    Received</label>
+                                                                    Received &nbsp;<span
+                                                                    class="text-danger">*</span></label>
                                                                 <input type="number" id="netAmountReceived"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['netAmountReceived']"
@@ -3385,7 +3397,8 @@
                                                         </div>
                                                         <div class="col-md mb-2">
                                                             <div class="custom-row text-number">
-                                                                <label for="remarks">Remarks</label>
+                                                                <label for="remarks">Remarks &nbsp;<span
+                                                                    class="text-danger">*</span></label>
                                                                 <textarea type="text" id="remarks"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['remarks']"
@@ -3491,8 +3504,7 @@
 
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
-                                                    <label for="claim">Appeal Document &nbsp;<span
-                                                            class="text-danger">*</span></label>
+                                                    <label for="claim">Appeal Document</label>
                                                     <input type="text" id="claim"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                         [(ngModel)]="this.claimSectionModal.APPEAL['appealDocument']"
