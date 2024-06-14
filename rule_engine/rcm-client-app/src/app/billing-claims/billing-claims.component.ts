@@ -2420,10 +2420,36 @@ export class BillingClaimsComponent {
       this.emptyFields["SERVICE_LEVEL_INFORMATION" + i]['adjustmentReason'] = false;
     }
 
-    this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { creditAdjustmentAmount: any, debitAdjustmentAmount: any, billToPatientAmount: any, adjustmentReason: string, btpReason: string }, index: number) => {
+    this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { allowedAmount: any, paidAmount: any, creditAdjustmentAmount: any, debitAdjustmentAmount: any, billToPatientAmount: any, adjustmentReason: string, btpReason: string, action: any, balanceFromEsBeforePosting: any, balanceFromEsAfterPosting: any }, index: number) => {
       let heading = "SERVICE_LEVEL_INFORMATION" + index;
       console.log('obj.creditAdjustmentAmount');
       console.log(obj.creditAdjustmentAmount);
+
+      if (obj.allowedAmount === null || obj.allowedAmount === "") {
+        this.emptyFields[heading]['allowedAmount'] = true;
+        isSectionValidated = false;
+      }
+
+      if (obj.paidAmount === null || obj.paidAmount === "") {
+        this.emptyFields[heading]['paidAmount'] = true;
+        isSectionValidated = false;
+      }
+
+      if (obj.creditAdjustmentAmount === null || obj.creditAdjustmentAmount === "") {
+        this.emptyFields[heading]['creditAdjustmentAmount'] = true;
+        isSectionValidated = false;
+      }
+
+      if (obj.debitAdjustmentAmount === null || obj.debitAdjustmentAmount === "") {
+        this.emptyFields[heading]['debitAdjustmentAmount'] = true;
+        isSectionValidated = false;
+      }
+
+      if (obj.billToPatientAmount === null || obj.billToPatientAmount === "") {
+        this.emptyFields[heading]['billToPatientAmount'] = true;
+        isSectionValidated = false;
+      }
+
       if ((obj.creditAdjustmentAmount===null || obj.creditAdjustmentAmount === 0) && (obj.debitAdjustmentAmount ===null ||obj.debitAdjustmentAmount === 0)) {
         obj.adjustmentReason = '';
       }
@@ -2443,6 +2469,16 @@ export class BillingClaimsComponent {
         isSectionValidated = false;
       }
 
+      if (obj.action === null || obj.action === "") {
+        this.emptyFields[heading]['action'] = true;
+        isSectionValidated = false;
+      }
+
+      if (obj.balanceFromEsBeforePosting === null || obj.balanceFromEsBeforePosting === "") {
+        // this.emptyFields[heading]['balanceFromEsBeforePosting'] = true;
+        this.emptyFields['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] = true;
+        isSectionValidated = false;
+      }
     });
 
     if (!this.sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt || !this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt) {
@@ -2463,7 +2499,7 @@ export class BillingClaimsComponent {
     this.emptyFields["PATIENT_STATEMENT"] = {};
     let isSectionValidated = true;
     //status is mandatory for all buttons
-    if (this.claimSectionModal['PATIENT_STATEMENT']['status'] === "") {
+    if (this.claimSectionModal['PATIENT_STATEMENT']['status'] === "" || this.claimSectionModal['PATIENT_STATEMENT']['status']==null) {
       this.emptyFields['PATIENT_STATEMENT']['status'] = true;
       isSectionValidated = false;
     }
@@ -2480,6 +2516,31 @@ export class BillingClaimsComponent {
         isSectionValidated = false;
       }
     }
+    if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1 && !this.claimSectionModal['PATIENT_STATEMENT']['remarks']) {
+      this.emptyFields["PATIENT_STATEMENT"]['remarks'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2 && !this.claimSectionModal['PATIENT_STATEMENT']['amountStatement']) {
+      this.emptyFields["PATIENT_STATEMENT"]['amountStatement'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2 && !this.claimSectionModal['PATIENT_STATEMENT']['statementType']) {
+      this.emptyFields["PATIENT_STATEMENT"]['statementType'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2 && !this.claimSectionModal['PATIENT_STATEMENT']['statementNotes']) {
+      this.emptyFields["PATIENT_STATEMENT"]['statementNotes'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2 && !this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate']) {
+      this.emptyFields["PATIENT_STATEMENT"]['statementSendingDate'] = true;
+      isSectionValidated = false;
+    }
+     if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2 && !this.claimSectionModal['PATIENT_STATEMENT']['remarks']) {
+      this.emptyFields["PATIENT_STATEMENT"]['remarks'] = true;
+      isSectionValidated = false;
+    }
+
     return isSectionValidated;
   }
 

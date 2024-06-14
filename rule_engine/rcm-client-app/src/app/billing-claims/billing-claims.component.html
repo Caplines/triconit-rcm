@@ -285,7 +285,6 @@
                                     <ng-container
                                         *ngIf="smilePoint && checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'],'view')">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['linksRelatedDoc']}">
-
                                             <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'])">
                                                 Links to Related Documents
                                                 <ng-container
@@ -372,7 +371,6 @@
                                             </div>
                                         </div>
                                     </ng-container>
-
                                     <ng-container *ngIf="checkForSectionAccess(sectionIds['REMARKS_BY_OTHER']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['remarksByOther']}">
                                         <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['REMARKS_BY_OTHER']['sectionId'])">Remarks by Other RCM Teams</a>
@@ -1602,15 +1600,15 @@
                                                             <th class="row-grey">Ledger Amt</th>
                                                             <th class="row-grey">Est. Amount</th>
                                                             <!-- <th class="row-grey">Surface</th> -->
-                                                            <th>Allowed Amount</th>
-                                                            <th>Paid Amount</th>
-                                                            <th>Credit Adjustment Amount</th>
-                                                            <th>Debit Adjustment Amount</th>
+                                                            <th>Allowed Amount&nbsp;<span class="text-danger">*</span></th>
+                                                            <th>Paid Amount&nbsp;<span class="text-danger">*</span></th>
+                                                            <th>Credit Adjustment Amount&nbsp;<span class="text-danger">*</span></th>
+                                                            <th>Debit Adjustment Amount&nbsp;<span class="text-danger">*</span></th>
                                                             <!-- <th>Adjustment Amount</th> -->
                                                             <th>Adjustment Reason</th>
-                                                            <th>Bill to Patient Amount</th>
+                                                            <th>Bill to Patient Amount&nbsp;<span class="text-danger">*</span></th>
                                                             <th>BTP Reason</th>
-                                                            <th>Action (Radio Button)</th>
+                                                            <th>Action (Radio Button)&nbsp;<span class="text-danger">*</span></th>
                                                             <th>Notes</th>
                                                             <th>View Notes</th>
                                                             <!--<th>Reconciliation</th>-->
@@ -1670,21 +1668,27 @@
                                                                         class="attach-secondary-width form-control"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.allowedAmount"
+                                                                        (change)="validate_SERVICE_LEVEL_INFORMATION()"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['allowedAmount']}"
                                                                         (blur)="getTotalServiceLevelInfo(true)" /></td>
                                                                 <td><input type="number"
                                                                         class="attach-secondary-width form-control"
+                                                                        (change)="validate_SERVICE_LEVEL_INFORMATION()"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['paidAmount']}"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.paidAmount"
                                                                         (blur)="getTotalServiceLevelInfo(true)" /> </td>
                                                                 <td><input type="number"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         class="attach-secondary-width form-control"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['creditAdjustmentAmount']}"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.creditAdjustmentAmount"
                                                                         (blur)="getTotalServiceLevelInfo(true)"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()"/> </td>
                                                                 <td><input type="number"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         class="attach-secondary-width form-control"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['debitAdjustmentAmount']}"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.debitAdjustmentAmount"
                                                                         (blur)="getTotalServiceLevelInfo(true)"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()" /> </td>
@@ -1710,6 +1714,7 @@
                                                                 <td> <input type="number"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         class="attach-secondary-width form-control"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['billToPatientAmount']}"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                         [(ngModel)]="data.billToPatientAmount"
                                                                         (blur)="getTotalServiceLevelInfo(true)"  (keyup)="validate_SERVICE_LEVEL_INFORMATION()"> </td>
@@ -1729,6 +1734,7 @@
                                                                 <td>
                                                                     <div class="form-check-inline">
                                                                         <input type="radio" class="form-check-input"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['action']}"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                             id="post" name="action{{idx}}" value="Post"
                                                                             [(ngModel)]="data.action">
@@ -1737,6 +1743,7 @@
                                                                     </div>
                                                                     <div class="form-check-inline">
                                                                         <input type="radio" [checked]="data.action"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['action']}"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                             id="assign" class="form-check-input"
                                                                             name="action{{idx}}" value="Assign"
@@ -1818,6 +1825,7 @@
                                                             <td> <input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     type="number" (blur)="getTotalAllowedAmt()"
+                                                                    (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="sectionLevelInfoTotalConfig.allowedAmount"
                                                                     [class.is-invalid]="!sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt" />
@@ -1825,6 +1833,7 @@
                                                             <td><input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     type="number" (blur)="getTotalPaidAmt()"
+                                                                    (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="sectionLevelInfoTotalConfig.paidAmount"
                                                                     [class.is-invalid]="!sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt" />
@@ -1839,10 +1848,12 @@
                                                             <td colspan="4"></td>
                                                         </tr>
                                                         <tr>
-                                                            <td colspan="3">Enter Balance From PMS Before Posting</td>
+                                                            <td colspan="3">Enter Balance From PMS Before Posting&nbsp;<span class="text-danger">*</span></td>
                                                             <td colspan="3"><input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     type="number"
+                                                                    [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'] && emptyFields['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['balanceFromEsBeforePosting']}"
+                                                                    (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                     (blur)="updatBalanceFromESBeforePosting()"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="sectionLevelInfoTotalConfig.balanceFromEsBeforePosting" />
@@ -1861,7 +1872,7 @@
                                                             </td>
                                                             <td colspan="11"></td>
                                                         <tr>
-                                                            <td colspan="3">Balance From PMS After Posting</td>
+                                                            <td colspan="3">Balance From PMS After Posting&nbsp;<span class="text-danger">*</span></td>
                                                             <td colspan="3"> <input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     (change)="checkReconcileLogic()"
@@ -1956,7 +1967,7 @@
                                                             <th>EOB Link</th>
                                                             <th>Attached By Team</th>
                                                             <th>Attached By User</th>
-                                                            <th>Remove EOB
+                                                            <th *ngIf="checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit')">Remove EOB
                                                                 <!-- <button class="btn btn-sm btn-danger" (click)="deleteAllEobLink()">Delete All Claims</button> -->
                                                             </th>
                                                         </tr>
@@ -2777,7 +2788,7 @@
 
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
-                                                                <label for="remarks">Enter Remarks</label>
+                                                                <label for="remarks">Enter Remarks &nbsp;<span class="text-danger">*</span></label>
                                                                 <textarea id="remarks"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['remarks']"
@@ -2806,7 +2817,7 @@
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
-                                                                <label for="amountStatement">Amount on Statement</label>
+                                                                <label for="amountStatement">Amount on Statement &nbsp;<span class="text-danger">*</span></label>
                                                                 <input type="number" id="amountStatement"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['amountStatement']"
@@ -2816,7 +2827,7 @@
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
-                                                                <label for="statementType">Statement Type</label>
+                                                                <label for="statementType">Statement Type &nbsp;<span class="text-danger">*</span></label>
                                                                 <select id="modeOfFollowUp" class="form-control"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementType']"
@@ -2858,7 +2869,7 @@
                                                         </div>
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
-                                                                <label for="statementNotes">Statement Notes</label>
+                                                                <label for="statementNotes">Statement Notes &nbsp;<span class="text-danger">*</span></label>
                                                                 <textarea id="statementNotes"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementNotes']"
@@ -2870,7 +2881,7 @@
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="statementSendingDate">Date of sending
-                                                                    Statement</label>
+                                                                    Statement&nbsp;<span class="text-danger">*</span></label>
                                                                 <!-- <input type="date" id="statementSendingDate"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
@@ -2894,7 +2905,7 @@
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number"
                                                                 style="margin-left: -13px;">
-                                                                <label for="status">Status</label>
+                                                                <label for="status">Status&nbsp;<span class="text-danger">*</span></label>
                                                                 <input type="text" id="status"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['status']"
