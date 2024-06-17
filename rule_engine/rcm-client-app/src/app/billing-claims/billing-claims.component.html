@@ -793,7 +793,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="3"
                                                                                 (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(false,rule.srNo);"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="!staticUtil.isInternalAudit() || makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="(!(staticUtil.isInternalAudit() ||staticUtil.isBilling())) || makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
                                                                             Not Available
                                                                         </label>
                                                                         <!-- <label class="btn btn-light"
@@ -823,7 +823,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="2"
                                                                                 (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="!staticUtil.isInternalAudit() || makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="(!(staticUtil.isInternalAudit() ||staticUtil.isBilling()))|| makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
                                                                             Attached
                                                                         </label>
                                                                     </div>
@@ -836,7 +836,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="1"
                                                                                 (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId);enableDisable300Sub(true,rule.srNo)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="!staticUtil.isInternalAudit() || makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="(!(staticUtil.isInternalAudit() ||staticUtil.isBilling()))|| makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
                                                                             Other
                                                                         </label>
                                                                     </div>
