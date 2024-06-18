@@ -3198,6 +3198,13 @@ export class BillingClaimsComponent {
     this.getTotalAllowedAmt();
     this.checkReconcileLogic();
     // this.checkReconcileLogic();
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+      if (this.sectionLevelInfoTotalConfig.billToPatientAmount > 0 && overrideBtp) {
+        e.flag = true;
+      } else {
+        e.flag = false;
+      }
+    });
   }
 
   getTotalPaidAmt() {
@@ -3205,7 +3212,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
       totalpaid = totalpaid + e.paidAmount;
     });
-    this.sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt = totalpaid == this.sectionLevelInfoTotalConfig.paidAmount ? true : false;
+    this.sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt = totalpaid.toFixed(2) == this.sectionLevelInfoTotalConfig.paidAmount ? true : false;
 
   }
 
@@ -3214,7 +3221,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
       totalpaid = totalpaid + e.allowedAmount;
     });
-    totalpaid == this.sectionLevelInfoTotalConfig.allowedAmount ? this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt = true : this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt = false;
+    totalpaid.toFixed(2) == this.sectionLevelInfoTotalConfig.allowedAmount ? this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt = true : this.sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt = false;
 
   }
 
