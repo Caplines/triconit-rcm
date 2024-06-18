@@ -699,7 +699,7 @@
                                                             class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}
                                                         </td>
                                                         <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}"
-                                                            class="alignRight">{{currentTeamName?.teamName}}</td>
+                                                            class="">{{currentTeamName?.teamName}}</td>
                                                         <!-- <td *ngIf="showColumns.currentStatus">
                                                             {{det.statusES ? (appConstants.statusESUpdated[det.statusES]==null?det.statusES:appConstants.statusESUpdated[det.statusES]) : det.statusESUpdated ?  appConstants.statusESUpdated[det.statusESUpdated] : 'N/A'  }}
                                                         </td> -->

@@ -4292,9 +4292,19 @@ public class ClaimServiceImpl {
 				message= "Claim Already Submitted";
 				return message;
 			} else {
+				String newCycleStatus = null;
+				if (assignToTeamId.intValue() == RcmTeamEnum.BILLING.getId()) {
+
+					newCycleStatus = ClaimStatusEnum.Pending_For_Billing.getType();
+				}
+				
+				if(assignToTeamId.intValue() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+					newCycleStatus = ClaimStatusEnum.Pending_For_Review.getType();
+				}
+				
 				message =rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, dto.getClaimUuid(),
 						assignToTeamId, dto.getRemark(), claim,
-						 assign, user, office,dto.getAttachmentsWithRemarks(),null,null,null);
+						 assign, user, office,dto.getAttachmentsWithRemarks(),newCycleStatus,null,null);
 				rcmClaimAssignmentRepo.save(assign);
 				if (message!=null && message.equals("OtherTeam")) message="done";
 				return message;

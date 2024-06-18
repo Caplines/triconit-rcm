@@ -2615,7 +2615,7 @@
                                                         <div class="custom-row text-number">
                                                             <label for="followUpRemarks">Enter Your Follow Up
                                                                 Remarks</label>
-                                                            <textarea type="date" id="followUpRemarks"
+                                                            <textarea type="date" rows="1" id="followUpRemarks"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['followUpRemarks']"
                                                                 class="form-control"
@@ -2789,7 +2789,7 @@
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="remarks">Enter Remarks &nbsp;<span class="text-danger">*</span></label>
-                                                                <textarea id="remarks"
+                                                                <textarea id="remarks" rows="1" 
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['remarks']"
                                                                     class="form-control"
@@ -2870,7 +2870,7 @@
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="statementNotes">Statement Notes &nbsp;<span class="text-danger">*</span></label>
-                                                                <textarea id="statementNotes"
+                                                                <textarea rows="1" id="statementNotes"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementNotes']"
                                                                     class="form-control"
@@ -3205,7 +3205,7 @@
                                                         <div class="custom-row text-number">
                                                             <label for="remarks">Remarks &nbsp;<span
                                                                 class="text-danger">*</span></label>
-                                                            <textarea type="date" id="remarks"
+                                                            <textarea type="date" rows="1" id="remarks"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['remarks']"
                                                                 class="form-control"
@@ -3423,7 +3423,7 @@
                                                             <div class="custom-row text-number">
                                                                 <label for="remarks">Remarks &nbsp;<span
                                                                     class="text-danger">*</span></label>
-                                                                <textarea type="text" id="remarks"
+                                                                <textarea type="text" rows="1"  id="remarks"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['remarks']"
                                                                     class="form-control"
@@ -3653,7 +3653,7 @@
                                                 <div class="custom-row text-number">
                                                     <label for="remarks">Remarks &nbsp;<span
                                                             class="text-danger">*</span></label>
-                                                    <textarea id="remarks" *ngIf="claimSectionModal?.REQUEST_REBILLING"
+                                                    <textarea id="remarks" rows="1"  *ngIf="claimSectionModal?.REQUEST_REBILLING"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                         [(ngModel)]="this.claimSectionModal.REQUEST_REBILLING['remarks']"
                                                         class="form-control"
@@ -3848,7 +3848,7 @@
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="rebillingRemarks">Remarks</label>
-                                                            <textarea type="date" id="rebillingRemarks"
+                                                            <textarea type="date" rows="1" id="rebillingRemarks"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.REBILLING['modal']['rebillingRemarks']"
                                                                 class="form-control"
@@ -4463,7 +4463,7 @@
                                                         <div class="custom-row text-number">
                                                             <label for="remarks">Remarks &nbsp;<span
                                                                     class="text-danger">*</span></label>
-                                                            <textarea type="date" id="remarks"
+                                                            <textarea type="date" rows="1"  id="remarks"
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['remarks']"
