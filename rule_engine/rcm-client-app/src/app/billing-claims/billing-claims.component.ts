@@ -339,7 +339,7 @@ export class BillingClaimsComponent {
     REQUEST_REBILLING: {
       "nextAction": "Re-billing",
       "currentAction": "Re-billing",
-      "teamId": 7,
+      "teamId": AppConstants.BILLING_TEAM,
       "reasonForRebilling": ''
     },
     REBILLING: {
@@ -684,7 +684,7 @@ export class BillingClaimsComponent {
       }*/
       if (ths.isInternalAudit) {
 
-        ths.claimEditModel.assignToTeam = 7;//ths.teamsMs[0].teamId;
+        ths.claimEditModel.assignToTeam = AppConstants.BILLING_TEAM;//ths.teamsMs[0].teamId;
       }
 
       if (valid && validSec) {
@@ -1297,7 +1297,7 @@ export class BillingClaimsComponent {
     else if (!right) return true;
     //else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
-    if (this.claimRcm.firstTeamId == 3 && this.isBilling
+    if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isBilling
     ) { //use case claim->/e28dd916-4da7-45c7-9884-ee6fd3cac759
       return true;
     }
@@ -1309,7 +1309,7 @@ export class BillingClaimsComponent {
     //if (!this.isBilling) return true;
     //else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
-    if (this.claimRcm.firstTeamId == 3 && this.isBilling
+    if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isBilling
     ) { //use case claim->/e28dd916-4da7-45c7-9884-ee6fd3cac759
       return true;
     }
@@ -1323,15 +1323,15 @@ export class BillingClaimsComponent {
     if (this.claimRcm == undefined) return true;
     if (!this.claimRcm.allowEdit) return true;
     //if (!this.claimRcm.pending) return true;
-    if (this.claimRcm.firstTeamId == 3 && this.isBilling
+    if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isBilling
     ) {
       return false;
     }
-    if (this.claimRcm.firstTeamId == 7 && this.isBilling
+    if (this.claimRcm.firstTeamId == AppConstants.BILLING_TEAM && this.isBilling
     ) {
       return false;
     }
-    if (this.claimRcm.firstTeamId == 3 && this.isInternalAudit
+    if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isInternalAudit
     ) {
       return false;
     }
@@ -1616,7 +1616,7 @@ export class BillingClaimsComponent {
   }
 
   get isInternalAuditLogin() {
-    return (Utils.selectedTeam() == 3);
+    return (Utils.selectedTeam() == AppConstants.INTERNAL_AUDIT_TEAM);
   }
   get isRoleSuperAdmin() {
     return Utils.checkRoleSuperAdmin();
