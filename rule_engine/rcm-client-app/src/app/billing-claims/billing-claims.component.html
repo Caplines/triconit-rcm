@@ -1910,9 +1910,9 @@
                                                         FLAG</label>
                                                 </span>
                                             </div>
-                                            <div class="col-md-4 mb-2">
+                                            <div class="col-md-12 mb-2 btn-align-right">
                                                 <div class="d-flex align-items-center">
-                                                    <button class="btn btn-success mr-2"
+                                                    <button class="btn btn-success"
                                                         (click)="saveServiceLevelInfo(false)"
                                                         [disabled]="loader.serviceLevelInfo || !this.sectionLevelInfoTotalConfig.reconcile"
                                                         *ngIf="activeServiceCodeCount >=1 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
@@ -2216,8 +2216,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4 mb-2"></div>
-                                            <div class="d-flex align-items-center">
-                                                <button class="btn btn-success mr-2" (click)="saveClaimLevelinfo(false)"
+                                            <div class="col-md-12 mb-2 btn-align-right">
+                                                <button class="btn btn-success" (click)="saveClaimLevelinfo(false)"
                                                     [disabled]="loader.claimLevelInfo"
                                                     *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                                     Save
@@ -2418,9 +2418,9 @@
                                             <div class="col-md-4 mb-2">
 
                                             </div>
-                                            <div class="col-md-12 mb-2">
+                                            <div class="col-md-12 mb-2 btn-align-right">
                                                 <div class="d-flex align-items-center">
-                                                    <button class="btn btn-success mr-2"
+                                                    <button class="btn btn-success"
                                                         (click)="saveInsurancePaymentInfo(false)"
                                                         [disabled]="loader.insurancePaymentInfo"
                                                         *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
@@ -2481,13 +2481,13 @@
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <th>S.No. (Descending Order of Date)</th>
-                                                            <th>Follow Up Done By (Team)</th>
-                                                            <th>Follow Up Done By (Associate Name)</th>
+                                                            <th>S.No.</th>
+                                                            <th>Follow Up Team</th>
+                                                            <th>Associate Name</th>
                                                             <th>Date & Time</th>
                                                             <th>Mode</th>
                                                             <th>Call Reference #</th>
-                                                            <th>Insurance Rep. Name</th>
+                                                            <th>Rep. Name</th>
                                                             <th>Claim Status</th>
                                                             <th>Remarks</th>
                                                         </tr>
@@ -2498,7 +2498,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm:ss a':'UTC '+timeZone}}</td>
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm a':'UTC '+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>
@@ -2625,9 +2625,9 @@
                                                     </div>
                                                     <!-- <div class="col-md-4 mb-2"></div>
                                                 <div class="col-md-4 mb-2"></div> -->
-                                                    <div class="col-md-12 mb-2">
+                                                    <div class="col-md-12 mb-2 btn-align-right">
                                                         <div class="d-flex align-items-center">
-                                                            <button class="btn btn-success mr-2"
+                                                            <button class="btn btn-success"
                                                                 (click)="saveInsuranceFollowUpInfo(false)"
                                                                 [disabled]="loader.insuranceFollowUpInfo"
                                                                 *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
@@ -2913,8 +2913,8 @@
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
                                                             </div>
                                                         </div>
-                                                        <div class="d-flex align-items-center">
-                                                            <button class="btn btn-success mr-2"
+                                                        <div class="btn-align-right">
+                                                            <button class="btn btn-success"
                                                                 (click)="savePatientStaementInfo(false)"
                                                                 [disabled]="loader.patientStaementInfo"
                                                                 *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0  && !allowOtherSaveWhileReqRebilling()">
@@ -3064,9 +3064,9 @@
 
                                                     <div class="col-md-4 mb-2"></div>
 
-                                                    <div class="col-md-4 mb-2">
+                                                    <div class="col-md-12 mb-2 btn-align-right">
                                                         <div class="d-flex align-items-center">
-                                                            <button class="btn btn-success mr-2"
+                                                            <button class="btn btn-success"
                                                                 (click)="savePatientPaymentInfo(false)"
                                                                 [disabled]="loader.patientPaymentInfo"
                                                                 *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
@@ -3145,7 +3145,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.createdBy}}</td>
                                                             <td>{{data.createdTeam}}</td>
-                                                            <td>{{data.date|date :'MM/dd/YYYY hh:mm:ss a':'UTC'+timeZone}}</td>
+                                                            <td>{{data.date|date :'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.contact}}</td>
                                                             <td>{{data.desposition}}</td>
@@ -3154,7 +3154,7 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <div class="pdf-viewer-container my-3">
+                                            <div class="pdf-viewer-container my-3" style="width:100%;">
                                                 <div class="my-1"><strong>Patient Communication Information</strong>
                                                 </div>
                                                 <div class="row">
@@ -3216,9 +3216,9 @@
                                                     <div class="col-md-4 mb-2"></div>
                                                     <div class="col-md-4 mb-2"></div>
 
-                                                    <div class="col-md-4 mb-2">
-                                                        <div class="d-flex align-items-center">
-                                                            <button class="btn btn-success mr-2"
+                                                    <div class="col-md-12 mb-2 ">
+                                                        <div class="btn-align-right">
+                                                            <button class="btn btn-success"
                                                                 (click)="savePatientCommunicationSection(false)"
                                                                 [disabled]="loader.patientCommunicationSection"
                                                                 *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
@@ -3277,7 +3277,7 @@
                                         <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                         <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                             [ngClass]="{'show':!toggleTab['COLLECTION_AGENCY']}">
-                                            <div>
+                                            <div style="width: 100%;">
                                                 <div class="">
                                                     <div class="mb-2">
                                                         <div class="btn-group btn-group-toggle d-flex"
@@ -3405,7 +3405,7 @@
                                                 <div class="row">
                                                     <ng-container
                                                         *ngIf="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3">
-                                                        <div class="col-md mb-2">
+                                                        <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="reason">Reason &nbsp;<span
                                                                         class="text-danger">*</span></label>
@@ -3419,7 +3419,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <div class="col-md mb-2">
+                                                        <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="remarks">Remarks &nbsp;<span
                                                                     class="text-danger">*</span></label>
@@ -3435,9 +3435,9 @@
 
                                                 <div class="row">
 
-                                                    <div class="col-md-4 mb-2">
-                                                        <div class="d-flex align-items-center">
-                                                            <button class="btn btn-success mr-2"
+                                                    <div class="col-md-12 mb-2 ">
+                                                        <div class="btn-align-right">
+                                                            <button class="btn btn-success"
                                                                 (click)="saveCollectionAgencyInfo(false)"
                                                                 [disabled]="loader.collectionAgencyInfo"
                                                                 *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
@@ -3528,7 +3528,7 @@
 
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
-                                                    <label for="claim">Appeal Document</label>
+                                                    <label for="claim">Appeal Document Link</label>
                                                     <input type="text" id="claim"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                         [(ngModel)]="this.claimSectionModal.APPEAL['appealDocument']"
@@ -3553,9 +3553,9 @@
 
                                             </div>
 
-                                            <div class="col-md-4 mb-2">
+                                            <div class="col-md-12 mb-2 btn-align-right">
                                                 <div class="d-flex align-items-center">
-                                                    <button class="btn btn-success mr-2"
+                                                    <button class="btn btn-success"
                                                         (click)="saveAppealLevelinfo(false)"
                                                         [disabled]="loader.appealLevelinfo"
                                                         *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
@@ -3727,7 +3727,7 @@
                                             <div class="col-md-4 mb-2"
                                                 *ngIf="claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'fullClaim' || !claimSectionModal.REQUEST_REBILLING['rebillingType']">
                                             </div>
-                                            <div class="col-md-4 mb-2"
+                                            <div class="col-md-12 mb-2 btn-align-right"
                                                 *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && claimRcm.currentState==0 && isPrimaryClaimClosed()">
                                                 <button class="btn btn-success"
                                                     (click)="checkValidationReqRebilling();">Request Rebilling</button>
@@ -3961,7 +3961,7 @@
                                             <div class="col-md-4 mb-2" *ngIf="claimSectionModal.REBILLING['modal']['rebillingStatus']"></div>
                                             <div class="col-md-4 mb-2" *ngIf="!claimSectionModal.REBILLING['modal']['rebillingStatus']"></div> -->
                                                 <div class="row">
-                                                    <div class="col-md-12 mb-2"
+                                                    <div class="col-md-12 mb-2 btn-align-right"
                                                         *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && claimRcm.currentState==0 && claimSectionModal.REBILLING['modal']['rebillingStatus'] && isPrimaryClaimClosed()">
                                                         <button class="btn btn-success"
                                                             (click)="saveRebillingSection(false)">Mark as
@@ -4328,7 +4328,7 @@
                                                 </div>
                                             </ng-container>
 
-                                            <div class="col-md-4 mb-2"
+                                            <div class="col-md-12 mb-2 btn-align-right"
                                                 *ngIf="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != null && ((checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit) && !hideRecreateButton) && isPrimaryClaimClosed()">
                                                 <button class="btn btn-success" (click)="saveRecreateNewClaim(false)" *ngIf="!validateRecreateClaimErrMsg">
                                                     {{claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen']
@@ -4473,7 +4473,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4 mb-2"></div>
-                                                    <div class="col-md-12 mb-2">
+                                                    <div class="col-md-12 mb-2 btn-align-right">
                                                         <button *ngIf="(claimRcm.currentTeamId == 3 || claimRcm.currentTeamId == 4 || 
                                     claimRcm.currentTeamId == 5 || claimRcm.currentTeamId == 6 ||
                                     claimRcm.currentTeamId == 7 || claimRcm.currentTeamId == 10 ||
@@ -4752,11 +4752,13 @@
                             <ul>
                                 <ng-container *ngFor="let steps of claimSteps">
                                     <li class="done">
-                                        <span class="claimDate">{{steps.dt | date: 'MM/dd/YYYY'}}</span>
-                                        {{steps.status}}
-                                        <span class="teamname" *ngIf="steps.name==null">System</span>
-                                        <span class="teamname" [ngClass]="{'last-child ':false}"
-                                            *ngIf="steps.name!=null">{{steps.name}}</span>
+                                        <strong>
+                                            <span class="teamname" *ngIf="steps.name==null">System</span>
+                                            <span class="teamname" [ngClass]="{'last-child ':false}" *ngIf="steps.name!=null">{{steps.name}}</span>
+                                            <span class="claimDate">({{steps.dt | date: 'MM/dd/YYYY'}})</span>
+                                        </strong>
+                                        <a href="javascript:void(0)">{{steps.status}}</a>
+                                        
                                     </li>
                                 </ng-container>
                                 <!-- <li>Close</li> -->

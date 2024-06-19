@@ -1065,7 +1065,7 @@ public class ClaimSectionImpl {
 				serviceLevelDto = new RcmServiceLevelInformation();
 				BeanUtils.copyProperties(rcmClaimDetail, serviceLevelDto);
 				serviceLevelDto.setGroupRun(1);
-				serviceLevelDto.setFlag(true);		
+				serviceLevelDto.setFlag(false);		
 				serviceLevelDto.setTeam(team);
 				serviceLevelDto.setCreatedBy(createdBy);
 				listOfServiceLevelDto.add(serviceLevelDto);
