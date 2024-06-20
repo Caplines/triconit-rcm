@@ -2150,6 +2150,7 @@
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo']"
+                                                        (change)="onClaimPassChange()"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimPassFirstGo']}">
                                                         <option value="">Select</option>
                                                         <option value="yes">Yes</option>
@@ -2157,9 +2158,10 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            <ng-container *ngIf="isInitialDenialRequired">
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
-                                                    <label for="intialDenial">Initial Denial</label>
+                                                    <label for="intialDenial">Initial Denial&nbsp;<span class="text-danger">*</span></label>
                                                     <select id="intialDenial" class="form-control"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2174,6 +2176,7 @@
                                                     </select>
                                                 </div>
                                             </div>
+                                            </ng-container>
 
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number"
@@ -2217,6 +2220,10 @@
                                             </div>
                                             <div class="col-md-4 mb-2"></div>
                                             <div class="col-md-12 mb-2 btn-align-right">
+                                                <div class="alert-message" *ngIf="claimSectionModal['CLAIM_LEVEL_INFORMATION']['errorMessage']"
+                                                    [ngClass]="'rsType-' + claimSectionModal['CLAIM_LEVEL_INFORMATION']['rsType']">
+                                                    {{claimSectionModal['CLAIM_LEVEL_INFORMATION']['errorMessage']}}
+                                                </div>
                                                 <button class="btn btn-success" (click)="saveClaimLevelinfo(false)"
                                                     [disabled]="loader.claimLevelInfo"
                                                     *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
@@ -2227,15 +2234,6 @@
                                                         <span class="loader-save-data"></span>
                                                     </div>
                                                 </div>
-                                                <div *ngIf="claimSectionModal['CLAIM_LEVEL_INFORMATION']['errorMessage']"
-                                                    [ngClass]="'rsType-' + claimSectionModal['CLAIM_LEVEL_INFORMATION']['rsType']">
-                                                    {{claimSectionModal['CLAIM_LEVEL_INFORMATION']['errorMessage']}}
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4 mb-2">
-                                                <!-- <button class="btn btn-outline-primary" (click)="checkSectionFieldValidation()">Final Submit</button> -->
-                                            </div>
-                                            <div class="col-md-4 mb-2">
 
                                             </div>
                                         </div>
