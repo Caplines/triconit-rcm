@@ -2,6 +2,7 @@ package com.tricon.rcm.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -287,6 +288,8 @@ public class ClaimUtil {
 		assignment.setSystemComment(systemComment);
 		assignment.setActive(true);
 		assignment.setTakenBack(false);
+		assignment.setCreatedDate(new Date());
+		assignment.setPendingSince(assignment.getCreatedDate());
 		return assignment;
 	}
 

@@ -3998,8 +3998,9 @@
                                                 Claim Recreation in PMS
                                                 <span class="text-danger" *ngIf="validateRecreateClaimErrMsg">{{validateRecreateClaimErrMsg}}</span>
                                                 <ng-container
-                                                    *ngIf="activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)">
-                                                    - <span [ngClass]="{'text-danger':true}"> No Service Codes left to
+                                                *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view') &&
+                                                                (activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount))">
+                                                    <span [ngClass]="{'text-danger':true}"> No Service Codes left to
                                                         be
                                                         Rebilled.</span>
                                                 </ng-container>

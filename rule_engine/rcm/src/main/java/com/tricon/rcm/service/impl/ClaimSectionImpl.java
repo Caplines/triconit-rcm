@@ -1199,15 +1199,15 @@ public class ClaimSectionImpl {
 			if (rcmPatientStatementInfoModel
 					.getButtonType() == Constants.NEED_TO_HOLD_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION) {
 				patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
-				patientStatement.setReason(rcmPatientStatementInfoModel.getReason());
+				patientStatement.setReason(rcmPatientStatementInfoModel.getReason()==null?"":rcmPatientStatementInfoModel.getReason());
 				patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
 				patientStatement.setNextReviewDate(
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate()) ? null
 								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
 			} else {
 				patientStatement.setAmountStatement(rcmPatientStatementInfoModel.getAmountStatement());
-				patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement());
-				patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType());
+				patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement()==null?"":rcmPatientStatementInfoModel.getModeOfStatement());
+				patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType()==null?"":rcmPatientStatementInfoModel.getStatementType());
 				patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
 				patientStatement.setNextStatementDate(
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate()) ? null
@@ -1454,15 +1454,15 @@ public class ClaimSectionImpl {
 			collectionAgency.setTeam(team);
 			collectionAgency.setButtonType(collectionAgencyInfoModel.getButtonType());
 			if (collectionAgencyInfoModel.getButtonType() == Constants.BUTTON_TYPE_ONE_FOR_COLLECTION_SECTION) {
-				collectionAgency.setCollectionType(collectionAgencyInfoModel.getCollectionType());
+				collectionAgency.setCollectionType(collectionAgencyInfoModel.getCollectionType()==null?"":collectionAgencyInfoModel.getCollectionType());
 				collectionAgency.setDebtNumber(collectionAgencyInfoModel.getDebtNumber());
 			} else if (collectionAgencyInfoModel.getButtonType() == Constants.BUTTON_TYPE_TWO_FOR_COLLECTION_SECTION) {
 				collectionAgency.setAmountReceived(collectionAgencyInfoModel.getAmountReceived());
-				collectionAgency.setModeOfPayment(collectionAgencyInfoModel.getModeOfPayment());
+				collectionAgency.setModeOfPayment(collectionAgencyInfoModel.getModeOfPayment()==null?"":collectionAgencyInfoModel.getModeOfPayment());
 				collectionAgency.setCommisionCharged(collectionAgencyInfoModel.getCommisionCharged());
 				collectionAgency.setNetAmountReceived(collectionAgencyInfoModel.getNetAmountReceived());
 			} else {
-				collectionAgency.setReason(collectionAgencyInfoModel.getReason());
+				collectionAgency.setReason(collectionAgencyInfoModel.getReason()==null?"":collectionAgencyInfoModel.getReason());
 				collectionAgency.setRemarks(collectionAgencyInfoModel.getRemarks());
 			}
 			collectionAgency = collectionAgencyRepo.save(collectionAgency);

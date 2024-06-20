@@ -3,6 +3,7 @@ package com.tricon.rcm.db.entity;
 
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -78,5 +79,8 @@ public class RcmClaimAssignment extends BaseAuditEntity implements Serializable{
 	
 	@Column(name = "action_name")
 	private String actionName;//
+	
+	@Column(name = "pending_since")
+	private Date pendingSince;
 	
 }

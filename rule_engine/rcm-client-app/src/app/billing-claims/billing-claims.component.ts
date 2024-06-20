@@ -2544,10 +2544,10 @@ export class BillingClaimsComponent {
       this.emptyFields["PATIENT_STATEMENT"]['statementSendingDate'] = true;
       isSectionValidated = false;
     }
-     if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2 && !this.claimSectionModal['PATIENT_STATEMENT']['remarks']) {
-      this.emptyFields["PATIENT_STATEMENT"]['remarks'] = true;
-      isSectionValidated = false;
-    }
+    //  if (this.claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2 && !this.claimSectionModal['PATIENT_STATEMENT']['remarks']) {
+    //   this.emptyFields["PATIENT_STATEMENT"]['remarks'] = true;
+    //   isSectionValidated = false;
+    // }
 
     return isSectionValidated;
   }

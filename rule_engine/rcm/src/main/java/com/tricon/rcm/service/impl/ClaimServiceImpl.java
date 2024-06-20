@@ -4153,7 +4153,7 @@ public class ClaimServiceImpl {
 				//only billing can submit
 				//ClaimStatusEnum.Billing.getType();//Once claim is submitted and its being reworked upon the maintain the current status.
 				message= rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
-						Constants.FROMBILLINGTOPOSTING,"Please work on claim",claim,assign,user,office,null,
+						Constants.FROMBILLINGTOPOSTING,"",claim,assign,user,office,null,
 						originalClaimPendingStatus? ClaimStatusEnum.Billed.getType() : null,originalClaimPendingStatus? ClaimStatusEnum.Need_to_Post.getType() : null,dto.getActionName());
 			    
 				

@@ -1,5 +1,6 @@
 package com.tricon.rcm.jpa.repository;
 
+import java.sql.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -135,4 +136,8 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			@Query(value = "select comment_assigned_by as value,claim_id as keyy from rcm_claim_assignment where active =false and current_team_id<>:teamId and claim_id in :claimUuid order by created_date desc limit 1", nativeQuery = true)
 			List<KeyValueDto> findLatestClaimCommentByOtherTeam(@Param("claimUuid") List<String> claimUUid,
 					@Param("teamId") int teamId);
+		
+			@Query(value = "select pending_since from rcm_claim_assignment where claim_id=:claimUuid and active =false and current_team_id=:teamId order by pending_since desc limit 1",nativeQuery = true)
+			Object findPendingSinceDateByClaimUuidAndCurrentTeamId(@Param("claimUuid") String claimUuid,@Param("teamId")int teamId);
+  
 }

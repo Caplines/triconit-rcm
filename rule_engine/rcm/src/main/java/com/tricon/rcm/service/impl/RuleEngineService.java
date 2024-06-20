@@ -72,6 +72,7 @@ import com.tricon.rcm.dto.RcmClaimAppointmentMainRootDto;
 import com.tricon.rcm.dto.RcmClaimDataDto;
 import com.tricon.rcm.dto.RcmClaimDetMainRootDto;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1059,11 +1060,20 @@ public class RuleEngineService {
 				}
 				
 				if (assignedUser != null) {
+					Object pendingSincedate = null;
+					if (claim.getCurrentTeamId().getId() == teamId) {
+						pendingSincedate = rcmClaimAssignmentRepo
+								.findPendingSinceDateByClaimUuidAndCurrentTeamId(claim.getClaimUuid(), teamId);
+					}
 				 //Insert only then	
 					RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 					
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
 							s[0].toString(), claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT);
+					if (pendingSincedate != null) {
+						Timestamp stp = (Timestamp) pendingSincedate;
+						rcmAssigment.setPendingSince(new Date(stp.getTime()));
+					}
 					rcmClaimAssignmentRepo.save(rcmAssigment);
 					ClaimStatusEnum status = null;
 					ClaimStatusEnum nextAction = null;
