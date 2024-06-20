@@ -1038,8 +1038,8 @@ public class RuleEngineService {
 		//Assign Unassigned Claims
 		try {
 			int currentStatusClosed=ClaimStatusEnum.Case_Closed.getId();
-			int currentStatusVoided=ClaimStatusEnum.Voided.getId();
-		List<Object> claims =rcmClaimRepository.getValidClaimWithCompanyTeams(compmanyId,teamId,currentStatusClosed,currentStatusVoided);
+			//int currentStatusVoided=ClaimStatusEnum.Voided.getId();
+		List<Object> claims =rcmClaimRepository.getValidClaimWithCompanyTeams(compmanyId,teamId,currentStatusClosed);
 		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
 				.findByStatus(ClaimStatusEnum.Billing.getType());
 		RcmTeam assignedTeam  = rcmTeamRepo.findById(teamId);
@@ -1161,8 +1161,8 @@ public class RuleEngineService {
 			int teamId,JwtUser jwtUser) {
 		
 		int currentStatusClosed=ClaimStatusEnum.Case_Closed.getId();
-		int currentStatusVoided=ClaimStatusEnum.Voided.getId();
-		List<PendingClaimToReAssignDto> claimList= rcmClaimRepository.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(company.getUuid(),teamId,currentStatusClosed,currentStatusVoided);
+		//int currentStatusVoided=ClaimStatusEnum.Voided.getId();
+		List<PendingClaimToReAssignDto> claimList= rcmClaimRepository.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(company.getUuid(),teamId,currentStatusClosed);
 		List<UserAssignOffice> userAssignOffices = new ArrayList<>();
 		RcmUser assignedBy= userRepo.findByUuid(jwtUser.getUuid()) ;
 		for(PendingClaimToReAssignDto cl:claimList) {
