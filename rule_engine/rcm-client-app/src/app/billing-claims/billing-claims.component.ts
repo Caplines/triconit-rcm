@@ -4097,9 +4097,9 @@ export class BillingClaimsComponent {
     const hasViewAccess = this.checkForSectionAccess(sectionId, 'view');
 
     if (hasEditAccess && this.claimRcm.allowEdit) {
-      return "cl-det-pencil";
+      return "Edit";
     } else if (hasViewAccess) {
-      return "cl-det-eye";
+      return "Read";
     }
   }
 }

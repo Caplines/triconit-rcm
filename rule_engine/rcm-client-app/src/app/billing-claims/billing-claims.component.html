@@ -60,9 +60,14 @@
                                     <!-- This section is for all Clients -->
                                     <ng-container *ngIf="checkForSectionAccess(sectionIds['SECTION_CLAIM_DETAIL']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimDetails']}">
-                                        <a data-toggle="collapse" aria-expanded="true" [ngClass]="accessIcon(sectionIds['SECTION_CLAIM_DETAIL']['sectionId'])">
-                                            Claim Details <span style="color:#ff00a8">{{infoMessage}}</span>
-                                        </a>
+                                        <div>
+                                            <a data-toggle="collapse" aria-expanded="true">
+                                                Claim Details <span style="color:#ff00a8">{{infoMessage}}</span>
+                                            </a>
+                                            <a [ngClass]="accessIcon(sectionIds['SECTION_CLAIM_DETAIL']['sectionId'])">
+                                                {{ accessIcon(sectionIds['SECTION_CLAIM_DETAIL']['sectionId']) }}
+                                            </a>
+                                        </div>
                                         <div class="down-icon" (click)="showHide('claimDetails')">
                                             <a href="javascript:void(0)"
                                                 [ngClass]="{'close':toggleTab['claimDetails']}"></a>
@@ -285,21 +290,23 @@
                                     <ng-container
                                         *ngIf="smilePoint && checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'],'view')">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['linksRelatedDoc']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'])">
-                                                Links to Related Documents
-                                                <ng-container
-                                                    *ngIf="(isBilling || isInternalAudit ) &&
-                                                checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'],'edit')">
-                                                    <span class="passedNum"
-                                                        *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
-                                                        style="cursor: pointer;" (click)="openUpdateIvPopup($event)">
-                                                        Update IV ID /
-                                                        TX Plan ID
-                                                    </span>
-                                                </ng-container>
-                                            </a>
-
-
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">
+                                                    Links to Related Documents
+                                                    <ng-container
+                                                        *ngIf="(isBilling || isInternalAudit ) &&
+                                                            checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'],'edit')">
+                                                        <span class="passedNum" *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
+                                                            style="cursor: pointer;" (click)="openUpdateIvPopup($event)">
+                                                            Update IV ID /
+                                                            TX Plan ID
+                                                        </span>
+                                                    </ng-container>
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId']) }}
+                                                </a>
+                                            </div>
                                             <div class="down-icon" (click)="showHide('linksRelatedDoc')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['linksRelatedDoc']}"></a>
@@ -373,7 +380,12 @@
                                     </ng-container>
                                     <ng-container *ngIf="checkForSectionAccess(sectionIds['REMARKS_BY_OTHER']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['remarksByOther']}">
-                                        <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['REMARKS_BY_OTHER']['sectionId'])">Remarks by Other RCM Teams</a>
+                                        <div>
+                                            <a data-toggle="collapse" aria-expanded="false">Remarks by Other RCM Teams</a>
+                                            <a [ngClass]="accessIcon(sectionIds['REMARKS_BY_OTHER']['sectionId'])">
+                                                {{ accessIcon(sectionIds['REMARKS_BY_OTHER']['sectionId']) }}
+                                            </a>
+                                        </div>
                                         <div class="down-icon" (click)="showHide('remarksByOther')">
                                             <a href="javascript:void(0)"
                                                 [ngClass]="{'close':toggleTab['remarksByOther']}"></a>
@@ -431,10 +443,16 @@
                                     <ng-container
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view')">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['attachment']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['ATTACHMENT']['sectionId'])">Attachments <span
-                                                    *ngIf="!(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit'))"
-                                                    class="text-danger"> (Access to this section of the RCM Tool is
-                                                    restricted for you)</span></a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">Attachments <span
+                                                        *ngIf="!(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit'))" class="text-danger"> (Access to
+                                                        this section of the RCM Tool is restricted for you)</span>
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['ATTACHMENT']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['ATTACHMENT']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('attachment')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['attachment']}"></a>
@@ -496,11 +514,15 @@
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['claimLevelAutomated']}"
                                             *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId'],'view')">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId'])">
-                                                Claim Level Validations (Automated)
-                                                <span class="passedNum">Pass:{{countA.pass}}</span> <span
-                                                    class="passedNum fail">Fail:{{countA.fail}}</span>
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">
+                                                    Claim Level Validations (Automated)
+                                                    <span class="passedNum">Pass:{{countA.pass}}</span> <span class="passedNum fail">Fail:{{countA.fail}}</span>
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId']) }}
+                                                </a>
+                                            </div>
                                             <div class="down-icon" (click)="showHide('claimLevelAutomated')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['claimLevelAutomated']}"></a>
@@ -578,8 +600,12 @@
                                     <ng-container>
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimLevelManual']}"
                                             *ngIf="checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'view')">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">Claim Level Validations
-                                                (Manual)</a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">Claim Level Validations (Manual)</a>
+                                                <a [ngClass]="accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId']) }}
+                                                </a>
+                                            </div>
                                             <div class="down-icon" (click)="showHide('claimLevelManual')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['claimLevelManual']}"></a>
@@ -1059,12 +1085,15 @@
                                     <ng-container *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['serviceCodeLevel']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'])"
-                                                id="serviceCodeValidationsM">
-                                                Service
-                                                Code Level
-                                                Validations (Manual)
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="serviceCodeValidationsM">
+                                                    Service Code Level Validations (Manual)
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('serviceCodeLevel')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['serviceCodeLevel']}"></a>
@@ -1186,14 +1215,16 @@
                                         *ngIf="smilePoint && checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_AUTO']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['serviceCodeAutomated']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_AUTO']['sectionId'])"
-                                                id="serviceCodeValidationsA">
-                                                Service
-                                                Code Level
-                                                Validations (Automated)
-                                                <span class="passedNum">Pass:{{countAS.pass}}</span> <span
-                                                    class="passedNum fail">Fail:{{countAS.fail}}</span>
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="serviceCodeValidationsA">
+                                                    Service Code Level Validations (Automated)
+                                                    <span class="passedNum">Pass:{{countAS.pass}}</span> <span class="passedNum fail">Fail:{{countAS.fail}}</span>
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_AUTO']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_AUTO']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('serviceCodeAutomated')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['serviceCodeAutomated']}"></a>
@@ -1268,7 +1299,12 @@
                                     <ng-container
                                         *ngIf="smilePoint && !isInternalAudit && checkForSectionAccess(sectionIds['RULE_ENGINE_VALIDATION']['sectionId'],'view')">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['ruleEngineValid']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['RULE_ENGINE_VALIDATION']['sectionId'])">Rule Engine Validations</a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">Rule Engine Validations</a>
+                                                <a [ngClass]="accessIcon(sectionIds['RULE_ENGINE_VALIDATION']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['RULE_ENGINE_VALIDATION']['sectionId']) }}
+                                                </a>
+                                            </div>
                                             <div class="down-icon" (click)="showHide('ruleEngineValid')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['ruleEngineValid']}"></a>
@@ -1346,9 +1382,15 @@
                                     </ng-container>
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['submissionDetail']}"
                                         *ngIf="!isInternalAuditLogin && checkForSectionAccess(sectionIds['CLAIM_SUBMISSION']['sectionId'],'view')">
-                                        <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['CLAIM_SUBMISSION']['sectionId'])">
-                                            Enter Claim Submission Details
-                                        </a>
+                                        <div>
+                                            <a data-toggle="collapse" aria-expanded="false">
+                                                Enter Claim Submission Details
+                                            </a>
+                                            <a [ngClass]="accessIcon(sectionIds['CLAIM_SUBMISSION']['sectionId'])">
+                                                {{ accessIcon(sectionIds['CLAIM_SUBMISSION']['sectionId']) }}
+                                            </a>
+                                        </div>
+                                        
                                         <div class="down-icon" (click)="showHide('submissionDetail')">
                                             <a href="javascript:void(0)"
                                                 [ngClass]="{'close':toggleTab['submissionDetail']}"></a>
@@ -1572,14 +1614,18 @@
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'])"
-                                                id="SERVICE_LEVEL_INFORMATION">
-                                                Service Level Information
-                                                <ng-container *ngIf="activeServiceCodeCount === 0">
-                                                    - <span [ngClass]="{'text-danger':true}"> No Service Codes
-                                                        Present</span>
-                                                </ng-container>
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="SERVICE_LEVEL_INFORMATION">
+                                                    Service Level Information
+                                                    <ng-container *ngIf="activeServiceCodeCount === 0">
+                                                        - <span [ngClass]="{'text-danger':true}"> No Service Codes Present</span>
+                                                    </ng-container>
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('SERVICE_LEVEL_INFORMATION')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['SERVICE_LEVEL_INFORMATION']}"></a>
@@ -1948,9 +1994,15 @@
                                     <ng-container
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['EOB']}">
-                                            <a data-toggle="collapse" aria-expanded="false" id="EOB" [ngClass]="accessIcon(sectionIds['EOB']['sectionId'])">
-                                                EOBs
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="EOB">
+                                                    EOBs
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['EOB']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['EOB']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('EOB')">
                                                 <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['EOB']}"></a>
                                             </div>
@@ -2081,9 +2133,15 @@
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['CLAIM_LEVEL_INFORMATION']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'])">
-                                                Claim Level Information
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">
+                                                    Claim Level Information
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('CLAIM_LEVEL_INFORMATION')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['CLAIM_LEVEL_INFORMATION']}"></a>
@@ -2234,7 +2292,6 @@
                                                         <span class="loader-save-data"></span>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         </div>
                                     </ng-container>
@@ -2259,9 +2316,15 @@
                                         *ngIf="(sectionLevelInfoTotalConfig.paidAmount>0) &&  !claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['INSURANCE_PAYMENT_INFORMATION']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'])">
-                                                Insurance Payment Information
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">
+                                                    Insurance Payment Information
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('INSURANCE_PAYMENT_INFORMATION')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['INSURANCE_PAYMENT_INFORMATION']}"></a>
@@ -2463,9 +2526,15 @@
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['INSURANCE_FOLLOW_UP']}">
-                                            <a data-toggle="collapse" aria-expanded="false" id="INSURANCE_FOLLOW_UP" [ngClass]="accessIcon(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'])">
-                                                Insurance Follow Up Details
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="INSURANCE_FOLLOW_UP">
+                                                    Insurance Follow Up Details
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['INSURANCE_FOLLOW_UP']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('INSURANCE_FOLLOW_UP')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['INSURANCE_FOLLOW_UP']}"></a>
@@ -2671,9 +2740,15 @@
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['PATIENT_STATEMENT']}">
-                                            <a data-toggle="collapse" aria-expanded="false" id="PATIENT_STATEMENT"  [ngClass]="accessIcon(sectionIds['PATIENT_STATEMENT']['sectionId'])">
-                                                Patient Statement
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="PATIENT_STATEMENT">
+                                                    Patient Statement
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['PATIENT_STATEMENT']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['PATIENT_STATEMENT']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('PATIENT_STATEMENT')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['PATIENT_STATEMENT']}"></a>
@@ -2957,9 +3032,15 @@
                                     <ng-container
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'view')">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['PATIENT_PAYMENT']}">
-                                            <a data-toggle="collapse" aria-expanded="false" id="PATIENT_PAYMENT" [ngClass]="accessIcon(sectionIds['PATIENT_PAYMENT']['sectionId'])">
-                                                Patient Payment
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="PATIENT_PAYMENT">
+                                                    Patient Payment
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['PATIENT_PAYMENT']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['PATIENT_PAYMENT']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('PATIENT_PAYMENT')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['PATIENT_PAYMENT']}"></a>
@@ -3111,9 +3192,15 @@
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['PATIENT_COMMUNICATION']}">
-                                            <a data-toggle="collapse" aria-expanded="false" id="PATIENT_COMMUNICATION" [ngClass]="accessIcon(sectionIds['PATIENT_COMMUNICATION']['sectionId'])">
-                                                Patient Commmunication
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="PATIENT_COMMUNICATION">
+                                                    Patient Commmunication
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['PATIENT_COMMUNICATION']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['PATIENT_COMMUNICATION']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('PATIENT_COMMUNICATION')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['PATIENT_COMMUNICATION']}"></a>
@@ -3263,9 +3350,15 @@
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['COLLECTION_AGENCY']}">
-                                            <a data-toggle="collapse" aria-expanded="false" id="COLLECTION_AGENCY" [ngClass]="accessIcon(sectionIds['COLLECTION_AGENCY']['sectionId'])">
-                                                Collection Agency
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="COLLECTION_AGENCY">
+                                                    Collection Agency
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['COLLECTION_AGENCY']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['COLLECTION_AGENCY']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('COLLECTION_AGENCY')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['COLLECTION_AGENCY']}"></a>
@@ -3478,9 +3571,15 @@
                                     <ng-container
                                         *ngIf="!claimRcm.pending &&  checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'view')">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['APPEAL']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['APPEAL']['sectionId'])">
-                                                Appeal
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">
+                                                    Appeal
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['APPEAL']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['APPEAL']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('APPEAL')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['APPEAL']}"></a>
@@ -3599,16 +3698,18 @@
                                         *ngIf="!claimRcm.rebilledStatus && !claimRcm.pending && checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['REQUEST_REBILLING'] || (activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)) }">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['REQUEST_REBILLING']['sectionId'])">
-                                                Request Rebilling
-                                                <ng-container
-                                                    *ngIf="activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)">
-                                                    - <span [ngClass]="{'text-danger':true}"> No Service Codes left to
-                                                        be
-                                                        Rebilled.</span>
-                                                </ng-container>
-
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">
+                                                    Request Rebilling
+                                                    <ng-container *ngIf="activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)">
+                                                        - <span [ngClass]="{'text-danger':true}"> No Service Codes left to be Rebilled.</span>
+                                                    </ng-container>
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['REQUEST_REBILLING']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['REQUEST_REBILLING']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('REQUEST_REBILLING')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['REQUEST_REBILLING']}"></a>
@@ -3753,9 +3854,15 @@
                                     <ng-container
                                         *ngIf="claimRcm.rebilledStatus && !claimRcm.pending && (checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'view') || checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'view'))">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['REBILLING']}">
-                                            <a data-toggle="collapse" aria-expanded="false" id="REBILLING" [ngClass]="accessIcon(sectionIds['REBILLING']['sectionId'])">
-                                                Rebilling
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="REBILLING">
+                                                    Rebilling
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['REBILLING']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['REBILLING']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('REBILLING')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['REBILLING']}"></a>
@@ -3994,18 +4101,21 @@
                                         *ngIf="((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['RECREATE_CLAIM'] || activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount)}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['RECREATE_CLAIM']['sectionId'])">
-                                                Claim Recreation in PMS
-                                                <span class="text-danger" *ngIf="validateRecreateClaimErrMsg">{{validateRecreateClaimErrMsg}}</span>
-                                                <ng-container
-                                                *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view') &&
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false">
+                                                    Claim Recreation in PMS
+                                                    <span class="text-danger" *ngIf="validateRecreateClaimErrMsg">{{validateRecreateClaimErrMsg}}</span>
+                                                    <ng-container
+                                                        *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view') &&
                                                                 (activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount))">
-                                                    <span [ngClass]="{'text-danger':true}"> No Service Codes left to
-                                                        be
-                                                        Rebilled.</span>
-                                                </ng-container>
-
-                                            </a>
+                                                        <span [ngClass]="{'text-danger':true}"> No Service Codes left to be Rebilled.</span>
+                                                    </ng-container>
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['RECREATE_CLAIM']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['RECREATE_CLAIM']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('RECREATE_CLAIM')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['RECREATE_CLAIM']}"></a>
@@ -4363,10 +4473,15 @@
                                         *ngIf="isPrimaryClaimClosed() && ( !claimRcm.rebilledStatus || !claimSectionModal.REBILLING['modal']['rebillingStatus']) && !claimRcm.pending &&  claimRcm.allowEdit && claimRcm.currentStatus!=appConstants.claimClosedId && checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
-                                            <a data-toggle="collapse" aria-expanded="false" [ngClass]="accessIcon(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'])"
-                                                id="CURRENT_STATUS_AND_NEXT_ACTION">
-                                                Current Status and next action required
-                                            </a>
+                                            <div>
+                                                <a data-toggle="collapse" aria-expanded="false" id="CURRENT_STATUS_AND_NEXT_ACTION">
+                                                    Current Status and next action required
+                                                </a>
+                                                <a [ngClass]="accessIcon(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId']) }}
+                                                </a>
+                                            </div>
+                                            
                                             <div class="down-icon" (click)="showHide('CURRENT_STATUS_AND_NEXT_ACTION')">
                                                 <a href="javascript:void(0)"
                                                     [ngClass]="{'close':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}"></a>
