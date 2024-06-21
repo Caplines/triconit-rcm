@@ -60,14 +60,9 @@
                                     <!-- This section is for all Clients -->
                                     <ng-container *ngIf="checkForSectionAccess(sectionIds['SECTION_CLAIM_DETAIL']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['claimDetails']}">
-                                        <div>
                                             <a data-toggle="collapse" aria-expanded="true">
                                                 Claim Details <span style="color:#ff00a8">{{infoMessage}}</span>
                                             </a>
-                                            <a [ngClass]="accessIcon(sectionIds['SECTION_CLAIM_DETAIL']['sectionId'])">
-                                                {{ accessIcon(sectionIds['SECTION_CLAIM_DETAIL']['sectionId']) }}
-                                            </a>
-                                        </div>
                                         <div class="down-icon" (click)="showHide('claimDetails')">
                                             <a href="javascript:void(0)"
                                                 [ngClass]="{'close':toggleTab['claimDetails']}"></a>
@@ -380,12 +375,7 @@
                                     </ng-container>
                                     <ng-container *ngIf="checkForSectionAccess(sectionIds['REMARKS_BY_OTHER']['sectionId'],'view')">
                                     <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['remarksByOther']}">
-                                        <div>
                                             <a data-toggle="collapse" aria-expanded="false">Remarks by Other RCM Teams</a>
-                                            <a [ngClass]="accessIcon(sectionIds['REMARKS_BY_OTHER']['sectionId'])">
-                                                {{ accessIcon(sectionIds['REMARKS_BY_OTHER']['sectionId']) }}
-                                            </a>
-                                        </div>
                                         <div class="down-icon" (click)="showHide('remarksByOther')">
                                             <a href="javascript:void(0)"
                                                 [ngClass]="{'close':toggleTab['remarksByOther']}"></a>
