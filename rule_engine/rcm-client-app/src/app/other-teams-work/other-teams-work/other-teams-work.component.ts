@@ -707,7 +707,7 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", this.staticUtil.isNotTeamOffice()?"Claim ID":"", this.staticUtil.isNotTeamOffice()?"Patient ID":"", "Patient Name", 'DOS', this.staticUtil.isNotTeamOffice()?"Claim Age":"", "TFL", "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type", "Est. Amount", this.staticUtil.isNotTeamPosting()?"Assigned By":"", this.staticUtil.isNotTeamPosting()?"Last Team's Remarks":"", "Pending Since Date", "Team Assigned"]
+      headers: ["Office", this.staticUtil.isNotTeamOffice()?"Claim ID":"", this.staticUtil.isNotTeamOffice()?"Patient ID":"", "Patient Name", 'DOS', this.staticUtil.isNotTeamOffice()?"Claim Age":"", "TFL", "Age Bracket", "Insurance Name", "Insurance Type", "Claim Type", "Est. Amount", this.staticUtil.isNotTeamPosting()?"Assigned By":"", this.staticUtil.isNotTeamPosting()?"Last Team's Remarks":"", "Pending Since Date"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -763,7 +763,6 @@ export class OtherTeamsWorkComponent implements OnInit {
         "Assigned By": this.staticUtil.isNotTeamPosting()?e.lastTeam:"",
         "Last Team's Remarks":this.staticUtil.isNotTeamPosting()? e.lastTeamRemark:"",
         "Pending Since Date": e.pendingSince,
-        "Team Assigned": this.currentTeamName.teamName
       }
     })  //method aligns the header to the value in CSV.
     // excelData = excelData.map(

@@ -27,7 +27,7 @@
                                         <img src="../../assets/img/xls.png" /></button><span
                                         *ngIf="loader.exportCSVLoader" class="spinner-border text-success mx-1"></span>
                                         <button *ngIf="currentTeamName.unFormatedName == 'PAYMENT_POSTING' && tabValue == 'submitted'" type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()" style="margin-left: 15px;">
-                                            <strong>Transfer to Aging</strong> </button>
+                                            <strong>Send to Aging</strong> </button>
                                     </div>
                             </div>
                             <ng-container *ngIf="errorMessage">
@@ -447,11 +447,11 @@
                                                     </div>
                                                 </th>
 
-                                                <th *ngIf="staticUtil.isNotTeamOffice()">
+                                                <!-- <th *ngIf="staticUtil.isNotTeamOffice()">
                                                     <div class="dFlex">
                                                         Team Assigned
                                                     </div>
-                                                </th>
+                                                </th> -->
 
                                                 <th *ngIf="showColumns.currentStatus">
                                                     <div class="dFlex">
@@ -698,19 +698,19 @@
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"
                                                             class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}
                                                         </td>
-                                                        <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}"
-                                                            class="">{{currentTeamName?.teamName}}</td>
+                                                        <!-- <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}"
+                                                            class="">{{currentTeamName?.teamName}}</td> -->
                                                         <!-- <td *ngIf="showColumns.currentStatus">
                                                             {{det.statusES ? (appConstants.statusESUpdated[det.statusES]==null?det.statusES:appConstants.statusESUpdated[det.statusES]) : det.statusESUpdated ?  appConstants.statusESUpdated[det.statusESUpdated] : 'N/A'  }}
                                                         </td> -->
-                                                        <td *ngIf="showColumns.currentStatus">
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.currentStatus">
                                                             {{det.claimStatus==null || det.claimStatus==='' ?'N/A':det.claimStatus}}
                                                         </td>
                                                         <!--  //api changes required -->
-                                                        <td *ngIf="showColumns.nextActionRequired">{{det.nextAction}}</td>
-                                                        <td *ngIf="showColumns.nextFollowUpDate">{{det.followUpDate==null?'N/A':det.followUpDate | date: 'MMM dd, YYYY'}}</td>
-                                                        <td *ngIf="showColumns.providerSpeciality">{{det.providerSpeciality==null || det.providerSpeciality==='' ?'N/A':det.providerSpeciality}}</td>
-                                                        <td *ngIf="showColumns.dueBalance">{{det.dueBalance==null?'$0.0':det.dueBalance| currency:'USD':true:'.0-0'}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.nextActionRequired">{{det.nextAction}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.nextFollowUpDate">{{det.followUpDate==null?'N/A':det.followUpDate | date: 'MMM dd, YYYY'}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.providerSpeciality">{{det.providerSpeciality==null || det.providerSpeciality==='' ?'N/A':det.providerSpeciality}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.dueBalance">{{det.dueBalance==null?'$0.0':det.dueBalance| currency:'USD':true:'.0-0'}}</td>
                                                         <td *ngIf="showColumns.showAttach"><textarea name="{{det.uuid}}"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid': det['isInvalid'] && !submitBtnConfig['remarks'][det.uuid]}"

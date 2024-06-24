@@ -704,6 +704,14 @@ a.flex-center:hover {
     margin-bottom: 0px;
 }
 
+#claimDetails {
+    .custom-row {
+        padding: 5px 10px;
+        min-height: auto;
+        align-items: flex-start;
+    }
+}
+
 .text-number {
     justify-content: space-between;
 }

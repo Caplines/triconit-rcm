@@ -400,7 +400,7 @@
                                                         <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                             <td>{{idx+1}}</td>
                                                             <td>{{rem.teamName}}</td>
-                                                            <td>{{rem.cd | date:'MM/dd/YYYY hh:mm:ss a':'UTC'+timeZone}}
+                                                            <td>{{rem.cd | date:'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{rem.comment}}</td>
                                                             <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}</td>
@@ -1936,7 +1936,7 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <div *ngIf="claimRcm.allowEdit && !claimRcm.pending &&  checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit')"
+                                            <div *ngIf="!claimRcm.pending"
                                                 class="save-btn col-sm-12 mb-1 my-1">
                                                 <span class="custom-control custom-switch custom-switch-lg">
                                                     <input type="checkbox" [checked]="isBtpFlagTrue"
@@ -3204,9 +3204,9 @@
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <th>S.No. (Descending Order of Date)</th>
-                                                            <th>User Name</th>
-                                                            <th>Team Name</th>
+                                                            <th>S.No.</th>
+                                                            <th>Associate Name</th>
+                                                            <th>Follow Up Team</th>
                                                             <th>Date & Time</th>
                                                             <th>Mode</th>
                                                             <th>Phone Number / Email</th>
