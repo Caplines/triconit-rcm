@@ -299,7 +299,7 @@
                                                     </ng-container>
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             <div class="down-icon" (click)="showHide('linksRelatedDoc')">
@@ -439,7 +439,7 @@
                                                         this section of the RCM Tool is restricted for you)</span>
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['ATTACHMENT']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['ATTACHMENT']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['ATTACHMENT']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -510,7 +510,7 @@
                                                     <span class="passedNum">Pass:{{countA.pass}}</span> <span class="passedNum fail">Fail:{{countA.fail}}</span>
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             <div class="down-icon" (click)="showHide('claimLevelAutomated')">
@@ -593,7 +593,7 @@
                                             <div>
                                                 <a data-toggle="collapse" aria-expanded="false">Claim Level Validations (Manual)</a>
                                                 <a [ngClass]="accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             <div class="down-icon" (click)="showHide('claimLevelManual')">
@@ -1080,7 +1080,7 @@
                                                     Service Code Level Validations (Manual)
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -1211,7 +1211,7 @@
                                                     <span class="passedNum">Pass:{{countAS.pass}}</span> <span class="passedNum fail">Fail:{{countAS.fail}}</span>
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_AUTO']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_AUTO']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['SERVICE_LEVEL_VALIDATION_AUTO']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -1292,7 +1292,7 @@
                                             <div>
                                                 <a data-toggle="collapse" aria-expanded="false">Rule Engine Validations</a>
                                                 <a [ngClass]="accessIcon(sectionIds['RULE_ENGINE_VALIDATION']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['RULE_ENGINE_VALIDATION']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['RULE_ENGINE_VALIDATION']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             <div class="down-icon" (click)="showHide('ruleEngineValid')">
@@ -1377,7 +1377,7 @@
                                                 Enter Claim Submission Details
                                             </a>
                                             <a [ngClass]="accessIcon(sectionIds['CLAIM_SUBMISSION']['sectionId'])">
-                                                {{ accessIcon(sectionIds['CLAIM_SUBMISSION']['sectionId']) }}
+                                                {{ accessIcon(sectionIds['CLAIM_SUBMISSION']['sectionId']) | accessTextTransform }}
                                             </a>
                                         </div>
                                         
@@ -1612,7 +1612,7 @@
                                                     </ng-container>
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -1989,7 +1989,7 @@
                                                     EOBs
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['EOB']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['EOB']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['EOB']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -2128,7 +2128,7 @@
                                                     Claim Level Information
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -2311,7 +2311,7 @@
                                                     Insurance Payment Information
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -2521,7 +2521,7 @@
                                                     Insurance Follow Up Details
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['INSURANCE_FOLLOW_UP']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['INSURANCE_FOLLOW_UP']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -2735,7 +2735,7 @@
                                                     Patient Statement
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['PATIENT_STATEMENT']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['PATIENT_STATEMENT']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['PATIENT_STATEMENT']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -3027,7 +3027,7 @@
                                                     Patient Payment
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['PATIENT_PAYMENT']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['PATIENT_PAYMENT']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['PATIENT_PAYMENT']['sectionId'])  | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -3187,7 +3187,7 @@
                                                     Patient Commmunication
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['PATIENT_COMMUNICATION']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['PATIENT_COMMUNICATION']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['PATIENT_COMMUNICATION']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -3345,7 +3345,7 @@
                                                     Collection Agency
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['COLLECTION_AGENCY']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['COLLECTION_AGENCY']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['COLLECTION_AGENCY']['sectionId']) | accessTextTransform}}
                                                 </a>
                                             </div>
                                             
@@ -3566,7 +3566,7 @@
                                                     Appeal
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['APPEAL']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['APPEAL']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['APPEAL']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -3696,7 +3696,7 @@
                                                     </ng-container>
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['REQUEST_REBILLING']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['REQUEST_REBILLING']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['REQUEST_REBILLING']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -3849,7 +3849,7 @@
                                                     Rebilling
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['REBILLING']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['REBILLING']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['REBILLING']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -3867,7 +3867,7 @@
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
-                                                            <th>S.No. (Descending Order of Date)</th>
+                                                            <th>S.No.</th>
                                                             <th>Requested By</th>
                                                             <th>Request Remarks</th>
                                                             <th>Date of Rebilling</th>
@@ -4102,7 +4102,7 @@
                                                     </ng-container>
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['RECREATE_CLAIM']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['RECREATE_CLAIM']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['RECREATE_CLAIM']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             
@@ -4468,7 +4468,7 @@
                                                     Current Status and next action required
                                                 </a>
                                                 <a [ngClass]="accessIcon(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId']) }}
+                                                    {{ accessIcon(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId']) | accessTextTransform }}
                                                 </a>
                                             </div>
                                             

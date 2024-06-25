@@ -5,6 +5,7 @@ import { ClaimIdPipe } from './claim-id-pipe';
 import { MessageTypePipe } from './message-type.pipe';
 import { GeneralDataFilter } from './general-filter';
 import {RelpaceAlphabetPipe} from "./relpace-alphabet.pipe";
+import { AccessTextTransformPipe } from './AccessTextTransformPipe';
 @NgModule({
   imports: [
     // dep modules
@@ -15,7 +16,8 @@ import {RelpaceAlphabetPipe} from "./relpace-alphabet.pipe";
     MessageTypePipe,
     GeneralDataFilter,
     ClaimSubmissionTeamPipe,
-    RelpaceAlphabetPipe
+    RelpaceAlphabetPipe,
+    AccessTextTransformPipe
   ],
   exports: [
     ClaimTypeFilter,
@@ -23,7 +25,8 @@ import {RelpaceAlphabetPipe} from "./relpace-alphabet.pipe";
     MessageTypePipe,
     GeneralDataFilter,
     ClaimSubmissionTeamPipe,
-    RelpaceAlphabetPipe
+    RelpaceAlphabetPipe,
+    AccessTextTransformPipe
 
   ]
 })
