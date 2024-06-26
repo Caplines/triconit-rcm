@@ -608,10 +608,18 @@
                                                         </ng-container>
 
                                                         <input type="checkbox" checked="{{selectAllAging}}" (change)="selectAllClaimsToAging($event)" style=" vertical-align: sub;"></span>
+                                                        <div class="tooltip2" >
+                                                            <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('transferToAging');" />
+                                                            <span class="tooltiptext"  style="width: 327px;left: -80%;"  *ngIf="showTooltipConfig['transferToAging']">
+                                                                   <span class="tooltip-cross-btn" (click)="showTooltipConfig['transferToAging']=false;">×</span>
+                                                                   <input type="checkbox" style="margin-left: -18px;">&nbsp;Eligible for sending to Aging Team.<br>
+                                                                   <img src="../../assets/img/lock-icon.png"/>&nbsp;Not eligible for sending to Aging Team.
+                                                            </span>
+                                                        </div>
                                                         <div class="dropdown">
                                                             <img (click)="showHideFilteredDropdown('selectAging')" src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
-                                                            <div class="dropdown-menu filter-dropdown-menu" style="margin-left:-208px;" (mouseleave)="onMouseLeave($event)"
+                                                            <div class="dropdown-menu filter-dropdown-menu" style="margin-left:-232px;" (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.selectAging">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -642,14 +650,14 @@
                                                        
                                                         <!-- <button type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()" style="margin-left: 15px;">
                                                             <strong>Transfer to Aging</strong> </button> -->
-                                                            <div class="tooltip2" >
+                                                            <!-- <div class="tooltip2" >
                                                                 <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('transferToAging');" />
                                                                 <span class="tooltiptext"  style="width: 327px;left: -80%;"  *ngIf="showTooltipConfig['transferToAging']">
                                                                        <span class="tooltip-cross-btn" (click)="showTooltipConfig['transferToAging']=false;">×</span>
                                                                        <input type="checkbox" style="margin-left: -18px;">&nbsp;Eligible for sending to Aging Team.<br>
                                                                        <img src="../../assets/img/lock-icon.png"/>&nbsp;Not eligible for sending to Aging Team.
                                                                 </span>
-                                                            </div>
+                                                            </div> -->
                                                     </div>
                                                 </th>
                                             </tr>

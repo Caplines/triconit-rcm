@@ -48,7 +48,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   hasAttachedFilesWithRemark: boolean = false;
   alert: any = { 'alertMsg': '', 'showAlert': false };
   showTransferClaimModal = false;
-  selectedClaimsTransfer:any = {"claimUuid":[],"reamrks":""};
+  selectedClaimsTransfer:any = {"claimUuid":[],"remarks":""};
   filteredInsuranceName: any = [];
   filteredInsuranceType: any = [];
   filteredClaimType: any = [];
