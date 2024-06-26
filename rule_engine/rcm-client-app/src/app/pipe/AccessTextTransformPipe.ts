@@ -8,7 +8,7 @@ export class AccessTextTransformPipe implements PipeTransform {
         if (value === 'Read') {
             return 'Read Only';
         } else if (value === 'Edit') {
-            return 'Write Access';
+            return 'Edit Access';
         }
         return value;
     }

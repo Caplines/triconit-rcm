@@ -1144,12 +1144,10 @@ public class ClaimSectionImpl {
 			rcmFollowUpInsuranceInfoModel.setFollowByUserLastName(followUpInformation.getCreatedBy().getLastName());
 			rcmFollowUpInsuranceInfoModel.setNextFollowUpDate(followUpInformation.getNextFollowUpDate()==null?"":Constants.SDF_MYSL_DATE_TIME.format(followUpInformation.getNextFollowUpDate()));
 			BeanUtils.copyProperties(followUpInformation, rcmFollowUpInsuranceInfoModel);	
-			if (finalSubmit) {
-				claim.setNextFollowUpDate(
+			claim.setNextFollowUpDate(
 						!StringUtils.isNoneBlank(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate()) ? null
 								: Constants.SDF_MYSL_DATE.parse(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate()));
-				rcmClaimRepository.save(claim);
-			}
+			rcmClaimRepository.save(claim);
 		}
 		logger.info("response->" + (followUpInformation!=null?true:false));
 		return rcmFollowUpInsuranceInfoModel;
