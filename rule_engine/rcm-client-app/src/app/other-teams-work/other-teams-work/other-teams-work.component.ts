@@ -20,11 +20,11 @@ export class OtherTeamsWorkComponent implements OnInit {
   expandCollapse: boolean = true;
   isSorted: any = {};
   loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
-  showFilteredDropdown: any = { 'officeName': false, 'insuranceName': false, insuranceType: false, claimType: false, lastTeam: false, 'currentTeam': false, 'currentStatus': false, 'nextActionRequired': false, 'providerSpeciality': false };
+  showFilteredDropdown: any = { 'officeName': false, 'insuranceName': false, insuranceType: false, claimType: false, lastTeam: false, 'currentTeam': false, 'currentStatus': false, 'nextActionRequired': false, 'providerSpeciality': false, 'selectAging': false };
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
-  isFilterAllSelected: any = { 'officeName': false, 'ageBracket': false, 'insuranceName': false, 'insuranceType': false, claimType: false, lastTeam: false, 'currentTeam': false, 'currentStatus': false, 'nextActionRequired': false, 'providerSpeciality': false };
+  isFilterAllSelected: any = { 'officeName': false, 'ageBracket': false, 'insuranceName': false, 'insuranceType': false, claimType: false, lastTeam: false, 'currentTeam': false, 'currentStatus': false, 'nextActionRequired': false, 'providerSpeciality': false, 'selectAging': false };
   clientName: string = '';
   isFilterValueExist: boolean = false;
   fliterName: string = '';
@@ -56,6 +56,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredCurrentStatus: any = [];
   filteredNextActionRequired: any = [];
   filteredProviderSpeciality: any = [];
+  filteredSelectAging: any = [];
   tabSwitch: any = { 'submitted': false, 'unSubmitted': true };
   tabValue: any;
   showColumns: any = { "currentStatus": false, "nextActionRequired": false, "nextFollowUpDate": false, "providerSpeciality": false, "dueBalance": false, "showAttach": false };
@@ -156,7 +157,8 @@ export class OtherTeamsWorkComponent implements OnInit {
         this.filterOptionProviderSpeciality();
         this.showClaimIdWithDigits();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
-        this.checkDiffForPaymentPosting() ;
+        this.checkDiffForPaymentPosting();
+        this.filterOptionSelectAging();
       }
     });
   }
@@ -202,6 +204,7 @@ export class OtherTeamsWorkComponent implements OnInit {
         ele['currentStatus'] = ele.claimStatus;
         ele['nextActionRequired'] = ele.nextAction;
         ele['providerSpeciality'] = ele.providerSpeciality;
+        ele['selectAging'] = ele.selectAging;
       })
     });
     this.sortFiltereData(this.filteredOfficeName);
@@ -319,6 +322,11 @@ export class OtherTeamsWorkComponent implements OnInit {
         return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredSelectAging.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['selectAging']) === item.diffForPaymentPosting ? "Unlocked" : "Locked";
+      });
+    });
   }
 
   addOrRemoveFilterAgeBracket() {
@@ -352,6 +360,11 @@ export class OtherTeamsWorkComponent implements OnInit {
         return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredSelectAging.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['selectAging']) === item.diffForPaymentPosting ? "Unlocked" : "Locked";
+      });
+    });
   }
 
   addOrRemoveInsuranceName() {
@@ -383,6 +396,11 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredProviderSpeciality.some((checkbox: any) => {
         return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredSelectAging.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['selectAging']) === item.diffForPaymentPosting ? "Unlocked" : "Locked";
       });
     });
   }
@@ -477,6 +495,16 @@ export class OtherTeamsWorkComponent implements OnInit {
         }
       });
       this.filterProviderSpeciality("providerSpeciality");
+    }
+    else if (filterProperty == "selectAging") {
+      this.filteredSelectAging.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e.checked = false;
+        }
+      });
+      this.filterSelectAging("selectAging");
     }
   }
 
@@ -862,6 +890,14 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filterProviderSpeciality();
   }
 
+  async filterOptionSelectAging() {
+    this.filteredSelectAging = await this.claimDetail.map((e: any) => { return { selectAging: e.diffForPaymentPosting ? "Unlocked" : "Locked", checked: true } });
+    if (this.filteredSelectAging.length > 1) {
+      this.filteredSelectAging = this.removeDuplicateValues(this.filteredSelectAging, 'selectAging');
+    }
+    this.filterSelectAging();
+  }
+
   removeDuplicateValues(filterValue: any, property: any) {
     let newArray: any = [];
     let uniqueObject: any = {};
@@ -965,6 +1001,28 @@ export class OtherTeamsWorkComponent implements OnInit {
     }
   }
 
+  filterSelectAging(e?: any, filterProperty?: any) {
+    if (!e) {
+      this.filteredItems = this.claimDetail;
+      this.isFilterAllSelected.selectAging = true;
+    } else {
+      let isAllSelected: boolean = true;
+      for (let i = 0; i < this.filteredSelectAging.length; i++) {
+        if (this.filteredSelectAging[i].checked == false) {
+          isAllSelected = false;
+          break;
+        }
+      } 
+      this.isFilterAllSelected.selectAging = isAllSelected;
+      this.filteredItems = this.claimDetail.filter((item: any) => {
+        return this.filteredSelectAging.some((checkbox: any) => {
+          return checkbox.checked && checkbox.selectAging === (item.diffForPaymentPosting ? "Unlocked" : "Locked")
+        });
+      });
+      this.addOrRemoveSelectAging();
+    }
+  }
+
   addOrRemoveInsuranceType() {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredAgeBracket.some((checkbox: any) => {
@@ -994,6 +1052,11 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredProviderSpeciality.some((checkbox: any) => {
         return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredSelectAging.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['selectAging']) === item.diffForPaymentPosting ? "Unlocked" : "Locked";
       });
     });
   }
@@ -1029,6 +1092,11 @@ export class OtherTeamsWorkComponent implements OnInit {
         return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredSelectAging.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['selectAging']) === item.diffForPaymentPosting ? "Unlocked" : "Locked";
+      });
+    });
   }
 
   addOrRemoveNextActionRequired() {
@@ -1062,6 +1130,11 @@ export class OtherTeamsWorkComponent implements OnInit {
         return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredSelectAging.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['selectAging']) === item.diffForPaymentPosting ? "Unlocked" : "Locked";
+      });
+    });
   }
 
   addOrRemoveProviderSpeciality() {
@@ -1093,6 +1166,49 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredNextActionRequired.some((checkbox: any) => {
         return (checkbox.checked && checkbox['nextActionRequired']) === item['nextActionRequired'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredSelectAging.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['selectAging']) === item.diffForPaymentPosting ? "Unlocked" : "Locked";
+      });
+    });
+  }
+
+  addOrRemoveSelectAging() {
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredAgeBracket.some((checkbox: any) => {
+        return checkbox.checked && checkbox['ageBracket'] === item['ageBracket'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceName.some((checkbox: any) => {
+        return checkbox.checked && checkbox['insuranceName'] === item['insuranceName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredOfficeName.some((checkbox: any) => {
+        return checkbox.checked && checkbox['officeName'] === item['officeName'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredInsuranceType.some((checkbox: any) => {
+        return checkbox.checked && checkbox['insuranceType'] === item['insuranceType'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredCurrentStatus.some((checkbox: any) => {
+        return checkbox.checked && checkbox['currentStatus'] === item['currentStatus'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredNextActionRequired.some((checkbox: any) => {
+        return checkbox.checked && checkbox['nextActionRequired'] === item['nextActionRequired'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredProviderSpeciality.some((checkbox: any) => {
+        return checkbox.checked && checkbox['providerSpeciality'] === item['providerSpeciality'];
       });
     });
   }
@@ -1164,6 +1280,11 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.filteredItems = this.filteredItems.filter((item: any) => {
       return this.filteredProviderSpeciality.some((checkbox: any) => {
         return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
+      });
+    });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredSelectAging.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['selectAging']) === item.diffForPaymentPosting ? "Unlocked" : "Locked";
       });
     });
   }
@@ -1242,6 +1363,11 @@ export class OtherTeamsWorkComponent implements OnInit {
         return (checkbox.checked && checkbox['providerSpeciality']) === item['providerSpeciality'];
       });
     });
+    this.filteredItems = this.filteredItems.filter((item: any) => {
+      return this.filteredSelectAging.some((checkbox: any) => {
+        return (checkbox.checked && checkbox['selectAging']) === item.diffForPaymentPosting ? "Unlocked" : "Locked";
+      });
+    });
   }
 
   switchTab(tab: any) {
@@ -1311,8 +1437,10 @@ export class OtherTeamsWorkComponent implements OnInit {
     }
     let all: any = true;
     this.filteredItems.forEach((x: any) => {
-      if (x.selectAging == null || x.selectAging == false) all = null;
-
+      if(x.diffForPaymentPosting){
+        if (x.selectAging == null || x.selectAging == false) 
+          all = null;
+      }
     });
     this.selectAllAging = all;
   }

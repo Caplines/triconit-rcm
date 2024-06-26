@@ -211,8 +211,7 @@
                                                                             [checked]="isFilterAllSelected.ageBracket"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'ageBracket')">
-                                                                        {{isFilterAllSelected.ageBracket ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.ageBracket ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.ageBracket=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -254,8 +253,7 @@
                                                                             [checked]="isFilterAllSelected.insuranceName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceName')">
-                                                                        {{isFilterAllSelected.insuranceName ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceName ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -298,8 +296,7 @@
                                                                             [checked]="isFilterAllSelected.insuranceType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceType')">
-                                                                        {{isFilterAllSelected.insuranceType ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -342,8 +339,7 @@
                                                                             [checked]="isFilterAllSelected.claimType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'claimType')">
-                                                                        {{isFilterAllSelected.claimType ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.claimType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -389,8 +385,7 @@
                                                                             [checked]="isFilterAllSelected.lastTeam"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'lastTeam')">
-                                                                        {{isFilterAllSelected.lastTeam ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.lastTeam ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.lastTeam=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -613,6 +608,37 @@
                                                         </ng-container>
 
                                                         <input type="checkbox" checked="{{selectAllAging}}" (change)="selectAllClaimsToAging($event)" style=" vertical-align: sub;"></span>
+                                                        <div class="dropdown">
+                                                            <img (click)="showHideFilteredDropdown('selectAging')" src="../../assets/img/filterIcon.png"
+                                                                style="cursor: pointer; margin-left: 6px;" />
+                                                            <div class="dropdown-menu filter-dropdown-menu" style="margin-left:-208px;" (mouseleave)="onMouseLeave($event)"
+                                                                *ngIf="showFilteredDropdown.selectAging">
+                                                                <div class="clearClose">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" [checked]="isFilterAllSelected.selectAging" value="selectAll"
+                                                                            (change)="selectAll($event,'selectAging')">
+                                                                        {{isFilterAllSelected.selectAging ? 'Clear All':'Select All'}}</label>
+                                                                    <button (click)="showFilteredDropdown.selectAging=false;" type="button" class="close"
+                                                                        data-dismiss="modal" aria-label="Close"><span>&times;</span></button>
+                                                                </div>
+                                                                <ng-container *ngFor="let data of filteredSelectAging">
+                                                                    <label class="mx-1">
+                                                                        <input type="checkbox" checked="true" [(ngModel)]="data.checked" value="{{data.selectAging}}"
+                                                                            (change)="filterSelectAging($event,'selectAging')">
+                                                                            <ng-container *ngIf="data.selectAging === 'Locked'">
+                                                                                <span><img src="../../assets/img/lock-icon.png" /></span>
+                                                                            </ng-container>
+                                                                            {{data.selectAging == "Locked" ? "Lock/Unlock" : "Check/Uncheck"}}
+                                                                    </label>
+                                                                </ng-container>
+                                                            </div>
+                                                        </div>
+                                                        <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['diffForPaymentPosting']}"
+                                                                (click)="sortData(filteredItems,'diffForPaymentPosting','asc','bool'); isSorted['diffForPaymentPosting'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['diffForPaymentPosting']}"
+                                                                (click)="sortData(filteredItems,'diffForPaymentPosting','desc','bool');isSorted['diffForPaymentPosting'] = true"></a>
+                                                        </span>
                                                        
                                                         <!-- <button type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()" style="margin-left: 15px;">
                                                             <strong>Transfer to Aging</strong> </button> -->

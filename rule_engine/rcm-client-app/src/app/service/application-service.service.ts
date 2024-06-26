@@ -241,6 +241,13 @@ export class ApplicationServiceService extends BaseService {
         else return <any>new Date(b.dates1[teamName.toUpperCase()]) - <any>new Date(a.dates1[teamName.toUpperCase()]);
       })
     }
+    else if (sortType === 'bool'){
+      order === 'asc' ? data.sort((a: any, b: any) => {
+        return (a[sortBy] === b[sortBy]) ? 0 : a[sortBy] ? -1 : 1;
+      }) : data.sort((a: any, b: any) => {
+        return (a[sortBy] === b[sortBy]) ? 0 : a[sortBy] ? 1 : -1;
+      })
+    }
   }
 
   sortDataOld(data: any, sortBy: any, sortingColm: any, order: any, sortingType: any, sortType: string) {
