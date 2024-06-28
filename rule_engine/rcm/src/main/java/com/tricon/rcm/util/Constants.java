@@ -173,5 +173,11 @@ public class Constants {
 	public static final int FROMPOSTINGTOAGING=RcmTeamEnum.AGING.getId();
     
 	public static final int CLAIM_CLOSED =30;
+	
+	public static final String BUTTON_TYPE_ASSIGN_TO_OTHER_TEAM="assignToOtherTeam";
+	public static final String BUTTON_TYPE_ASSIGN_TO_SAME_TEAM="assignToSameTeam";
+    public static final String BUTTON_TYPE_ARCHIVE="archive";
+    public static final String BUTTON_TYPE_ASSIGN_TO_TL="assignToTeamLead";
+
     
 }

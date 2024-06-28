@@ -2051,6 +2051,11 @@ export class BillingClaimsComponent {
       return this.datepipe.transform(dateString, 'yyyy-MM-dd');
     }
   }
+  convertStringToDateForApiCallTODate(dateString: string) {
+    if (dateString !== null && dateString !== '') {
+      return new Date(this.datepipe.transform(dateString, 'yyyy-MM-dd'));
+    }
+  }
 
 
 
@@ -4015,7 +4020,7 @@ export class BillingClaimsComponent {
       if (event.model == 'SUB_DET_DT') {
         this.removeErrorDisplayKeyById('SUB_DET_DT');
         if (event.value != null)
-          this.submissionDto.esDate = new Date(event.value);
+          this.submissionDto.esDate = this.convertStringToDateForApiCallTODate(event.value);
         else
           this.submissionDto.esDate = null;
       }

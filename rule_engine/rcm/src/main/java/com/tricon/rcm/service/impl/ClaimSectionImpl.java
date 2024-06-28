@@ -42,6 +42,8 @@ import com.tricon.rcm.db.entity.RcmClientSectionMapping;
 import com.tricon.rcm.db.entity.RcmCollectionAgency;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsuranceFollowUpSection;
+import com.tricon.rcm.db.entity.RcmInsuranceType;
+import com.tricon.rcm.db.entity.RcmInsuranceTypeDateMapping;
 import com.tricon.rcm.db.entity.RcmIssueClaims;
 import com.tricon.rcm.db.entity.RcmLinkedClaims;
 import com.tricon.rcm.db.entity.RcmOffice;
@@ -113,6 +115,8 @@ import com.tricon.rcm.jpa.repository.RcmCollectionAgencyRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmCurrentClaimStatusRepo;
 import com.tricon.rcm.jpa.repository.RcmInsurancePaymentSectionRepo;
+import com.tricon.rcm.jpa.repository.RcmInsuranceTypeDateMappingRepo;
+import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmIssueClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmLinkedClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmOfficeRepository;
@@ -212,6 +216,9 @@ public class ClaimSectionImpl {
 	@Autowired
 	RcmPatientCommunicationRepo patientCommunicationRepo;
 	
+	@Autowired
+	RcmInsuranceTypeRepo rcmInsuranceTypeRepo;
+	
 
 	
 	@Autowired
@@ -259,6 +266,10 @@ public class ClaimSectionImpl {
 	@Lazy
 	@Autowired
 	RcmCommonServiceImpl rcmCommonServiceImpl;
+	
+	@Autowired
+	RcmInsuranceTypeDateMappingRepo insuranceTypeDateMappingRepo;
+	
 	
 
 	@Transactional(rollbackOn = Exception.class)
@@ -1131,9 +1142,6 @@ public class ClaimSectionImpl {
 			followUpInformation.setClaim(claim);
 			followUpInformation.setInsuranceRepName(rcmFollowUpInsuranceInfoModel.getInsuranceRepName());
 			followUpInformation.setModeOfFollowUp(rcmFollowUpInsuranceInfoModel.getModeOfFollowUp());
-			followUpInformation.setNextFollowUpRequired(rcmFollowUpInsuranceInfoModel.getNextFollowUpRequired());
-			followUpInformation.setNextFollowUpDate(!StringUtils.isNoneBlank(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate())?null:
-					Constants.SDF_MYSL_DATE.parse(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate()));
 			followUpInformation.setRefNumber(rcmFollowUpInsuranceInfoModel.getRefNumber());
 			followUpInformation.setCreatedBy(createdBy);
 			followUpInformation.setFinalSubmit(finalSubmit);
@@ -1142,12 +1150,7 @@ public class ClaimSectionImpl {
 			rcmFollowUpInsuranceInfoModel.setFollowByTeam(followUpInformation.getTeam().getDescription());	
 			rcmFollowUpInsuranceInfoModel.setFollowByUser(followUpInformation.getCreatedBy().getFirstName());	
 			rcmFollowUpInsuranceInfoModel.setFollowByUserLastName(followUpInformation.getCreatedBy().getLastName());
-			rcmFollowUpInsuranceInfoModel.setNextFollowUpDate(followUpInformation.getNextFollowUpDate()==null?"":Constants.SDF_MYSL_DATE_TIME.format(followUpInformation.getNextFollowUpDate()));
 			BeanUtils.copyProperties(followUpInformation, rcmFollowUpInsuranceInfoModel);	
-			claim.setNextFollowUpDate(
-						!StringUtils.isNoneBlank(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate()) ? null
-								: Constants.SDF_MYSL_DATE.parse(rcmFollowUpInsuranceInfoModel.getNextFollowUpDate()));
-			rcmClaimRepository.save(claim);
 		}
 		logger.info("response->" + (followUpInformation!=null?true:false));
 		return rcmFollowUpInsuranceInfoModel;
@@ -1362,6 +1365,21 @@ public class ClaimSectionImpl {
 			currentClaimStatusAndNextActionData = currentStatusAndNextActionRepo
 					.save(currentClaimStatusAndNextActionData);
 			
+			// set automated field nextFollowUpDate inside follow_up_section
+			RcmInsuranceType ins = claim.getRcmInsuranceType();
+			RcmInsuranceType inst = rcmInsuranceTypeRepo.findById(ins.getId());
+			if (inst != null) {
+				RcmInsuranceTypeDateMapping data = insuranceTypeDateMappingRepo
+						.findByTeamIdAndName(assignToTeam.getId(), inst.getCode());
+				if (data != null) {
+					Calendar calendarForNextFollowUpDate = Calendar.getInstance();
+					Date date = claim.getNextFollowUpDate() != null ? claim.getNextFollowUpDate() : new Date();
+					calendarForNextFollowUpDate.setTime(date);
+					calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, data.getNextFollowUpGap());
+					claim.setNextFollowUpDate(calendarForNextFollowUpDate.getTime());
+					logger.info("Next Follow Up Data in RcmTable:" + claim.getNextFollowUpDate());
+				}
+			}
 			//update es_satus in claim table
 			claim.setStatusESUpdated(nextActionReequiredInfoModel.getCurrentClaimStatusEs());
 			rcmClaimRepository.save(claim);

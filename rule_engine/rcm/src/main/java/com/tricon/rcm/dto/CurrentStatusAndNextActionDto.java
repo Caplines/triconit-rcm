@@ -12,4 +12,5 @@ public class CurrentStatusAndNextActionDto {
 	private String nextAction;
 	private int assignToTeamId;
 	private int sectionId;
+	private String buttonType;
 }

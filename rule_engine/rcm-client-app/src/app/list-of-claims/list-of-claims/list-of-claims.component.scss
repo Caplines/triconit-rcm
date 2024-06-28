@@ -91,6 +91,7 @@
 .table-inner-scrollbar {
     thead {
         th{
+            min-width: 180px;
             .filter-dropdown-menu {
                 width: 280px;
                 line-height: normal;
@@ -102,11 +103,30 @@
                 }
             }
             &:first-child {
-                z-index: 9;
+                z-index: 99999;
+                width: 170px;
+                min-width: 170px;
+                max-width: 170px;
+                left: 0px;
             }
-            &:nth-child(6){
+            &:nth-child(2) {
+                width: 150px;
+                min-width: 150px;
+                max-width: 150px;
+                left: 170px;
+                z-index: 9999;
+            }
+
+            &:nth-child(3) {
+                width: 150px;
+                min-width: 150px;
+                max-width: 150px;
+                left: 320px;
+                z-index: 999;
+            }
+            /*&:nth-child(6) {
                 min-width: 80px;
-            }
+            }*/
             &:nth-child(7){
                 z-index: 999999;
             }
@@ -156,8 +176,53 @@
             //         right: -27px;
             //     }
             // }
-    
+            &.sm-width {
+                min-width: 150px;
+            }
+
+            &.md-width {
+                min-width: 210px;
+            }
         }    
+    }
+    tbody {
+        td {
+            &:first-child {
+                width: 170px;
+                min-width: 170px;
+                max-width: 170px;
+                left: 0px;
+                position: sticky;
+            }
+
+            &:nth-child(2) {
+                width: 150px;
+                min-width: 150px;
+                max-width: 150px;
+                left: 170px;
+                position: sticky;
+            }
+
+            &:nth-child(3) {
+                width: 150px;
+                min-width: 150px;
+                max-width: 150px;
+                left: 320px;
+                position: sticky;
+            }
+        }
+    }
+}
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(0, 0, 0, 0.03);
+
+    td:first-child, td:nth-child(2), td:nth-child(3) {
+        background-color: #f7f7f7;
+    }
+}
+.table-striped tbody tr:nth-of-type(even) {
+    td:first-child, td:nth-child(2), td:nth-child(3) {
+        background-color: #fff;
     }
 }
 .fetchMyClaims thead th:nth-child(13) .filter-dropdown-menu {

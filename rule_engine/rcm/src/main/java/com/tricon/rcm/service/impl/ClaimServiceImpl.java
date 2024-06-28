@@ -59,6 +59,7 @@ import com.tricon.rcm.db.entity.RcmClaimsServiceRuleValidation;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsurance;
 import com.tricon.rcm.db.entity.RcmInsuranceType;
+import com.tricon.rcm.db.entity.RcmInsuranceTypeDateMapping;
 import com.tricon.rcm.db.entity.RcmIssueClaims;
 
 import com.tricon.rcm.db.entity.RcmMappingTable;
@@ -200,6 +201,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimSubmissionDetailsRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimsServiceRuleValidationRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceRepo;
+import com.tricon.rcm.jpa.repository.RcmInsuranceTypeDateMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmIssueClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmLinkedClaimsRepo;
@@ -354,6 +356,10 @@ public class ClaimServiceImpl {
 	
 	@Autowired
 	UserAssignOfficeRepo userAssignRepo;
+	
+	@Autowired
+	RcmInsuranceTypeDateMappingRepo insuranceTypeDateMappingRepo;
+	
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -2294,14 +2300,14 @@ public class ClaimServiceImpl {
 			RcmClaims claim = null;
 			IVFDto ivfDto =null;
 			
-			// set automated field nextFollowUpDate inside follow_up_section
-			String insuranceType = implDto.isPrimary() ? dto.getPrimaryInsType() : dto.getSecondaryInsType();
-			Calendar calendarForNextFollowUpDate = Calendar.getInstance();
-			Date date = dto.getNextFollowUpDate() != null ? dto.getNextFollowUpDate() : new Date();
-			calendarForNextFollowUpDate.setTime(date);
-			int days = InsuranceTypeEnum.getDaysByType(insuranceType);
-			calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, days);
-			implDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE.format(calendarForNextFollowUpDate.getTime()));
+//			// set automated field nextFollowUpDate inside follow_up_section
+//			String insuranceType = implDto.isPrimary() ? dto.getPrimaryInsType() : dto.getSecondaryInsType();
+//			Calendar calendarForNextFollowUpDate = Calendar.getInstance();
+//			Date date = dto.getNextFollowUpDate() != null ? dto.getNextFollowUpDate() : new Date();
+//			calendarForNextFollowUpDate.setTime(date);
+//			int days = InsuranceTypeEnum.getDaysByType(insuranceType);
+//			calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, days);
+//			implDto.setNextFollowUpDate(Constants.SDF_MYSL_DATE.format(calendarForNextFollowUpDate.getTime()));
 			
 			try {
 				
@@ -5282,6 +5288,14 @@ public class ClaimServiceImpl {
 		boolean allCheckValidation = true;
 		boolean validateClaimRight = checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),
 				partialHeader.getCompany().getUuid());
+		
+		if (sectionRequestBody.getNextActionRequiredInfoModel().getButtonType() != null && (sectionRequestBody
+				.getNextActionRequiredInfoModel().getButtonType().equals(Constants.BUTTON_TYPE_ARCHIVE)
+				|| sectionRequestBody.getNextActionRequiredInfoModel().getButtonType()
+						.equals(Constants.BUTTON_TYPE_ASSIGN_TO_TL))) {
+			logger.error("Invalid button type");
+			return false;
+		}
 		if (!validateClaimRight) {
 			logger.error("claim not valid");
 			return false;
