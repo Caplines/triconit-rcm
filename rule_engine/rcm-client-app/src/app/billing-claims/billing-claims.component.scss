@@ -256,6 +256,9 @@
     align-items: center;
     justify-content: center;
     pointer-events: none;
+    max-width: 220px;
+    text-align: center;
+    padding: 0 10px;
 }
 .steps-taken.vertical li.done{
     border-left: 4px solid #5abe37;
