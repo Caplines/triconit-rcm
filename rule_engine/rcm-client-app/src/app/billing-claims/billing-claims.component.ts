@@ -94,10 +94,13 @@ export class BillingClaimsComponent {
   activeServiceCodeCount: number = 0;
   rebilledServiceCodeCount: number = 0;
   isPdfError: boolean = false;
-  isNextFollowUpRequired: boolean = false;
+  // isNextFollowUpRequired: boolean = false;
   isInitialDenialRequired: boolean = false;
   checkDeliveredTo = false;
-  showAssignToTeam=true;
+  showAssignToTeam: boolean = false;
+  showAssignToTeamLead: boolean = false;
+  showAToPNextActionRequired: boolean = true;
+  showSubmitPopup: boolean = false;
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -335,7 +338,7 @@ export class BillingClaimsComponent {
     },
     CURRENT_STATUS_AND_NEXT_ACTION: {
       "currentClaimStatusEs": "",
-
+      buttonType: null,
     },
     REQUEST_REBILLING: {
       "nextAction": "Re-billing",
@@ -1513,17 +1516,31 @@ export class BillingClaimsComponent {
     }
     if (valid) {
       //Save Data
-      ths.claimAssignToTeamModel.claimUuid = ths.claimUUid;
-      ths.claimAssignToTeamModel.otherTeamId = -1;
-      ths.claimAssignToTeamModel.remark = rem.value;
-      ths.claimAssignToTeamModel.teamLeadUuid = ths.claimEditModel.assignTouuid;
-      ths.claimAssignToTeamModel.toLead = true;
-      ths.claimService.assignClaimToTL(ths.claimAssignToTeamModel, (res: any) => {
-        if (res.status === 200) {
-          window.location.reload();
+      ths.assignToLeadSave(rem.value, ths.claimEditModel.assignTouuid);
+    }
+  }
 
-        }
-      })
+  assignToLeadSave(remark: string, assignTouuid: string){
+    let ths = this;
+    ths.claimAssignToTeamModel.claimUuid = ths.claimUUid;
+    ths.claimAssignToTeamModel.otherTeamId = -1;
+    ths.claimAssignToTeamModel.remark = remark;
+    ths.claimAssignToTeamModel.teamLeadUuid = assignTouuid;
+    ths.claimAssignToTeamModel.toLead = true;
+    ths.claimService.assignClaimToTL(ths.claimAssignToTeamModel, (res: any) => {
+      if (res.status === 200) {
+        window.location.reload();
+
+      }
+    })
+  }
+
+  openSubmitModal() {
+    this.validate_CURRENT_STATUS_AND_NEXT_ACTION()
+    if (this.validate_CURRENT_STATUS_AND_NEXT_ACTION()){
+      this.modelElement.modal = document.getElementById("next-action-submit-modal");
+      this.modelElement.span = document.getElementsByClassName("close")[0];
+      this.modelElement.modal.style.display = "block";
     }
   }
 
@@ -1801,7 +1818,7 @@ export class BillingClaimsComponent {
     let ths = this;
     ths.actionButtons = false;
     ths.claimStatus = new ClaimUpdateStatusModel();
-    ths.claimStatus.reason = ths.reason;
+    ths.claimStatus.reason = ths.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].remarks;
     ths.claimStatus.claimUuid = ths.claimUUid;
     ths.claimService.archiveclaim(ths.claimStatus, (res: any) => {
       ths.actionButtons = true;
@@ -2238,32 +2255,59 @@ export class BillingClaimsComponent {
         }
       }
     } else {
-      if (this.claimEditModel.assignToTeam == -1) {
+      if (this.claimEditModel.assignToTeam == -1 && !(this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive' || this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead')) {
         alert('NO team Selected');
         return;
       }
     }
     if (!isClaimClosed) {
-      this.isOtherTLExist(this.finalerror, (res: any) => {
-        if (res) {
-          if (ths.isSectionValidated && ths.checkIfOldSectionAccessWhileFinalSave()) {
-            //First Save OLD Data Then Save New data.
-            let type = "";
-            if (ths.claimRcm.currentTeamId === AppConstants.BILLING_TEAM) type = "submitafterpending";
-            else if (ths.claimRcm.currentTeamId === AppConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
-            else type = "assignafterpendingnot_bill_internal";
+      const buttonType = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'];
+      if (buttonType == 'archive') {
+        this.markArchived();
+      }
+      else if (buttonType == 'assignToSameTeam') {
+        if (ths.isSectionValidated && ths.checkIfOldSectionAccessWhileFinalSave()) {
+          //First Save OLD Data Then Save New data.
+          let type = "";
+          if (ths.claimRcm.currentTeamId === AppConstants.BILLING_TEAM) type = "submitafterpending";
+          else if (ths.claimRcm.currentTeamId === AppConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
+          else type = "assignafterpendingnot_bill_internal";
+          ths.finalsubmitcurrentstat = false;
+          ths.saveClaim(type, true);
+        } else {
+          if (ths.isSectionValidated && save) {
             ths.finalsubmitcurrentstat = false;
-            ths.saveClaim(type, true);
-
-          } else {
-            if (ths.isSectionValidated && save) {
+            ths.finalSaveSection(moveToNextTeam, showResponseStatus);
+          }
+        }
+      }
+      else if (buttonType == 'assignToTeamLead'){
+        debugger;
+        let remarks = this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].remarks;
+        let teamLeadId = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'];
+        this.assignToLeadSave(remarks, teamLeadId);
+      }
+      else {
+        this.isOtherTLExist(this.finalerror, (res: any) => {
+          if (res) {
+            if (ths.isSectionValidated && ths.checkIfOldSectionAccessWhileFinalSave()) {
+              //First Save OLD Data Then Save New data.
+              let type = "";
+              if (ths.claimRcm.currentTeamId === AppConstants.BILLING_TEAM) type = "submitafterpending";
+              else if (ths.claimRcm.currentTeamId === AppConstants.INTERNAL_AUDIT_TEAM) type = "reviewedafterpendingbyinternalaudit";
+              else type = "assignafterpendingnot_bill_internal";
               ths.finalsubmitcurrentstat = false;
-              ths.finalSaveSection(moveToNextTeam, showResponseStatus);
+              ths.saveClaim(type, true);
+
+            } else {
+              if (ths.isSectionValidated && save) {
+                ths.finalsubmitcurrentstat = false;
+                ths.finalSaveSection(moveToNextTeam, showResponseStatus);
+              }
             }
           }
-
-        }
-      });
+        });
+      }
     }
   }
 
@@ -2571,10 +2615,6 @@ export class BillingClaimsComponent {
       this.emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus'] = true;
       isSectionValidated = false;
     }
-    if (this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpRequired'] === "") {
-      this.emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpRequired'] = true;
-      isSectionValidated = false;
-    }
 
     if (this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['modeOfFollowUp'] == "Call") {
       if (!this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'].refNumber) {
@@ -2727,36 +2767,68 @@ export class BillingClaimsComponent {
     return true;
   }
   validate_CURRENT_STATUS_AND_NEXT_ACTION() {
-    //debugger;
+    let buttonType = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'];
     let isSectionValidated = true;
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"] = {};
-    if (this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeamId == -1) {
-      if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] == 'Case Closed'){
-        isSectionValidated = true;
-        this.showAssignToTeam=false;
 
-      } else {
-        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"]['assignToTeamId'] = true;
-        isSectionValidated = false;
-        this.showAssignToTeam=true;
-      }
-    }
-    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction) {
-      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
-      isSectionValidated = false;
-    }
-    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].remarks) {
+    this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusRcm = false;
+    this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusEs = false;
+    this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = false;
+    this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeamId = false;
+    this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeamLead = false;
+    this.emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'].buttonType = false;
+
+    if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.remarks) {
       this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].remarks = true;
       isSectionValidated = false;
     }
-    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusRcm) {
-      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusRcm = true;
+
+    if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType']) {
+      this.emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'].buttonType = true;
       isSectionValidated = false;
     }
 
-    if (!this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusEs) {
-      this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusEs = true;
-      isSectionValidated = false;
+    if (buttonType == 'assignToOtherTeam') {
+      if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.currentClaimStatusRcm) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusRcm = true;
+        isSectionValidated = false;
+      }
+      if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.currentClaimStatusEs) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusEs = true;
+        isSectionValidated = false;
+      }
+      if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.nextAction) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
+        isSectionValidated = false;
+      }
+      if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.assignToTeamId == -1) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeamId = true;
+        isSectionValidated = false;
+      }
+
+    }
+    else if (buttonType == 'assignToSameTeam') {
+      if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.currentClaimStatusRcm) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusRcm = true;
+        isSectionValidated = false;
+      }
+      if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.currentClaimStatusEs) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusEs = true;
+        isSectionValidated = false;
+      }
+      if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.nextAction) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
+        isSectionValidated = false;
+      }
+
+    }
+    else if (buttonType == 'assignToTeamLead') {
+
+      if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.assignToTeamLead) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeamLead = true;
+        isSectionValidated = false;
+      }
+
     }
     return isSectionValidated;
   }
@@ -2900,10 +2972,10 @@ export class BillingClaimsComponent {
       this.appService.fetchInsuranceFollowUpSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
           this.claimSectionModal['INSURANCE_FOLLOW_UP'].data = res.data;
-          this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate'] = this.claimRcm.nextFollowUpDate;
-          if (this.claimSectionModal['INSURANCE_FOLLOW_UP'] !== null) {
-            this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate']);
-          }
+          // this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate'] = this.claimRcm.nextFollowUpDate;
+          // if (this.claimSectionModal['INSURANCE_FOLLOW_UP'] !== null) {
+          //   this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal']['nextFollowUpDate']);
+          // }
         }
       })
     }
@@ -3308,7 +3380,7 @@ export class BillingClaimsComponent {
         claimUuid: this.claimUUid,
         rcmFollowUpInsuranceInfoModel: {
           ...this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'],
-          nextFollowUpDate: this.convertStringToDateForApiCall(this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'])
+          // nextFollowUpDate: this.convertStringToDateForApiCall(this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'])
         }
 
       };
@@ -3318,7 +3390,7 @@ export class BillingClaimsComponent {
         this.loader.insuranceFollowUpInfo = false;
       })
     }
-    this.isNextFollowUpRequired = false;
+    // this.isNextFollowUpRequired = false;
     return this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'];
   }
 
@@ -3664,6 +3736,45 @@ export class BillingClaimsComponent {
 
   }
 
+  selectActionToPerformNextActionRequired(action: any){
+    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] = action;
+    this.showAssignToTeam = false;
+    this.showAssignToTeamLead = false;
+    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'] = '';
+    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;
+
+    if (action == 'assignToOtherTeam') {
+      this.showAssignToTeam = true;
+    }
+    if (action == 'assignToSameTeam'){
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = this.claimRcm.currentTeamId;
+      
+    }
+    if(action == 'assignToTeamLead'){
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = '';
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'] = '';
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] = '';
+      this.showAssignToTeamLead = true;
+    }
+    if(action == 'archive'){
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = '';
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'] = '';
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] = '';
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'] = '';
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;
+    }
+    this.validate_CURRENT_STATUS_AND_NEXT_ACTION();
+  }
+
+  claimStatusCheck(event: any){
+    this.showAToPNextActionRequired = true;
+    if(event.target.value == 'Case Closed'){
+      this.showAssignToTeam= false;
+      this.showAssignToTeamLead = false;
+      this.showAToPNextActionRequired = false;
+    }
+  }
+
   validateNewClaimId(action?: any) {
     const claimId = this.claimRcm.claimId.split('_')[0];
     this.validateRecreateClaimErrMsg = "";
@@ -3896,7 +4007,7 @@ export class BillingClaimsComponent {
 
   clearInsuranceFollowUpSection() {
 
-    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpRequired'] = "";
+    // this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpRequired'] = "";
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus'] = "";
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['modeOfFollowUp'] = "";
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['refNumber'] = "";
@@ -3911,22 +4022,22 @@ export class BillingClaimsComponent {
   }
 
   nextActionRequire(e: any) {
-    this.validate_CURRENT_STATUS_AND_NEXT_ACTION();
-    console.log(e.target.value);
-    if (this.isCDP) {
-      if (e.target.value === this.appConstants.Need_to_call_Insurance) {
-        //check if Current Logged i team is CDP then add CDP to Assign to team 
-        if (this.teamsMs.filter(x => { x.teamName === 'CDP' }).length == 0) {
-          let m: TeamsM = {};
-          m.teamId = AppConstants.CDP_TEAM;
-          m.teamName = 'CDP';
-          this.teamsMs.push(m);
-        }
-      }
-      else {
-        this.teamsMs = this.teamsMs.filter(obj => { return obj.teamId !== AppConstants.CDP_TEAM });
-      }
-    }
+    // this.validate_CURRENT_STATUS_AND_NEXT_ACTION();
+    // console.log(e.target.value);
+    // if (this.isCDP) {
+    //   if (e.target.value === this.appConstants.Need_to_call_Insurance) {
+    //     //check if Current Logged i team is CDP then add CDP to Assign to team 
+    //     if (this.teamsMs.filter(x => { x.teamName === 'CDP' }).length == 0) {
+    //       let m: TeamsM = {};
+    //       m.teamId = AppConstants.CDP_TEAM;
+    //       m.teamName = 'CDP';
+    //       // this.teamsMs.push(m);
+    //     }
+    //   }
+    //   else {
+    //     this.teamsMs = this.teamsMs.filter(obj => { return obj.teamId !== AppConstants.CDP_TEAM });
+    //   }
+    // }
   }
 
   isPrimaryClaimClosed() {
@@ -3999,13 +4110,13 @@ export class BillingClaimsComponent {
     }, 2000);
   };
 
-  onFollowUpChange(event: any) {
-    if (event == 'YES') {
-      this.isNextFollowUpRequired = true;
-    } else {
-      this.isNextFollowUpRequired = false;
-    }
-  }
+  // onFollowUpChange(event: any) {
+  //   if (event == 'YES') {
+  //     this.isNextFollowUpRequired = true;
+  //   } else {
+  //     this.isNextFollowUpRequired = false;
+  //   }
+  // }
 
   onClaimPassChange(){
     if (this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo'] == 'yes'){
@@ -4042,12 +4153,12 @@ export class BillingClaimsComponent {
         else
           this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'] = null;
       }
-      if (event.model == 'nextFollowUpDate') {
-        if (event.value != null)
-          this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = new Date(event.value);
-        else
-          this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = null;
-      }
+      // if (event.model == 'nextFollowUpDate') {
+      //   if (event.value != null)
+      //     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = new Date(event.value);
+      //   else
+      //     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = null;
+      // }
       if (event.model == 'nextReviewDate') {
         if (event.value != null)
           this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate'] = new Date(event.value);

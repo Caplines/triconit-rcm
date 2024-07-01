@@ -2541,7 +2541,7 @@
                                                             <th>S.No.</th>
                                                             <th>Follow Up Team</th>
                                                             <th>Associate Name</th>
-                                                            <th>Date & Time</th>
+                                                            <!-- <th>Date & Time</th> -->
                                                             <th>Mode</th>
                                                             <th>Call Reference #</th>
                                                             <th>Rep. Name</th>
@@ -2555,7 +2555,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm a':'UTC '+timeZone}}</td>
+                                                            <!-- <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm a':'UTC '+timeZone}}</td> -->
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>
@@ -2634,7 +2634,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="col-md-4 mb-2">
+                                                    <!-- <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="nextFollowUpRequired">Next Follow Up
                                                                 Required</label>
@@ -2648,16 +2648,11 @@
                                                                 <option value="NO">No</option>
                                                             </select>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
 
-                                                    <div class="col-md-4 mb-2" *ngIf="isNextFollowUpRequired">
+                                                    <!-- <div class="col-md-4 mb-2" *ngIf="isNextFollowUpRequired">
                                                         <div class="custom-row text-number">
                                                             <label for="nextFollowUpDate">Next Follow Up Date</label>
-                                                            <!-- <input type="date" id="nextFollowUpDate"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                            [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate']"
-                                                            class="form-control"
-                                                            [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate']}"> -->
                                                             <app-date-picker id="nextFollowUpDate" 
                                                                 class="claimDatepicker"
                                                                 [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['nextFollowUpDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && claimRcm.allowEdit)}"
@@ -2666,7 +2661,7 @@
                                                                 (ngModelChange)="onSelectDate($event)">
                                                             </app-date-picker>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
 
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
@@ -4489,9 +4484,11 @@
                                                                 Status<span class="text-danger">*</span>
                                                             </label>
                                                             <select id="currentClaimStatusRcm"
-                                                                (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
+                                                                (change)="claimStatusCheck($event); validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 class="form-control"
-                                                                [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit')"
+                                                                [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') || 
+                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead' || 
+                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"
                                                                 [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm']"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusRcm']}">
                                                                 <option value="">Select</option>
@@ -4510,8 +4507,10 @@
                                                             <select id="currentClaimStatusEs"
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 class="form-control"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit) || 
+                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead' || 
+                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"
+                                                                [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusEs']}">
                                                                 <option value="">Select</option>
                                                                 <ng-container *ngIf="claimRcm.primary">
@@ -4534,8 +4533,10 @@
                                                                     class="text-danger">*</span></label>
                                                             <select id="nextAction" class="form-control"
                                                                 (change)="nextActionRequire($event)"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit) || 
+                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead' || 
+                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"
+                                                                [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['nextAction']}">
                                                                 <option value="">Select</option>
                                                                 <ng-container
@@ -4543,6 +4544,58 @@
                                                                     <option [value]="item.name">{{item.name}}</option>
                                                                 </ng-container>
                                                             </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-sm-8 mb-3 d-flex" *ngIf="showAToPNextActionRequired">
+                                                        <label class="custom-row text-number" style="min-width: 160px;">
+                                                            Action to Perform&nbsp;<span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="btn-group btn-group-toggle d-flex actPerform" data-toggle="buttons"
+                                                            [ngClass]="{'actError':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['buttonType']}">
+                                                            <ng-container>
+                                                                <label class="btn btn-light mx-0"
+                                                                    [ngClass]="{
+                                                                        'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToOtherTeam'
+                                                                    }">
+                                                                    <input type="radio" name="action" class="form-check-input" [value]="'assignToOtherTeam'"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToOtherTeam'"
+                                                                        (change)="selectActionToPerformNextActionRequired('assignToOtherTeam')">
+                                                                        Assign to Other Team
+                                                                </label>
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{
+                                                                            'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToSameTeam'
+                                                                        }">
+                                                                    <input type="radio" name="action" [value]="'assignToSameTeam'" class="form-check-input"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToSameTeam'"
+                                                                        (change)="selectActionToPerformNextActionRequired('assignToSameTeam')">
+                                                                        Assign to Same Team
+                                                                </label>
+                                                                <label class="btn btn-light" 
+                                                                    [ngClass]="{
+                                                                            'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead'
+                                                                        }">
+                                                                    <input type="radio" name="action" [value]="'assignToTeamLead'" class="form-check-input"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead'"
+                                                                        (change)="selectActionToPerformNextActionRequired('assignToTeamLead')">
+                                                                        Assign to Team Lead
+                                                                </label>
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{
+                                                                        'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'
+                                                                    }">
+                                                                    <input type="radio" name="action" [value]="'archive'" class="form-check-input"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"           
+                                                                        (change)="selectActionToPerformNextActionRequired('archive')">
+                                                                        <span *ngIf="claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp">Archive</span>
+                                                                        <span *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp">UnArchive</span>
+                                                                </label>
+                                                            </ng-container>
                                                         </div>
                                                     </div>
 
@@ -4554,11 +4607,30 @@
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId']"
+                                                                [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId']"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeamId']}">
-                                                                <option [value]="-1" [selected]="true">Select</option>
+                                                                <option value="-1">Select</option>
                                                                 <option [value]="tl.teamId" *ngFor="let tl of teamsMs;">
                                                                     {{tl.teamName}}</option>
+                                                            </select>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-4 mb-2" *ngIf="showAssignToTeamLead">
+                                                        <div class="custom-row text-number">
+                                                            <label for="assignToTeam">Assign to Team Lead&nbsp;<span class="text-danger">*</span></label>
+                                                            <select id="selectLeadName"
+                                                                (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
+                                                                class="form-control"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead']"
+                                                                [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeamLead']}">
+                                                                <option value="">Select Lead Name</option>
+                                                                <ng-container *ngFor="let tl of tlUsers">
+                                                                    <option value="{{tl.uuid}}">
+                                                                        {{tl.firstName}} {{tl.lastName}}
+                                                                    </option>
+                                                                </ng-container>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -4570,39 +4642,18 @@
                                                             <textarea type="date" rows="1"  id="remarks"
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [(ngModel)]="this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['remarks']"
+                                                                [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['remarks']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['remarks']}">
-                                                    </textarea>
+                                                            </textarea>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-4 mb-2"></div>
                                                     <div class="col-md-12 mb-2 btn-align-right">
-                                                        <button *ngIf="(claimRcm.currentTeamId == 3 || claimRcm.currentTeamId == 4 || 
-                                    claimRcm.currentTeamId == 5 || claimRcm.currentTeamId == 6 ||
-                                    claimRcm.currentTeamId == 7 || claimRcm.currentTeamId == 10 ||
-                                    claimRcm.currentTeamId == 11 || claimRcm.currentTeamId == 13 ||
-                                    claimRcm.currentTeamId == 14 || claimRcm.currentTeamId == 12 || claimRcm.currentTeamId == 20 ||claimRcm.currentTeamId == 18
-                                                    ) && claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
-                                                            type="button" class="btn btn-success"
-                                                            [disabled]="!finalsubmitcurrentstat"
-                                                            (click)="checkSectionFieldValidation(true,true,true)">
-                                                            Submit
+                                                        <button type="button" class="btn btn-success"
+                                                            (click)="openSubmitModal()">
+                                                            Review Submit
                                                         </button>
-
-
-                                                        <!-- <button class="btn btn-success" (click)="saveNextActionRequiredSection(false)"
-                                                    [hidden]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)">Save</button> -->
-                                                    </div>
-                                                    <div class="col-md-12 mb-2 alert fade show text-center"
-                                                        *ngIf="finalerror.showAlertPopup"
-                                                        [ngClass]="{'alert-success': !this.finalerror.isError,'alert-danger':this.finalerror.isError}"
-                                                        role="alert">
-                                                        <button type="button" (click)="finalerror.showAlertPopup=false;"
-                                                            class="close" data-dismiss="alert" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                        <strong>{{finalerror.alertMsg}}</strong>
                                                     </div>
                                                 </div>
                                             </div>
@@ -4614,6 +4665,118 @@
 
                                 </div>
                                 <!-- Modal -->
+
+                                <div id="next-action-submit-modal" class="modal">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Review Submit</h5>
+                                            <button type="button" (click)="closeModal()" class="close"><span>×</span></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <ng-container>
+                                                <div class="table-responsive">
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm']">
+                                                                    Claim Status
+                                                                </th>
+                                                                <th *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']">
+                                                                    Claim Status in PMS
+                                                                </th>
+                                                                <th *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']">
+                                                                    Next Action Required
+                                                                </th>
+                                                                <th *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] != null">
+                                                                    Action to Perform
+                                                                </th>
+                                                                <th *ngIf="+claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] != -1">
+                                                                    Assign to Team
+                                                                </th>
+                                                                <th *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead']">
+                                                                    Assign to Team Lead
+                                                                </th>
+                                                                <th>Remarks</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm']">
+                                                                    {{ claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] }}
+                                                                </td>
+                                                                <td *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']">
+                                                                    {{ claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'] }}
+                                                                </td>
+                                                                <td *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']">
+                                                                    {{ claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] }}
+                                                                </td>
+                                                                <td *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] != null">
+                                                                    {{ appConstants.actionToPerformButtons[claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType']] }}
+                                                                </td>
+                                                                <td *ngIf="+claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] != -1 && 
+                                                                    (   claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType']!= null && 
+                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] === 'assignToOtherTeam')">
+                                                                    <ng-container *ngFor="let team of appConstants.teamData">
+                                                                        <span *ngIf="+claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] === team.teamId">
+                                                                            {{ team.teamName }}
+                                                                        </span>
+                                                                    </ng-container>
+                                                                </td>
+                                                                <td *ngIf="+claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] != -1 && 
+                                                                    (   claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType']!= null && 
+                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] === 'assignToSameTeam')">
+                                                                      {{claimRcm.assignedToTeamName}}
+                                                                </td>
+                                                                <td *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead']">
+                                                                    <ng-container *ngFor="let tl of tlUsers">
+                                                                        <span *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'] === tl.uuid">
+                                                                            {{ tl.firstName }} {{ tl.lastName }}
+                                                                        </span>
+                                                                    </ng-container>
+                                                                </td>
+                                                                <td>
+                                                                    {{ claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['remarks'] }}
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <div class="col-md-4 mb-2"></div>
+                                            <div class="col-md-12 mb-2 btn-align-right">
+                                                <div style="margin-right:12px">
+                                                    <h5>Are you sure that you want to submit?</h5>
+                                                </div>
+                                                <button 
+                                                    *ngIf="(claimRcm.currentTeamId == 3 || claimRcm.currentTeamId == 4 || 
+                                                         claimRcm.currentTeamId == 5 || claimRcm.currentTeamId == 6 ||
+                                                         claimRcm.currentTeamId == 7 || claimRcm.currentTeamId == 10 ||
+                                                         claimRcm.currentTeamId == 11 || claimRcm.currentTeamId == 13 ||
+                                                         claimRcm.currentTeamId == 14 || claimRcm.currentTeamId == 12 || 
+                                                         claimRcm.currentTeamId == 20 ||claimRcm.currentTeamId == 18
+                                                    ) && claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
+                                                        type="button" class="btn btn-success" style="margin-right:12px" [disabled]="!finalsubmitcurrentstat"
+                                                        (click)="checkSectionFieldValidation(true,true,true)">
+                                                    Submit
+                                                </button>
+                                                <button style="margin-right:12px" type="button" class="btn btn-danger" (click)="closeModal()">
+                                                    Close
+                                                </button>
+                                            </div>
+                                            <div class="col-md-12 mb-2 alert fade show text-center" *ngIf="finalerror.showAlertPopup"
+                                                [ngClass]="{'alert-success': !this.finalerror.isError,'alert-danger':this.finalerror.isError}" role="alert">
+                                                <button type="button" (click)="finalerror.showAlertPopup=false;" class="close" data-dismiss="alert"
+                                                    aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <strong>{{finalerror.alertMsg}}</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div id="assigment-modal" class="modal">
                                     <div class="modal-content">
                                         <div _ngcontent-qaa-c48="" class="modal-header">
@@ -4780,19 +4943,6 @@
                                 <div class="action-buttons aftersubmission"
                                     *ngIf="!claimRcm.pending  && actionButtons  && selectedTeam== claimRcm.currentTeamId">
 
-                                    <button *ngIf="claimRcm.currentState==0 && selectedTeam== claimRcm.currentTeamId && claimRcm.currentStatus!=30"
-                                        type="button" class="btn btn-success" [disabled]="inSave"
-                                        (click)="saveClaim('assigntl',false)">
-                                        Assign to
-                                        Team Lead
-                                    </button>
-
-
-                                    <button *ngIf="claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp"
-                                        type="button" class="btn btn-success" [disabled]="inSave"
-                                        (click)="openArchivedModal()">
-                                        Archive
-                                    </button>
                                     <button *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp"
                                         type="button" class="btn btn-success" [disabled]="inSave"
                                         (click)="openUnArchivedModal()">

@@ -614,3 +614,24 @@ a.Read {
     justify-content: flex-end;
     width: 100%;
 }
+
+
+
+.actPerform {
+    border: 0px !important;
+
+    &.actError {
+        border: 1px solid #dc3545 !important;
+        border-radius: 5px;
+    }
+
+    label {
+        font-weight: normal !important;
+        font-family: "Lato", sans-serif;
+        line-height: normal;
+        text-align: left;
+        font-size: 14px;
+        padding: 6px 6px 6px 26px !important;
+        color: #778080 !important;
+    }
+}

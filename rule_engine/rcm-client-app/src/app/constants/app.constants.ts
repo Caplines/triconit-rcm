@@ -436,4 +436,11 @@ export class AppConstants {
         { reasonName: "Need Primary EOB"},
 
     ];
+
+    public actionToPerformButtons: any = {
+        'assignToOtherTeam': 'Assign to other team',
+        'assignToSameTeam': 'Assign to Same Team',
+        'assignToTeamLead': 'Assign to Team Lead',
+        'archive': 'Archive',
+    }
 }
