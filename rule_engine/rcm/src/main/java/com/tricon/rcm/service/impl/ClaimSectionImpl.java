@@ -1339,16 +1339,10 @@ public class ClaimSectionImpl {
 			}
 		}
 		
-		if(assignToTeam!=null && assignToTeam.getId()==team.getId()) {
-			if (assignToTeam.getId()==RcmTeamEnum.CDP.getId() && nextActionReequiredInfoModel.getNextAction().equalsIgnoreCase(ClaimStatusEnum.Need_to_call_Insurance.getType())) {
-				logger.info("Team can be assign to logged user team in case of CDP and Need  to call Insurance");
-			}else {
-				logger.error("Team not assign to logged user team");
-				return null;	
-			}
-			
-				
-		}
+		if (assignToTeam != null && assignToTeam.getId() == team.getId()) {
+			logger.error("Team is assign to logged user team");
+		} 
+
 		if (claim != null && finalSubmit) {
 			currentClaimStatusAndNextActionData = new CurrentClaimStatusAndNextAction();
 			currentClaimStatusAndNextActionData
