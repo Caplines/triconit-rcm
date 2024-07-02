@@ -1535,6 +1535,26 @@ export class BillingClaimsComponent {
     })
   }
 
+  assignToLeadSaveAfterPending(remark: string, assignTouuid: string,
+    currentClaimStatusRcm: string, currentClaimStatusEs: string, nextAction: string) {
+    let ths = this;
+    ths.claimAssignToTeamModel.currentClaimStatusRcm = currentClaimStatusRcm;
+    ths.claimAssignToTeamModel.currentClaimStatusEs = currentClaimStatusEs;
+    ths.claimAssignToTeamModel.nextAction = nextAction;
+    ths.claimAssignToTeamModel.withNextActionData = 'true';
+    ths.claimAssignToTeamModel.claimUuid = ths.claimUUid;
+    ths.claimAssignToTeamModel.otherTeamId = -1;
+    ths.claimAssignToTeamModel.remark = remark;
+    ths.claimAssignToTeamModel.teamLeadUuid = assignTouuid;
+    ths.claimAssignToTeamModel.toLead = true;
+    ths.claimService.assignClaimToTL(ths.claimAssignToTeamModel, (res: any) => {
+      if (res.status === 200) {
+        window.location.reload();
+
+      }
+    })
+  }
+
   openSubmitModal() {
     this.validate_CURRENT_STATUS_AND_NEXT_ACTION()
     if (this.validate_CURRENT_STATUS_AND_NEXT_ACTION()){
@@ -2282,10 +2302,12 @@ export class BillingClaimsComponent {
         }
       }
       else if (buttonType == 'assignToTeamLead'){
-        debugger;
         let remarks = this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].remarks;
         let teamLeadId = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'];
-        this.assignToLeadSave(remarks, teamLeadId);
+        let currentClaimStatusRcm = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'];
+        let currentClaimStatusEs = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'];
+        let nextAction = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'];
+        this.assignToLeadSaveAfterPending(remarks, teamLeadId, currentClaimStatusRcm, currentClaimStatusEs, nextAction);
       }
       else {
         this.isOtherTLExist(this.finalerror, (res: any) => {
@@ -3036,25 +3058,11 @@ export class BillingClaimsComponent {
 
     let team: any = this.appConstants.TEAMS_CONFIG.get(this.claimRcm.assignedToTeam);
 
-    //canWorkBeforeSubmssion ?: boolean;
-    //this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeam'] = {
-    // "teamId": 7, "teamName": "Billing"
-    // };
-
-
-    //if (this.checkForSectionAccess(this.sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'], 'view')) {
-    /*this.appService.fetchNextActionRequiredSection(this.claimUUid, (res: any) => {
-      if (res && res.data) {
-        this.claimSectionModal['CURRENT_STATUS_AND_NEXT_ACTION'] = res.data;
-        this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = this.claimRcm.currentStatusName;
-        this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['CURRENT_STATUS_AND_NEXT_ACTION'] = this.claimRcm.nextActionName;
-      } else {
-        this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = this.claimRcm.currentStatusName;
-        this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['CURRENT_STATUS_AND_NEXT_ACTION']= this.claimRcm.nextActionName;
-      }
-    })*/
-    //}
-
+    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] = 'assignToOtherTeam';
+    this.showAssignToTeamLead = false;
+    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'] = '';
+    this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;
+    this.showAssignToTeam = true;
   }
 
   fetchPatientCommunicationSection() {

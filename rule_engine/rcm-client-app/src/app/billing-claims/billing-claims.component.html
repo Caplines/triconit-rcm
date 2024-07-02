@@ -4478,6 +4478,47 @@
                                             <div class="">
                                                 <div class="row">
 
+                                                    <div class="col-sm-12 mb-3 d-flex" *ngIf="showAToPNextActionRequired">
+                                                        <label class="custom-row text-number" style="min-width: 160px;">
+                                                            Action to Perform&nbsp;<span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="btn-group btn-group-toggle d-flex actPerform" data-toggle="buttons"
+                                                            [ngClass]="{'actError':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['buttonType']}">
+                                                            <ng-container>
+                                                                <label class="btn btn-light mx-0" [ngClass]="{
+                                                                    'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToOtherTeam'}">
+                                                                    <input type="radio" name="action" class="form-check-input" [value]="'assignToOtherTeam'"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToOtherTeam'"
+                                                                        (change)="selectActionToPerformNextActionRequired('assignToOtherTeam')">
+                                                                    Assign to Other Team
+                                                                </label>
+                                                                <label class="btn btn-light" [ngClass]="{'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToSameTeam'}">
+                                                                    <input type="radio" name="action" [value]="'assignToSameTeam'" class="form-check-input"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToSameTeam'"
+                                                                        (change)="selectActionToPerformNextActionRequired('assignToSameTeam')">
+                                                                    Assign to Same Team
+                                                                </label>
+                                                                <label class="btn btn-light" [ngClass]="{'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead'}">
+                                                                    <input type="radio" name="action" [value]="'assignToTeamLead'" class="form-check-input"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead'"
+                                                                        (change)="selectActionToPerformNextActionRequired('assignToTeamLead')">
+                                                                    Assign to Team Lead
+                                                                </label>
+                                                                <label class="btn btn-light" [ngClass]="{'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'}">
+                                                                    <input type="radio" name="action" [value]="'archive'" class="form-check-input"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"
+                                                                        (change)="selectActionToPerformNextActionRequired('archive')">
+                                                                    <span *ngIf="claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp">Archive</span>
+                                                                    <span *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp">UnArchive</span>
+                                                                </label>
+                                                            </ng-container>
+                                                        </div>
+                                                    </div>
+
                                                     <div class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
                                                             <label for="currentClaimStatusRcm">Claim
@@ -4487,7 +4528,6 @@
                                                                 (change)="claimStatusCheck($event); validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 class="form-control"
                                                                 [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') || 
-                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead' || 
                                                                         claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"
                                                                 [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm']"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusRcm']}">
@@ -4508,7 +4548,6 @@
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 class="form-control"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit) || 
-                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead' || 
                                                                         claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"
                                                                 [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs']"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusEs']}">
@@ -4534,7 +4573,6 @@
                                                             <select id="nextAction" class="form-control"
                                                                 (change)="nextActionRequire($event)"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit) || 
-                                                                        claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead' || 
                                                                         claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"
                                                                 [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['nextAction']}">
@@ -4544,58 +4582,6 @@
                                                                     <option [value]="item.name">{{item.name}}</option>
                                                                 </ng-container>
                                                             </select>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="col-sm-8 mb-3 d-flex" *ngIf="showAToPNextActionRequired">
-                                                        <label class="custom-row text-number" style="min-width: 160px;">
-                                                            Action to Perform&nbsp;<span class="text-danger">*</span>
-                                                        </label>
-                                                        <div class="btn-group btn-group-toggle d-flex actPerform" data-toggle="buttons"
-                                                            [ngClass]="{'actError':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['buttonType']}">
-                                                            <ng-container>
-                                                                <label class="btn btn-light mx-0"
-                                                                    [ngClass]="{
-                                                                        'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToOtherTeam'
-                                                                    }">
-                                                                    <input type="radio" name="action" class="form-check-input" [value]="'assignToOtherTeam'"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToOtherTeam'"
-                                                                        (change)="selectActionToPerformNextActionRequired('assignToOtherTeam')">
-                                                                        Assign to Other Team
-                                                                </label>
-                                                                <label class="btn btn-light"
-                                                                    [ngClass]="{
-                                                                            'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToSameTeam'
-                                                                        }">
-                                                                    <input type="radio" name="action" [value]="'assignToSameTeam'" class="form-check-input"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToSameTeam'"
-                                                                        (change)="selectActionToPerformNextActionRequired('assignToSameTeam')">
-                                                                        Assign to Same Team
-                                                                </label>
-                                                                <label class="btn btn-light" 
-                                                                    [ngClass]="{
-                                                                            'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead'
-                                                                        }">
-                                                                    <input type="radio" name="action" [value]="'assignToTeamLead'" class="form-check-input"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead'"
-                                                                        (change)="selectActionToPerformNextActionRequired('assignToTeamLead')">
-                                                                        Assign to Team Lead
-                                                                </label>
-                                                                <label class="btn btn-light"
-                                                                    [ngClass]="{
-                                                                        'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'
-                                                                    }">
-                                                                    <input type="radio" name="action" [value]="'archive'" class="form-check-input"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                        [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"           
-                                                                        (change)="selectActionToPerformNextActionRequired('archive')">
-                                                                        <span *ngIf="claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp">Archive</span>
-                                                                        <span *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp">UnArchive</span>
-                                                                </label>
-                                                            </ng-container>
                                                         </div>
                                                     </div>
 
@@ -4652,7 +4638,7 @@
                                                     <div class="col-md-12 mb-2 btn-align-right">
                                                         <button type="button" class="btn btn-success"
                                                             (click)="openSubmitModal()">
-                                                            Review Submit
+                                                            Submit
                                                         </button>
                                                     </div>
                                                 </div>

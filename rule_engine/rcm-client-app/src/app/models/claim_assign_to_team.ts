@@ -6,5 +6,8 @@ export class ClaimAssignToTeamModel {
   otherTeamId?: number;
   remark?: string;
   teamLeadUuid?: string;
-
+  currentClaimStatusRcm?: string; 
+  currentClaimStatusEs?: string; 
+  nextAction?: string;
+  withNextActionData?: string;
 }
