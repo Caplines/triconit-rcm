@@ -1326,14 +1326,14 @@ public class ClaimSectionImpl {
 	
 	@Transactional(rollbackOn = Exception.class)
 	public Boolean saveNextActionRequiredAndCurrentClaimStatusSection(
-			CurrentStatusAndNextActionDto nextActionReequiredInfoModel, RcmClaims claim, RcmUser createdBy,
+			CurrentStatusAndNextActionDto nextActionRequiredInfoModel, RcmClaims claim, RcmUser createdBy,
 			RcmTeam team, boolean finalSubmit, String clientName) {
 		CurrentClaimStatusAndNextAction currentClaimStatusAndNextActionData = null;
-		RcmTeam assignToTeam=rcmTeamRepo.findById(nextActionReequiredInfoModel.getAssignToTeamId());
+		RcmTeam assignToTeam=rcmTeamRepo.findById(nextActionRequiredInfoModel.getAssignToTeamId());
 		
 		//assign to team is null when claim is closed
 		if(assignToTeam==null) {
-			if(!nextActionReequiredInfoModel.getCurrentClaimStatusRcm().equals(ClaimStatusEnum.Case_Closed.getType())){
+			if(!nextActionRequiredInfoModel.getCurrentClaimStatusRcm().equals(ClaimStatusEnum.Case_Closed.getType())){
 				logger.error("Invalid team");
 				return null;
 			}
@@ -1346,11 +1346,11 @@ public class ClaimSectionImpl {
 		if (claim != null && finalSubmit) {
 			currentClaimStatusAndNextActionData = new CurrentClaimStatusAndNextAction();
 			currentClaimStatusAndNextActionData
-					.setCurrentClaimStatusEs(nextActionReequiredInfoModel.getCurrentClaimStatusEs());
+					.setCurrentClaimStatusEs(nextActionRequiredInfoModel.getCurrentClaimStatusEs());
 			currentClaimStatusAndNextActionData
-					.setCurrentClaimStatusRcm(nextActionReequiredInfoModel.getCurrentClaimStatusRcm());
-			currentClaimStatusAndNextActionData.setNextAction(nextActionReequiredInfoModel.getNextAction());
-			currentClaimStatusAndNextActionData.setRemarks(nextActionReequiredInfoModel.getRemarks());
+					.setCurrentClaimStatusRcm(nextActionRequiredInfoModel.getCurrentClaimStatusRcm());
+			currentClaimStatusAndNextActionData.setNextAction(nextActionRequiredInfoModel.getNextAction());
+			currentClaimStatusAndNextActionData.setRemarks(nextActionRequiredInfoModel.getRemarks());
 			currentClaimStatusAndNextActionData.setClaim(claim);
 			currentClaimStatusAndNextActionData.setCreatedBy(createdBy);
 			currentClaimStatusAndNextActionData.setFinalSubmit(finalSubmit);
@@ -1360,22 +1360,25 @@ public class ClaimSectionImpl {
 					.save(currentClaimStatusAndNextActionData);
 			
 			// set automated field nextFollowUpDate inside follow_up_section
-			RcmInsuranceType ins = claim.getRcmInsuranceType();
-			RcmInsuranceType inst = rcmInsuranceTypeRepo.findById(ins.getId());
-			if (inst != null) {
-				RcmInsuranceTypeDateMapping data = insuranceTypeDateMappingRepo
-						.findByTeamIdAndName(assignToTeam.getId(), inst.getCode());
-				if (data != null) {
-					Calendar calendarForNextFollowUpDate = Calendar.getInstance();
-					Date date = claim.getNextFollowUpDate() != null ? claim.getNextFollowUpDate() : new Date();
-					calendarForNextFollowUpDate.setTime(date);
-					calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, data.getNextFollowUpGap());
-					claim.setNextFollowUpDate(calendarForNextFollowUpDate.getTime());
-					logger.info("Next Follow Up Data in RcmTable:" + claim.getNextFollowUpDate());
+			if (nextActionRequiredInfoModel.getButtonType() != null
+					&& nextActionRequiredInfoModel.getButtonType().equals(Constants.BUTTON_TYPE_ASSIGN_TO_SAME_TEAM)) {
+				RcmInsuranceType ins = claim.getRcmInsuranceType();
+				RcmInsuranceType inst = rcmInsuranceTypeRepo.findById(ins.getId());
+				if (inst != null) {
+					RcmInsuranceTypeDateMapping data = insuranceTypeDateMappingRepo
+							.findByTeamIdAndName(assignToTeam.getId(), inst.getCode());
+					if (data != null) {
+						Calendar calendarForNextFollowUpDate = Calendar.getInstance();
+						Date date = claim.getNextFollowUpDate() != null ? claim.getNextFollowUpDate() : new Date();
+						calendarForNextFollowUpDate.setTime(date);
+						calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, data.getNextFollowUpGap());
+						claim.setNextFollowUpDate(calendarForNextFollowUpDate.getTime());
+						logger.info("Next Follow Up Data in RcmTable:" + claim.getNextFollowUpDate());
+					}
 				}
 			}
 			//update es_satus in claim table
-			claim.setStatusESUpdated(nextActionReequiredInfoModel.getCurrentClaimStatusEs());
+			claim.setStatusESUpdated(nextActionRequiredInfoModel.getCurrentClaimStatusEs());
 			rcmClaimRepository.save(claim);
 			return currentClaimStatusAndNextActionData != null ? true : null;
 		}

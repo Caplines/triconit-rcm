@@ -35,6 +35,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,6 +44,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.google.common.collect.Collections2;
 import com.tricon.rcm.db.entity.ClaimCycle;
+import com.tricon.rcm.db.entity.CurrentClaimStatusAndNextAction;
 import com.tricon.rcm.db.entity.RcmClaimArchiveHistory;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimComment;
@@ -200,6 +202,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimSubmissionDetailsRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimsServiceRuleValidationRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
+import com.tricon.rcm.jpa.repository.RcmCurrentClaimStatusRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceTypeDateMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
@@ -359,6 +362,13 @@ public class ClaimServiceImpl {
 	
 	@Autowired
 	RcmInsuranceTypeDateMappingRepo insuranceTypeDateMappingRepo;
+	
+	@Lazy
+	@Autowired
+	ClaimSectionImpl claimSectionImpl;
+	
+	@Autowired
+	RcmCurrentClaimStatusRepo currentStatusAndNextActionRepo;
 	
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
@@ -3850,18 +3860,56 @@ public class ClaimServiceImpl {
 			newAssign.setTakenBack(false);
 			if (newAssign.isActive()) newAssign.setActionName(ClaimStatusEnum.Claim_Assign_TO_TL.getType());
 			rcmClaimAssignmentRepo.save(newAssign);
-			String newCycleStatus =null;//  ClaimMovementUtil.getNextStatus(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
-			//int nextTeam =claim.getCurrentTeamId().getId();// ClaimMovementUtil.getNextTeam(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
-			//ClaimStatusEnum nextAction =null;// ClaimMovementUtil.getNextAction(assign.getCurrentTeamId().getId(), primaryCl, secondaryCl, checkForPrimary);
-			claimCycleService.createNewClaimCycleWithOldStatus(claim,claim.getCurrentTeamId(),rcmLeadUser,newCycleStatus,null);
-			// Take back from OLd team
+			String newCycleStatus =null;
 			
-			
+			CurrentStatusAndNextActionDto nextActionRequiredInfoModel = new CurrentStatusAndNextActionDto();
+			if (StringUtils.isAllBlank(dto.getNextAction())) {
+				ClaimStatusEnum nextAction = ClaimStatusEnum.getById(claim.getNextAction());
+				nextActionRequiredInfoModel.setNextAction(nextAction != null ? nextAction.getType() : null);
+			} else {
+				ClaimStatusEnum nextAction = ClaimStatusEnum.getByType(dto.getNextAction());
+				nextActionRequiredInfoModel.setNextAction(dto.getNextAction());
+				claim.setNextAction(nextAction.getId());
+			}
+			if (StringUtils.isAllBlank(dto.getCurrentClaimStatusRcm())) {
+				ClaimStatusEnum type = ClaimStatusEnum.getById(claim.getCurrentStatus());
+				nextActionRequiredInfoModel.setCurrentClaimStatusRcm(type != null ? type.getType() : null);
+			} else {
+				ClaimStatusEnum rcmStatus = ClaimStatusEnum.getByType(dto.getCurrentClaimStatusRcm());
+				nextActionRequiredInfoModel.setCurrentClaimStatusRcm(dto.getCurrentClaimStatusRcm());
+				claim.setCurrentStatus(rcmStatus.getId());
+			}
+			nextActionRequiredInfoModel.setAssignToTeamId(teamId);
+			nextActionRequiredInfoModel.setRemarks(dto.getRemark());
+			nextActionRequiredInfoModel.setCurrentClaimStatusEs(
+					StringUtils.isAllBlank(dto.getCurrentClaimStatusEs()) ? claim.getStatusESUpdated()
+							: dto.getCurrentClaimStatusEs());
+			// save next action data
+			RcmTeam currentTeam = rcmTeamRepo.findById(teamId);
+
+			claimSectionImpl.saveNextActionRequiredAndCurrentClaimStatusSection(nextActionRequiredInfoModel, claim,
+					user, currentTeam, true, "");
+
+			if (dto.getWithNextActionData() == null)
+				claimCycleService.createNewClaimCycleWithOldStatus(claim, claim.getCurrentTeamId(), rcmLeadUser,
+						newCycleStatus, null);
+			else {
+				newCycleStatus = StringUtils.isAllBlank(dto.getCurrentClaimStatusRcm()) ? null
+						: dto.getCurrentClaimStatusRcm();
+				ClaimStatusEnum nextAction = ClaimStatusEnum.getByType(dto.getNextAction());
+				String nextActionType = null;
+				if (nextAction != null) {
+					nextActionType = nextAction.getType();
+				}
+				claimCycleService.createNewClaimCycleWithOldStatus(claim, currentTeam, rcmLeadUser, newCycleStatus,
+						nextActionType);
+			}
+
 			return "success";
-		}else {
+		} else {
 			return "assigned user not a lead";
 		}
-		}
+	}
 
 		else
 			return "wrong Client Name";
