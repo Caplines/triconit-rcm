@@ -250,8 +250,9 @@ public class RuleEngineService {
 									//	System.out.println("k");
 									//}
 									List<String> allCl = Arrays.asList(re.getClaimId() + claimTypeEnum.getSuffix());
-									List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
 									
+									List<RcmClaims> claims = rcmClaimRepository.findByClaimIdInAndOffice(allCl, off);
+									List<String> arcClaims = rcmClaimRepository.getClaimbyOfficeAndClaimIdsArchivedForBatch(off.getUuid(),"_arc_"+re.getClaimId() + claimTypeEnum.getSuffix());
 									UserAssignOffice assignedUserBilling = userAssignOfficeRepo
 											.findByOfficeUuidAndTeamId(off.getUuid(), RcmTeamEnum.BILLING.getId());
 									UserAssignOffice assignedUserInternalAudit = userAssignOfficeRepo
@@ -260,7 +261,7 @@ public class RuleEngineService {
 									assignedTeamBilling = rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId());
 									assignedTeamInternalAudit= rcmTeamRepo.findById(RcmTeamEnum.INTERNAL_AUDIT.getId());
 									RcmInsuranceType rcmInsuranceType = null;
-									if (claims == null || claims.size() == 0) {
+									if ((claims == null || claims.size() == 0 ) && (arcClaims == null || arcClaims.size() == 0 )) {
 										// List<String> buildError1=null;
 										// Fresh Claims
 

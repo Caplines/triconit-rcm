@@ -1155,4 +1155,11 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ " " )//select * from rcm_claims where claim_id  REGEXP '_13767_P|P';
 		List<ReconcillationClaimDto> getClaimInIssueClaimByClaimIdAndOfficeArchived(@Param("officeId") String officeId,
 				@Param("claimsIds") String claimsIds);
+		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId from  rcm_claims  cl where "
+				+ " cl.office_id=:officeId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED+" and cl.claim_id  REGEXP :claimsId "
+				+ " " )//select * from rcm_claims where claim_id  REGEXP '_arc_13767_P';
+		List<String> getClaimbyOfficeAndClaimIdsArchivedForBatch(@Param("officeId") String officeId,
+				@Param("claimsId") String claimsId);
+
 }
