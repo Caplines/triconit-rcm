@@ -5337,10 +5337,12 @@ public class ClaimServiceImpl {
 		boolean validateClaimRight = checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),
 				partialHeader.getCompany().getUuid());
 		
-		if (sectionRequestBody.getNextActionRequiredInfoModel().getButtonType() != null && (sectionRequestBody
-				.getNextActionRequiredInfoModel().getButtonType().equals(Constants.BUTTON_TYPE_ARCHIVE)
-				|| sectionRequestBody.getNextActionRequiredInfoModel().getButtonType()
-						.equals(Constants.BUTTON_TYPE_ASSIGN_TO_TL))) {
+		if ((sectionRequestBody.getNextActionRequiredInfoModel() != null
+				&& sectionRequestBody.getNextActionRequiredInfoModel().getButtonType() != null)
+				&& (sectionRequestBody.getNextActionRequiredInfoModel().getButtonType()
+						.equals(Constants.BUTTON_TYPE_ARCHIVE)
+						|| sectionRequestBody.getNextActionRequiredInfoModel().getButtonType()
+								.equals(Constants.BUTTON_TYPE_ASSIGN_TO_TL))) {
 			logger.error("Invalid button type");
 			return false;
 		}
