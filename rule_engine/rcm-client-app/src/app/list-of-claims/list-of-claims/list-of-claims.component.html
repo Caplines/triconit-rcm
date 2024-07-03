@@ -526,6 +526,11 @@
                                                             </span>
                                                         </div>
                                                     </th>
+                                                    <th>
+                                                        <div class="dFlex">
+                                                            Due Date
+                                                        </div>
+                                                    </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -634,6 +639,7 @@
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
                                                                 *ngIf="isLastTeam" class="NA">
                                                                 {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}">{{(det.followUpDate == null ? det.pendingSince : det.followUpDate) | date:'MMM dd, YYYY'}}</td>
                                                         </tr>
                                                     </ng-container>
                                                 </ng-container>

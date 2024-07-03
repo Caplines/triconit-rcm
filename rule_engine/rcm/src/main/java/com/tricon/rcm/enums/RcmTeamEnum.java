@@ -24,15 +24,15 @@ public enum RcmTeamEnum {
 	REPORTING(9,"REPORTING","Reporting",new RcmRoleEnum[] {RcmRoleEnum.REPORTING},true,false),
 	ORTHO(10,"ORTHO","Ortho",new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	CDP(11,"CDP","CDP",new RcmRoleEnum[] {RcmRoleEnum.TL ,RcmRoleEnum.ASSO},true,true),
-	PAYMENT_POSTING(12,"PAYMENT_POSTING","Payment Posting",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),
+	PAYMENT_POSTING(12,"PAYMENT_POSTING","Payment Posting",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	PPO_IV(13,"PPO_IV","PPO IV",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	MEDICAID_IV(14,"MEDICAID_IV","Medicaid IV",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	NEED_TO_HOLD(15,"NEED_TO_HOLD","Need to hold",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
-	QUALITY(16,"QUALITY","Quality",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),
+	QUALITY(16,"QUALITY","Quality",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	//AR(17,"AR","AR",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},false,false), AR NOT USED
-	PATIENT_STATEMENT(18,"PATIENT_STATEMENT","Patient Statement",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false),
+	PATIENT_STATEMENT(18,"PATIENT_STATEMENT","Patient Statement",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
 	CREDENTIALING(19,"CREDENTIALING","Credentialing",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true),
-	AGING(20,"AGING","Aging",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,false);
+	AGING(20,"AGING","Aging",new RcmRoleEnum[] {RcmRoleEnum.TL, RcmRoleEnum.ASSO},true,true);
 	
 	final private int id;
 	final private String name;

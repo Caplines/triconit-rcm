@@ -399,9 +399,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	// Production means Total Claims Submitted and No days between 2 dates
 	// use refrence from Ruleengine RcmClaimDaoImpl->>
 	// Constants.QUERY_FOR_RCMCALIM_1
-	@Query(nativeQuery = true, value = " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/count(distinct cast(rcsd.updated_date as date)) as days ,"
+	@Query(nativeQuery = true, value = " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/count(distinct cast(rcsd.es_date as date)) as days ,"
 			+ "us.uuid as uuid,us.first_name "
-			+ "as fName,us.last_name as lName,comp.name as companyName ,count(distinct rcsd.updated_date) as disDate  "
+			+ "as fName,us.last_name as lName,comp.name as companyName ,count(distinct rcsd.es_date) as disDate  "
 			+" from rcm_claims_submission_details rcsd inner join "
 			+ " rcm_user us on  rcsd.submitted_by=us.uuid  "
 			+ "left join rcm_claims cl on rcsd.claim_id=cl.claim_uuid  " + "inner join office off on off.uuid=cl.office_id "
@@ -414,7 +414,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			// and rc.patient_id=cl.patient_id "
 			+ "where cl.pending =false and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
-			+ "and cast(rcsd.updated_date as date) "//IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date)
+			+ "and cast(rcsd.es_date as date) "//IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date)
 			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid ")
 	List<ProductionDto> claimProductionByForBilling(@Param("companyIds") List<String> companyIds,
 			@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate);
@@ -426,9 +426,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	// we are marking that as submitted in the RCM Tool
 	// use refrence from Ruleengine RcmClaimDaoImpl->>
 	// Constants.QUERY_FOR_RCMCALIM_1
-	@Query(nativeQuery = true, value = " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/count(distinct cast(rcsd.updated_date as date)) as days ,"
+	@Query(nativeQuery = true, value = " select count(distinct cl.claim_uuid) as total,FLOOR(count(distinct cl.claim_uuid))/count(distinct cast(rcsd.es_date as date)) as days ,"
 			+ "us.uuid as uuid,us.first_name "
-			+ "as fName,us.last_name as lName,comp.name as companyName,count(distinct rcsd.updated_date) as disDate "+
+			+ "as fName,us.last_name as lName,comp.name as companyName,count(distinct rcsd.es_date) as disDate "+
 			" from rcm_claims_submission_details rcsd inner join "+
 			" rcm_user us on  rcsd.submitted_by=us.uuid "
 			+ "left join rcm_claims cl on rcsd.claim_id=cl.claim_uuid " + "inner join office off on off.uuid=cl.office_id "
@@ -442,7 +442,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			// and rc.patient_id=cl.patient_id "
 			+ "where cl.pending =false and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "
 			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
-			+ "and cast(rcsd.updated_date as date) "
+			+ "and cast(rcsd.es_date as date) "
 			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid ")
 	List<ProductionDto> claimProductionByForBillingAssoicate(@Param("companyIds") List<String> companyIds,
 			@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate,

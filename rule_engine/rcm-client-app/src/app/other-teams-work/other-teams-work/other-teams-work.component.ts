@@ -59,21 +59,21 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredSelectAging: any = [];
   tabSwitch: any = { 'submitted': false, 'unSubmitted': true };
   tabValue: any;
-  showColumns: any = { "currentStatus": false, "nextActionRequired": false, "nextFollowUpDate": false, "providerSpeciality": false, "dueBalance": false, "showAttach": false };
+  showColumns: any = { "currentStatus": false, "nextActionRequired": false, "dueDate": false, "providerSpeciality": false, "dueBalance": false, "showAttach": false };
   columnPermissionsByTeam: any = {
-    'Aging': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
-    'CDP': ['currentStatus', 'nextActionRequired', 'nextFollowUpDate', 'providerSpeciality'],
-    'Credentialing': ['currentStatus', 'nextActionRequired', 'showAttach'],
-    'Patient Statement': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueBalance'],
-    'Payment Posting': ['currentStatus', 'nextActionRequired', 'providerSpeciality'],
-    'LC3': ['showAttach'],
-    'Office': ['showAttach'],
-    'Ortho': ['showAttach'],
-    'PPO IV': ['showAttach'],
-    'Medicaid IV': ['showAttach'],
+    'Aging': ['currentStatus', 'nextActionRequired', 'dueDate', 'providerSpeciality'],
+    'CDP': ['currentStatus', 'nextActionRequired', 'dueDate', 'providerSpeciality'],
+    'Credentialing': ['currentStatus', 'nextActionRequired', 'showAttach','dueDate'],
+    'Patient Statement': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueBalance','dueDate'],
+    'Payment Posting': ['currentStatus', 'nextActionRequired', 'providerSpeciality','dueDate'],
+    'LC3': ['showAttach','dueDate'],
+    'Office': ['showAttach','dueDate'],
+    'Ortho': ['showAttach','dueDate'],
+    'PPO IV': ['showAttach','dueDate'],
+    'Medicaid IV': ['showAttach','dueDate'],
     'Need to hold': ['showAttach'],
     'Quality': ['showAttach'],
-    'Patient Calling': ['showAttach'],
+    'Patient Calling': ['showAttach','dueDate'],
   };
 
   showTooltipConfig:any={};

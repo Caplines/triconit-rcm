@@ -1141,6 +1141,7 @@ public class ClaimSectionImpl {
 			followUpInformation.setFollowUpRemarks(rcmFollowUpInsuranceInfoModel.getFollowUpRemarks());
 			followUpInformation.setClaim(claim);
 			followUpInformation.setInsuranceRepName(rcmFollowUpInsuranceInfoModel.getInsuranceRepName());
+			//followUpInformation.setNextFollowUpDate(new Date());
 			followUpInformation.setModeOfFollowUp(rcmFollowUpInsuranceInfoModel.getModeOfFollowUp());
 			followUpInformation.setRefNumber(rcmFollowUpInsuranceInfoModel.getRefNumber());
 			followUpInformation.setCreatedBy(createdBy);
@@ -1150,6 +1151,7 @@ public class ClaimSectionImpl {
 			rcmFollowUpInsuranceInfoModel.setFollowByTeam(followUpInformation.getTeam().getDescription());	
 			rcmFollowUpInsuranceInfoModel.setFollowByUser(followUpInformation.getCreatedBy().getFirstName());	
 			rcmFollowUpInsuranceInfoModel.setFollowByUserLastName(followUpInformation.getCreatedBy().getLastName());
+			rcmFollowUpInsuranceInfoModel.setNextFollowUpDate(followUpInformation.getCreatedDate()==null?"":Constants.SDF_MYSL_DATE_TIME.format(followUpInformation.getCreatedDate()));
 			BeanUtils.copyProperties(followUpInformation, rcmFollowUpInsuranceInfoModel);	
 		}
 		logger.info("response->" + (followUpInformation!=null?true:false));
@@ -1170,7 +1172,7 @@ public class ClaimSectionImpl {
 				responseDto.setFollowByUser(attachBy.getFirstName());
 				responseDto.setFollowByUserLastName(attachBy.getLastName());
 				responseDto.setFollowByTeam(team.getDescription());
-				responseDto.setNextFollowUpDate(data.getNextFollowUpDate()==null?"":Constants.SDF_MYSL_DATE_TIME.format(data.getNextFollowUpDate()));
+				responseDto.setNextFollowUpDate(data.getCreatedDate()==null?"":Constants.SDF_MYSL_DATE_TIME.format(data.getCreatedDate()));
 				BeanUtils.copyProperties(data, responseDto);
 				responseData.add(responseDto);
 			}
@@ -1210,9 +1212,11 @@ public class ClaimSectionImpl {
 				patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement()==null?"":rcmPatientStatementInfoModel.getModeOfStatement());
 				patientStatement.setStatementType(rcmPatientStatementInfoModel.getStatementType()==null?"":rcmPatientStatementInfoModel.getStatementType());
 				patientStatement.setStatementNotes(rcmPatientStatementInfoModel.getStatementNotes());
-				patientStatement.setNextStatementDate(
-						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate()) ? null
-								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
+				
+				//next statement date is already present in list of claim page so no need to showing here
+//				patientStatement.setNextStatementDate(
+//						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextStatementDate()) ? null
+//								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextStatementDate()));
 				patientStatement.setStatementSendingDate(
 						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getStatementSendingDate()) ? null
 								: Constants.SDF_MYSL_DATE
@@ -1250,11 +1254,11 @@ public class ClaimSectionImpl {
 				calendarForNextReviewDate.setTime(new Date());
 				calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, 7);
 				responseDto.setNextReviewDate(Constants.SDF_MYSL_DATE.format(calendarForNextReviewDate.getTime()));
-				Calendar calendarForNextStatementDate = Calendar.getInstance();
-				calendarForNextStatementDate.setTime(new Date());
-				calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, 7);
-				responseDto
-						.setNextStatementDate(Constants.SDF_MYSL_DATE.format(calendarForNextStatementDate.getTime()));
+//				Calendar calendarForNextStatementDate = Calendar.getInstance();
+//				calendarForNextStatementDate.setTime(new Date());
+//				calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, 7);
+//				responseDto
+//						.setNextStatementDate(Constants.SDF_MYSL_DATE.format(calendarForNextStatementDate.getTime()));
 			} else  {
 				if (patientStatement != null && patientStatement.isFinalSubmit()) {
 					responseDto = new RcmPatientStatementDto();
@@ -1271,30 +1275,30 @@ public class ClaimSectionImpl {
 							patientStatement.setStatementType(String.valueOf(type + 1));
 						}
 						Calendar calendarForNextReviewDate = Calendar.getInstance();
-						Calendar calendarForNextStatementDate = Calendar.getInstance();
+//						Calendar calendarForNextStatementDate = Calendar.getInstance();
 						Date dateForNextReview = patientStatement.getNextReviewDate() != null
 								? patientStatement.getNextReviewDate()
 								: new Date();
-						Date dateForNextStatement = patientStatement.getNextStatementDate() != null
-								? patientStatement.getNextStatementDate()
-								: new Date();
+//						Date dateForNextStatement = patientStatement.getNextStatementDate() != null
+//								? patientStatement.getNextStatementDate()
+//								: new Date();
 
 						PatientStatementTypeEnum type = PatientStatementTypeEnum
 								.getPatientStatementTypeByType(Integer.parseInt(patientStatement.getStatementType()));
 						calendarForNextReviewDate.setTime(dateForNextReview);
 						calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, type.getDays());
 						patientStatement.setNextReviewDate(calendarForNextReviewDate.getTime());
-						calendarForNextStatementDate.setTime(dateForNextStatement);
-						calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, type.getDays());
-						patientStatement.setNextStatementDate(calendarForNextStatementDate.getTime());
+//						calendarForNextStatementDate.setTime(dateForNextStatement);
+//						calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, type.getDays());
+//						patientStatement.setNextStatementDate(calendarForNextStatementDate.getTime());
 					} else {
 						logger.error("Statement Type is missing,so automation failed");
 					}
 					
 					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
 							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
-					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
-							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
+//					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
+//							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
 					responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
 							: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
 					BeanUtils.copyProperties(patientStatement, responseDto);
@@ -1302,8 +1306,8 @@ public class ClaimSectionImpl {
 					responseDto = new RcmPatientStatementDto();
 					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
 							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
-					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
-							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
+//					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
+//							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
 					responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
 							: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
 					BeanUtils.copyProperties(patientStatement, responseDto);
@@ -1314,8 +1318,8 @@ public class ClaimSectionImpl {
 				responseDto = new RcmPatientStatementDto();
 				responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
 						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
-				responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
-						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
+//				responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
+//						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
 				responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
 						: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
 				BeanUtils.copyProperties(patientStatement, responseDto);
@@ -1950,6 +1954,7 @@ public class ClaimSectionImpl {
 					for (ClaimFromSheet dtoSheet : recreateClaimRequestInfoModel.getClaimFromSheet()) {
 						dtoSheet.setClientName(office.getCompany().getName());
 						dtoSheet.setOfficeName(office.getName());
+						dtoSheet.setSecondaryClaimSubmissionDate(Constants.SDF_MYSL_DATE.format(new Date())); //now we are inserting default date .ie.today date when we are executing recreate
 						dtoSheet.setOfficeKey(String.valueOf(office.getKey()));
 						dtoSheet.setServiceCodes(serviceCodes);		
 						dtoSheet.setToothAndSurfaces(toothAndSurface);

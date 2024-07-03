@@ -370,6 +370,7 @@ export class BillingClaimsComponent {
       claimFromSheet: {
         secondaryBlledAmount: '',
         secondaryClaimSubmissionDate: '',
+        secondaryClaimStatus: 'E', //we are hinding 3 fields form ui- secondaryClaimSubmissionDate,primaryPaid,secondaryClaimStatus and default value of secondaryClaimStatus is E
         primaryPaid: '',
         claimTypeS: 'Billing',
         providerIdReport: '',
@@ -3012,7 +3013,8 @@ export class BillingClaimsComponent {
           if (this.claimSectionModal['PATIENT_STATEMENT'] !== null) {
             this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate']);
             this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate']);
-            this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate']);
+            //next statement date is already present in list of claim page so no need to showing here
+            // this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate']);
           }
           if (!res.data.modeOfStatement) {
             this.claimSectionModal['PATIENT_STATEMENT']['modeOfStatement'] = '';
@@ -3413,7 +3415,8 @@ export class BillingClaimsComponent {
           ...this.claimSectionModal['PATIENT_STATEMENT'],
           statementSendingDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate']),
           nextReviewDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate']),
-          nextStatementDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate'])
+          //next statement date is already present in list of claim page so no need to showing here
+          // nextStatementDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate'])
         }
       };
       console.log(params);
@@ -3953,6 +3956,9 @@ export class BillingClaimsComponent {
     this.claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet'] = {};
     for (const key in this.claimSectionModal.RECREATE_CLAIM['claimFromSheet']) {
       if (!this.claimSectionModal.RECREATE_CLAIM['claimFromSheet'][key]) {
+        if(key=='secondaryClaimSubmissionDate' || key=='primaryPaid' || key=='secondaryClaimStatus'){
+          continue;
+        }
         this.claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet'][key] = true;
         secondaryFieldsValid = false;
       }
@@ -4179,12 +4185,13 @@ export class BillingClaimsComponent {
         else
           this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate'] = null;
       }
-      if (event.model == 'nextStatementDate') {
-        if (event.value != null)
-          this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate'] = new Date(event.value);
-        else
-          this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate'] = null;
-      }
+      //next statement date is already present in list of claim page so no need to showing here
+      // if (event.model == 'nextStatementDate') {
+      //   if (event.value != null)
+      //     this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate'] = new Date(event.value);
+      //   else
+      //     this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate'] = null;
+      // }
       if (event.model == 'dateOfPayment') {
         if (event.value != null)
           this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment'] = new Date(event.value);

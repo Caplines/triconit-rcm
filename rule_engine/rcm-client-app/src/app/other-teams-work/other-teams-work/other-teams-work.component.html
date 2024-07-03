@@ -514,9 +514,9 @@
                                                     </div>
                                                 </th>
 
-                                                <th *ngIf="showColumns.nextFollowUpDate">
+                                                <th *ngIf="showColumns.dueDate">
                                                     <div class="dFlex">
-                                                        Next Follow up Date
+                                                        Due Date
                                                     </div>
                                                 </th>
 
@@ -636,7 +636,7 @@
                                                                             <ng-container *ngIf="data.selectAging === 'Locked'">
                                                                                 <span><img src="../../assets/img/lock-icon.png" /></span>
                                                                             </ng-container>
-                                                                            {{data.selectAging == "Locked" ? "Lock/Unlock" : "Check/Uncheck"}}
+                                                                            {{data.selectAging == "Locked" ? "Ineligible" : "Eligible"}}
                                                                     </label>
                                                                 </ng-container>
                                                             </div>
@@ -742,7 +742,7 @@
                                                         </td>
                                                         <!--  //api changes required -->
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.nextActionRequired">{{det.nextAction}}</td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.nextFollowUpDate">{{det.followUpDate==null?'N/A':det.followUpDate | date: 'MMM dd, YYYY'}}</td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.dueDate">{{(det.followUpDate == null ? det.pendingSince : det.followUpDate) | date:'MMM dd, YYYY'}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.providerSpeciality">{{det.providerSpeciality==null || det.providerSpeciality==='' ?'N/A':det.providerSpeciality}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="showColumns.dueBalance">{{det.dueBalance==null?'$0.0':det.dueBalance| currency:'USD':true:'.0-0'}}</td>
                                                         <td *ngIf="showColumns.showAttach"><textarea name="{{det.uuid}}"

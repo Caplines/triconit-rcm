@@ -1884,7 +1884,7 @@
                                                             <td colspan="4"></td>
                                                         </tr>
                                                         <tr>
-                                                            <td colspan="3">Enter Balance From PMS Before Posting&nbsp;<span class="text-danger">*</span></td>
+                                                            <td colspan="3">Enter Patient Balance From PMS Before Posting&nbsp;<span class="text-danger">*</span></td>
                                                             <td colspan="3"><input type="number" id="SERVICE_LEVEL_INFORMATION_EsBeforePosting"
                                                                     class="attach-secondary-width form-control"
                                                                     type="number"
@@ -2040,18 +2040,17 @@
                                                                                 Claim Data Not Found
                                                                             </div> -->
                                             </div>
-                                            <div class="container-fluid pdf-viewer-container my-3">
+                                            <div class="container-fluid pdf-viewer-container mb-3">
                                                 <div *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') "
-                                                    class="row align-items-center my-3 justify-content-end">
-                                                    <span>Enter Link in the box if you would like to attach another EOB
+                                                    class="row align-items-center " style="justify-content: space-between;padding-right:5px;">
+                                                    <span class="d-flex" style="white-space: nowrap;align-items: center;">Enter Link in the box if you would like to attach another EOB
                                                         and
-                                                        press Save Button</span>
-                                                    <span class="d-flex">
-                                                        <input type="text" class="form-control mx-2"
-                                                            *ngIf="claimSectionModal['EOB']"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                            [(ngModel)]="claimSectionModal['EOB']['pdfLink']">
-                                                        <button class="btn btn-primary btn-sm"
+                                                        press Save Button <input type="text" class="form-control mx-2" style="width: 300px;"
+                                                        *ngIf="claimSectionModal['EOB']"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [(ngModel)]="claimSectionModal['EOB']['pdfLink']"></span>
+                                                    <span>
+                                                        <button class="btn btn-success btn-md"
                                                             *ngIf="claimRcm.currentState==0 && isPrimaryClaimClosed()"
                                                             [disabled]="!claimSectionModal['EOB']['pdfLink']"
                                                             (click)="getPdfUrlAndSaveEOB(false)">Save</button>
@@ -2229,7 +2228,7 @@
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number"
                                                     *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
-                                                    <label for="noOfEstPayment">No. of Est. Payments &nbsp;<span
+                                                    <label for="noOfEstPayment">No. of Installments&nbsp;<span
                                                             class="text-danger">*</span></label>
                                                     <input type="text" id="noOfEstPayment"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
@@ -2256,7 +2255,7 @@
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number"
                                                     *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
-                                                    <label for="noOfPaymentReceived">No. of Payments Received
+                                                    <label for="noOfPaymentReceived">No. of Installments Received
                                                         &nbsp;<span class="text-danger">*</span></label>
                                                     <input type="text" id="noOfPaymentReceived"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
@@ -2541,7 +2540,7 @@
                                                             <th>S.No.</th>
                                                             <th>Follow Up Team</th>
                                                             <th>Associate Name</th>
-                                                            <!-- <th>Date & Time</th> -->
+                                                            <th>Date & Time</th>
                                                             <th>Mode</th>
                                                             <th>Call Reference #</th>
                                                             <th>Rep. Name</th>
@@ -2555,7 +2554,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <!-- <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm a':'UTC '+timeZone}}</td> -->
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm a':'UTC '+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>
@@ -2907,15 +2906,15 @@
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
                                                         </div>
                                                     </div> -->
-                                                        <div class="col-md-4 mb-2">
+                                                        <!-- <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="nextStatementDate">Next Statement
                                                                     Date</label>
-                                                                <!-- <input type="date" id="nextStatementDate"
+                                                                <input type="date" id="nextStatementDate"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']"
                                                                 class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate']}"> -->
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate']}">
                                                                 <app-date-picker id="nextStatementDate" 
                                                                     class="claimDatepicker"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
@@ -2924,7 +2923,7 @@
                                                                     (ngModelChange)="onSelectDate($event)">
                                                                 </app-date-picker>
                                                             </div>
-                                                        </div>
+                                                        </div> -->
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="statementNotes">Statement Notes &nbsp;<span class="text-danger">*</span></label>
@@ -4226,12 +4225,12 @@
                                                 <table class="table">
                                                     <thead>
                                                         <tr>
-                                                            <th>Secondary Billed Amount</th>
-                                                            <th>Secondary Claim Submission Date</th>
-                                                            <th>Primary Paid </th>
+                                                            <th>Secondary Billing Amount</th>
+                                                            <!-- <th>Secondary Claim Submission Date</th>
+                                                            <th>Primary Paid </th> -->
                                                             <th>Claim Type</th>
-                                                            <th>Secondary Claim Status</th>
-                                                            <th>Provider ID (Report)</th>
+                                                            <!-- <th>Secondary Claim Status</th> -->
+                                                            <th>Provider ID</th>
                                                             <th>Secondary Est Amount</th>
                                                             <th>Secondary Insurance Name</th>
                                                             <th>Secondary Insurance Phone No.</th>
@@ -4239,7 +4238,7 @@
                                                             <th>Secondary Member ID</th>
                                                             <th>Secondary Insurance Address</th>
                                                             <th>Secondary Group Number</th>
-                                                            <th>Secondary Policy Holder</th>
+                                                            <th>Secondary Policy Holder Name</th>
                                                             <th>Secondary Policy Holder DOB</th>
                                                             <!-- <th>#Service Codes</th> -->
                                                             <!-- <th>#Tooth</th> -->
@@ -4256,7 +4255,7 @@
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryBlledAmount']"
                                                                     [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryBlledAmount']">
                                                             </td>
-                                                            <td>
+                                                            <!-- <td>
                                                                 <app-date-picker id="secondaryClaimSubmissionDate" 
                                                                     class="claimDatepicker dpWidth"
                                                                     [ngClass]="{'is-invalid':claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryClaimSubmissionDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
@@ -4264,22 +4263,22 @@
                                                                     (emitToParent)="receiveChildEventdate($event)" 
                                                                     (ngModelChange)="onSelectDate($event)">
                                                                 </app-date-picker>
-                                                            </td>
-                                                            <td><input type="number"
+                                                            </td> -->
+                                                            <!-- <td><input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['primaryPaid']"
                                                                     [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['primaryPaid']">
-                                                            </td>
+                                                            </td> -->
                                                             <td><input class="attach-secondary-width form-control"
                                                                     readonly
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['claimTypeS']"
                                                                     [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['claimTypeS']">
                                                             </td>
-                                                            <td><input type="text"
+                                                            <!-- <td><input type="text"
                                                                     class="attach-secondary-width form-control"
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryClaimStatus']"
                                                                     [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['secondaryClaimStatus']">
-                                                            </td>
+                                                            </td> -->
                                                             <td><input type="text"
                                                                     class="attach-secondary-width form-control"
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['providerIdReport']"
