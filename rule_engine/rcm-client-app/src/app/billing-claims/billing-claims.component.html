@@ -2197,7 +2197,6 @@
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo']"
-                                                        (change)="onClaimPassChange()"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimPassFirstGo']}">
                                                         <option value="">Select</option>
                                                         <option value="yes">Yes</option>
@@ -2205,10 +2204,9 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            <ng-container *ngIf="isInitialDenialRequired">
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
-                                                    <label for="intialDenial">Initial Denial&nbsp;<span class="text-danger">*</span></label>
+                                                    <label for="intialDenial">Initial Denial</label>
                                                     <select id="intialDenial" class="form-control"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
@@ -2223,8 +2221,24 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                            </ng-container>
-
+                                            <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="claim">Downpayment Amount</label>
+                                                    <input type="number" id="DownpaymentAmount" *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['downPaymentAmount']" class="form-control"
+                                                        [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['downPaymentAmount']}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4 mb-2">
+                                                <div class="custom-row text-number">
+                                                    <label for="claim">Installment Amount</label>
+                                                    <input type="number" id="InstallmentAmount" *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['installmentAmount']" class="form-control"
+                                                        [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['installmentAmount']}">
+                                                </div>
+                                            </div>
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number"
                                                     *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">

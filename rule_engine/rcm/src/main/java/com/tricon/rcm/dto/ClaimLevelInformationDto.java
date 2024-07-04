@@ -13,6 +13,8 @@ public class ClaimLevelInformationDto {
 	private String noOfEstPayment;
 	private String paymentFrequency;
 	private String noOfPaymentReceived;
+	private double downPaymentAmount;
+	private double installmentAmount;
 	private int sectionId;
 
 }

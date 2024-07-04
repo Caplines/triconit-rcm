@@ -282,6 +282,8 @@ export class BillingClaimsComponent {
       claimPassFirstGo: '',
       initialDenial: '',
       network: '',
+      downPaymentAmount: '',
+      installmentAmount: '',
     },
     APPEAL: {
       modeOfAppeal: '',
@@ -2062,7 +2064,7 @@ export class BillingClaimsComponent {
           this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']);
         }
       }
-      this.onClaimPassChange();
+     // this.onClaimPassChange();
     })
   }
 
@@ -2412,12 +2414,22 @@ export class BillingClaimsComponent {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimPassFirstGo = true;
       isSectionValidated = false;
     }
-    if (this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo'] == 'yes') {
-      if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].initialDenial) {
-        this.emptyFields["CLAIM_LEVEL_INFORMATION"].initialDenial = true;
-        isSectionValidated = false;
-      }
-    }
+    
+    // if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].downPaymentAmount) {
+    //   this.emptyFields["CLAIM_LEVEL_INFORMATION"].downPaymentAmount = true;
+    //   isSectionValidated = false;
+    // }
+    // if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].installmentAmount) {
+    //   this.emptyFields["CLAIM_LEVEL_INFORMATION"].installmentAmount = true;
+    //   isSectionValidated = false;
+    // }
+    
+    // if (this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo'] == 'yes') {
+    //   if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].initialDenial) {
+    //     this.emptyFields["CLAIM_LEVEL_INFORMATION"].initialDenial = true;
+    //     isSectionValidated = false;
+    //   }
+    // }
     /*if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].claimStatusEs) {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimStatusEs = true;
       isSectionValidated = false;
@@ -4132,14 +4144,14 @@ export class BillingClaimsComponent {
   //   }
   // }
 
-  onClaimPassChange(){
-    if (this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo'] == 'yes'){
-      this.isInitialDenialRequired = true;
-    } else {
-      this.isInitialDenialRequired = false;
-      this.claimSectionModal.CLAIM_LEVEL_INFORMATION['initialDenial'] = '';
-    }
-  }
+  // onClaimPassChange(){
+  //   if (this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo'] == 'yes'){
+  //     this.isInitialDenialRequired = true;
+  //   } else {
+  //     this.isInitialDenialRequired = false;
+  //     this.claimSectionModal.CLAIM_LEVEL_INFORMATION['initialDenial'] = '';
+  //   }
+  // }
   receiveChildEventdate(event: any) {
     if (event['action'] === 'changeDatePicker') {
       if (event.model == 'SUB_DET_DT') {

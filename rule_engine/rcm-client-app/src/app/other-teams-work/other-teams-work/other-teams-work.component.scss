@@ -82,9 +82,8 @@ a.arrow-down.selected {
 .table-inner-scrollbar {
     position: relative;
     overflow-y: auto;
-    height: calc(100vh - 220px);
+    height: calc(100vh - 260px);
     min-width: 100%;
-    overflow-x :hidden;
 }
 
 .table-inner-scrollbar thead th {
@@ -102,6 +101,7 @@ a.arrow-down.selected {
 .table-inner-scrollbar {
     thead {
         th {
+            min-width: 180px;
             .filter-dropdown-menu {
                 width: 280px;
                 line-height: normal;
@@ -118,12 +118,26 @@ a.arrow-down.selected {
             }
 
             &:first-child {
-                z-index: 2;
+                z-index: 99999;
+                width: 170px;
+                min-width: 170px;
+                max-width: 170px;
+                left: 0px;
             }
 
-            &:nth-child(6) {
-                min-width: 80px;
-                z-index: 999999;
+            &:nth-child(2) {
+                width: 150px;
+                min-width: 150px;
+                max-width: 150px;
+                left: 170px;
+                z-index: 9999;
+            }
+            &:nth-child(3) {
+                width: 150px;
+                min-width: 150px;
+                max-width: 150px;
+                left: 320px;
+                z-index: 999;
             }
 
             &:nth-child(7) {
@@ -135,7 +149,7 @@ a.arrow-down.selected {
             }
 
             &:nth-child(9) {
-                z-index: 999;
+                z-index: 99;
 
             }
 
@@ -151,7 +165,67 @@ a.arrow-down.selected {
             }
         }
     }
+
+        tbody {
+            td {
+                &:first-child {
+                    width: 170px;
+                    min-width: 170px;
+                    max-width: 170px;
+                    left: 0px;
+                    position: sticky;
+                }
+    
+                &:nth-child(2) {
+                    width: 150px;
+                    min-width: 150px;
+                    max-width: 150px;
+                    left: 170px;
+                    position: sticky;
+                }
+    
+                &:nth-child(3) {
+                    width: 150px;
+                    min-width: 150px;
+                    max-width: 150px;
+                    left: 320px;
+                    position: sticky;
+                }
+            }
+
+        }
+        &.table-striped {
+            tbody tr:nth-of-type(even) {
+                td:first-child, td:nth-child(2), td:nth-child(3) {
+                    background-color: #fff;
+                }
+                &.blueBgBackground {
+                
+                    td {
+                        color: #000;
+                        background-color: #a0cafa !important;
+                    }
+                  }
+            }
+            tbody tr:nth-of-type(odd) {
+               
+             
+                td:first-child, td:nth-child(2), td:nth-child(3) {
+                    background-color: #f7f7f7;
+                }
+                &.blueBgBackground {
+                
+                    td {
+                        color: #000;
+                        background-color: #a0cafa !important;
+                    }
+                  }
+            }
+            
+        }
 }
+
+
 
 .filter-dropdown-menu label:first-child {
     color: #dc3545;
@@ -504,13 +578,7 @@ h1 {
     display: block;
   }
 
-  .blueBgBackground {
-    background-color: #a0cafa !important;
-
-    td {
-        color: #000;
-    }
-  }
+  
 
 .filterDropdown {
     thead {
@@ -521,3 +589,4 @@ h1 {
         }
     }
 }
+

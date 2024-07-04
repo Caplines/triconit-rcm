@@ -651,6 +651,8 @@ public class ClaimSectionImpl {
 			claimLevelSection.setClaimPassFirstGo(claimLvelInfoDto.getClaimPassFirstGo());
 			claimLevelSection.setNoOfEstPayment(claimLvelInfoDto.getNoOfEstPayment());
 			claimLevelSection.setNoOfPaymentReceived(claimLvelInfoDto.getNoOfPaymentReceived());
+			claimLevelSection.setDownPaymentAmount(claimLvelInfoDto.getDownPaymentAmount());
+			claimLevelSection.setInstallmentAmount(claimLvelInfoDto.getInstallmentAmount());
 			claimLevelSection.setPaymentFrequency(claimLvelInfoDto.getPaymentFrequency());
 			claimLevelSection.setInitialDenial(claimLvelInfoDto.getInitialDenial());
 			claimLevelSection.setCreatedBy(createdBy);

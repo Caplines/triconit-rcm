@@ -65,4 +65,11 @@ public class RcmClaimLevelSection extends BaseAuditEntity implements java.io.Ser
 
 	@Column(name = "final_submit")
 	private boolean finalSubmit;
+	
+	@Column(name = "downPayment_Amount" ,columnDefinition = "DOUBLE DEFAULT 0")
+	private double downPaymentAmount;
+	
+	@Column(name = "installment_Amount",columnDefinition = "DOUBLE DEFAULT 0")
+	private double installmentAmount;
+	
 }
