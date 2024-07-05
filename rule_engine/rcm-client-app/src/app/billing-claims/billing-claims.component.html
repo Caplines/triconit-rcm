@@ -1908,7 +1908,7 @@
                                                             </td>
                                                             <td colspan="11"></td>
                                                         <tr>
-                                                            <td colspan="3">Balance From PMS After Posting&nbsp;<span class="text-danger">*</span></td>
+                                                            <td colspan="3">Enter Patient Balance From PMS After Posting&nbsp;<span class="text-danger">*</span></td>
                                                             <td colspan="3"> <input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     (change)="checkReconcileLogic()"
@@ -2968,22 +2968,23 @@
                                                             </div>
                                                         </div>
                                                     </ng-container>
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number"
+                                                            style="margin-left: -13px;">
+                                                            <label for="status">Status&nbsp;<span class="text-danger">*</span></label>
+                                                            <input type="text" id="status"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['status']"
+                                                                class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-4 mb-2"
                                                         *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1">
                                                     </div>
 
                                                     <div class="col-md-12 mb-2">
-                                                        <div class="col-md-4 mb-2">
-                                                            <div class="custom-row text-number"
-                                                                style="margin-left: -13px;">
-                                                                <label for="status">Status&nbsp;<span class="text-danger">*</span></label>
-                                                                <input type="text" id="status"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                    [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['status']"
-                                                                    class="form-control"
-                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
-                                                            </div>
-                                                        </div>
+
                                                         <div class="btn-align-right">
                                                             <button class="btn btn-success"
                                                                 (click)="savePatientStaementInfo(false)"
@@ -4242,7 +4243,7 @@
                                                             <th>Secondary Billing Amount</th>
                                                             <!-- <th>Secondary Claim Submission Date</th>
                                                             <th>Primary Paid </th> -->
-                                                            <th>Claim Type</th>
+                                                            <!-- <th>Claim Type</th> -->
                                                             <!-- <th>Secondary Claim Status</th> -->
                                                             <th>Provider ID</th>
                                                             <th>Secondary Est Amount</th>
@@ -4283,11 +4284,11 @@
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['primaryPaid']"
                                                                     [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['primaryPaid']">
                                                             </td> -->
-                                                            <td><input class="attach-secondary-width form-control"
+                                                            <!-- <td><input class="attach-secondary-width form-control"
                                                                     readonly
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['claimTypeS']"
                                                                     [(ngModel)]="claimSectionModal.RECREATE_CLAIM['claimFromSheet']['claimTypeS']">
-                                                            </td>
+                                                            </td> -->
                                                             <!-- <td><input type="text"
                                                                     class="attach-secondary-width form-control"
                                                                     [class.is-invalid]="claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet']['secondaryClaimStatus']"
