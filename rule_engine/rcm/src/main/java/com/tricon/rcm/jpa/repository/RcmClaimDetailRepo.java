@@ -15,6 +15,8 @@ public interface RcmClaimDetailRepo extends JpaRepository<RcmClaimDetail, Intege
 
 	List<RcmClaimDetail> findByClaimClaimUuid(String claimUUid);
 	
+	List<RcmClaimDetail> findByClaimClaimUuidAndServiceCode(String claimUUid,String serviceCode);
+	
 	List<RcmClaimDetail> findByClaimClaimUuidAndActiveTrue(String claimUUid);
 	
 	long countByClaimClaimUuid(String claimUUid);

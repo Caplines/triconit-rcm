@@ -155,6 +155,8 @@ export interface ServiceLevelCodeDataModel {
 	answer?: string;
 	message?: string;
 	ruleId?: number;
+	tooth?: string;
+	surface?: string;
 }
 
 export interface ServiceLevelCodeModel {
