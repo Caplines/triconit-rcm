@@ -1610,6 +1610,31 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
+                                                        <td>6</td>
+                                                        <td>Clean Claim</td>
+                                                        <td>
+                                                            <div data-toggle="buttons"
+                                                                class="btn-group btn-group-toggle" id="SUB_CLEAN_CLA">
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:submissionDto.cleanClaim}">
+                                                                    <input type="radio" name="cleaCLA" value=""
+                                                                        (click)="submissionDto.cleanClaim=true;removeErrorDisplayKeyById('SUB_CLEAN_CLA');preAuthEnable(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit');"
+                                                                        [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')">
+                                                                    Yes
+                                                                </label>
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:submissionDto.cleanClaim==false}">
+                                                                    <input type="radio" name="cleaCLA" value=""
+                                                                        (click)="submissionDto.cleanClaim=false;removeErrorDisplayKeyById('SUB_CLEAN_CLA');removeErrorDisplayKeyById('SUB_CLEAN_CLA');preAuthEnable(sectionIds['CLAIM_SUBMISSION'],'edit');"
+                                                                        [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')">
+                                                                    No
+                                                                </label>
+
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
                                                         <td></td>
                                                         <td class="remarkAria">
                                                             <strong>Remarks</strong>

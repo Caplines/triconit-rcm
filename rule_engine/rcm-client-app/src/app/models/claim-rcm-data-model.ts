@@ -180,6 +180,7 @@ export interface SubmissionDetailModel {
 	preauthNo?: string;
 	providerRefNo?: string;
 	esTime?: string;
+	cleanClaim?: boolean
 }
 
 export interface ClaimRuleModel {

@@ -17,6 +17,6 @@ public class ClaimSubmissionDto {
 	String preauthNo;
 	String providerRefNo;
 	String esTime;
-
+	boolean cleanClaim;
 
 }

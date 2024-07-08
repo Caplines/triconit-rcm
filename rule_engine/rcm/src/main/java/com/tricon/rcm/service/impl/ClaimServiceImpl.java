@@ -3753,6 +3753,7 @@ public class ClaimServiceImpl {
 		det.setProviderRefNo(dto.getProviderRefNo());
 		det.setRefferalLetter(dto.isRefferalLetter());
 		det.setAttachmentSend(dto.isAttachmentSend());
+		det.setCleanClaim(dto.isCleanClaim());
 		det.setEsTime(dto.getEsTime());
 
 		return rcmClaimSubmissionDetailsRepo.save(det).getId();

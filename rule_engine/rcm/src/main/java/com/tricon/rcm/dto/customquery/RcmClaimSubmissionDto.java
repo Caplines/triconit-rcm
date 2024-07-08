@@ -17,5 +17,6 @@ public interface RcmClaimSubmissionDto {
 	String getLName();
 	String getUuid();
 	String getEsTime();
+	boolean getCleanClaim();
 
 }

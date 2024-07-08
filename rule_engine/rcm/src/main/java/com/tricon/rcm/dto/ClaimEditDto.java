@@ -23,4 +23,5 @@ public class ClaimEditDto {
 	int assignToTeam;
 	boolean byPassPendingCheck;
 	String actionName;
+	boolean cleanClaim;
 }
