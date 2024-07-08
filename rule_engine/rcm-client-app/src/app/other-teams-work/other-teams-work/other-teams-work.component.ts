@@ -59,7 +59,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredSelectAging: any = [];
   tabSwitch: any = { 'submitted': false, 'unSubmitted': true };
   tabValue: any;
-  showColumns: any = { "currentStatus": false, "nextActionRequired": false, "dueDate": false, "providerSpeciality": false, "dueBalance": false, "showAttach": false };
+  showColumns: any = { "currentStatus": false, "nextActionRequired": false, "dueDate": false, "providerSpeciality": false, "dueBalance": false, "showAttach": false, "dueDateSort": false };
   columnPermissionsByTeam: any = {
     'Aging': ['currentStatus', 'nextActionRequired', 'dueDate', 'providerSpeciality'],
     'CDP': ['currentStatus', 'nextActionRequired', 'dueDate', 'providerSpeciality'],
@@ -139,6 +139,7 @@ export class OtherTeamsWorkComponent implements OnInit {
           } else {
             e['EstAmount'] = e.secTotal;
           }
+          e['dueDateSort'] = e.followUpDate == null ? e.pendingSince : e.followUpDate;
           return e;
         })
         ths.claimDetail = data;

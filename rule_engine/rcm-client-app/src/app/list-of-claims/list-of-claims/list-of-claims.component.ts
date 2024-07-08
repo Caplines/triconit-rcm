@@ -105,6 +105,7 @@ export class ListOfClaimsComponent implements OnInit {
           } else {
             e['EstAmount'] = e.secTotal;
           }
+          e['dueDateSort'] = e.followUpDate == null ? e.pendingSince : e.followUpDate;
           return e;
         })
         ths.claimDetail = data;
@@ -261,15 +262,16 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   removePrefix(data: any) {
-    const arr: any = data;
+    let arr: any = data;
 
     const claimIdCounts = new Map();
     const result = [];
 
-    for (const obj of arr) {
+    for (let obj of arr) {
       const claimId = obj.claimId.slice(0, -2); // remove the "_P" or "_S" suffix
       const count = claimIdCounts.get(claimId) || 0;
       claimIdCounts.set(claimId, count + 1);
+      obj['dueDateSort'] = obj.followUpDate == null ? obj.pendingSince : obj.followUpDate;
     }
 
     for (const obj of arr) {
