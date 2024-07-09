@@ -48,6 +48,7 @@ public class ClaimCycleServiceImpl {
 		}
 		
 		ClaimCycle newcycle =ClaimUtil.createCycle(claim, status,nextAction, team, user);
+		newcycle.setStatusUpdated(nextAction);
 		newcycle.setId(claimCycleRepo.save(newcycle).getId());
 		logger.info("new Cycle Created.. with Status:"+ status);
 		return newcycle;

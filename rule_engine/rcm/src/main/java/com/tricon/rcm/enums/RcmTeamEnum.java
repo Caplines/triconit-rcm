@@ -13,7 +13,7 @@ public enum RcmTeamEnum {
 	/*
 	 * Make sure Same is present in rcm_team Table
 	 */
-	SYSYEM(1, "SYSTEM","System", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM },false,false),
+	SYSTEM(1, "SYSTEM","System", new RcmRoleEnum[] { RcmRoleEnum.SYSTEM },false,false),
     ADMIN(2, "ADMIN","Admin", new RcmRoleEnum[] { RcmRoleEnum.ADMIN },false,false),
 	INTERNAL_AUDIT(3, "INTERNAL_AUDIT","Internal Audit", new RcmRoleEnum[] { RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),
 	LC3(4, "LC3","LC3", new RcmRoleEnum[] {  RcmRoleEnum.TL, RcmRoleEnum.ASSO },true,true),

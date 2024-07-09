@@ -7,4 +7,5 @@ public interface ClaimSteps {
 	Date getDt();
 	String getStatus();
 	String getName();
+	String getStatusUpdated();
 }

@@ -61,19 +61,19 @@ export class OtherTeamsWorkComponent implements OnInit {
   tabValue: any;
   showColumns: any = { "currentStatus": false, "nextActionRequired": false, "dueDate": false, "providerSpeciality": false, "dueBalance": false, "showAttach": false, "dueDateSort": false };
   columnPermissionsByTeam: any = {
-    'Aging': ['currentStatus', 'nextActionRequired', 'dueDate', 'providerSpeciality'],
-    'CDP': ['currentStatus', 'nextActionRequired', 'dueDate', 'providerSpeciality'],
-    'Credentialing': ['currentStatus', 'nextActionRequired', 'showAttach','dueDate'],
-    'Patient Statement': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueBalance','dueDate'],
-    'Payment Posting': ['currentStatus', 'nextActionRequired', 'providerSpeciality','dueDate'],
-    'LC3': ['showAttach','dueDate'],
-    'Office': ['showAttach','dueDate'],
-    'Ortho': ['showAttach','dueDate'],
-    'PPO IV': ['showAttach','dueDate'],
-    'Medicaid IV': ['showAttach','dueDate'],
-    'Need to hold': ['showAttach'],
-    'Quality': ['showAttach'],
-    'Patient Calling': ['showAttach','dueDate'],
+    'Aging': ['currentStatus', 'nextActionRequired', 'dueDateSort', 'providerSpeciality'],
+    'CDP': ['currentStatus', 'nextActionRequired', 'dueDateSort', 'providerSpeciality'],
+    'Credentialing': ['currentStatus', 'nextActionRequired', 'showAttach','dueDateSort'],
+    'Patient Statement': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueBalance','dueDateSort'],
+    'Payment Posting': ['currentStatus', 'nextActionRequired', 'providerSpeciality','dueDateSort'],
+    'LC3': ['showAttach','dueDateSort'],
+    'Office': ['showAttach','dueDateSort'],
+    'Ortho': ['showAttach','dueDateSort'],
+    'PPO IV': ['showAttach','dueDateSort'],
+    'Medicaid IV': ['showAttach','dueDateSort'],
+    'Need to hold': ['showAttach','dueDateSort'],
+    'Quality': ['showAttach','dueDateSort'],
+    'Patient Calling': ['showAttach','dueDateSort'],
   };
 
   showTooltipConfig:any={};
