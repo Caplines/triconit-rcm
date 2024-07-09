@@ -76,7 +76,7 @@ export class HeaderComponent implements OnInit {
     if (this.roleData.length == 0) {
       this.getRoles();
     }
-
+    /*
     if (Utils.getRolesFromLS()[0] === 'ROLE_ADMIN' && !this.userInfo.currentRoleName) {
       this.selectedClient = 'Smilepoint';
       this.selectedRole = 'Admin';
@@ -87,7 +87,7 @@ export class HeaderComponent implements OnInit {
         this.switchAccount();
       }, 1000);
     }
-
+*/
     // if(this.userInfo.currentClientName && this.userInfo.currentTeamId != "-1"){
     //   this.issueClaim();
     // }
@@ -237,7 +237,7 @@ export class HeaderComponent implements OnInit {
         this.selectedTeam = this.cwModel.teams[0].id;
       }
 
-      if (this.cwModel.roles.length == 1 && this.cwModel.companies.length == 1 && (localStorage.getItem("roles") == "ROLE_ADMIN" || localStorage.getItem("roles") == "ROLE_REPORTING" || this.cwModel.teams.length == 1)) {
+      if (this.cwModel.roles.length == 1 && this.cwModel.companies.length == 1 && (localStorage.getItem("roles") == "ROLE_REPORTING" || this.cwModel.teams.length == 1)) {
         this.isSingleRole = true;
         this.switchAccount();
       }
@@ -265,10 +265,10 @@ export class HeaderComponent implements OnInit {
   }
 
   checkBtnDisabled() {
-    if (this.selectedRole == 'SUPER_ADMIN') {
+    if (this.selectedRole == 'SUPER_ADMIN' || this.selectedRole == 'ADMIN') {
       this.checkValidationSuperAdmin();
     }
-    else if (this.selectedRole == 'ADMIN' || this.selectedRole == 'REPORTING') {
+    else if (this.selectedRole == 'REPORTING') {
       this.checkValidationAdminReporting();
     }
     else if (this.selectedRole != 'SUPER_ADMIN' || this.selectedRole != 'ADMIN' || this.selectedRole != 'REPORTING') {

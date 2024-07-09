@@ -181,7 +181,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 //	}
 	
 	@GetMapping(value = "api/get-claim-level-info/{claimUuid}/{withTeam}")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<?> getClaimLevelInfo(@PathVariable("claimUuid")String claimUuid,@PathVariable("withTeam")boolean withTeam,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
@@ -199,7 +199,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	}
 	
 	@GetMapping(value = "api/get-appeal-level-info/{claimUuid}/{withTeam}")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<?> getAppealLevelInfo(@PathVariable("claimUuid")String claimUuid,@PathVariable("withTeam")boolean withTeam,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
@@ -278,7 +278,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	}
 	
 	@GetMapping(value = "api/get-insurance-payment-info/{claimUuid}/{withTeam}")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<?> getInsurancePaymentInfo(@PathVariable("claimUuid") String claimUuid,
 			@PathVariable("withTeam") boolean withTeam, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

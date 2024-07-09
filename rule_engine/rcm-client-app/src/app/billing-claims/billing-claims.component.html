@@ -1091,6 +1091,9 @@
                                             </div>
                                         </div>
                                     </ng-container>
+                                    <ng-container>
+                                        <!-- TODDO FOR NOTES SECTION -->
+                                    </ng-container>
                                     <ng-container
                                         *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'view')">
                                         <div class="bold-b-text"
@@ -2321,7 +2324,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4 mb-2">
-                                                <div class="custom-row text-number">
+                                                <div class="custom-row text-number"
+                                                    *ngIf="(claimRcm.claimType|lowercase) == 'ortho'">
                                                     <label for="claim">Downpayment Amount</label>
                                                     <input type="number" id="DownpaymentAmount"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
@@ -2332,7 +2336,8 @@
                                                 </div>
                                             </div>
                                             <div class="col-md-4 mb-2">
-                                                <div class="custom-row text-number">
+                                                <div class="custom-row text-number"
+                                                    *ngIf="(claimRcm.claimType|lowercase) == 'ortho'">
                                                     <label for="claim">Installment Amount</label>
                                                     <input type="number" id="InstallmentAmount"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
@@ -3099,7 +3104,7 @@
                                                         </div>
                                                     </ng-container>
                                                     <div class="col-md-4 mb-2">
-                                                        <div class="custom-row text-number" style="margin-left: -13px;">
+                                                        <div class="custom-row text-number">
                                                             <label for="status">Status&nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <input type="text" id="status"
@@ -3109,10 +3114,10 @@
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
                                                         </div>
                                                     </div>
-                                                    <div class="col-md-4 mb-2"
+                                                    <!-- <div class="col-md-4 mb-2"
                                                         *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1">
                                                     </div>
-
+                                                     -->
                                                     <div class="col-md-12 mb-2">
 
                                                         <div class="btn-align-right">
@@ -4256,7 +4261,7 @@
                                                     <span class="text-danger"
                                                         *ngIf="validateRecreateClaimErrMsg">{{validateRecreateClaimErrMsg}}</span>
                                                     <ng-container
-                                                        *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view') &&
+                                                        *ngIf="checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view') &&
                                                                 (activeServiceCodeCount === 0 ||  (rebilledServiceCodeCount === activeServiceCodeCount))">
                                                         <span [ngClass]="{'text-danger':true}"> No Service Codes left to
                                                             be Rebilled.</span>
@@ -5211,14 +5216,14 @@
                             [ngClass]="{'toggleSidebar':toggleSideBar}">
                             <ul>
                                 <ng-container *ngFor="let steps of claimSteps">
-                                    <li class="done">
+                                    <li class="{{steps.done}}">
                                         <strong>
                                             <span class="teamname" *ngIf="steps.name==null">System</span>
                                             <span class="teamname" [ngClass]="{'last-child ':false}"
                                                 *ngIf="steps.name!=null">{{steps.name}}</span>
                                             <span class="claimDate">({{steps.dt | date: 'MM/dd/YYYY'}})</span>
                                         </strong>
-                                        <a href="javascript:void(0)">{{steps.status}}</a>
+                                        <a href="javascript:void(0)">{{steps.statusUpdated}}</a>
 
                                     </li>
                                 </ng-container>

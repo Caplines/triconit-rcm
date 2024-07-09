@@ -155,6 +155,15 @@ export default class Utils {
       return false;
    }
 
+   static checkRoleSuperAdminAndOnlyAdmin() {
+      let ls: any = localStorage;
+      if (ls.getItem('currentUser') && ls.getItem('selected_roleName') &&
+         (ls.getItem('selected_roleName')?.indexOf("SUPER_ADMIN") > -1 || ls.getItem('selected_roleName')?.indexOf("ADMIN") > -1)) {
+         return true;
+      }
+      return false;
+   }
+
 
 
    static isRoleLead() {

@@ -311,6 +311,8 @@ export interface ClaimStep {
 	dt?: Date;
 	name?: string;
 	status?: string;
+	statusUpdated?: string;
+	done?: string;
 }
 
 export interface linkedClaim {

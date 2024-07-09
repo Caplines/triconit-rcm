@@ -143,6 +143,12 @@ export class BillingClaimsComponent {
       isWorkDone: true,
       hideOnNoAccess: true
     },
+    'NOTES_RELATED_VALIDATION': {
+      sectionId: 28,
+      isNewSection: false,
+      isWorkDone: true,
+      hideOnNoAccess: true
+    },
     'SERVICE_LEVEL_VALIDATION_AUTO': {
       sectionId: 7,
       isNewSection: false,
@@ -3380,19 +3386,23 @@ export class BillingClaimsComponent {
         if (res.status === 200) {
           console.log(res.data);
           ths.claimSteps = this.filterConsecutiveDuplicates(res.data);
+          ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'undone';
         }
       });
   }
 
   filterConsecutiveDuplicates(data: any) {
     if (data.length === 0) return data;
-    const filteredData = [data[0]];
+    data[0]['done'] = 'done';
+    let filteredData = [data[0]];
+
     for (let i = 1; i < data.length; i++) {
-      const prev = filteredData[filteredData.length - 1];
-      const current = data[i];
+      let prev = filteredData[filteredData.length - 1];
+      let current = data[i];
       if (prev.status === current.status && prev.name === current.name) {
         continue;
       } else {
+        current['done'] = 'done';
         filteredData.push(current);
       }
     }

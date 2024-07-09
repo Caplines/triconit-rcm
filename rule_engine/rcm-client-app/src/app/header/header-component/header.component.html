@@ -114,7 +114,7 @@
             </li>
             <!-- <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' && currentTeamId == 7) || (staticUtil.isRoleLead() && currentTeamId == 7)"><a href="javascript:void(0);" [routerLink]="['/fetch-claims']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/dashboard-active.png':'../../assets/img/dashboard.png'" />Billing Pendency Dashboard</a></li> -->
             <li
-                *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Normal' ) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) )">
+                *ngIf="(staticUtil.checkRoleSuperAdminAndOnlyAdmin() && loginUserType== 'Normal' ) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) )">
                 <a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active"
                     #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />List Of
@@ -139,8 +139,8 @@
                         [src]="rla.isActive? '../../assets/img/search-claim.png':'../../assets/img/search-claim-gray.png'" />Search
                     Claims</a>
             </li>
-            <li *ngIf="(loginUserType!='Admin')"><a href="javascript:void(0);" [routerLink]="['/reconciliation']" routerLinkActive="active"
-                    #rla="routerLinkActive"><img
+            <li *ngIf="(loginUserType!='Admin')"><a href="javascript:void(0);" [routerLink]="['/reconciliation']"
+                    routerLinkActive="active" #rla="routerLinkActive"><img
                         [src]="rla.isActive? '../../assets/img/reconciliation-green-icon.png':'../../assets/img/reconciliation.png'" />Reconciliation
                 </a></li>
             <!-- <li ><a href="javascript:void(0);" [routerLink]="['/update-pass']" routerLinkActive="active" #rla="routerLinkActive"><img [src]="rla.isActive? '../../assets/img/updatePassword-active.png':'../../assets/img/updatePassword.png'" />Update Password</a></li>  -->
@@ -162,7 +162,8 @@
                 </div>
                 <div class="modal-body">
 
-                    <ng-container *ngIf="selectedRole == 'SUPER_ADMIN'" style="align-items: flex-start;">
+                    <ng-container *ngIf="selectedRole == 'SUPER_ADMIN' || selectedRole == 'ADMIN'"
+                        style="align-items: flex-start;">
                         <div class="form-group login-radio-box switchBoxContainer">
                             <label class="font-weight-bolder">Login As</label>
                             <div class="form-check-inline-radio ">
@@ -181,11 +182,11 @@
                     </ng-container>
 
                     <div class="form-group  switchBoxContainer"
-                        [ngStyle]="{'display': (loginUserType=='Admin' || staticUtil.getRolesFromLS()[0] == 'ROLE_ADMIN') ? 'none' : 'flex' }">
+                        [ngStyle]="{'display': (loginUserType=='Admin') ? 'none' : 'flex' }">
                         <label class="font-weight-bolder">Client</label>
                         <select class="form-control" id="selectClientAC" name="selectClientAC"
                             (change)="checkBtnDisabled()" [(ngModel)]="selectedClient"
-                            [disabled]="cwModel?.companies?.length == 1 ? true : false || (loginUserType=='Admin' || staticUtil.getRolesFromLS()[0] == 'ROLE_ADMIN')">
+                            [disabled]="cwModel?.companies?.length <=0  ? true : false || (loginUserType=='Admin')">
                             <option selected="true" hidden="true" value="">Select Client</option>
                             <ng-container *ngFor="let tl of cwModel?.companies">
                                 <option value="{{tl.name}}">{{tl.name}}</option>
@@ -208,7 +209,7 @@
 
 
                     <div class="form-group switchBoxContainer"
-                        [ngStyle]="{'display': (loginUserType=='Admin' || staticUtil.getRolesFromLS()[0] == 'ROLE_ADMIN') ? 'none' : 'flex' }">
+                        [ngStyle]="{'display': (loginUserType=='Admin') ? 'none' : 'flex' }">
                         <label class="font-weight-bolder">Team</label>
                         <select class="form-control" id="selectTeamAC" name="selectTeamAC" (change)="checkBtnDisabled()"
                             [(ngModel)]="selectedTeam"

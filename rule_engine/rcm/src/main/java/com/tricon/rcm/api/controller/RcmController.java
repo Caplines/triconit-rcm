@@ -114,7 +114,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Fetching Claims From  ES or GSheet", response = String.class, responseContainer = "Map")
 	@PostMapping("/api/fetch-claims-from-source")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ADMIN')")
 	public ResponseEntity<Object> fetchClaimsFromSource(@RequestBody ClaimSourceDto dto,
 			Model model) {
 
@@ -136,7 +136,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Fresh Claims Logs (Billing Pendency Dashboard)", response = FreshClaimLogDto.class, responseContainer = "List")
 	@GetMapping("/api/fetch-fresh-claims-logs/{uuid}")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ADMIN')")
 	public ResponseEntity<Object> fetchFreshClaimLogs(@PathVariable("uuid") String companyUuid
 			,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -180,7 +180,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDataDto.class, responseContainer = "List")
 	@GetMapping("/api/fetch-fresh-claims-det/{type}/{subType}")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','ADMIN')")
 	public ResponseEntity<Object> fetchFreshClaimsDetails(@PathVariable("type") int type,
 			@PathVariable("subType") String subType,Model model) {
 		
@@ -196,7 +196,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDataDto.class, responseContainer = "List")
 	@GetMapping("/api/fetch-fresh-claims-det-lead/{type}/{subType}")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','ADMIN')")
 	public ResponseEntity<Object> fetchFreshClaimsDetailsLead(@PathVariable("type") int type,
 			@PathVariable("subType") String subType,Model model) {
 		
@@ -243,7 +243,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = AssignFreshClaimLogsImplDto.class, responseContainer = "List")
 	@PostMapping("/api/fetch-claims-log-assign")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','ADMIN')")
 	public ResponseEntity<Object> fetchClaimsForAssignments(@RequestBody AssigmentClaimListDto dto,
 			 Model model) {
 		
@@ -861,7 +861,7 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	@GetMapping(value = "api/claim/user-section-permission")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<?> getSectionDetailsOfUserAndClient(Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
