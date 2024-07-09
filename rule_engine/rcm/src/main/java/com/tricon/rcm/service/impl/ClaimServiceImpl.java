@@ -3098,7 +3098,9 @@ public class ClaimServiceImpl {
 								one.setName(qq.getNameOfService());
 								one.setRemark(oldVal.getRemark());
 								one.setAnswer(oldVal.getAnswer());
-								
+								List<RcmClaimDetail> cList= rcmClaimDetailRepo.findByClaimClaimUuidAndServiceCode(claim.getClaimUuid(),entry.getKey());
+								one.setTooth(getToothOrSurfaceFromClaimDetails(cList, true));
+								one.setSurface(getToothOrSurfaceFromClaimDetails(cList, false));
 								list.add(one);
 								//Run The Rule
 								
@@ -3168,6 +3170,9 @@ public class ClaimServiceImpl {
 					one.setMessageType(s.getMessageType());
 					one.setManualAuto(s.getManualAuto());
 					one.setAnswer(s.getAnswer());
+					List<RcmClaimDetail> cList= rcmClaimDetailRepo.findByClaimClaimUuidAndServiceCode(claim.getClaimUuid(),s.getServiceCode());
+					one.setTooth(getToothOrSurfaceFromClaimDetails(cList, true));
+					one.setSurface(getToothOrSurfaceFromClaimDetails(cList, false));
 					if (s.getRule()!=null)one.setRuleId(s.getRule().getId());
 					one.setInsuranceTypes(s.getInsuranceTypes());
 					one.setDisplayValues(s.getDisplayValues());
@@ -3754,6 +3759,7 @@ public class ClaimServiceImpl {
 		det.setProviderRefNo(dto.getProviderRefNo());
 		det.setRefferalLetter(dto.isRefferalLetter());
 		det.setAttachmentSend(dto.isAttachmentSend());
+		det.setCleanClaim(dto.isCleanClaim());
 		det.setEsTime(dto.getEsTime());
 
 		return rcmClaimSubmissionDetailsRepo.save(det).getId();
@@ -4803,7 +4809,7 @@ public class ClaimServiceImpl {
 		//Remove Office in case of associate 
 		if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 			List<RcmOfficeDto> fil =new ArrayList<>();
-			List<UserAssignOffice> assignoffices=userAssignOfficeRepo.findByUserUuid(partialHeader.getJwtUser().getUuid());
+			List<UserAssignOffice> assignoffices=userAssignOfficeRepo.findByUserUuidAndTeamId(partialHeader.getJwtUser().getUuid(),teamId);
 			for (UserAssignOffice assignoffice:assignoffices) {
 				fil.addAll(offices.stream().filter(re -> re.getUuid().equals(assignoffice.getOffice().getUuid()) )
 			      .collect(Collectors.toList()));
@@ -6318,5 +6324,20 @@ public class ClaimServiceImpl {
 				break;
 		}
 		return response;
+	}
+	
+	private String getToothOrSurfaceFromClaimDetails(List<RcmClaimDetail> cList,boolean byTooth) {
+		String data="NA";
+		if (cList!=null) {
+			List<String> tooths = cList.stream()
+					.filter(i -> i.getTooth()!=null)
+					.map(RcmClaimDetail::getTooth).collect(Collectors.toList());
+			List<String> surfaces = cList.stream()
+					.filter(i -> i.getSurface()!=null)
+					.map(RcmClaimDetail::getSurface).collect(Collectors.toList());
+			if (tooths.size()>0 && byTooth)data=String.join(",", tooths);
+			if (surfaces.size()>0 && !byTooth)data=String.join(",", surfaces);
+		}
+		return data;
 	}
 }

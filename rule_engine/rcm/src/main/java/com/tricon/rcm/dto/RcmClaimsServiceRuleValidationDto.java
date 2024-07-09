@@ -27,6 +27,10 @@ public class RcmClaimsServiceRuleValidationDto {
 	
 	private String displayValues;
 	
+	private String tooth;
+	
+	private String surface;
+	
 	private int ruleId;
 
 }

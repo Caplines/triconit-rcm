@@ -840,6 +840,7 @@ export class BillingClaimsComponent {
         ths.addErrorDisplay(document.getElementById("SUB_DET_ATT"));
         ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
         ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
+        ths.addErrorDisplay(document.getElementById("SUB_CLEAN_CLA"));
         if (!ths.claimNoEnable()) {
 
           ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
@@ -866,6 +867,10 @@ export class BillingClaimsComponent {
         }
         if (ths.submissionDto.refferalLetter === undefined || ths.submissionDto.refferalLetter === null) {
           ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
+          valid = false;
+        }
+        if (ths.submissionDto.cleanClaim === undefined || ths.submissionDto.cleanClaim === null) {
+          ths.addErrorDisplay(document.getElementById("SUB_CLEAN_CLA"));
           valid = false;
         }
         if (!ths.claimNoEnable()) {
@@ -1523,7 +1528,7 @@ export class BillingClaimsComponent {
     }
   }
 
-  assignToLeadSave(remark: string, assignTouuid: string){
+  assignToLeadSave(remark: string, assignTouuid: string) {
     let ths = this;
     ths.claimAssignToTeamModel.claimUuid = ths.claimUUid;
     ths.claimAssignToTeamModel.otherTeamId = -1;
@@ -1560,7 +1565,7 @@ export class BillingClaimsComponent {
 
   openSubmitModal() {
     this.validate_CURRENT_STATUS_AND_NEXT_ACTION()
-    if (this.validate_CURRENT_STATUS_AND_NEXT_ACTION()){
+    if (this.validate_CURRENT_STATUS_AND_NEXT_ACTION()) {
       this.modelElement.modal = document.getElementById("next-action-submit-modal");
       this.modelElement.span = document.getElementsByClassName("close")[0];
       this.modelElement.modal.style.display = "block";
@@ -2064,7 +2069,7 @@ export class BillingClaimsComponent {
           this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['CLAIM_LEVEL_INFORMATION']['claimProcessingDate']);
         }
       }
-     // this.onClaimPassChange();
+      // this.onClaimPassChange();
     })
   }
 
@@ -2304,7 +2309,7 @@ export class BillingClaimsComponent {
           }
         }
       }
-      else if (buttonType == 'assignToTeamLead'){
+      else if (buttonType == 'assignToTeamLead') {
         let remarks = this.claimSectionModal["CURRENT_STATUS_AND_NEXT_ACTION"].remarks;
         let teamLeadId = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'];
         let currentClaimStatusRcm = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'];
@@ -2414,7 +2419,7 @@ export class BillingClaimsComponent {
       this.emptyFields["CLAIM_LEVEL_INFORMATION"].claimPassFirstGo = true;
       isSectionValidated = false;
     }
-    
+
     // if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].downPaymentAmount) {
     //   this.emptyFields["CLAIM_LEVEL_INFORMATION"].downPaymentAmount = true;
     //   isSectionValidated = false;
@@ -2423,7 +2428,7 @@ export class BillingClaimsComponent {
     //   this.emptyFields["CLAIM_LEVEL_INFORMATION"].installmentAmount = true;
     //   isSectionValidated = false;
     // }
-    
+
     // if (this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo'] == 'yes') {
     //   if (!this.claimSectionModal["CLAIM_LEVEL_INFORMATION"].initialDenial) {
     //     this.emptyFields["CLAIM_LEVEL_INFORMATION"].initialDenial = true;
@@ -2539,7 +2544,7 @@ export class BillingClaimsComponent {
         isSectionValidated = false;
       }
 
-      if ((obj.creditAdjustmentAmount===null || obj.creditAdjustmentAmount === 0) && (obj.debitAdjustmentAmount ===null ||obj.debitAdjustmentAmount === 0)) {
+      if ((obj.creditAdjustmentAmount === null || obj.creditAdjustmentAmount === 0) && (obj.debitAdjustmentAmount === null || obj.debitAdjustmentAmount === 0)) {
         obj.adjustmentReason = '';
       }
 
@@ -2547,13 +2552,13 @@ export class BillingClaimsComponent {
         obj.btpReason = '';
       }
 
-      if (((obj.creditAdjustmentAmount!=null && obj.creditAdjustmentAmount > 0) || (obj.debitAdjustmentAmount!=null && obj.debitAdjustmentAmount > 0)) &&
-        (obj.adjustmentReason === null || obj.adjustmentReason ==='')) {
+      if (((obj.creditAdjustmentAmount != null && obj.creditAdjustmentAmount > 0) || (obj.debitAdjustmentAmount != null && obj.debitAdjustmentAmount > 0)) &&
+        (obj.adjustmentReason === null || obj.adjustmentReason === '')) {
         this.emptyFields[heading]['adjustmentReason'] = true;
         isSectionValidated = false;
       }
 
-      if ((obj.billToPatientAmount!=null && obj.billToPatientAmount > 0 )&& (obj.btpReason === null || obj.btpReason === '')) {
+      if ((obj.billToPatientAmount != null && obj.billToPatientAmount > 0) && (obj.btpReason === null || obj.btpReason === '')) {
         this.emptyFields[heading]['btpReason'] = true;
         isSectionValidated = false;
       }
@@ -2566,9 +2571,9 @@ export class BillingClaimsComponent {
 
     let SERVICE_LEVEL_INFORMATION_EsBeforePosting: any = document.getElementById('SERVICE_LEVEL_INFORMATION_EsBeforePosting')
 
-    if (this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] === null || 
-        this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] === "" || 
-        SERVICE_LEVEL_INFORMATION_EsBeforePosting.value === "") {
+    if (this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] === null ||
+      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] === "" ||
+      SERVICE_LEVEL_INFORMATION_EsBeforePosting.value === "") {
       this.emptyFields['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting'] = true;
       isSectionValidated = false;
     }
@@ -2591,7 +2596,7 @@ export class BillingClaimsComponent {
     this.emptyFields["PATIENT_STATEMENT"] = {};
     let isSectionValidated = true;
     //status is mandatory for all buttons
-    if (this.claimSectionModal['PATIENT_STATEMENT']['status'] === "" || this.claimSectionModal['PATIENT_STATEMENT']['status']==null) {
+    if (this.claimSectionModal['PATIENT_STATEMENT']['status'] === "" || this.claimSectionModal['PATIENT_STATEMENT']['status'] == null) {
       this.emptyFields['PATIENT_STATEMENT']['status'] = true;
       isSectionValidated = false;
     }
@@ -3238,7 +3243,7 @@ export class BillingClaimsComponent {
 
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.splice(this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length - 1, 0, model);
 
-    this.activeServiceCodeCount=this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length;
+    this.activeServiceCodeCount = this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length;
   }
 
   addUndistributedSectionLevelField() {
@@ -3282,7 +3287,7 @@ export class BillingClaimsComponent {
     this.checkReconcileLogic();
   }
 
-  getTotalServiceLevelInfo(overrideBtp:boolean) {
+  getTotalServiceLevelInfo(overrideBtp: boolean) {
     this.clearTotalValues();
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
       // this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount + +e.allowedAmount;
@@ -3294,8 +3299,9 @@ export class BillingClaimsComponent {
       this.sectionLevelInfoTotalConfig.creditAdjustmentAmount = this.sectionLevelInfoTotalConfig.creditAdjustmentAmount + +e.creditAdjustmentAmount;
       this.sectionLevelInfoTotalConfig.debitAdjustmentAmount = this.sectionLevelInfoTotalConfig.debitAdjustmentAmount + +e.debitAdjustmentAmount;
     });
-    if(overrideBtp){
-    this.sectionLevelInfoTotalConfig.billToPatientAmount > 0 ? this.isBtpFlagTrue = true : this.isBtpFlagTrue = false;}
+    if (overrideBtp) {
+      this.sectionLevelInfoTotalConfig.billToPatientAmount > 0 ? this.isBtpFlagTrue = true : this.isBtpFlagTrue = false;
+    }
     this.addDecimalInTotalServiceValue();
     this.getTotalPaidAmt();
     this.getTotalAllowedAmt();
@@ -3759,7 +3765,7 @@ export class BillingClaimsComponent {
 
   }
 
-  selectActionToPerformNextActionRequired(action: any){
+  selectActionToPerformNextActionRequired(action: any) {
     this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] = action;
     this.showAssignToTeam = false;
     this.showAssignToTeamLead = false;
@@ -3769,17 +3775,17 @@ export class BillingClaimsComponent {
     if (action == 'assignToOtherTeam') {
       this.showAssignToTeam = true;
     }
-    if (action == 'assignToSameTeam'){
+    if (action == 'assignToSameTeam') {
       this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = this.claimRcm.currentTeamId;
-      
+
     }
-    if(action == 'assignToTeamLead'){
+    if (action == 'assignToTeamLead') {
       this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = '';
       this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'] = '';
       this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] = '';
       this.showAssignToTeamLead = true;
     }
-    if(action == 'archive'){
+    if (action == 'archive') {
       this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] = '';
       this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusEs'] = '';
       this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction'] = '';
@@ -3789,10 +3795,10 @@ export class BillingClaimsComponent {
     this.validate_CURRENT_STATUS_AND_NEXT_ACTION();
   }
 
-  claimStatusCheck(event: any){
+  claimStatusCheck(event: any) {
     this.showAToPNextActionRequired = true;
-    if(event.target.value == 'Case Closed'){
-      this.showAssignToTeam= false;
+    if (event.target.value == 'Case Closed') {
+      this.showAssignToTeam = false;
       this.showAssignToTeamLead = false;
       this.showAToPNextActionRequired = false;
     }
@@ -3968,7 +3974,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet'] = {};
     for (const key in this.claimSectionModal.RECREATE_CLAIM['claimFromSheet']) {
       if (!this.claimSectionModal.RECREATE_CLAIM['claimFromSheet'][key]) {
-        if(key=='secondaryClaimSubmissionDate' || key=='primaryPaid' || key=='secondaryClaimStatus'){
+        if (key == 'secondaryClaimSubmissionDate' || key == 'primaryPaid' || key == 'secondaryClaimStatus') {
           continue;
         }
         this.claimSectionModal.RECREATE_CLAIM['emptyClaimFromSheet'][key] = true;
@@ -4211,15 +4217,15 @@ export class BillingClaimsComponent {
           this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment'] = null;
       }
       if (event.model == "secondaryClaimSubmissionDate") {
-        if (event.value != null) 
+        if (event.value != null)
           this.claimSectionModal.RECREATE_CLAIM["claimFromSheet"]["secondaryClaimSubmissionDate"] = new Date(event.value);
-        else 
+        else
           this.claimSectionModal.RECREATE_CLAIM["claimFromSheet"]["secondaryClaimSubmissionDate"] = null;
       }
       if (event.model == "secondaryPolicyHolderDob") {
-        if (event.value != null) 
+        if (event.value != null)
           this.claimSectionModal.RECREATE_CLAIM["claimFromSheet"]["secondaryPolicyHolderDob"] = new Date(event.value);
-        else 
+        else
           this.claimSectionModal.RECREATE_CLAIM["claimFromSheet"]["secondaryPolicyHolderDob"] = null;
       }
     }
@@ -4228,8 +4234,8 @@ export class BillingClaimsComponent {
   onSelectDate(date: any) {
     this.emitToChild.emit(date);
   }
-  
-  get staticUtil():any {
+
+  get staticUtil(): any {
 
     return Utils;
   }

@@ -14,6 +14,7 @@ public interface UserAssignOfficeRepo extends JpaRepository<UserAssignOffice, In
 	
 	UserAssignOffice findByOfficeUuidAndTeamId(String officeId,int teamId);
 	List<UserAssignOffice> findByUserUuid(String uuid);
+	List<UserAssignOffice> findByUserUuidAndTeamId(String uuid,int teamId);
 	UserAssignOffice findByUserUuidAndOfficeUuidAndTeamId(String userUuid,String officeId,int teamId);
 	
 	@Query(nativeQuery = true, value = "select uoff.office_id as OfficeUuid,uoff.user_id as UserUuid,uoff.team_id as TeamId "

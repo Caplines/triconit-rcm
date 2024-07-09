@@ -20,7 +20,7 @@ public interface RcmClaimSubmissionDetailsRepo extends JpaRepository<RcmClaimSub
 			+ " dt.claim_id claimUuid,dt.es_date esDate,es_time esTime,dt.channel channel,dt.attachment_send attachmentSend,"
 			+ " dt.preauth preauth,us.first_name fName,us.last_name lName,us.uuid uuid,"
 			+ " dt.refferal_letter refferalLetter,dt.claim_no claimNumber,dt.preauth_no preauthNo,dt.provider_ref_no "
-			+ " providerRefNo from rcm_claims_submission_details dt inner join rcm_user us on us.uuid=dt.submitted_by "
+			+ " providerRefNo,dt.clean_claim cleanClaim from rcm_claims_submission_details dt inner join rcm_user us on us.uuid=dt.submitted_by "
 			+ " inner join rcm_user_company ruc on ruc.rcm_user_id=us.uuid "
 			+ " where dt.claim_id=:claimId and ruc.company_id=:compid "
 			)

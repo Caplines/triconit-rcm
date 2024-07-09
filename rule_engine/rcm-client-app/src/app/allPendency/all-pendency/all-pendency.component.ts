@@ -287,7 +287,8 @@ export class AllPendencyComponent {
         })
       })
     }
-
+    this.clearTotalCount();
+    this.total(this.filteredItems);
   }
   
   showFilterOptionOfficeName(data: any) {
