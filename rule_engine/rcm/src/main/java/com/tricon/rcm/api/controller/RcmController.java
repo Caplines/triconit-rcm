@@ -256,7 +256,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Billing TL Prodution Report", response = ProductionDto.class, responseContainer = "List")
 	@PostMapping("/api/bill/claim-production")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ASSO')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ASSO','ADMIN')")
 	public ResponseEntity<Object> claimsProduction(@RequestBody ClaimProductionLogDto dto, Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -295,8 +295,10 @@ public class RcmController extends BaseHeaderController{
    
 	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
 	@GetMapping("/api/allclients")
-	public ResponseEntity<Object> getAllClients() {
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", rcmCommonServiceImpl.findAllClients()));
+	public ResponseEntity<Object> getAllClients(Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", rcmCommonServiceImpl.findAllClients(partialHeader)));
 	}
 
 	@ApiOperation(value = "Api For Fetching All Client Names and uuid", response = ClientCustomDto.class, responseContainer = "List")
@@ -524,7 +526,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Fetching pendency Report Data (All Billing Pendency Dashboard)", response = AllPendencyReportDto.class, responseContainer = "List")
 	@GetMapping("/api/allpendency/{companyUuid}")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ASSO')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ASSO','ADMIN')")
 	public ResponseEntity<Object> fetchAllPendencyData(@PathVariable("companyUuid") String companyUuid,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader==null) {
@@ -684,7 +686,7 @@ public class RcmController extends BaseHeaderController{
 	}
 	
 	@GetMapping("api/alluserclients")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<Object> getAllclients(Model model) {
 		List<CompanyIdAndNameDto> response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -961,7 +963,7 @@ public class RcmController extends BaseHeaderController{
 	
 	
 	@PostMapping(value = "/api/reconciliation")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','REPORTING')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','REPORTING','ADMIN')")
 	public ResponseEntity<?> reconcillationData(@RequestBody ReconciliationDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)

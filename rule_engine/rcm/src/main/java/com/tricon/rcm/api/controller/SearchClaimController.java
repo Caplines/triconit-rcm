@@ -42,7 +42,7 @@ public class SearchClaimController extends BaseHeaderController {
 	SearchClaimServiceImpl searchClaimServiceImpl;
 
 	@GetMapping(value = "/get-clients-with-offices")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','REPORTING')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','REPORTING','ADMIN')")
 	public ResponseEntity<?> getUserClients(Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
@@ -60,7 +60,7 @@ public class SearchClaimController extends BaseHeaderController {
 	}
 	
 	@PostMapping(value = "/api/search-claims")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','REPORTING')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','REPORTING','ADMIN')")
 	public ResponseEntity<?> claimSearch(@RequestBody SearchClaimDto dto, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)

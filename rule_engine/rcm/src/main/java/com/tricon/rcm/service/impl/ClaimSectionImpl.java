@@ -411,11 +411,16 @@ public class ClaimSectionImpl {
 //	}
 	
 	
-	public List<ClientSectionMappingDto> getClientsWithAllSectionsAndTeam() throws Exception {
+	public List<ClientSectionMappingDto> getClientsWithAllSectionsAndTeam(PartialHeader partialHeader) throws Exception {
 		List<ClientSectionMappingDto> response = new ArrayList<>();
 		List<RcmClaimSection> claimSections = claimSectionRepo.findAllWithSectionCategory().stream()
 				.filter(x -> x.isActive() == true).collect(Collectors.toList());
-		List<ClientCustomDto> clients = rcmCompanyRepo.findAllClients();
+		List<ClientCustomDto> clients = null;
+		if (partialHeader.getRole().equals(Constants.ADMIN)) {
+			clients = rcmCompanyRepo.findAllClientsOfAssociatedUser(partialHeader.getJwtUser().getUuid());
+		} else {
+			clients = rcmCompanyRepo.findAllClients();
+		}
 		List<RcmTeamDto> teamData = RcmTeamEnum.getAllTeamsIsRoleVisible();
 		clients.forEach(client -> {
 			ClientSectionMappingDto responseDto = new ClientSectionMappingDto();

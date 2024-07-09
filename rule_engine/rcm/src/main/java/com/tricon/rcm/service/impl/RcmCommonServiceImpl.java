@@ -104,6 +104,8 @@ public class RcmCommonServiceImpl {
 	@Autowired
 	ClaimSectionValidationUtil claimSectionValidationUtil;
 	
+	@Autowired
+	RcmUserCompanyRepo rcmUserCompanyRepo;
 	
 	public List<RcmOfficeDto> getAllOffices() {
 
@@ -138,8 +140,11 @@ public class RcmCommonServiceImpl {
 		return msg;
 	}
 
-	public List<ClientCustomDto> findAllClients() {
-		return rcmCompanyRepo.findAllClients();
+	public List<ClientCustomDto> findAllClients(PartialHeader partialHeader) {
+		if (partialHeader.getRole().equals(Constants.ADMIN)) {
+			return rcmCompanyRepo.findAllClientsOfAssociatedUser(partialHeader.getJwtUser().getUuid());
+		} else
+			return rcmCompanyRepo.findAllClients();
 	}
 
 	/**

@@ -64,7 +64,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	 * @return
 	 */
 	@PostMapping(value = "api/manage-claim-client-section")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
 	public ResponseEntity<?> clientSectionDetails(@RequestBody List<ClientSectionMappingDto> listOfSectionsDto,
 			Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -95,7 +95,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	}
 
 	@GetMapping(value = "api/claim-client-with-section")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','ADMIN')")
 	public ResponseEntity<?> getSectionDetails(Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
@@ -103,7 +103,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		List<ClientSectionMappingDto> response = null;
 		try {
-			response = claimSection.getClientsWithAllSectionsAndTeam();
+			response = claimSection.getClientsWithAllSectionsAndTeam(partialHeader);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
