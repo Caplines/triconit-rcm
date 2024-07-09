@@ -260,6 +260,7 @@
     text-align: center;
     padding: 0 10px;
 }
+
 .steps-taken.vertical li.done{
     border-left: 4px solid #5abe37;
 }
@@ -267,6 +268,15 @@
     background: #5abe37;
     color: #ffffff;
 }
+
+.steps-taken.vertical li.undone{
+    border-left: 4px solid #5abe37;
+}
+.steps-taken.vertical li.undone a{
+    background: #696969;
+    color: #ffffff;
+}
+
 
 
 .steps-taken.vertical li.done a::before {
@@ -280,7 +290,16 @@
     left: -23px;
 }
 
-
+.steps-taken.vertical li.undone a::before {
+    content: "";
+    width: 21px;
+    height: 4px;
+    background: #5abe37;
+    top: 18px;
+    position: absolute;
+    z-index: 0;
+    left: -23px;
+}
 
 .hide_class {
     display: none;

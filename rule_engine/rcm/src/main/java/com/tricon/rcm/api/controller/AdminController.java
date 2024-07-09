@@ -618,7 +618,7 @@ public class AdminController extends BaseHeaderController{
 				|| dto.getRole().equals(Constants.REPORTING))) {
 
 		   if(!dto.getTeamId().isEmpty() && dto.getTeamId().stream().anyMatch(x->x.intValue()==RcmTeamEnum.ADMIN.getId()
-				   ||  x.intValue()==RcmTeamEnum.SUPER_ADMIN.getId() || x.intValue()==RcmTeamEnum.SYSYEM.getId())){
+				   ||  x.intValue()==RcmTeamEnum.SUPER_ADMIN.getId() || x.intValue()==RcmTeamEnum.SYSTEM.getId())){
 			   msg=MessageConstants.TEAM_NOT_EXIT;
 		   }
 			if (dto.getTeamId().isEmpty() || dto.getTeamId().stream().anyMatch(x -> x == 0)) {

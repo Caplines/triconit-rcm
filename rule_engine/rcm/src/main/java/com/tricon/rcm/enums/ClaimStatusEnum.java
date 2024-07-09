@@ -9,7 +9,7 @@ public enum ClaimStatusEnum {
 	Billing(1, "Billing"), 
 	ReBilling(2, "Re-billing"),
 	Need_to_Audit(3,"Need to Audit"),
-	//Need_to_Bill(4,"Need to Bill"),
+	Need_to_Bill(4,"Need to Bill"),
 	Primary_Closed(5, "Primary Closed"), 
 	Need_to_call(6,"Need to call"), 
 	Primary_Settled(7, "Primary Settled"), 
@@ -82,7 +82,8 @@ public enum ClaimStatusEnum {
 	Need_Additional_Information_For_Claim(74,"Need Additional Information For Claim"),
 	Need_to_Follow_Up_For_Void_Request(75,"Need to follow up for Void Request"),
 	Need_to_Get_Provider_Credentialed(76,"Need to get Provider Credentialed"),
-	Need_to_Call_Insurance_For_reprocessing(77,"Need to call Insurance for reprocessing");
+	Need_to_Call_Insurance_For_reprocessing(77,"Need to call Insurance for reprocessing"),
+	NEED_TO_REBILL(78,"Need to re-bill");
 	
 	
 	

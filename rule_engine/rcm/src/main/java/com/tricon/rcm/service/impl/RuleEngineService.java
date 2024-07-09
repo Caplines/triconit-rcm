@@ -398,7 +398,8 @@ public class RuleEngineService {
 										}
 										claim.setCurrentStatus(ClaimStatusEnum.Claim_Uploaded.getId());	
 										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
-										claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Claim_Uploaded.getType(),null, currentTeam, user);
+										RcmTeam systemTeam=rcmTeamRepo.findByNameId(RcmTeamEnum.SYSTEM.getName());
+										claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Claim_Uploaded.getType(),null,systemTeam, user);
 										RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(
 												re.getClaimId() + claimTypeEnum.getSuffix(), off, source);
 										if (isC != null) {
@@ -415,9 +416,9 @@ public class RuleEngineService {
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
 											claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Billing.getId());
-											claim.setNextAction(ClaimStatusEnum.Pending_For_Billing.getId());
-											rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Pending_For_Billing.getId(),claim.getClaimUuid());
-											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(),ClaimStatusEnum.Pending_For_Billing.getType(),assignedTeamBilling, user);
+											claim.setNextAction(ClaimStatusEnum.Need_to_Bill.getId());
+											rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Need_to_Bill.getId(),claim.getClaimUuid());
+											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(),ClaimStatusEnum.Need_to_Bill.getType(),assignedTeamBilling, user);
 										
 										}
 										if (assignedUserInternalAudit != null && (isMedicaid||  isChip || isFCL)) {
@@ -995,7 +996,7 @@ public class RuleEngineService {
 					ClaimStatusEnum nextAction = null;
 					if (teamId == RcmTeamEnum.BILLING.getId()) {
 						status=ClaimStatusEnum.Pending_For_Billing;
-						nextAction= ClaimStatusEnum.Pending_For_Billing;
+						nextAction= ClaimStatusEnum.Need_to_Bill;
 					}
 					else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 						status=ClaimStatusEnum.Pending_For_Review;
@@ -1080,7 +1081,7 @@ public class RuleEngineService {
 					ClaimStatusEnum nextAction = null;
 					if (teamId == RcmTeamEnum.BILLING.getId()) {
 						status=ClaimStatusEnum.Pending_For_Billing;
-						nextAction= ClaimStatusEnum.Pending_For_Billing;
+						nextAction= ClaimStatusEnum.Need_to_Bill;
 					}
 					else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 						status=ClaimStatusEnum.Pending_For_Review;
