@@ -2232,7 +2232,14 @@ public class ClaimServiceImpl {
 		
 		
 		if (dto != null) {
-
+			
+			if (!partialHeader.getRole().equals(Constants.SUPER_ADMIN)) {
+				validateClaimRight=dto.getCompanyId().equals(partialHeader.getCompany().getUuid());
+				if (!validateClaimRight) {
+					return null;
+				}
+			}
+			
 			implDto = new FreshClaimDataImplDto();
 
 			//implDto.setSecInsurance("N/A");
@@ -2555,7 +2562,8 @@ public class ClaimServiceImpl {
 				if (sec != null) {
 					Object s[] = (Object[]) sec;
 					implDto.setAssoicatedClaimUuid(s[0].toString());
-					implDto.setAssoicatedClaimStatus((boolean) s[1]);
+					
+					implDto.setAssoicatedClaimStatus(ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getId()!=(int) s[1]);
 					implDto.setPrimInsurance(s[2]==null?"":s[2].toString());
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
 				}
@@ -2567,7 +2575,7 @@ public class ClaimServiceImpl {
 				if (sec != null) {
 					Object s[] = (Object[]) sec;
 					implDto.setAssoicatedClaimUuid(s[0].toString());
-					implDto.setAssoicatedClaimStatus((boolean) s[1]);
+					implDto.setAssoicatedClaimStatus(ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getId()!=(int) s[1]);
 					implDto.setSecInsurance(s[2].toString());//For Primary see if we have Primary
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
 				}else {
