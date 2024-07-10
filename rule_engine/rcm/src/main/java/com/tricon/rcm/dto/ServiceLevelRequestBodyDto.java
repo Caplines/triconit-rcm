@@ -1,6 +1,7 @@
 package com.tricon.rcm.dto;
 
 import java.util.List;
+import java.util.Set;
 
 import lombok.Data;
 
@@ -27,6 +28,6 @@ public class ServiceLevelRequestBodyDto {
 	private double balanceFromEsAfterPosting;
 	private double creditAdjustmentAmount;
 	private double debitAdjustmentAmount;
-	private List<ServiceLevelNotes>serviceCodeNotes;
+	private Set<ServiceLevelNotes>serviceCodeNotes;
 	private boolean rebilledCodeStatus;
 }

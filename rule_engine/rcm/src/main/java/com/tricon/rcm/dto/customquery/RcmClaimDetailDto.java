@@ -109,4 +109,6 @@ public interface RcmClaimDetailDto {
 	String getStatusESUpdated();
 	
 	Date getNextFollowUpDate();
+	
+	int getLastTeamWorkId();
 }

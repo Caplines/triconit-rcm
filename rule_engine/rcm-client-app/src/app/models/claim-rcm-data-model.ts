@@ -110,6 +110,7 @@ export interface ClaimRcmDataModel {
 	amountCollectedClaims?: number;
 	statusESUpdated?: string;
 	nextFollowUpDate?: String;
+    lastTeamWorkId?: number;
 
 }
 

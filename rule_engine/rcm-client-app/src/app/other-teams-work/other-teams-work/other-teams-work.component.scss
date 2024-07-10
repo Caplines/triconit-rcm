@@ -199,13 +199,13 @@ a.arrow-down.selected {
                 td:first-child, td:nth-child(2), td:nth-child(3) {
                     background-color: #fff;
                 }
-                &.blueBgBackground {
+                // &.blueBgBackground {
                 
-                    td {
-                        color: #000;
-                        background-color: #a0cafa !important;
-                    }
-                  }
+                //     td {
+                //         color: #000;
+                //         background-color: #a0cafa !important;
+                //     }
+                //   }
             }
             tbody tr:nth-of-type(odd) {
                
@@ -213,13 +213,13 @@ a.arrow-down.selected {
                 td:first-child, td:nth-child(2), td:nth-child(3) {
                     background-color: #f7f7f7;
                 }
-                &.blueBgBackground {
+                // &.blueBgBackground {
                 
-                    td {
-                        color: #000;
-                        background-color: #a0cafa !important;
-                    }
-                  }
+                //     td {
+                //         color: #000;
+                //         background-color: #a0cafa !important;
+                //     }
+                //   }
             }
             
         }

@@ -11,8 +11,11 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -1002,6 +1005,8 @@ public class ClaimSectionImpl {
 			serviceLevelData.setActive(true);
 			serviceLevelData.setGroupRun(maxRun + 1);
 			BeanUtils.copyProperties(data, serviceLevelData);
+			serviceLevelData.setTooth((data.getTooth()==null || data.getTooth().isEmpty())?"N/A":data.getTooth());
+			serviceLevelData.setSurface((data.getSurface()==null || data.getSurface().isEmpty())?"N/A":data.getSurface());
 			serviceLevelData.setCreditAdjustmentAmount(data.getCreditAdjustmentAmount());
 			serviceLevelData.setDebitAdjustmentAmount(data.getDebitAdjustmentAmount());
 			serviceLevelRepo.save(serviceLevelData);
@@ -1069,7 +1074,7 @@ public class ClaimSectionImpl {
 
 		int maxRun = serviceLevelRepo.getMaxRunFromServiceLevel(claimUuid);
 		List<RcmServiceLevelInformation> serviceLevelData = serviceLevelRepo
-				.findServiceLevelCodesByClaimUuid(claimUuid,maxRun);
+				.findServiceLevelCodesByClaimUuid(claimUuid,maxRun);// all data max data
 		if (serviceLevelData.isEmpty()) {
 			// fetch data from rcm claim_detail table and insert into
 			// rcm_service_level_information table
@@ -1083,6 +1088,8 @@ public class ClaimSectionImpl {
 				serviceLevelDto = new RcmServiceLevelInformation();
 				BeanUtils.copyProperties(rcmClaimDetail, serviceLevelDto);
 				serviceLevelDto.setGroupRun(1);
+				serviceLevelDto.setTooth((rcmClaimDetail.getTooth()==null || rcmClaimDetail.getTooth().isEmpty())?"N/A":rcmClaimDetail.getTooth());
+				serviceLevelDto.setSurface((rcmClaimDetail.getSurface()==null || rcmClaimDetail.getSurface().isEmpty())?"N/A":rcmClaimDetail.getSurface());
 				serviceLevelDto.setFlag(false);		
 				serviceLevelDto.setTeam(team);
 				serviceLevelDto.setCreatedBy(createdBy);
@@ -1098,36 +1105,53 @@ public class ClaimSectionImpl {
 			}
 
 		} else {
-			List<RcmServiceNotesDto> oldServiceNotes = serviceLevelRepo.findOldServiceLevelCodesByClaimUuid(claimUuid,
-					maxRun);
+			String oldCreatedBy = serviceLevelData.get(0).getCreatedBy().getUuid();
+			List<RcmServiceNotesDto> oldServiceNotes = null;
+			if (partialHeader.getJwtUser().getUuid().equals(oldCreatedBy)) {
+				oldServiceNotes = serviceLevelRepo.findOldServiceLevelCodesByClaimUuid(claimUuid, maxRun);
+			} else {
+				oldServiceNotes = serviceLevelRepo.findAllServiceLevelCodesByClaimUuid(claimUuid);
+			}
 			ServiceLevelNotes notes = null;
-			List<ServiceLevelNotes> oldNotesList = new ArrayList<>();
-			List<ServiceLevelNotes> newNotesList = new ArrayList<>();
+			Set<ServiceLevelNotes> oldNotesList = new HashSet<ServiceLevelNotes>();
+			Set<ServiceLevelNotes> newNotesList = new HashSet<ServiceLevelNotes>();
 			for (RcmServiceLevelInformation serviceCodes : serviceLevelData) {
-				notes = new ServiceLevelNotes();
 				for (RcmServiceNotesDto serviceNotes : oldServiceNotes) {
-					notes = new ServiceLevelNotes();
-					if (serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())) {
-						if(serviceNotes.getNotes()!=null) {
-						notes.setNotes(serviceNotes.getNotes());
-						notes.setServiceCode(serviceNotes.getServiceCode());
-						notes.setCreatedBy(serviceNotes.getCreatedBy());
-						notes.setCreatedDate(serviceNotes.getDate()==null?"":Constants.SDF_MYSL_DATE.format(serviceNotes.getDate()));
-						notes.setTeamName(serviceNotes.getTeamName());
-						oldNotesList.add(notes);
+					if (serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())
+							&& serviceCodes.getTooth().equals(serviceNotes.getTooth())
+							&& serviceCodes.getSurface().equals(serviceNotes.getSurface())){
+						if (serviceNotes.getNotes()!=null && !serviceNotes.getNotes().isEmpty()) {
+							notes = new ServiceLevelNotes();
+							notes.setNotes(serviceNotes.getNotes());
+							notes.setSurface(serviceNotes.getSurface());
+							notes.setTooth(serviceNotes.getTooth());		
+							notes.setServiceCode(serviceNotes.getServiceCode());
+							notes.setCreatedBy(serviceNotes.getCreatedBy());
+							notes.setCreatedDate(serviceNotes.getDate() == null ? ""
+									: Constants.SDF_MYSL_DATE.format(serviceNotes.getDate()));
+							notes.setTeamName(serviceNotes.getTeamName());
+							oldNotesList.add(notes);
 						}
 					}
 				}
 			}
+			
 			for (RcmServiceLevelInformation serviceData : serviceLevelData) {
 				responseData = new ServiceLevelRequestBodyDto();
-				newNotesList = new ArrayList<>();
+				newNotesList = new HashSet<ServiceLevelNotes>();
 				for (ServiceLevelNotes notesData : oldNotesList) {
-					if (notesData.getServiceCode().equals(serviceData.getServiceCode())) {
+					if (notesData.getServiceCode().equals(serviceData.getServiceCode())
+							&& notesData.getTooth().equals(serviceData.getTooth())
+							&& notesData.getSurface().equals(serviceData.getSurface())) {
 						newNotesList.add(notesData);
 						responseData.setServiceCodeNotes(newNotesList);
 					}		
 				}			
+				if (partialHeader.getJwtUser().getUuid().equals(serviceData.getCreatedBy().getUuid())) {
+				} else {
+					serviceData.setNotes("");
+				}
+				oldCreatedBy=serviceData.getCreatedBy().getUuid();
 				BeanUtils.copyProperties(serviceData, responseData);
 				responseData.setRebilledCodeStatus(serviceData.isRebilledStatus());
 				responseData.setAdjustmentReason(serviceData.getAdjustmentReason()==null?"":serviceData.getAdjustmentReason());
@@ -1211,9 +1235,9 @@ public class ClaimSectionImpl {
 				patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
 				patientStatement.setReason(rcmPatientStatementInfoModel.getReason()==null?"":rcmPatientStatementInfoModel.getReason());
 				patientStatement.setRemarks(rcmPatientStatementInfoModel.getRemarks());
-				patientStatement.setNextReviewDate(
-						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate()) ? null
-								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
+//				patientStatement.setNextReviewDate(
+//						!StringUtils.isNoneBlank(rcmPatientStatementInfoModel.getNextReviewDate()) ? null
+//								: Constants.SDF_MYSL_DATE.parse(rcmPatientStatementInfoModel.getNextReviewDate()));
 			} else {
 				patientStatement.setAmountStatement(rcmPatientStatementInfoModel.getAmountStatement());
 				patientStatement.setModeOfStatement(rcmPatientStatementInfoModel.getModeOfStatement()==null?"":rcmPatientStatementInfoModel.getModeOfStatement());
@@ -1246,7 +1270,7 @@ public class ClaimSectionImpl {
 		} else {
 			patientStatement = patientStatementRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
 		}
-
+        //next review date and next statement date is a automated fields early but now, not required for this
 		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		boolean sectionAccess = rcmCommonServiceImpl.validateUserSectionAccess(partialHeader,
 				15,createdBy);
@@ -1257,10 +1281,10 @@ public class ClaimSectionImpl {
 				// 1,NextReviewDate,NextStatementDate
 				responseDto.setStatementType(String.valueOf(1));
 				responseDto.setButtonType(1);
-				Calendar calendarForNextReviewDate = Calendar.getInstance();
-				calendarForNextReviewDate.setTime(new Date());
-				calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, 7);
-				responseDto.setNextReviewDate(Constants.SDF_MYSL_DATE.format(calendarForNextReviewDate.getTime()));
+//				Calendar calendarForNextReviewDate = Calendar.getInstance();
+//				calendarForNextReviewDate.setTime(new Date());
+//				calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, 7);
+//				responseDto.setNextReviewDate(Constants.SDF_MYSL_DATE.format(calendarForNextReviewDate.getTime()));
 //				Calendar calendarForNextStatementDate = Calendar.getInstance();
 //				calendarForNextStatementDate.setTime(new Date());
 //				calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, 7);
@@ -1281,20 +1305,20 @@ public class ClaimSectionImpl {
 							int type = Integer.valueOf(patientStatement.getStatementType());
 							patientStatement.setStatementType(String.valueOf(type + 1));
 						}
-						Calendar calendarForNextReviewDate = Calendar.getInstance();
+						//Calendar calendarForNextReviewDate = Calendar.getInstance();
 //						Calendar calendarForNextStatementDate = Calendar.getInstance();
-						Date dateForNextReview = patientStatement.getNextReviewDate() != null
-								? patientStatement.getNextReviewDate()
-								: new Date();
+//						Date dateForNextReview = patientStatement.getNextReviewDate() != null
+//								? patientStatement.getNextReviewDate()
+//								: new Date();
 //						Date dateForNextStatement = patientStatement.getNextStatementDate() != null
 //								? patientStatement.getNextStatementDate()
 //								: new Date();
 
-						PatientStatementTypeEnum type = PatientStatementTypeEnum
-								.getPatientStatementTypeByType(Integer.parseInt(patientStatement.getStatementType()));
-						calendarForNextReviewDate.setTime(dateForNextReview);
-						calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, type.getDays());
-						patientStatement.setNextReviewDate(calendarForNextReviewDate.getTime());
+//						PatientStatementTypeEnum type = PatientStatementTypeEnum
+//								.getPatientStatementTypeByType(Integer.parseInt(patientStatement.getStatementType()));
+//						calendarForNextReviewDate.setTime(dateForNextReview);
+//						calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, type.getDays());
+//						patientStatement.setNextReviewDate(calendarForNextReviewDate.getTime());
 //						calendarForNextStatementDate.setTime(dateForNextStatement);
 //						calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, type.getDays());
 //						patientStatement.setNextStatementDate(calendarForNextStatementDate.getTime());
@@ -1302,8 +1326,8 @@ public class ClaimSectionImpl {
 						logger.error("Statement Type is missing,so automation failed");
 					}
 					
-					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
-							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
+//					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
+//							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
 //					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
 //							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
 					responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
@@ -1311,8 +1335,8 @@ public class ClaimSectionImpl {
 					BeanUtils.copyProperties(patientStatement, responseDto);
 				}else {
 					responseDto = new RcmPatientStatementDto();
-					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
-							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
+//					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
+//							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
 //					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
 //							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
 					responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
@@ -1323,8 +1347,8 @@ public class ClaimSectionImpl {
 		} else {
 			if (patientStatement != null) {
 				responseDto = new RcmPatientStatementDto();
-				responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
-						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
+//				responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
+//						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
 //				responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
 //						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
 				responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""

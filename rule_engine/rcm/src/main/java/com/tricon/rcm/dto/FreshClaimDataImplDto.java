@@ -165,5 +165,7 @@ public class FreshClaimDataImplDto {
     String nextFollowUpDate;
     
     List<AssignOfficeResponseDto>userAssignOfficeData;
+    
+    int lastTeamWorkId;
 }
 

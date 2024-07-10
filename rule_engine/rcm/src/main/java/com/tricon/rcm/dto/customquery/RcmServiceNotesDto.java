@@ -8,6 +8,8 @@ public interface RcmServiceNotesDto {
 	String getNotes();
 	String getCreatedBy();
 	String getTeamName();
+	String getTooth();
+	String getSurface();
 	Date getDate();
 
 }
