@@ -4872,7 +4872,7 @@
                                                                     Next Action Required
                                                                 </th>
                                                                 <th
-                                                                    *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] != null">
+                                                                    *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] != 'CaseClosed'">
                                                                     Action to Perform
                                                                 </th>
                                                                 <th
@@ -4907,7 +4907,7 @@
                                                                     }}
                                                                 </td>
                                                                 <td
-                                                                    *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] != null">
+                                                                    *ngIf="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] !='CaseClosed'">
                                                                     {{
                                                                     appConstants.actionToPerformButtons[claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType']]
                                                                     }}

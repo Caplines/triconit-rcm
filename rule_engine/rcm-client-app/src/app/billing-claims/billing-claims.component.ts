@@ -2271,6 +2271,7 @@ export class BillingClaimsComponent {
     }
     ths.claimEditModel = {};
     let isClaimClosed = false;
+    debugger;
     ths.claimEditModel.assignToTeam = ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'];
     if (this.claimEditModel.assignToTeam == -1 && ths.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm'] === "Case Closed") {
       isClaimClosed = true;
@@ -2813,6 +2814,7 @@ export class BillingClaimsComponent {
     return true;
   }
   validate_CURRENT_STATUS_AND_NEXT_ACTION() {
+    debugger;
     let buttonType = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'];
     let isSectionValidated = true;
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"] = {};
@@ -3807,10 +3809,43 @@ export class BillingClaimsComponent {
 
   claimStatusCheck(event: any) {
     this.showAToPNextActionRequired = true;
+    let oldValue= this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'];
     if (event.target.value == 'Case Closed') {
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType']='CaseClosed';
       this.showAssignToTeam = false;
       this.showAssignToTeamLead = false;
       this.showAToPNextActionRequired = false;
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;
+      this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'] = '';
+    }else if (oldValue != 'CaseClosed'){
+        this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType']=oldValue;
+        this.showAssignToTeam = false;
+        this.showAssignToTeamLead = false;
+        this.showAToPNextActionRequired = true;
+        if(oldValue=='assignToOtherTeam'){
+          this.showAssignToTeam = true;
+          this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;
+        }
+        if(oldValue=='assignToSameTeam'){
+              
+        }
+        if(oldValue=='assignToTeamLead'){
+          this.showAssignToTeamLead =true;
+          this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'] = '';
+        }
+
+          // this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType']='assignToOtherTeam';
+          // this.showAssignToTeam = true;
+          // this.showAssignToTeamLead = false;
+          // this.showAToPNextActionRequired = true;
+    }else{
+          this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType']='assignToOtherTeam';
+          this.showAssignToTeam = true;
+          // this.showAssignToTeamLead = false;
+          this.showAToPNextActionRequired = true;
+          this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId'] = -1;
+          this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead'] = '';
+
     }
   }
 
