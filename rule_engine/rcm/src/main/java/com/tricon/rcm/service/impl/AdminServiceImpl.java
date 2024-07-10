@@ -204,7 +204,7 @@ public class AdminServiceImpl {
 	private RcmUser convertDtotoModel(UserRegistrationDto dto) {
 		RcmUser user = new RcmUser();
 		user.setFirstName(dto.getFirstName());
-		user.setLastName(dto.getLastName());
+		user.setLastName((dto.getLastName()==null || dto.getLastName().isEmpty())?"":dto.getLastName());
 		user.setPassword(EncrytedKeyUtil.encryptKey(dto.getPassword()));
 		user.setActive(1);
 		user.setEmail(dto.getEmail());
@@ -880,7 +880,7 @@ public class AdminServiceImpl {
 
 			// edit user Personal details
 			existingUser.setFirstName(dto.getFirstName());
-			existingUser.setLastName(dto.getLastName());
+			existingUser.setLastName((dto.getLastName()==null || dto.getLastName().isEmpty())?"":dto.getLastName());
 			existingUser = userRepo.save(existingUser);
 			if (existingUser != null) {
 				commonService.dumpUserDataToRcmUserTemp(existingUser,null,null,null);

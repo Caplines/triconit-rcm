@@ -518,7 +518,7 @@ public class AdminController extends BaseHeaderController{
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		
 		if (dto.getUuid() == null || dto.getUuid().isEmpty() || dto.getFirstName() == null
-				|| dto.getFirstName().isEmpty()||dto.getLastName()==null ||dto.getLastName().isEmpty()) {
+				|| dto.getFirstName().isEmpty()) {
 			return ResponseEntity
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
