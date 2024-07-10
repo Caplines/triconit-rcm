@@ -26,8 +26,8 @@
                                     <div class="col-sm">
                                         <div class="form-group">
                                             <label for="lname">Last Name</label>
-                                            <input type="text" class="form-control" maxlength="25" formControlName="lastName" [ngClass]="{'is-invalid':userDetails.controls.lastName.invalid && userDetails.controls.lastName.touched,'is-valid':userDetails.controls.lastName.valid}">
-                                            <small class="text-danger" *ngIf="userDetails.controls['lastName'].touched && userDetails.controls['lastName'].errors?.required">* Please Provide Your Last Name.</small>
+                                            <input type="text" class="form-control" maxlength="25" formControlName="lastName" [ngClass]="{'is-invalid':userDetails.controls.lastName.invalid && userDetails.controls.lastName.touched,'is-valid':userDetails.controls.lastName.valid && userDetails.controls.lastName.value}">
+                                            <!-- <small class="text-danger" *ngIf="userDetails.controls['lastName'].touched && userDetails.controls['lastName'].errors?.required">* Please Provide Your Last Name.</small> -->
                                             <small class="text-danger" *ngIf="userDetails.controls['lastName'].touched && userDetails.controls['lastName']?.errors?.minlength">* Name cannot be less than 3 words.</small>
                                             <small class="text-danger" *ngIf="userDetails.controls['lastName'].touched && userDetails.controls['lastName'].errors?.pattern">* Numbers or Spaces are not allowed.</small>
                                         </div>

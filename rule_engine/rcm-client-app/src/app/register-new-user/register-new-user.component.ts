@@ -24,7 +24,7 @@ export class RegisterNewUserComponent implements OnInit {
     title.setTitle(Utils.defaultTitle + "Register New User");
     this.userDetails = this.fb.group({
       'firstName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
-      'lastName' : ['',[Validators.required,Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
+      'lastName' : ['',[Validators.minLength(3),Validators.maxLength(25),Validators.pattern("[a-zA-Z]*")]],
       'email' : ['',[Validators.required,Validators.email,Validators.maxLength(100),Validators.pattern("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,4}$")]],
       'password': [ '', [ Validators.required, Validators.minLength(6), Validators.maxLength(20),]
      ],
@@ -49,6 +49,9 @@ export class RegisterNewUserComponent implements OnInit {
   registerNewUser(){
     if(this.userDetails.value.teamId == null ){
       this.userDetails.value.teamId = [];
+    }
+    if(this.userDetails.value.lastName == null){
+      this.userDetails.value.lastName = '';
     }
     this.appService.registerUser(this.userDetails.value,(callback:any)=>{
       if(callback.status == 200){

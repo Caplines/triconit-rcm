@@ -36,7 +36,7 @@ export class UserSettingComponent implements OnInit {
     title.setTitle(Utils.defaultTitle + "User Setting");
     this.editedUserDetails = this.fb.group({
       'firstName': ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25), Validators.pattern("[a-zA-Z]*")]],
-      'lastName': ['', [Validators.required, Validators.minLength(3), Validators.maxLength(25), Validators.pattern("[a-zA-Z]*")]],
+      'lastName': ['', [Validators.minLength(3), Validators.maxLength(25), Validators.pattern("[a-zA-Z]*")]],
       'companyUuid': ['', Validators.required],
       'teamId': ['', Validators.required],
       'role': ['', Validators.required],
@@ -301,7 +301,7 @@ export class UserSettingComponent implements OnInit {
     const firstName = this.editedUserDetails.controls['firstName'].value;
     const lastName = this.editedUserDetails.controls['lastName'].value;
     const uuid = this.user.uuid;
-    if(firstName.length!=0 && lastName.length!=0){
+    if(firstName.length!=0){
     this.appService.editUserInfo({ "uuid": uuid, "firstName": firstName, "lastName": lastName }, (ress: any) => {
       if (ress.status == 200 ||ress.status==400) {
         this.alert.showAlertPopup = true;

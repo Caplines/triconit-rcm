@@ -407,8 +407,7 @@
                                                             <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                                 <td>{{idx+1}}</td>
                                                                 <td>{{rem.teamName}}</td>
-                                                                <td>{{rem.cd | date:'MM/dd/YYYY hh:mm
-                                                                    a':'UTC'+timeZone}}
+                                                                <td>{{rem.cd | date:'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}
                                                                 </td>
                                                                 <td>{{rem.comment}}</td>
                                                                 <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}
@@ -1706,7 +1705,7 @@
                                                             <th class="row-grey">Service Code</th>
                                                             <th class="row-grey">Tooth#</th>
                                                             <th class="row-grey">Surface</th>
-                                                            <th class="row-grey">Ledger Amt</th>
+                                                            <th class="row-grey">Ledger Amount</th>
                                                             <th class="row-grey">Est. Amount</th>
                                                             <!-- <th class="row-grey">Surface</th> -->
                                                             <th>Allowed Amount&nbsp;<span class="text-danger">*</span>
@@ -2683,8 +2682,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm a':'UTC
-                                                                '+timeZone}}</td>
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>
@@ -2949,15 +2947,15 @@
                                                             </div>
                                                         </div>
 
-                                                        <div class="col-md-4 mb-2">
+                                                        <!-- <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
-                                                                <label for="nextReviewDate">Next Review Date</label>
+                                                                <label for="nextReviewDate">Next Review Date</label> -->
                                                                 <!-- <input type="date" id="nextReviewDate"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate']}"> -->
-                                                                <app-date-picker id="nextReviewDate"
+                                                                <!-- <app-date-picker id="nextReviewDate"
                                                                     class="claimDatepicker"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
                                                                     [inputDate]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']"
@@ -2965,7 +2963,7 @@
                                                                     (ngModelChange)="onSelectDate($event)">
                                                                 </app-date-picker>
                                                             </div>
-                                                        </div>
+                                                        </div> -->
 
                                                         <!-- <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">

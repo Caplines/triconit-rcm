@@ -57,7 +57,7 @@
                                                 <option value="status" *ngIf="this.user.email !== userName">Enable / Disable Status</option>
                                                 <!-- <option value="role" *ngIf="this.user.teamNameId != -1 && this.user.email != userName " >Enable / Disable Role</option> -->
                                                 <option value="editUser" *ngIf="this.user.teamNameId != -1 && this.user.email != userName " >Edit User</option>
-                                                <option value="editSec" *ngIf="this.user.roles.roleName !== 'Super Admin' && this.userRole !== 'ROLE_ADMIN'">Edit Section</option>
+                                                <option value="editSec" *ngIf="this.user.roles.roleName !== 'Super Admin' && this.user.roles.roleName !== 'Admin' && this.userRole !== 'ROLE_ADMIN'">Edit Section</option>
                                             </select>
                                     </div>
                                 </div>
@@ -113,8 +113,8 @@
                                                                     <div class="col-sm">
                                                                         <div class="form-group">
                                                                             <label for="lname">Last Name</label>
-                                                                            <input type="text" class="form-control" maxlength="25" formControlName="lastName" [ngClass]="{'is-invalid':editedUserDetails.controls.lastName.invalid && editedUserDetails.controls.lastName.touched,'is-valid':editedUserDetails.controls.lastName.valid}">
-                                                                            <small class="text-danger" *ngIf="editedUserDetails.controls['lastName'].touched && editedUserDetails.controls['lastName'].errors?.required">* Please Provide Your Last Name.</small>
+                                                                            <input type="text" class="form-control" maxlength="25" formControlName="lastName" [ngClass]="{'is-invalid':editedUserDetails.controls.lastName.invalid && editedUserDetails.controls.lastName.touched,'is-valid':editedUserDetails.controls.lastName.valid && editedUserDetails.controls.lastName.value}">
+                                                                            <!-- <small class="text-danger" *ngIf="editedUserDetails.controls['lastName'].touched && editedUserDetails.controls['lastName'].errors?.required">* Please Provide Your Last Name.</small> -->
                                                                             <small class="text-danger" *ngIf="editedUserDetails.controls['lastName'].touched && editedUserDetails.controls['lastName']?.errors?.minlength">* Name cannot be less than 3 words.</small>
                                                                             <small class="text-danger" *ngIf="editedUserDetails.controls['lastName'].touched && editedUserDetails.controls['lastName'].errors?.pattern">* Numbers or Spaces are not allowed.</small>
                                                                         </div>

@@ -3034,7 +3034,7 @@ export class BillingClaimsComponent {
         if (res && res.data) {
           this.claimSectionModal['PATIENT_STATEMENT'] = res.data;
           if (this.claimSectionModal['PATIENT_STATEMENT'] !== null) {
-            this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate']);
+            // this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate']);
             this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate']);
             //next statement date is already present in list of claim page so no need to showing here
             // this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate'] = this.convertStringToDateForDatePicker(this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate']);
@@ -3442,7 +3442,7 @@ export class BillingClaimsComponent {
         rcmPatientStatementInfoModel: {
           ...this.claimSectionModal['PATIENT_STATEMENT'],
           statementSendingDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['statementSendingDate']),
-          nextReviewDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate']),
+          // nextReviewDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['nextReviewDate']),
           //next statement date is already present in list of claim page so no need to showing here
           // nextStatementDate: this.convertStringToDateForApiCall(this.claimSectionModal['PATIENT_STATEMENT']['nextStatementDate'])
         }
@@ -4227,12 +4227,12 @@ export class BillingClaimsComponent {
       //   else
       //     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = null;
       // }
-      if (event.model == 'nextReviewDate') {
-        if (event.value != null)
-          this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate'] = new Date(event.value);
-        else
-          this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate'] = null;
-      }
+      // if (event.model == 'nextReviewDate') {
+      //   if (event.value != null)
+      //     this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate'] = new Date(event.value);
+      //   else
+      //     this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate'] = null;
+      // }
       if (event.model == 'statementSendingDate') {
         if (event.value != null)
           this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate'] = new Date(event.value);
