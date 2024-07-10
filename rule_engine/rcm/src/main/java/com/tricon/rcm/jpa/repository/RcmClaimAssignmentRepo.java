@@ -36,8 +36,8 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	
 	RcmClaimAssignment findByClaimsClaimUuidAndActiveAndAssignedToNotNull(String claimUUid,boolean active);
 	
-	@Query(value = "select id from rcm_claim_assignment where active =true and assigned_to is not  null and claim_id=:claimUuid order by created_date asc", nativeQuery = true)
-	List<Integer> findIssueAssingments(@Param("claimUuid") String claimUUid);
+	@Query(value = "select id from rcm_claim_assignment where active =true  and claim_id=:claimUuid order by created_date,id asc", nativeQuery = true)
+	List<Integer> findIssueAssignments(@Param("claimUuid") String claimUUid);
 	
 	
 	RcmClaimAssignment findByClaimsClaimUuidAndActiveAndCurrentTeamIdId(String claimUUid,boolean active,int teamId);
@@ -101,10 +101,7 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			+" where rca.claim_id=:claim_id and current_team_id=:teamId and assigned_to is null and active is true")
 	List<RcmClaimAssignment>findTotalEntiresinClaimAssignmentWithNullAssignedTo(@Param("claim_id") String claimId,@Param("teamId") int teamId);
 	
-	@Query(nativeQuery = true, value = "  "
-			+" SELECT * FROM rcm_claim_assignment rca "
-			+" where rca.claim_id=:claim_id and current_team_id=:teamId  and active is true")
-	List<RcmClaimAssignment>findTotalActiveEntiresinClaimAssignment(@Param("claim_id") String claimId);
+
 
 	//	@Transactional
 //	@Modifying

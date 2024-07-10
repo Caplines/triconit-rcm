@@ -2225,7 +2225,7 @@ public class ClaimServiceImpl {
 		//Check for Duplicate Active Assignment
 		List<Integer> assignedClaims =null;
 		try {
-			assignedClaims= rcmClaimAssignmentRepo.findIssueAssingments(claimUuid);
+			assignedClaims= rcmClaimAssignmentRepo.findIssueAssignments(claimUuid);
 		 if (assignedClaims.size()>1) {
 			 rcmClaimAssignmentRepo.updateClaimIssueAssignment(assignedClaims.get(0),claimUuid);
 		 }
@@ -2568,10 +2568,18 @@ public class ClaimServiceImpl {
 				if (sec != null) {
 					Object s[] = (Object[]) sec;
 					implDto.setAssoicatedClaimUuid(s[0].toString());
-					
+					/*
+					 * "For now, the secondary claims becomes active to workupon by Internal Audit and billing team as soon as billing team submits the primary claims.
+						But, as per our phase#2 requiments, this is how it should be
+						When any user selects the ""Next Action Required"" as ""Need to Bill to Secondary"", then the secondary claim of that claim should become active to be worked upon by Billing or internal audt team (depending on the insurance type) 
+						For, Internal Audit team, they should be able to work on secondary even if primary is open"
+					 */
 					implDto.setAssoicatedClaimStatus(ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getId()!=(int) s[1]);
 					implDto.setPrimInsurance(s[2]==null?"":s[2].toString());
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
+					if (implDto.getCurrentTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+						implDto.setAssoicatedClaimStatus(false);
+					}
 				}
 
 			} else {
@@ -2584,6 +2592,9 @@ public class ClaimServiceImpl {
 					implDto.setAssoicatedClaimStatus(ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getId()!=(int) s[1]);
 					implDto.setSecInsurance(s[2].toString());//For Primary see if we have Primary
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
+					if (implDto.getCurrentTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+						implDto.setAssoicatedClaimStatus(false);
+					}
 				}else {
 					implDto.setSecInsurance("N/A");
 				}
