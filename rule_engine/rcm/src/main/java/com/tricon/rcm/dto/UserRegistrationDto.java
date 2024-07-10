@@ -15,7 +15,7 @@ public class UserRegistrationDto {
 
 	@NotEmpty(message = "Please provide your first name")
 	private String firstName;
-	@NotEmpty(message = "Please provide your last name")
+	//@NotEmpty(message = "Please provide your last name")
 	private String lastName;
 	@Email(message = "Please provide a valid Email")
 	@NotEmpty(message = "Please provide an email")
