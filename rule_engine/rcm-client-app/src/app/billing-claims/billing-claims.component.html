@@ -1642,7 +1642,8 @@
                                                             <strong>Remarks</strong>
                                                             <div>
                                                                 <textarea class="form-control" id="" rows="3"
-                                                                    [(ngModel)]='claimRcm.claimRemarks'></textarea>
+                                                                    [(ngModel)]='claimRcm.claimRemarks'
+                                                                    [ngClass]="{'dp-disable':isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')}"></textarea>
                                                             </div>
                                                         </td>
                                                         <td></td>
