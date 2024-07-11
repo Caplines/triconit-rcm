@@ -5158,7 +5158,7 @@ public class ClaimServiceImpl {
 			rcmClaimRepository.save(claim);
 			
 			claimCycleService.createNewClaimCycle(claim,ClaimStatusEnum.Claim_Archived.getType(),
-					ClaimStatusEnum.Claim_Archived.getType(),claim.getCurrentTeamId(),updatedBy);
+					ClaimStatusEnum.getById(claim.getCurrentStatus()).getType(),claim.getCurrentTeamId(),updatedBy);
 			
 		}else return "Wrong Client";
     	return "Claim Archived";
@@ -5202,7 +5202,7 @@ public class ClaimServiceImpl {
 			claim.setUpdatedBy(updatedBy);
 			rcmClaimRepository.save(claim);
 			claimCycleService.createNewClaimCycle(claim,ClaimStatusEnum.Claim_UnArchived.getType(),
-					ClaimStatusEnum.Claim_UnArchived.getType(),claim.getCurrentTeamId(),updatedBy);
+					ClaimStatusEnum.getById(claim.getNextAction()).getType(),claim.getCurrentTeamId(),updatedBy);
 			
 		}else return "Wrong Client";
     	return "Claim UnArchived";

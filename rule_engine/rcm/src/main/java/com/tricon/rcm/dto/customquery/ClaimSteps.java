@@ -8,4 +8,5 @@ public interface ClaimSteps {
 	String getStatus();
 	String getName();
 	String getStatusUpdated();
+	String getNextAction();
 }

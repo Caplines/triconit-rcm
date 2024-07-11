@@ -314,6 +314,7 @@ export interface ClaimStep {
 	status?: string;
 	statusUpdated?: string;
 	done?: string;
+	nextAction?:string;
 }
 
 export interface linkedClaim {

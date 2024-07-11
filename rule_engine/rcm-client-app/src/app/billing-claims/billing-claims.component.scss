@@ -276,8 +276,24 @@
     background: #696969;
     color: #ffffff;
 }
+.steps-taken.vertical li.mk_archive{
+    border-left: 4px solid #5abe37;
+}
+.steps-taken.vertical li.mk_archive a{
+    background: #ff0000;
+    color: #ffffff;
+}
 
-
+.steps-taken.vertical li.mk_archive a::before {
+    content: "";
+    width: 21px;
+    height: 4px;
+    background: #5abe37;
+    top: 18px;
+    position: absolute;
+    z-index: 0;
+    left: -23px;
+}
 
 .steps-taken.vertical li.done a::before {
     content: "";
