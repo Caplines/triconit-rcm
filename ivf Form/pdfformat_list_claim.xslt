@@ -13,6 +13,7 @@ version="1.0" >
                 font-size: 12px;
                 padding: 0px;
                 margin:0px;
+                margin-left:-30px;
             }
             .table {
                 border-collapse: collapse;
@@ -107,7 +108,7 @@ version="1.0" >
                  <xsl:variable name="tabSwitchValue" select="tabSwitch" />  
                   <xsl:variable name="cTeamId" select="currentTeamId" />   
                      <tr class="bgWhite">
-                          <td colspan="16" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
+                          <td colspan="17" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
                          <td>Office</td>
@@ -128,6 +129,7 @@ version="1.0" >
                          <td>Billing Amount</td>
                          <td>Assigned By</td>
                          </xsl:if>
+                         <td>Due Date</td>
 
                      </tr>    
                       <xsl:for-each select="data/data">   
@@ -209,7 +211,11 @@ version="1.0" >
                        <td>         
                             <xsl:value-of select="lastTeam"/>        
                        </td>  
-                        </xsl:if>               
+                        </xsl:if> 
+                        <td><xsl:variable name="month" select="substring(dueDateSort, 6, 2)" />
+                       <xsl:variable name="day" select="substring(dueDateSort, 9, 2)" />
+                       <xsl:variable name="year" select="substring(dueDateSort, 1, 4)" />
+                       <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>              
                        </tr>            
                     </xsl:for-each> 
                  </table>

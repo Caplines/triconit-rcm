@@ -707,6 +707,9 @@ export class OtherTeamsWorkComponent implements OnInit {
         if (e.claimId) {
           e.newClaimId = e.claimId.replace(/\D/g, "");
         }
+        if (e.dueBalance==null) {
+          e.dueBalance = 0;
+        }
       })
       let data = { "fileName": "List_Of_Claims", "data": this.filteredItems, "clientName": this.clientName, "currentTeamName": this.currentTeamName.teamName };
       this.appService.othersTeamPdfDownload(data, "pdf", (res: any) => {

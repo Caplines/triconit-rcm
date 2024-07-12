@@ -1315,6 +1315,7 @@ export class BillingClaimsComponent {
     else if (!right) return true;
     //else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
+    else if(this.claimRcm.currentState==1)return true;
     if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isBilling
     ) { //use case claim->/e28dd916-4da7-45c7-9884-ee6fd3cac759
       return true;
@@ -1340,6 +1341,7 @@ export class BillingClaimsComponent {
     if (!right) return true;
     if (this.claimRcm == undefined) return true;
     if (!this.claimRcm.allowEdit) return true;
+    if (this.claimRcm.currentState == 1) return true;
     //if (!this.claimRcm.pending) return true;
     if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isBilling
     ) {

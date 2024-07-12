@@ -439,7 +439,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view')">
+                                        *ngIf="checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view')">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['attachment']}">
                                             <div>
                                                 <a data-toggle="collapse" aria-expanded="false">Attachments <span
@@ -464,7 +464,7 @@
                                             <ng-container
                                                 *ngIf="(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)">
                                                 <app-attach-file
-                                                    [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && (isBilling || isInternalAudit) && claimRcm.allowEdit),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit && (isBilling || isInternalAudit)}"
+                                                    [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && claimRcm.allowEdit  && claimRcm.currentState==0),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit  && claimRcm.currentState==0}"
                                                     (emitToParent)="receiveChildEvent($event)"></app-attach-file>
                                             </ng-container>
                                         </div>
@@ -1408,7 +1408,7 @@
                                                     (keydown)="removeErrorDisplayKey($event)"
                                                     [(ngModel)]="claimRcm.ruleEngineRunRemark" id="ruleEngineRunRemark"
                                                     placeholder="Run Engine not run"
-                                                    [disabled]="!checkForSectionAccess(sectionIds['RULE_ENGINE_VALIDATION']['sectionId'],'edit')"></textarea>
+                                                    [disabled]="!(checkForSectionAccess(sectionIds['RULE_ENGINE_VALIDATION']['sectionId'],'edit')  && claimRcm.currentState==0)"></textarea>
                                             </ng-container>
                                         </div>
                                     </ng-container>
@@ -1643,7 +1643,7 @@
                                                             <div>
                                                                 <textarea class="form-control" id="" rows="3"
                                                                     [(ngModel)]='claimRcm.claimRemarks'
-                                                                    [ngClass]="{'dp-disable':isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')}"></textarea>
+                                                                    [ngClass]="{'dp-disable':isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')  && claimRcm.currentState==1}"></textarea>
                                                             </div>
                                                         </td>
                                                         <td></td>
@@ -1782,7 +1782,7 @@
                                                                 </ng-container>
                                                                 <td> <input type="number"
                                                                         class="attach-secondary-width form-control"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [(ngModel)]="data.allowedAmount"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['allowedAmount']}"
@@ -1791,14 +1791,14 @@
                                                                         class="attach-secondary-width form-control"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['paidAmount']}"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [(ngModel)]="data.paidAmount"
                                                                         (blur)="getTotalServiceLevelInfo(true)" /> </td>
                                                                 <td><input type="number"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         class="attach-secondary-width form-control"
                                                                         [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['creditAdjustmentAmount']}"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [(ngModel)]="data.creditAdjustmentAmount"
                                                                         (blur)="getTotalServiceLevelInfo(true)"
                                                                         (keyup)="validate_SERVICE_LEVEL_INFORMATION()" />
@@ -1807,7 +1807,7 @@
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         class="attach-secondary-width form-control"
                                                                         [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['debitAdjustmentAmount']}"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [(ngModel)]="data.debitAdjustmentAmount"
                                                                         (blur)="getTotalServiceLevelInfo(true)"
                                                                         (keyup)="validate_SERVICE_LEVEL_INFORMATION()" />
@@ -1820,7 +1820,7 @@
                                                                 <td>
                                                                     <select class="attach-secondary-width form-control"
                                                                         [(ngModel)]="data.adjustmentReason"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit) || (data.creditAdjustmentAmount <= 0 && data.debitAdjustmentAmount <= 0)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0) || (data.creditAdjustmentAmount <= 0 && data.debitAdjustmentAmount <= 0)"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['adjustmentReason']}"
                                                                         [title]="data.adjustmentReason">
@@ -1835,7 +1835,7 @@
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                         class="attach-secondary-width form-control"
                                                                         [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['billToPatientAmount']}"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [(ngModel)]="data.billToPatientAmount"
                                                                         (blur)="getTotalServiceLevelInfo(true)"
                                                                         (keyup)="validate_SERVICE_LEVEL_INFORMATION()">
@@ -1843,7 +1843,7 @@
                                                                 <td>
                                                                     <select class="attach-secondary-width form-control"
                                                                         (change)="validate_SERVICE_LEVEL_INFORMATION()"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit) || (data.billToPatientAmount <= 0)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0) || (data.billToPatientAmount <= 0)"
                                                                         [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['btpReason']}"
                                                                         [(ngModel)]="data.btpReason">
                                                                         <option value="">Select
@@ -1857,7 +1857,7 @@
                                                                     <div class="form-check-inline">
                                                                         <input type="radio" class="form-check-input"
                                                                             [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['action']}"
-                                                                            [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                            [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                             id="post" name="action{{idx}}" value="Post"
                                                                             [(ngModel)]="data.action">
                                                                         <label class="form-check-label" for="post">Post
@@ -1866,7 +1866,7 @@
                                                                     <div class="form-check-inline">
                                                                         <input type="radio" [checked]="data.action"
                                                                             [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['action']}"
-                                                                            [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                            [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                             id="assign" class="form-check-input"
                                                                             name="action{{idx}}" value="Assign"
                                                                             [(ngModel)]="data.action">
@@ -1877,7 +1877,7 @@
                                                                 <td>
                                                                     <textarea style="overflow:hidden;width:200px;"
                                                                         rows="4" cols="40" rows="4" cols="40"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [(ngModel)]="data.notes"></textarea>
                                                                 </td>
                                                                 <td> <a href="javascript:void(0)"
@@ -1949,7 +1949,7 @@
                                                                     class="attach-secondary-width form-control"
                                                                     type="number" (blur)="getTotalAllowedAmt()"
                                                                     (change)="validate_SERVICE_LEVEL_INFORMATION()"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="sectionLevelInfoTotalConfig.allowedAmount"
                                                                     [class.is-invalid]="!sectionLevelInfoTotalConfig.isCorrectTotalAllowedAmt" />
                                                             </td>
@@ -1957,7 +1957,7 @@
                                                                     class="attach-secondary-width form-control"
                                                                     type="number" (blur)="getTotalPaidAmt()"
                                                                     (change)="validate_SERVICE_LEVEL_INFORMATION()"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="sectionLevelInfoTotalConfig.paidAmount"
                                                                     [class.is-invalid]="!sectionLevelInfoTotalConfig.isCorrectTotalPaidAmt" />
                                                             </td>
@@ -1980,7 +1980,7 @@
                                                                     [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'] && emptyFields['SERVICE_LEVEL_INFORMATION']['balanceFromEsBeforePosting']}"
                                                                     (change)="validate_SERVICE_LEVEL_INFORMATION()"
                                                                     (blur)="updatBalanceFromESBeforePosting()"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="sectionLevelInfoTotalConfig.balanceFromEsBeforePosting" />
                                                             </td>
                                                             <td>
@@ -2006,7 +2006,7 @@
                                                             <td colspan="3"> <input type="number"
                                                                     class="attach-secondary-width form-control"
                                                                     (change)="checkReconcileLogic()"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="sectionLevelInfoTotalConfig.balanceFromEsAfterPosting">
                                                             </td>
                                                             <td></td>
@@ -2146,7 +2146,7 @@
                                                         and
                                                         press Save Button <input type="text" class="form-control mx-2"
                                                             style="width: 300px;" *ngIf="claimSectionModal['EOB']"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                             [(ngModel)]="claimSectionModal['EOB']['pdfLink']"></span>
                                                     <span>
                                                         <button class="btn btn-success btn-md"
@@ -2248,7 +2248,7 @@
                                                             class="text-danger">*</span></label>
                                                     <input type="text" id="claim"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0 )"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimId']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimId']}">
@@ -2268,7 +2268,7 @@
                                                     <app-date-picker id="claimDate"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                         class="claimDatepicker"
-                                                        [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                        [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimProcessingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                         [inputDate]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimProcessingDate']"
                                                         (emitToParent)="receiveChildEventdate($event)"
                                                         (ngModelChange)="onSelectDate($event)">
@@ -2282,7 +2282,7 @@
                                                             class="text-danger">*</span></label>
                                                     <select id="network" class="form-control"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['network']"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['network']}">
                                                         <option value="">Select Network</option>
@@ -2297,7 +2297,7 @@
                                                             class="text-danger">*</span></label>
                                                     <select id="claimPassed" class="form-control"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['claimPassFirstGo']"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['claimPassFirstGo']}">
                                                         <option value="">Select</option>
@@ -2311,7 +2311,7 @@
                                                     <label for="intialDenial">Initial Denial</label>
                                                     <select id="intialDenial" class="form-control"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['initialDenial']"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['initialDenial']}">
                                                         <option value="">Select</option>
@@ -2329,7 +2329,7 @@
                                                     <label for="claim">Downpayment Amount</label>
                                                     <input type="number" id="DownpaymentAmount"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['downPaymentAmount']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['downPaymentAmount']}">
@@ -2341,7 +2341,7 @@
                                                     <label for="claim">Installment Amount</label>
                                                     <input type="number" id="InstallmentAmount"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['installmentAmount']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['installmentAmount']}">
@@ -2354,7 +2354,7 @@
                                                             class="text-danger">*</span></label>
                                                     <input type="text" id="noOfEstPayment"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['noOfEstPayment']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['noOfEstPayment']}">
@@ -2368,7 +2368,7 @@
                                                             class="text-danger">*</span></label>
                                                     <input type="text" id="paymentFrequency"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['paymentFrequency']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['paymentFrequency']}">
@@ -2381,7 +2381,7 @@
                                                         &nbsp;<span class="text-danger">*</span></label>
                                                     <input type="text" id="noOfPaymentReceived"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['noOfPaymentReceived']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['noOfPaymentReceived']}">
@@ -2454,7 +2454,7 @@
                                                 <div class="custom-row text-number">
                                                     <label for="paymentIssueTo">Payment Issued To</label>
                                                     <select id="paymentIssueTo" class="form-control"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentIssueTo']"
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentIssueTo']}">
                                                         <option value="">Select</option>
@@ -2468,7 +2468,7 @@
                                                     <label for="paymentMode">Mode of Payment</label>
                                                     <select id="paymentMode" class="form-control"
                                                         (change)="clearCheckDeliverOtherThanModeCheck()"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode']"
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentMode']}">
                                                         <option value="">Select</option>
@@ -2484,7 +2484,7 @@
                                                 <div class="custom-row text-number">
                                                     <label for="amountReceivedInBank">Amount Received in Bank</label>
                                                     <input type="number" id="amountReceivedInBank"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountReceivedInBank']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank']}">
@@ -2494,7 +2494,7 @@
                                                 <div class="custom-row text-number">
                                                     <label for="amountPostedInEs">Amount Posted in PMS</label>
                                                     <input type="number" id="amountPostedInEs"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountPostedInEs']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs']}">
@@ -2505,7 +2505,7 @@
                                                 <div class="custom-row text-number">
                                                     <label for="checkDeliverTo">Check Delivered To</label>
                                                     <select class="form-control"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit) || this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' "
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0) || this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' "
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo']"
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkDeliverTo']}">
                                                         <option value="">Select</option>
@@ -2534,7 +2534,7 @@
                                                         *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Recoupment'">Recoupment
                                                         #</label>
                                                     <input type="text" id="checkNumber"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkNumber']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkNumber']}">
@@ -2564,7 +2564,7 @@
                                                     class="form-control"
                                                     [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate']}"> -->
                                                     <app-date-picker id="checkCashDate" class="claimDatepicker"
-                                                        [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                        [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                         [inputDate]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']"
                                                         (emitToParent)="receiveChildEventdate($event)"
                                                         (ngModelChange)="onSelectDate($event)">
@@ -2583,7 +2583,7 @@
                                                     [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank']}"> -->
                                                     <app-date-picker id="amountDateReceivedInBank"
                                                         class="claimDatepicker"
-                                                        [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                        [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                         [inputDate]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
                                                         (emitToParent)="receiveChildEventdate($event)"
                                                         (ngModelChange)="onSelectDate($event)">
@@ -2704,7 +2704,7 @@
                                                             <label for="modeOfFollowUp">Mode of Follow Up &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <select id="modeOfFollowUp" class="form-control"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['modeOfFollowUp']"
                                                                 [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['modeOfFollowUp']}">
                                                                 <option value="">Select</option>
@@ -2719,7 +2719,7 @@
                                                             <label for="refNumber">Call Ref. # &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <input type="text" id="refNumber"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['refNumber']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['refNumber']}">
@@ -2731,7 +2731,7 @@
                                                             <label for="insuranceRepName">Insurance Rep. Name&nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <input type="text" id="insuranceRepName"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['insuranceRepName']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['insuranceRepName']}">
@@ -2742,7 +2742,7 @@
                                                             <label for="currentClaimStatus">Insurance Claim
                                                                 Status</label>
                                                             <select id="currentClaimStatus" class="form-control"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus']"
                                                                 [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus']}">
                                                                 <option value="">Select</option>
@@ -2796,7 +2796,7 @@
                                                             <label for="followUpRemarks">Enter Your Follow Up
                                                                 Remarks</label>
                                                             <textarea type="date" rows="1" id="followUpRemarks"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['followUpRemarks']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['followUpRemarks']}">
@@ -2880,7 +2880,7 @@
                                                             <label class="btn btn-light mx-0"
                                                                 [ngClass]="{'active':claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1}">
                                                                 <input type="radio" name="statement"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     class="form-check-input" [value]="1"
                                                                     [checked]="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1"
                                                                     (change)="selectStatementBox(1)">Need to hold
@@ -2889,7 +2889,7 @@
                                                                 [ngClass]="{'active':claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2}">
                                                                 <input type="radio" name="statement" [value]="2"
                                                                     class="form-check-input"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [checked]="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2"
                                                                     (change)="selectStatementBox(2)">Send Statement
                                                             </label>
@@ -2904,7 +2904,7 @@
                                                                 <label for="balanceSheetLink">Link to Balance Detail
                                                                     Sheet</label>
                                                                 <input type="text" id="balanceSheetLink"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['balanceSheetLink']"
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['balanceSheetLink']}">
@@ -2917,7 +2917,7 @@
                                                                 <label for="reason">Reason &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <select id="reason" class="form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['reason']"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['reason']}">
                                                                     <option value="">Select</option>
@@ -2991,7 +2991,7 @@
                                                                 <label for="remarks">Enter Remarks &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <textarea id="remarks" rows="1"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['remarks']"
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['remarks']}">
@@ -3006,7 +3006,7 @@
                                                                 <label for="modeOfStatement">Mode of Statement
                                                                     &nbsp;<span class="text-danger">*</span></label>
                                                                 <select id="modeOfStatement" class="form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['modeOfStatement']"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['modeOfStatement']}">
                                                                     <option value="">Select</option>
@@ -3021,7 +3021,7 @@
                                                                 <label for="amountStatement">Amount on Statement
                                                                     &nbsp;<span class="text-danger">*</span></label>
                                                                 <input type="number" id="amountStatement"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['amountStatement']"
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['amountStatement']}">
@@ -3032,7 +3032,7 @@
                                                                 <label for="statementType">Statement Type &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <select id="modeOfFollowUp" class="form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementType']"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementType']}">
                                                                     <option value="">Select</option>
@@ -3075,7 +3075,7 @@
                                                                 <label for="statementNotes">Statement Notes &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <textarea rows="1" id="statementNotes"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementNotes']"
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementNotes']}">
@@ -3094,7 +3094,7 @@
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}"> -->
                                                                 <app-date-picker id="statementSendingDate"
                                                                     class="claimDatepicker"
-                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                                     [inputDate]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
                                                                     (emitToParent)="receiveChildEventdate($event)"
                                                                     (ngModelChange)="onSelectDate($event)">
@@ -3107,7 +3107,7 @@
                                                             <label for="status">Status&nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <input type="text" id="status"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['status']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
@@ -3197,7 +3197,8 @@
                                                             class="form-control"
                                                             [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment']}"> -->
                                                             <app-date-picker id="dateOfPayment" class="claimDatepicker"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit)"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                                 [inputDate]="this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment']"
                                                                 (emitToParent)="receiveChildEventdate($event)"
                                                                 (ngModelChange)="onSelectDate($event)">
@@ -3211,7 +3212,7 @@
                                                                 this claim &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <input type="number" id="amountCollectedClaims"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['amountCollectedClaims']}">
@@ -3223,7 +3224,7 @@
                                                             <label for="postedInPMS">Posted in PMS? &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <select id="postedInPMS" class="form-control"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit   && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['postedInPMS']"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['postedInPMS']}">
                                                                 <option value="">Select</option>
@@ -3240,7 +3241,7 @@
                                                                 Posted in
                                                                 PMS &nbsp;<span class="text-danger">*</span></label>
                                                             <input type="text" id="dueBalanceInPMS"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['dueBalanceInPMS']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dueBalanceInPMS']}">
@@ -3252,7 +3253,7 @@
                                                             <label for="modeOfPayment">Mode of Payment &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <select id="modeOfPayment" class="form-control"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment']"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['modeOfPayment']}">
                                                                 <option value="">Select</option>
@@ -3388,7 +3389,7 @@
                                                             <label for="modeOfFollowUp">Mode of Follow Up &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <select id="modeOfFollowUp" class="form-control"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['modeOfFollowUp']"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_COMMUNICATION'] && emptyFields['PATIENT_COMMUNICATION']['modeOfFollowUp']}">
                                                                 <option value="">Select</option>
@@ -3403,7 +3404,7 @@
                                                             <label for="contact" style="min-width: 147px;">Phone Number
                                                                 / Email&nbsp;<span class="text-danger">*</span></label>
                                                             <input type="text" id="contact"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['contact']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_COMMUNICATION'] && emptyFields['PATIENT_COMMUNICATION']['contact']}">
@@ -3415,7 +3416,7 @@
                                                             <label for="desposition">Desposition &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <select id="modeOfFollowUp" class="form-control"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['desposition']"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_COMMUNICATION'] && emptyFields['PATIENT_COMMUNICATION']['desposition']}">
                                                                 <option value="">Select</option>
@@ -3430,7 +3431,7 @@
                                                             <label for="remarks">Remarks &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <textarea type="date" rows="1" id="remarks"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_COMMUNICATION['modal']['remarks']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_COMMUNICATION'] && emptyFields['PATIENT_COMMUNICATION']['remarks']}">
@@ -3517,7 +3518,7 @@
                                                                 [ngClass]="{'active':claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1}">
                                                                 <input type="radio" name="statement"
                                                                     (click)="selectCollectionTypeButton(1)"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     class="form-check-input" [value]="1"
                                                                     [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 1">Send
                                                                 to Collection | Edit Collection Details
@@ -3527,7 +3528,7 @@
                                                                 <input type="radio" name="statement" [value]="2"
                                                                     class="form-check-input"
                                                                     (click)="selectCollectionTypeButton(2)"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 2">Post
                                                                 Amount Received Through Collection
                                                             </label>
@@ -3536,7 +3537,7 @@
                                                                 <input type="radio" name="statement" [value]="3"
                                                                     class="form-check-input"
                                                                     (click)="selectCollectionTypeButton(3)"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [checked]="claimSectionModal.COLLECTION_AGENCY['buttonType'] == 3">
                                                                 Withdraw From Collections
                                                             </label>
@@ -3552,7 +3553,7 @@
                                                                 <label for="debtNumber">Debt# &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <input type="text" id="debtNumber"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0 )"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['debtNumber']"
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['debtNumber']}">
@@ -3563,7 +3564,7 @@
                                                                 <label for="collectionType">Collection Type &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <select id="collectionType" class="form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['collectionType']"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['collectionType']}">
                                                                     <option value="">Select</option>
@@ -3584,7 +3585,7 @@
                                                                         class="text-danger">*</span></label>
                                                                 <input type="number" id="amountReceived"
                                                                     (blur)="calculateNetAmtReceived()"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['amountReceived']"
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['amountReceived']}">
@@ -3595,7 +3596,7 @@
                                                                 <label for="modeOfPayment">Mode of Payment &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <select id="modeOfPayment" class="form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['modeOfPayment']"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['modeOfPayment']}">
                                                                     <option value="">Select</option>
@@ -3614,7 +3615,7 @@
                                                                     &nbsp;<span class="text-danger">*</span></label>
                                                                 <input type="number" id="commisionCharged"
                                                                     (blur)="calculateNetAmtReceived()"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['commisionCharged']"
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['commisionCharged']}">
@@ -3626,7 +3627,7 @@
                                                                     Received &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <input type="number" id="netAmountReceived"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['netAmountReceived']"
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['netAmountReceived']}">
@@ -3642,7 +3643,7 @@
                                                                 <label for="reason">Reason &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <select id="reason" class="form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['reason']"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['reason']}">
                                                                     <option value="">Select</option>
@@ -3659,7 +3660,7 @@
                                                                 <label for="remarks">Remarks &nbsp;<span
                                                                         class="text-danger">*</span></label>
                                                                 <textarea type="text" rows="1" id="remarks"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['COLLECTION_AGENCY']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.COLLECTION_AGENCY['remarks']"
                                                                     class="form-control"
                                                                     [ngClass]="{'is-invalid':emptyFields['COLLECTION_AGENCY'] && emptyFields['COLLECTION_AGENCY']['remarks']}"></textarea>
@@ -3739,7 +3740,7 @@
                                                     <label for="modeOfAppeal">Mode of Appeal &nbsp;<span
                                                             class="text-danger">*</span></label>
                                                     <select id="modeOfAppeal" class="form-control"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.APPEAL['modeOfAppeal']"
                                                         [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['modeOfAppeal']}">
                                                         <option value="">Select</option>
@@ -3755,7 +3756,7 @@
                                                     <label for="aiToolUsed">AI Tool Used? &nbsp;<span
                                                             class="text-danger">*</span></label>
                                                     <select id="aiToolUsed" class="form-control"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.APPEAL['aiToolUsed']"
                                                         [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['aiToolUsed']}">
                                                         <option value="">Select</option>
@@ -3772,7 +3773,7 @@
                                                 <div class="custom-row text-number">
                                                     <label for="claim">Appeal Document Link</label>
                                                     <input type="text" id="claim"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.APPEAL['appealDocument']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['appealDocument']}">
@@ -3784,7 +3785,7 @@
                                                     <label for="claim">Remarks &nbsp;<span
                                                             class="text-danger">*</span></label>
                                                     <input type="text" id="claim"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['APPEAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.APPEAL['remarks']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['APPEAL'] && emptyFields['APPEAL']['remarks']}">
@@ -3873,7 +3874,7 @@
                                                             class="text-danger">*</span></label>
                                                     <select id="reasonForRebilling" class="form-control"
                                                         *ngIf="claimSectionModal?.REQUEST_REBILLING"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.REQUEST_REBILLING['reasonForRebilling']"
                                                         [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['reasonForRebilling']}">
                                                         <option value="">Select</option>
@@ -3902,7 +3903,7 @@
                                                             class="text-danger">*</span></label>
                                                     <textarea id="remarks" rows="1"
                                                         *ngIf="claimSectionModal?.REQUEST_REBILLING"
-                                                        [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.REQUEST_REBILLING['remarks']"
                                                         class="form-control"
                                                         [ngClass]="{'is-invalid':emptyFields['REQUEST_REBILLING'] && emptyFields['REQUEST_REBILLING']['remarks']}"></textarea>
@@ -3916,7 +3917,8 @@
                                                         <ng-container
                                                             *ngIf="serviceLevelSectionMultiSelectConfig.rebillingRequirements.length>0">
                                                             <multi-select-dropdown class="multiselect"
-                                                                [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                                [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                                 [inputConfig]="{'requiredRequestedReBilling':serviceLevelSectionMultiSelectConfig.rebillingRequirements,'isDetailPage':true}"
                                                                 (emitToParent)="receiveChildrenEvent($event)">
                                                             </multi-select-dropdown>
@@ -3934,7 +3936,7 @@
                                                         [ngClass]="{'active':claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'fullClaim'}">
                                                         <input type="radio" name="statement" class="form-check-input"
                                                             [value]="'fullClaim'"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                             [checked]="claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'fullClaim'"
                                                             (change)="selectRebillingType('fullClaim')">Full Claim
                                                     </label>
@@ -3942,7 +3944,7 @@
                                                         [ngClass]="{'active':claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'partialClaim'}">
                                                         <input type="radio" name="statement" [value]="'partialClaim'"
                                                             class="form-check-input"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState==0)"
                                                             [checked]="claimSectionModal.REQUEST_REBILLING['rebillingType'] == 'partialClaim'"
                                                             (change)="selectRebillingType('partialClaim')">Partial Claim
                                                     </label>
@@ -4071,7 +4073,7 @@
                                                             <div class="custom-row text-number">
                                                                 <label for="usedAI">Used AI?</label>
                                                                 <select class="form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                     [(ngModel)]="this.claimSectionModal.REBILLING['modal']['usedAI']"
                                                                     [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['usedAI']}">
                                                                     <option value="">Select</option>
@@ -4123,7 +4125,7 @@
                                                                     [ngClass]="{'active':claimSectionModal.REBILLING['modal']['rebillingStatus']}">
                                                                     <input type="radio" name="statement"
                                                                         class="form-check-input" [value]="true"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [checked]="claimSectionModal.REBILLING['modal']['rebillingStatus']"
                                                                         (change)="selectRebillingStatus(true)">ReBilling
                                                                 </label>
@@ -4132,7 +4134,7 @@
                                                                     [ngClass]="{'active':!claimSectionModal.REBILLING['modal']['rebillingStatus']}">
                                                                     <input type="radio" name="statement" [value]="false"
                                                                         class="form-check-input"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState==0)"
                                                                         [checked]="!claimSectionModal.REBILLING['modal']['rebillingStatus']"
                                                                         (change)="selectRebillingStatus(false)">No Need
                                                                     to
@@ -4196,7 +4198,7 @@
                                                                             [ngClass]="{'active':claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']}">
                                                                             <input type="radio" name="statement"
                                                                                 class="form-check-input" [value]="true"
-                                                                                [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                                 [checked]="claimSectionModal.REBILLING['modal']['reCeationOptionChoosen'] == true"
                                                                                 (change)="selectRecreationRebillingClaim(true)">Yes
                                                                         </label>
@@ -4205,7 +4207,7 @@
                                                                             [ngClass]="{'active':!claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']}">
                                                                             <input type="radio" name="statement"
                                                                                 [value]="false" class="form-check-input"
-                                                                                [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                                 [checked]="claimSectionModal.REBILLING['modal']['reCeationOptionChoosen'] == false"
                                                                                 (change)="selectRecreationRebillingClaim(false)">No
                                                                         </label>
@@ -4291,7 +4293,7 @@
                                                         [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'}">
                                                         <input type="radio" name="action" class="form-check-input"
                                                             [value]="'attachSecondary'"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                             [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary'"
                                                             (change)="selectActionToPerformRecreate('attachSecondary')">Attach
                                                         Secondary
@@ -4301,7 +4303,7 @@
                                                             [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2}">
                                                             <input type="radio" name="action" [value]="'2'"
                                                                 class="form-check-input"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 2"
                                                                 (change)="selectActionToPerformRecreate('2')">Recreate
                                                             Full
@@ -4311,7 +4313,7 @@
                                                             [ngClass]="{'active':claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3}">
                                                             <input type="radio" name="action" [value]="'3'"
                                                                 class="form-check-input"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [checked]="claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3"
                                                                 (change)="selectActionToPerformRecreate('3')">Recreate
                                                             Partially
@@ -4327,7 +4329,7 @@
                                                         <label for="newClaimId">Enter New Claim ID</label>
                                                         <input type="text" id="newClaimId"
                                                             *ngIf="claimSectionModal?.RECREATE_CLAIM"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                             [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['newClaimId']"
                                                             class="form-control"
                                                             [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['newClaimId']}"
@@ -4343,7 +4345,7 @@
                                                         <label for="reasonRecreation">Reason for Recreation</label>
                                                         <select id="reasonRecreation" class="form-control"
                                                             *ngIf="claimSectionModal?.RECREATE_CLAIM"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                             [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['reasonRecreation']"
                                                             [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['reasonRecreation']}">
                                                             <option [selected]="true" [value]="null">Select</option>
@@ -4358,7 +4360,7 @@
                                                         <label for="recreationRemarks">Remarks</label>
                                                         <textarea id="recreationRemarks"
                                                             *ngIf="claimSectionModal?.RECREATE_CLAIM"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                             [(ngModel)]="this.claimSectionModal.RECREATE_CLAIM['modal']['recreationRemarks']"
                                                             class="form-control" rows="1" cols="30"
                                                             [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['recreationRemarks']}">
@@ -4651,7 +4653,7 @@
                                         <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                         <div *ngIf="!loader.serviceCode" class="form-row  collapse"
                                             [ngClass]="{'show':!toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
-                                            <div class="">
+                                            <div style="width:100%;">
                                                 <div class="row">
 
                                                     <div class="col-sm-12 mb-3 d-flex"
@@ -4669,7 +4671,7 @@
                                                                     <input type="radio" name="action"
                                                                         class="form-check-input"
                                                                         [value]="'assignToOtherTeam'"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToOtherTeam'"
                                                                         (change)="selectActionToPerformNextActionRequired('assignToOtherTeam')">
                                                                     Assign to Other Team
@@ -4679,7 +4681,7 @@
                                                                     <input type="radio" name="action"
                                                                         [value]="'assignToSameTeam'"
                                                                         class="form-check-input"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToSameTeam'"
                                                                         (change)="selectActionToPerformNextActionRequired('assignToSameTeam')">
                                                                     Assign to Same Team
@@ -4689,7 +4691,7 @@
                                                                     <input type="radio" name="action"
                                                                         [value]="'assignToTeamLead'"
                                                                         class="form-check-input"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'assignToTeamLead'"
                                                                         (change)="selectActionToPerformNextActionRequired('assignToTeamLead')">
                                                                     Assign to Team Lead
@@ -4698,13 +4700,13 @@
                                                                     [ngClass]="{'active':claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'}">
                                                                     <input type="radio" name="action"
                                                                         [value]="'archive'" class="form-check-input"
-                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [checked]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'] == 'archive'"
                                                                         (change)="selectActionToPerformNextActionRequired('archive')">
                                                                     <span
                                                                         *ngIf="claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp">Archive</span>
                                                                     <span
-                                                                        *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp">UnArchive</span>
+                                                                        *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp">Unarchive</span>
                                                                 </label>
                                                             </ng-container>
                                                         </div>
@@ -4719,7 +4721,7 @@
                                                                 <select id="currentClaimStatusRcm"
                                                                     (change)="claimStatusCheck($event); validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                     class="form-control"
-                                                                    [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit')"
+                                                                    [disabled]="!checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && claimRcm.currentState==0"
                                                                     [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['currentClaimStatusRcm']"
                                                                     [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['currentClaimStatusRcm']}">
                                                                     <option value="">Select</option>
@@ -4763,7 +4765,7 @@
                                                                         class="text-danger">*</span></label>
                                                                 <select id="nextAction" class="form-control"
                                                                     (change)="nextActionRequire($event)"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState==0)"
                                                                     [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']"
                                                                     [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['nextAction']}">
                                                                     <option value="">Select</option>
@@ -4784,7 +4786,7 @@
                                                             <select id="assignToTeam"
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 class="form-control"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState==0)"
                                                                 [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamId']"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeamId']}">
                                                                 <option value="-1">Select</option>
@@ -4801,7 +4803,7 @@
                                                             <select id="selectLeadName"
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
                                                                 class="form-control"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState==0)"
                                                                 [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['assignToTeamLead']"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['assignToTeamLead']}">
                                                                 <option value="">Select Lead Name</option>
@@ -4820,7 +4822,7 @@
                                                                     class="text-danger">*</span></label>
                                                             <textarea type="date" rows="1" id="remarks"
                                                                 (change)="validate_CURRENT_STATUS_AND_NEXT_ACTION()"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState==0)"
                                                                 [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['remarks']"
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['remarks']}">
@@ -5156,7 +5158,7 @@
                                     <button *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp"
                                         type="button" class="btn btn-success" [disabled]="inSave"
                                         (click)="openUnArchivedModal()">
-                                        UnArchive
+                                        Unarchive
                                     </button>
 
 
@@ -5187,7 +5189,7 @@
                                     *ngIf="claimRcm.currentState==1 && claimRcm.claimCmpMatchesLoggedCmp">
                                     <button *ngIf="claimRcm.pending" type="button" class="btn btn-success"
                                         (click)="openUnArchivedModal()">
-                                        UnArchive
+                                        Unarchive
                                     </button>
                                 </div>
                                 <div *ngIf="!actionButtons" class="loader-data"></div>
@@ -5326,7 +5328,7 @@
         <div id="unarchive-modal" class="modal unarchive">
             <div class="modal-content">
                 <div _ngcontent-qaa-c48="" class="modal-header">
-                    <h5 class="modal-title">Un Archive Claim</h5>
+                    <h5 class="modal-title">Unarchive Claim</h5>
                     <button type="button" (click)="closeArchPopup('unarchive-modal')"
                         class="close"><span>×</span></button>
                 </div>
@@ -5341,7 +5343,7 @@
                             <div class="plan-id-box">
                                 <label>&nbsp;</label>
                                 <button class="btn btn-success" [disabled]="reason.trim()==''"
-                                    (click)="markUnArchived()">UnArchive</button>
+                                    (click)="markUnArchived()">Unarchive</button>
                             </div>
                         </div>
                         <div class="alert fade show text-center" *ngIf="alertArch.showAlertPopup"

@@ -25,4 +25,5 @@ public class ListOfClaimPdfDto {
 	private String pendingSince;
 	private String ageBracket;
 	private String newClaimId;
+	private String dueDateSort;
 }

@@ -26,4 +26,9 @@ public class OthersTeamPdfDto {
 	private String newClaimId;
 	private String claimAge;
 	private String timelyFilingLimitData;
+	private String currentStatus;
+	private String nextActionRequired;
+	private String dueDateSort;
+	private String providerSpeciality;
+	private String dueBalance;
 }

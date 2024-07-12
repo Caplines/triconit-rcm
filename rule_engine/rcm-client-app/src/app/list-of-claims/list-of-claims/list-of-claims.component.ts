@@ -621,7 +621,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Office", "Claim Id", "Patient ID", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Assigned By" : ""]
+      headers: ["Office", "Claim Id", "Patient ID", "Patient Name", 'DOS', "Claim Age", "TFL", "Pending Since Date", "Age Bracket", "Claim Type", "Action Required", "Insurance Name", "Insurance Type", "Estimated Amount", this.tabSwitch.sendBack ? "BillingAmount" : '', this.isLastTeam ? "Assigned By" :'',"Due Date"]
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -658,6 +658,13 @@ export class ListOfClaimsComponent implements OnInit {
       else {
         e = { ...e, pendingSince: '' };
       }
+      if (e.dueDateSort) {
+        let date: Date = new Date(e.dueDateSort);
+        e = { ...e, dueDateSort: `${this.getMonthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}` };
+      }
+      else {
+        e = { ...e, dueDateSort: '' };
+      }
       return e;
     })      //method add value as "-" or "0", if its empty or null.
 
@@ -681,7 +688,8 @@ export class ListOfClaimsComponent implements OnInit {
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
           "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
-          "Assigned By": this.isLastTeam ? e.lastTeam : ""
+          "Assigned By": this.isLastTeam ? e.lastTeam : "",
+          "Due Date":e.dueDateSort
         }
       })
       excelData = excelData.map(
@@ -705,7 +713,9 @@ export class ListOfClaimsComponent implements OnInit {
           "Insurance Type": e.prName ? e.prName : e.secName,
           "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
           "Billing Amount": e.billedAmount ? '$' + formatNumber(e.billedAmount, this.locale, '.0-0').toString() : "$0",
-          "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : ""
+          "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : "",
+          "Due Date":e.dueDateSort
+
         }
       })  //method aligns the header to the value in CSV.
       excelData = excelData.map(

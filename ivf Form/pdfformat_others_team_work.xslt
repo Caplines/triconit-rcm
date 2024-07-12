@@ -106,7 +106,7 @@ version="1.0" >
                  <table class="inner-table">
                  <xsl:variable name="currentTeam" select="currentTeamName" /> 
                      <tr class="bgWhite">
-                          <td colspan="16" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
+                          <td colspan="21" class="tableHeading">List_Of_Claims (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
                          <td>Office</td>
@@ -129,8 +129,18 @@ version="1.0" >
                          <td>Assigned By</td>
                          <td>Last Team's Remarks</td>
                          </xsl:if>
-                         <td>Pending since</td>
-                         <td>Current Team</td>
+                         <td>Pending Since</td>
+                         <td>Due Date</td>
+                         <xsl:if test="$currentTeam='Payment Statement' ">
+                         <td>Due Balance</td>
+                         </xsl:if>
+                         <xsl:if test="$currentTeam = 'Aging' or $currentTeam = 'CDP' or $currentTeam = 'Credentialing' or $currentTeam = 'Patient Statement' or $currentTeam = 'Payment Posting'">
+                         <td>Current Status</td>
+                         <td>Current Action</td>
+                         <td>Provider Speciality</td>
+                         </xsl:if>
+                       
+                        
                      </tr>    
                       <xsl:for-each select="data/data">   
 
@@ -196,7 +206,19 @@ version="1.0" >
                        <xsl:variable name="day" select="substring(pendingSince, 9, 2)" />
                        <xsl:variable name="year" select="substring(pendingSince, 1, 4)" />
                        <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>
-                       <td><xsl:value-of select="$currentTeam"/></td>                     
+                       <td><xsl:variable name="month" select="substring(dueDateSort, 6, 2)" />
+                       <xsl:variable name="day" select="substring(dueDateSort, 9, 2)" />
+                       <xsl:variable name="year" select="substring(dueDateSort, 1, 4)" />
+                       <xsl:value-of select="concat(substring('JanFebMarAprMayJunJulAugSepOctNovDec', $month * 3 - 2, 3), ' ', $day, ', ', $year)" /></td>
+                       <xsl:if test="$currentTeam = 'Payment Statement' ">       
+                       <td><xsl:value-of select="concat('$', format-number(dueBalance, '0'))"/></td></xsl:if>  
+                      <xsl:if test="$currentTeam = 'Aging' or $currentTeam = 'CDP' or $currentTeam = 'Credentialing' or $currentTeam = 'Patient Statement' or $currentTeam = 'Payment Posting'">
+                       <td><xsl:value-of select="currentStatus"/></td>      
+                       <td><xsl:value-of select="nextActionRequired"/></td>  
+                       <td><xsl:value-of select="providerSpeciality"/></td> 
+                       </xsl:if>   
+
+                       
                        </tr>            
                     </xsl:for-each> 
                  </table>
