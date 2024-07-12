@@ -365,6 +365,10 @@ export class AppConstants {
             name:'Sedation Record',
             checked:false
         },
+        {
+            name: 'Other',
+            checked: false
+        },
       ]
 
 
@@ -443,4 +447,24 @@ export class AppConstants {
         'assignToTeamLead': 'Assign to Team Lead',
         'archive': 'Archive',
     }
+
+    public patientStatementStatus: any = [
+        { status: "Statement Not Required" },
+        { status: "Pending with Posting Team" },
+        { status: "Pending with LC3 Team" },
+        { status: "Pending with CDP team" },
+        { status: "Amount Adjusted" },
+        { status: "Pending with Office" },
+        { status: "Pending with Financing Option" },
+        { status: "Statement Created" },
+        { status: "Ortho Patient" },
+        { status: "Pending with Offshore" },
+    ];
+
+    public paymentFrequency :any = [
+        { frequency: "Monthly" },
+        { frequency: "Quaterly" },
+        { frequency: "Half - Yearly" },
+        { frequency: "Yearly" },
+    ];
 }

@@ -1117,6 +1117,13 @@ public class ClaimSectionImpl {
 			Set<ServiceLevelNotes> newNotesList = new HashSet<ServiceLevelNotes>();
 			for (RcmServiceLevelInformation serviceCodes : serviceLevelData) {
 				for (RcmServiceNotesDto serviceNotes : oldServiceNotes) {
+					if (serviceCodes.getSurface() == null) {
+						serviceCodes.setSurface("N/A");
+					}
+					if (serviceCodes.getTooth() == null) {
+						serviceCodes.setTooth("N/A");
+					}
+					
 					if (serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())
 							&& serviceCodes.getTooth().equals(serviceNotes.getTooth())
 							&& serviceCodes.getSurface().equals(serviceNotes.getSurface())){
@@ -1137,6 +1144,13 @@ public class ClaimSectionImpl {
 			}
 			
 			for (RcmServiceLevelInformation serviceData : serviceLevelData) {
+				
+				if (serviceData.getSurface() == null) {
+					serviceData.setSurface("N/A");
+				}
+				if (serviceData.getTooth() == null) {
+					serviceData.setTooth("N/A");
+				}
 				responseData = new ServiceLevelRequestBodyDto();
 				newNotesList = new HashSet<ServiceLevelNotes>();
 				for (ServiceLevelNotes notesData : oldNotesList) {
