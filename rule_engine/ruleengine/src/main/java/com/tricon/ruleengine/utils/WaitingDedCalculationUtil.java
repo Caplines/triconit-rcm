@@ -1,6 +1,10 @@
 package com.tricon.ruleengine.utils;
 
+import java.io.BufferedWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -11,11 +15,13 @@ import org.springframework.context.MessageSource;
 
 import com.tricon.ruleengine.dto.CodeValueDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;
+import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Rules;
 import com.tricon.ruleengine.model.sheet.CommonDataCheck;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 public class WaitingDedCalculationUtil {
 
+	static Class<?> clazz = WaitingDedCalculationUtil.class;
 	public static final int preventive_precentage_type=1;
 	public static final int basic_precentage_type=2;
 	public static final int major_precentage_type=3;
@@ -25,7 +31,7 @@ public class WaitingDedCalculationUtil {
 	
 	//List<Object> tpList =null for DED
 	public static List<TPValidationResponseDto> isWaitingDedValid(List<Object> tpList,IVFTableSheet ivf,int checkType,
-			Rules rule,String errorMessageKey,MessageSource messageSource){
+			Rules rule,String errorMessageKey,MessageSource messageSource,double primeRemDed,double planIndDedRem ,BufferedWriter bw){
 		List<TPValidationResponseDto> list = new ArrayList<>();
 		
 		try {
@@ -44,45 +50,45 @@ public class WaitingDedCalculationUtil {
 		
 		Map<Integer, List<CodeValueDto>>  map = new HashMap<>();
 		if (checkType == check_type_waiting ) {
-			if (preventiveWaiting.equalsIgnoreCase("yes")) {
+			if (!preventiveWaiting.equalsIgnoreCase("no")) {
 				map.put(preventive_precentage_type,java.util.Arrays.asList(getPreventiveValueFromIv(ivf,tpList)));
 			}
-			if (basisWaiting.equalsIgnoreCase("yes")) {
+			if (!basisWaiting.equalsIgnoreCase("no")) {
 				map.put(basic_precentage_type,java.util.Arrays.asList(getBasicValueFromIv(ivf,tpList)));
 			}
-			if (majorWaiting.equalsIgnoreCase("yes")) {
+			if (!majorWaiting.equalsIgnoreCase("no")) {
 				map.put(major_precentage_type,java.util.Arrays.asList(getMajorValueFromIv(ivf,tpList)));
 			}
 			
 		}else 	if (checkType == check_type_ded ) {
-			if (preventiveDed.equalsIgnoreCase("yes")) {
+			if (!preventiveDed.equalsIgnoreCase("no")) {
 				map.put(preventive_precentage_type,java.util.Arrays.asList(getPreventiveValueFromIv(ivf,tpList)));
 				
 			}
-			if (basisDed.equalsIgnoreCase("yes")) {
+			if (!basisDed.equalsIgnoreCase("no")) {
 				map.put(basic_precentage_type,java.util.Arrays.asList(getBasicValueFromIv(ivf,tpList)));
 			}
-			if (majorDed.equalsIgnoreCase("yes")) {
+			if (!majorDed.equalsIgnoreCase("no")) {
 				map.put(major_precentage_type,java.util.Arrays.asList(getMajorValueFromIv(ivf,tpList)));
 			}
 		}
 		map.entrySet().stream()
 		      .forEach(e -> {
 		    	  e.getValue().forEach(x ->{
-		    		if (checkType == check_type_waiting) {
+		    		//if (checkType == check_type_waiting) {
 		    			//Look for Codes in TP
 		    			Optional<Object> fiter=	tpList.stream().filter( cd ->
 		    			((CommonDataCheck) cd).getServiceCode().equals(x.getCode())).findFirst();
 		    			if (!fiter.isPresent()) {
 		    				return;
 		    			}
-		    		}
+		    		//}
 		    		//if Percentage Zero no need to check
-		    		if ( x.getValue()==null || ( x.getValue()!=null &&  x.getValue().equals("0"))) {
+		    		if ( x.getValue()==null ) {//|| ( x.getValue()!=null &&  x.getValue().equals("0"))
 		    			return;
 		    		}
-			    	final  TPValidationResponseDto dtoF=  isPrecentageByTypeSame(e.getKey(), preventivePercentage, basisPercentage, majorPecentage, checkType, x.getCode(),
-				        		 x.getValue(), messageSource, rule, errorMessageKey);
+			    	final  TPValidationResponseDto dtoF=  isPrecentageByTypeSame((CommonDataCheck)fiter.get(),e.getKey(), preventivePercentage, basisPercentage, majorPecentage, checkType, x.getCode(),
+				        		 x.getValue(), messageSource, rule, errorMessageKey,preventiveWaiting,basisWaiting,majorWaiting,ivf.getPlanEffectiveDate(), primeRemDed,planIndDedRem ,ivf,bw);
 			    	if (dtoF!=null) {
 			    		list.add(dtoF);
 			    	}
@@ -90,81 +96,151 @@ public class WaitingDedCalculationUtil {
 	        
 	        });
 		}catch(Exception ex) {
+			ex.printStackTrace();
 			list.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
 					Constants.FAIL, "", "", ""));
 			
 		}
+		if(list.size()>0 && checkType == check_type_ded) {
+			//TPValidationResponseDto obj = list.get(0); // remember first item
+			//list.clear(); // clear complete list
+			//list.add(obj); // add first item
+		}
 		return list;
 	}
 	
-	private static TPValidationResponseDto isPrecentageByTypeSame(int percentageType,String preventivePercentage,String basicPercentage,
+	private static TPValidationResponseDto isPrecentageByTypeSame(CommonDataCheck cd,int percentageType,String preventivePercentage,String basicPercentage,
 			                        String majorPecentage,int checkType,String code,String value,
-			                        MessageSource messageSource,Rules rule,String errorMessageKey
-			                        ) {
+			                        MessageSource messageSource,Rules rule,String errorMessageKey,
+			                        String preventiveWaiting,String basisWaiting,String majorWaiting,
+			                        String planEffectiveDate,double primeRemDed,double planIndDedRem,IVFTableSheet ivf,BufferedWriter bw) {
 		
 		TPValidationResponseDto dto = null;
 		if( checkType == check_type_ded || checkType == check_type_waiting) {
-			
+			  Object[] obj= null;
+			 
 			  if (percentageType == preventive_precentage_type ) {
 				  if (!preventivePercentage.equalsIgnoreCase(value)) {
 					  //Error build Message
-					  if (basicPercentage.equalsIgnoreCase(value)) {
+					  if (checkType == check_type_waiting ) {
+						// now check for basicPercentage if not "no" the Check with Effective date
+						  if (!basisWaiting.equalsIgnoreCase("no") && basicPercentage.equalsIgnoreCase(value)) {
+							  if (!isEffectiveDateValid(ivf, cd.getCdDetails().getDateLastUpdated(), bw, Integer.parseInt(basicPercentage))){
+								  obj = new Object[] {basisWaiting,majorWaiting,code,planEffectiveDate};
+							  }else {
+								  return null;
+							  } 
+						  }
+						  if (!majorWaiting.equalsIgnoreCase("no") && majorPecentage.equalsIgnoreCase(value)) {
+							  if (!isEffectiveDateValid(ivf, cd.getCdDetails().getDateLastUpdated(), bw, Integer.parseInt(majorPecentage))){
+								  obj = new Object[] {basisWaiting,majorWaiting,code,planEffectiveDate};
+							  }else {
+								  return null;
+							  } 
+						  }
+					  }
+					  if (checkType == check_type_ded && basicPercentage.equalsIgnoreCase(value) && planIndDedRem>0) {
+						 obj = new Object[] {planIndDedRem, primeRemDed, code,"Basic"};
 						dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 								errorMessageKey,
-								new Object[] { },
-								locale), Constants.FAIL, "", "", "");
-					  }else  if (majorPecentage.equalsIgnoreCase(value)) {
+								obj,
+								locale), Constants.FAIL, "",code, "");
+					  }else  if (checkType == check_type_ded  && majorPecentage.equalsIgnoreCase(value)  && planIndDedRem>0 ) {
+						  obj = new Object[] {planIndDedRem, primeRemDed, code,"Major"};
 						  dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 									errorMessageKey,
-									new Object[] { },
-									locale), Constants.FAIL, "", "", "");
+									obj,
+									locale), Constants.FAIL, "", "", code);
 					  }else {
+						  if (checkType == check_type_ded && planIndDedRem>0)obj = new Object[] {planIndDedRem, primeRemDed, code ,"NONE"};
 						  dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 									errorMessageKey,
-									new Object[] { },
-									locale), Constants.FAIL, "", "", "");
+									obj,
+									locale), Constants.FAIL, "","", code);
 					  }
 				  }
 			}else if (percentageType == major_precentage_type ) {
 				if (!majorPecentage.equalsIgnoreCase(value)) {
 					  //Error build Message
-					  if (basicPercentage.equalsIgnoreCase(value)) {
+					  if (checkType == check_type_waiting ) {
+						// now check for basicPercentage if not "no" the Check with Effective date
+						  if (!basisWaiting.equalsIgnoreCase("no") && basicPercentage.equalsIgnoreCase(value)) {
+							  if (!isEffectiveDateValid(ivf, cd.getCdDetails().getDateLastUpdated(), bw, Integer.parseInt(basicPercentage))){
+								  obj = new Object[] {basisWaiting,majorWaiting,code,planEffectiveDate};
+							  }else {
+								  return null;
+							  } 
+						  }
+						  if (!preventiveWaiting.equalsIgnoreCase("no") && preventivePercentage.equalsIgnoreCase(value)) {
+							  if (!isEffectiveDateValid(ivf, cd.getCdDetails().getDateLastUpdated(), bw, Integer.parseInt(preventivePercentage))){
+								  obj = new Object[] {basisWaiting,majorWaiting,code,planEffectiveDate};
+							  }else {
+								  return null;
+							  } 
+						  }
+					  }
+					
+					  if (checkType == check_type_ded && basicPercentage.equalsIgnoreCase(value) && planIndDedRem>0)  {
+						obj = new Object[] {planIndDedRem, primeRemDed, code,"Basic"}; 
 						dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 								errorMessageKey,
-								new Object[] { },
-								locale), Constants.FAIL, "", "", "");
-					  }else  if (preventivePercentage.equalsIgnoreCase(value)) {
-						  dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+								obj,
+								locale), Constants.FAIL, "", "", code);
+					  }else  if (checkType == check_type_ded  && preventivePercentage.equalsIgnoreCase(value)  && planIndDedRem>0 ) {
+						   obj = new Object[] {planIndDedRem, primeRemDed, code,"Preventive"};
+						   dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 									errorMessageKey,
-									new Object[] { },
-									locale), Constants.FAIL, "", "", "");
+									obj,
+									locale), Constants.FAIL, "", "", code);
 					  }else {
+						  if (checkType == check_type_ded  && planIndDedRem>0)obj = new Object[] {planIndDedRem, primeRemDed, code ,"NONE"}; 
 						  dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 									errorMessageKey,
-									new Object[] { },
-									locale), Constants.FAIL, "", "", "");
+									obj,
+									locale), Constants.FAIL, "", "", code);
 					  }
 				  }
 				
 			}else if (percentageType == basic_precentage_type ) {
 				if (!basicPercentage.equalsIgnoreCase(value)) {
 					  //Error build Message
-					  if (majorPecentage.equalsIgnoreCase(value)) {
-						dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+					  if (checkType == check_type_waiting ) {
+						// now check for basicPercentage if not "no" the Check with Effective date
+						  if (!preventiveWaiting.equalsIgnoreCase("no") && preventivePercentage.equalsIgnoreCase(value)) {
+							  if (!isEffectiveDateValid(ivf, cd.getCdDetails().getDateLastUpdated(), bw, Integer.parseInt(preventivePercentage))){
+								  obj = new Object[] {basisWaiting,majorWaiting,code,planEffectiveDate};
+							  }else {
+								  return null;
+							  } 
+						  }
+						  if (!majorWaiting.equalsIgnoreCase("no") && majorPecentage.equalsIgnoreCase(value)) {
+							  if (!isEffectiveDateValid(ivf, cd.getCdDetails().getDateLastUpdated(), bw, Integer.parseInt(majorPecentage))){
+								  obj = new Object[] {basisWaiting,majorWaiting,code,planEffectiveDate};
+							  }else {
+								  return null;
+							  } 
+						  }
+					  }
+					
+					  if (checkType == check_type_ded  && majorPecentage.equalsIgnoreCase(value)  && planIndDedRem>0 ) {
+						  obj = new Object[] {planIndDedRem, primeRemDed, code,"Major"}; 
+						  dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 								errorMessageKey,
-								new Object[] { },
-								locale), Constants.FAIL, "", "", "");
-					  }else  if (preventivePercentage.equalsIgnoreCase(value)) {
+								obj,
+								locale), Constants.FAIL, "", "", code);
+					  }else if (checkType == check_type_ded  && preventivePercentage.equalsIgnoreCase(value)  && planIndDedRem>0 ) {
+						  obj = new Object[] {planIndDedRem, primeRemDed, code ,"Preventive"};
 						  dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 									errorMessageKey,
-									new Object[] { },
-									locale), Constants.FAIL, "", "", "");
+									obj,
+									locale), Constants.FAIL, "", "", code);
 					  }else {
+						  if (checkType == check_type_ded  && planIndDedRem>0)obj = new Object[] {planIndDedRem, primeRemDed, code ,"NONE"};
 						  dto=new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
 									errorMessageKey,
-									new Object[] { },
-									locale), Constants.FAIL, "", "", "");
+									obj,
+									locale), Constants.FAIL, "", "", code);
 					  }
 				  }
 			}
@@ -256,5 +332,32 @@ public class WaitingDedCalculationUtil {
 				new CodeValueDto("D7953",ivf.getD7953())
 	    		};
 }
+	
+	private static boolean  isEffectiveDateValid(IVFTableSheet ivf, String tpLastUpdatedDate, BufferedWriter bw,int waitingPeriod) {
+		try {
+		Date effD = null;
+		Date dos = Constants.SIMPLE_DATE_FORMAT.parse(tpLastUpdatedDate);
+		String eff = ivf.getPlanEffectiveDate();
+		DateUtils.CheckForStringInDate(eff);
+		effD = Constants.SIMPLE_DATE_FORMAT_IVF.parse(eff);
+		Calendar nextAvailbleDate = new GregorianCalendar();
+		nextAvailbleDate.setTime(effD);
+		nextAvailbleDate.set(nextAvailbleDate.get(Calendar.YEAR), nextAvailbleDate.get(Calendar.MONTH) + waitingPeriod,
+				nextAvailbleDate.get(Calendar.DATE));
+		RuleEngineLogger.generateLogs(clazz, "Next Date Available-" + nextAvailbleDate.getTime(),
+				Constants.rule_log_debug, bw);
+
+		RuleEngineLogger.generateLogs(clazz, "WAIT -" + waitingPeriod, Constants.rule_log_debug, bw);
+		RuleEngineLogger.generateLogs(clazz, "LAST UPDATED DATE-- " + dos, Constants.rule_log_debug, bw);
+		Date x = nextAvailbleDate.getTime();
+		if (x.compareTo(dos) >= 0) {
+			return false;//ERROR
+		}
+		else return true;
+		}catch(Exception m) {
+			m.printStackTrace();
+			return true;
+		}
+	}
              
 }

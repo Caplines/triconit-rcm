@@ -595,6 +595,12 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		List<CaplineIVFFormDto> capD = createData(d, off, null,true);
 		if (capD!=null && capD.size() > 0) {
 			for(CaplineIVFFormDto form :capD) {
+			form.setPlanTypeChipOrChildrenMedicaid(false);
+			if (form.getPolicy1()!=null ) {
+				if (form.getPolicy1().toLowerCase().contains("chip")
+					|| form.getPolicy1().toLowerCase().contains("children medicaid")	)
+				form.setPlanTypeChipOrChildrenMedicaid(true);
+			}
 			if (form.getHistory() != null) {
 				int ct = 0;
 				List<ToothHistoryDto> hdto = new ArrayList<>();
@@ -661,6 +667,11 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				CaplineIVFFormDto form = li.get(0);
 				obj[0]=form.getBasicInfo2();
 				form.setPdfAlert("");
+				if (form.getPolicy1()!=null ) {
+					if (form.getPolicy1().toLowerCase().contains("chip")
+						|| form.getPolicy1().toLowerCase().contains("children medicaid")	)
+					form.setPlanTypeChipOrChildrenMedicaid(true);
+				}
 				if (form.getPolicy4()!=null)form.setPolicy4(WordUtils.wrap(form.getPolicy4(), 10, " ", true));
 				if (form.getPolicy16()!=null)form.setPolicy16(WordUtils.wrap(form.getPolicy16(), 10, " ", true));
 				if (form.getBasicInfo3()!=null) {

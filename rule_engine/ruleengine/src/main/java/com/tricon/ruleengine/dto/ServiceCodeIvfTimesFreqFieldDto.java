@@ -11,7 +11,7 @@ public class ServiceCodeIvfTimesFreqFieldDto {
 	String dos;
 	String surface;
 	String serviceCodeHis;//Used in humana and FMX Pano
-	
+	String historyTooth;
 	
 	
 	
@@ -98,6 +98,14 @@ public class ServiceCodeIvfTimesFreqFieldDto {
 
 	public void setServiceCodeHis(String serviceCodeHis) {
 		this.serviceCodeHis = serviceCodeHis;
+	}
+
+	public String getHistoryTooth() {
+		return historyTooth;
+	}
+
+	public void setHistoryTooth(String historyTooth) {
+		this.historyTooth = historyTooth;
 	}
 	
 	

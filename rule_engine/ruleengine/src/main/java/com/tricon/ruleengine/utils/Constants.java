@@ -157,6 +157,10 @@ public class Constants {
 	public static final String RULE_ID_114="Fillings and Endo not paid on same tooth on same DOS";
 	public static final String RULE_ID_115="Dental Procedures and Nomenclature - D4381";
 	public static final String RULE_ID_116="D2934 in Chip plan";
+	public static final String RULE_ID_117="Fluoride covered till age";
+	public static final String RULE_ID_118="Sealant covered till age";
+	public static final String RULE_ID_119="SSC and Fillings done within 12 months";
+	public static final String RULE_ID_120="Quads Allowed Per Day for SRP";
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
 

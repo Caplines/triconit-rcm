@@ -779,6 +779,8 @@ public class CaplineIVFFormDto {
 	private String d2954;
 	private String d2954fr;
 	
+	private boolean planTypeChipOrChildrenMedicaid;
+	
     //END
     
     public String getFill1() {
@@ -4061,6 +4063,14 @@ public class CaplineIVFFormDto {
 
 	public void setD2954fr(String d2954fr) {
 		this.d2954fr = d2954fr;
+	}
+
+	public boolean isPlanTypeChipOrChildrenMedicaid() {
+		return planTypeChipOrChildrenMedicaid;
+	}
+
+	public void setPlanTypeChipOrChildrenMedicaid(boolean planTypeChipOrChildrenMedicaid) {
+		this.planTypeChipOrChildrenMedicaid = planTypeChipOrChildrenMedicaid;
 	}
 
 	
