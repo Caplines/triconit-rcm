@@ -1617,8 +1617,7 @@ public class ClaimSectionImpl {
 	public Object saveRebillingSection(PartialHeader partialHeader, RebillingDto rebillingInfoModel, RcmClaims claim,
 			RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
 		RcmRebillingSection rebillingSection = null;
-		if (rebillingInfoModel.isRebillingStatus() && (rebillingInfoModel.getSelectedRebillingServiceCodes().isEmpty()
-				|| rebillingInfoModel.getSelectedRebillingRequirements().isEmpty())) {
+		if (rebillingInfoModel.isRebillingStatus() && rebillingInfoModel.getSelectedRebillingServiceCodes().isEmpty()) {
 			logger.error("service code or requirements are empty!");
 			return null;
 
@@ -1646,7 +1645,7 @@ public class ClaimSectionImpl {
 						.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.joining(","));
 				logger.info("after removing duplicates service code from selectedServiceCodesData->"+selectedServiceCodes);
 			}
-			if (!rebillingInfoModel.getSelectedRebillingRequirements().isEmpty()) {
+			if (rebillingInfoModel.getSelectedRebillingRequirements()!=null && !rebillingInfoModel.getSelectedRebillingRequirements().isEmpty()) {
 				selectedRequirements = rebillingInfoModel.getSelectedRebillingRequirements().stream()
 						.collect(Collectors.joining(","));
 				logger.info("selectedrequirementsData->"+selectedRequirements);
