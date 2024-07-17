@@ -1,5 +1,7 @@
 package com.tricon.ruleengine.dto;
 
+import java.util.Set;
+
 public class ToothHistoryDto {
 	
 	String historyCode;
@@ -7,6 +9,7 @@ public class ToothHistoryDto {
 	String historyTooth;
 	String surfaceTooth;
 	String className;
+	Set<String> tpTooth;
 	
 	public ToothHistoryDto() {
 		super();
@@ -51,6 +54,17 @@ public class ToothHistoryDto {
 		this.className = className;
 	}
 
+	public Set<String> getTpTooth() {
+		return tpTooth;
+	}
+
+	public void setTpTooth(Set<String> tpTooth) {
+		this.tpTooth = tpTooth;
+	}
+
+	
+
+	
 	
 	
 }

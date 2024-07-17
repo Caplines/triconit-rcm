@@ -292,7 +292,7 @@ export default class Utils {
    }
 
    static isNotTeamOffice() {
-      return <any>localStorage.getItem("selected_teamId") != 5 ? true : false;
+      return <any>localStorage.getItem("selected_teamId") != AppConstants.OFFICE_TEAM ? true : false;
    }
 
    static getLoggedInUserFirstName(): string {
@@ -324,7 +324,7 @@ export default class Utils {
    }
 
    static isNotTeamPosting() {
-      return <any>localStorage.getItem("selected_teamId") != 12 ? true : false;
+      return <any>localStorage.getItem("selected_teamId") != AppConstants.PAYMENT_POSTING_TEAM ? true : false;
    }
 
    static isRoleReporting() {
@@ -333,5 +333,13 @@ export default class Utils {
          return true;
       }
       return false;
+   }
+
+   static isNotTeamCredentialing() {
+      return <any>localStorage.getItem("selected_teamId") != AppConstants.CREDENTIALING_TEAM ? true : false;
+   }
+
+   static isNotTeamAging() {
+      return <any>localStorage.getItem("selected_teamId") != AppConstants.AGING_TEAM ? true : false;
    }
 }

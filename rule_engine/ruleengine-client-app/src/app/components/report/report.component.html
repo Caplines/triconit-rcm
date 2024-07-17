@@ -1322,7 +1322,7 @@
 						<td class="width-14"><span class="redText">{{reportDataInd.percentages1}}</span></td>
 						<td class="width-7  borderNone"></td>
 						<td class="width-15" colspan="2">Major Services %</td>
-						<td class="width-12"><span class="redText">{{reportDataInd.percentages1}}</span></td>
+						<td class="width-12"><span class="redText">{{reportDataInd.percentages3}}</span></td>
 					</tr>
 					<tr>
 						<td colspan="2">Waiting Period</td>
@@ -1380,10 +1380,22 @@
 						<td class="rowHeading width-7">Percentage</td>
 						<td class="rowHeading">Frequency</td>
 					</tr>
+					<tr *ngIf="reportDataInd.planTypeChipOrChildrenMedicaid">
+						<td>D0145 (OEC)</td>
+						<td><span class="redText">{{reportDataInd.d0145}}</span></td>
+						<td><span class="redText">{{reportDataInd.exams3}}</span></td>
+						<td class="borderNone"></td>
+						<td colspan="2"></td>
+						<td><span class="redText"></span></td>
+						<td class="borderNone"></td>
+						<td class="rowHeading"></td>
+						<td class="rowHeading width-7"></td>
+						<td class="rowHeading"></td>
+					</tr>
 					<tr>
 						<td>D0150 (COE) </td>
 						<td><span class="redText">{{reportDataInd.d0150}}</span></td>
-						<td><span class="redText">{{reportDataInd.xrays4}}</span></td>
+						<td><span class="redText">{{reportDataInd.exams4}}</span></td>
 						<td class="borderNone"></td>
 						<td colspan="2">No. of Fillings Allowed in a Year</td>
 						<td><span class="redText">{{reportDataInd.fill1}}</span></td>
@@ -1432,8 +1444,8 @@
 					</tr>
 					<tr>
 						<td>D0210 (FMX)</td>
-						<td><span class="redText">{{reportDataInd.bwx}}</span></td>
-						<td><span class="redText">{{reportDataInd.xrays1}}</span></td>
+						<td><span class="redText">{{reportDataInd.percentages16}}</span></td>
+						<td><span class="redText">{{reportDataInd.xrays4}}</span></td>
 						<td class="borderNone"></td>
 						<td class="rowHeading">Perio (Non-Surgical)</td>
 						<td class="rowHeading">Percentage</td>
@@ -1443,12 +1455,12 @@
 					</tr>
 					<tr>
 						<td>D0272/74 (BWXs) </td>
-						<td><span class="redText">{{reportDataInd.pano1}}</span></td>
-						<td><span class="redText">{{reportDataInd.xrays4}}</span></td>
+						<td><span class="redText">{{reportDataInd.bwx}}</span></td>
+						<td><span class="redText">{{reportDataInd.xrays1}}</span></td>
 						<td class="borderNone"></td>
 						<td>D4910 (Perio Main) </td>
 						<td><span class="redText">{{reportDataInd.perioMnt1}}</span></td>
-						<td><span class="redText">{{reportDataInd.perio2}}</span></td>
+						<td><span class="redText">{{reportDataInd.perioMnt2}}</span></td>
 						<td class="borderNone"></td>
 						<td colspan="2">Applicable to Downgrading </td>
 						<td><span class="redText">{{reportDataInd.posterior6}}</span></td>
@@ -1474,7 +1486,7 @@
 						<td class="borderNone"></td>
 						<td>D4341 (SRP) </td>
 						<td><span class="redText">{{reportDataInd.perio1}}</span></td>
-						<td><span class="redText">{{reportDataInd.perioMnt2}}</span></td>
+						<td><span class="redText">{{reportDataInd.perio2}}</span></td>
 						<td class="borderNone"></td>
 						<td colspan="2">No. of Crowns Allowed in a Year </td>
 						<td><span class="redText">{{reportDataInd.crn1}}</span></td>
@@ -1629,7 +1641,7 @@
 					<tr>
 						<td>D1351 (Per Tooth) </td>
 						<td><span class="redText">{{reportDataInd.sealantsD}}</span></td>
-						<td><span class="redText">{{reportDataInd.sealantsD}}</span></td>
+						<td><span class="redText">{{reportDataInd.sealants1}}</span></td>
 						<td class="borderNone"></td>
 						<td class="rowHeading">VAPs</td>
 						<td class="rowHeading">Percentage</td>
@@ -1720,7 +1732,7 @@
 					<tr>
 						<td>D9310</td>
 						<td><span class="redText">{{reportDataInd.posterior8}}</span></td>
-						<td><span class="redText">{{reportDataInd.posterior8}}</span></td>
+						<td><span class="redText">{{reportDataInd.posterior9}}</span></td>
 						<td class="borderNone"></td>
 						<td class="rowHeading">Night Gaurds </td>
 						<td class="rowHeading">Percentage</td>

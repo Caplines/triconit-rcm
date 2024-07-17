@@ -24,6 +24,7 @@ import com.tricon.ruleengine.dto.TPValidationResponseDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Rules;
+import com.tricon.ruleengine.model.sheet.CommonDataCheck;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 
 public class FreqencyUtils {
@@ -60,7 +61,11 @@ public class FreqencyUtils {
 						dto.setFy(Integer.parseInt(temp.replace("py", "")));
 
 					} else if (temp.indexOf("lt") > -1) {
+						try {
 						dto.setLt(Integer.parseInt(temp.replace("lt", "")));
+						}catch(Exception n) {
+							dto.setLt(1);
+						}
 					} else if (temp.indexOf("days") > -1) {
 						dto.setOnlyDays(Integer.parseInt(temp.replace("days", "")));
 					}
@@ -96,10 +101,12 @@ public class FreqencyUtils {
 		int times = 0;
 		int ctr = 0;
 		String tooth = "";
+		String historyTooth = "";
 		String code = "";
 		String surface = "";
 
 		Set<String> dos = new HashSet<>();
+		Set<String> dosWithTooth = new HashSet<>();
 		Set<String> codehistory = new HashSet<>();
 		String fr = "";
 		String fl = "";
@@ -108,11 +115,13 @@ public class FreqencyUtils {
 				if (s.getServiceCode().equals(serviceCode)) {
 					count = count + s.getCount();
 					dos.add(s.getDos());
+					dosWithTooth.add(s.getDos()+"(#"+s.getHistoryTooth()+")");
 					if (s.getServiceCodeHis()!=null)codehistory.add(s.getServiceCodeHis());
 					else codehistory.add("");
 					fl = s.getFieldName();
 					code = s.getServiceCode();
 					tooth = s.getTooth();
+					historyTooth= s.getHistoryTooth();
 					fr = s.getFreqency();
 					surface = s.getSurface();
 					if (ctr == 0)
@@ -124,9 +133,9 @@ public class FreqencyUtils {
 			}
 
 		}
-		if (!surface.equals(""))
+		if (!surface.trim().equals(""))
 			surface = "(" + surface + ")";
-		return new Object[] { count, tooth, String.join(",", dos), fl, times, code, fr, surface,String.join(",", codehistory) };
+		return new Object[] { count, tooth, String.join(",", dos), fl, times, code, fr, surface,String.join(",", codehistory),historyTooth ,String.join(",", dosWithTooth)};
 	}
 
 	/*
@@ -995,7 +1004,7 @@ public class FreqencyUtils {
 			List<ServiceCodeIvfTimesFreqFieldDto> l3, List<ServiceCodeIvfTimesFreqFieldDto> l4,
 			List<ServiceCodeIvfTimesFreqFieldDto> l5, List<ServiceCodeIvfTimesFreqFieldDto> l6,List<ServiceCodeIvfTimesFreqFieldDto> l7,
 			String s1, String s2,
-			String s3, String s4, String s5, String s6, String s7, String tooth,int currentCount,boolean humana) {
+			String s3, String s4, String s5, String s6, String s7, String tooth,int currentCount,String toothinTP,List<Object> tpList,boolean humana) {
 		int ct = currentCount;
 		int ti = 0;
 		int actualmax = -1;
@@ -1082,20 +1091,22 @@ public class FreqencyUtils {
 		
 		if ((actualmax > 0) && (ct > 0 && ct > actualmax)) {
 			Set<String> dos = new HashSet<>();
-			
+			Set<String> dosWithTooth = new HashSet<>();
 			String fl = "";
 			String fr = "";
 			String sur = "";
 
 			if (l1 != null) {
 				dos.add((String) c1[2]);
+				dosWithTooth.add((String) c1[10]);
 				fl = fl + " " + (String) c1[3];
 				fr = fr + " " + (String) c1[6];
 				sur = sur + " " + (String) c1[7];
 
 			}
 			if (l2 != null) {
-				dos.add((String) c2[2]);
+				dos.add((String) c2[2] );
+				dosWithTooth.add((String) c2[10]);
 				fl = fl + " " + (String) c2[3];
 				fr = fr + " " + (String) c2[6];
 				sur = sur + " " + (String) c2[7];
@@ -1103,6 +1114,7 @@ public class FreqencyUtils {
 			}
 			if (l3 != null) {
 				dos.add((String) c3[2]);
+				dosWithTooth.add((String) c3[10]);
 				fl = fl + " " + (String) c3[3];
 				fr = fr + " " + (String) c3[6];
 				sur = sur + " " + (String) c3[7];
@@ -1110,27 +1122,31 @@ public class FreqencyUtils {
 			}
 			if (l4 != null) {
 				dos.add((String) c4[2]);
+				dosWithTooth.add((String) c4[10]);
 				fl = fl + " " + (String) c4[3];
 				fr = fr + " " + (String) c4[6];
 				sur = sur + " " + (String) c4[7];
 
 			}
 			if (l5 != null) {
-				dos.add((String) c5[2]);
+				dos.add((String) c5[2] );
+				dosWithTooth.add((String) c4[10]);
 				fl = fl + " " + (String) c5[3];
 				fr = fr + " " + (String) c5[6];
 				sur = sur + " " + (String) c5[7];
 
 			}
 			if (l6 != null) {
-				dos.add((String) c6[2]);
+				dos.add((String) c6[2] );
+				dosWithTooth.add((String) c6[10]);
 				fl = fl + " " + (String) c6[3];
 				fr = fr + " " + (String) c6[6];
 				sur = sur + " " + (String) c6[7];
 
 			}
 			if (l7 != null) {
-				dos.add((String) c7[2]);
+				dos.add((String) c7[2] );
+				dosWithTooth.add((String) c7[10]);
 				fl = fl + " " + (String) c7[3];
 				fr = fr + " " + (String) c7[6];
 				sur = sur + " " + (String) c7[7];
@@ -1139,10 +1155,24 @@ public class FreqencyUtils {
 			
 
 			// 3124 code ,TOOTH,DOS, TIMES
-			if (!sur.equals(""))
+			if (tooth.equals("NA")) {
+				tooth=toothinTP;
+			}
+			Set<String> ths= new HashSet<>();
+			ths.add(tooth);
+			for (Object t : tpList) {
+				CommonDataCheck tp = (CommonDataCheck) t;
+				if (tp.getServiceCode().equalsIgnoreCase(s1) || tp.getServiceCode().equalsIgnoreCase(s2)
+					|| tp.getServiceCode().equalsIgnoreCase(s3) || tp.getServiceCode().equalsIgnoreCase(s4)
+					|| tp.getServiceCode().equalsIgnoreCase(s5) || tp.getServiceCode().equalsIgnoreCase(s6)
+					|| tp.getServiceCode().equalsIgnoreCase(s7)) {
+					ths.add(tp.getTooth());
+				}
+			}
+			if (!sur.trim().equals(""))
 				sur = "(" + sur + ")";
-			if (humana)mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,String.join(",", codeH) };
-			else mess = new Object[] { String.join(",", code), tooth, String.join(",", dos), actualmax, fr, sur,"" };
+			if (humana)mess = new Object[] { String.join(",", code), String.join(",", ths), String.join(",", dosWithTooth), actualmax, fr, sur,String.join(",", codeH) };
+			else mess = new Object[] { String.join(",", code), String.join(",", ths), String.join(",", dosWithTooth), actualmax, fr, sur,"" };
 
 		}
 		return mess;
@@ -1549,6 +1579,9 @@ public class FreqencyUtils {
 		if (compairThreeVlaues(tpCodes, historyCode, "D2394", "M2394", "P2394") != null) {
 			alikecodepresent = true;
 		}
+		if (compairSevenValues(tpCodes, historyCode, "D7111", "D7140", "D7210","D7220", "D7230","D7240", "D7250") != null) {
+			alikecodepresent = true;
+		}
 
 		return alikecodepresent;
 	}
@@ -1576,6 +1609,44 @@ public class FreqencyUtils {
 		if (tpCodes.equals(three) && historyCode.equals(one)) {
 			b = true;
 		}
+		return b;
+	}
+
+	private static Boolean compairSevenValues(String tpCodes, String historyCode, String one, String two,
+			String three,String four,String five,String six,String seven) {
+		Boolean b = null;
+		// boolean alikecodepresent=false;
+ 
+		if (tpCodes.equals(one) && (historyCode.equals(two) || historyCode.equals(three) ||
+				historyCode.equals(four) ||historyCode.equals(five) || historyCode.equals(six) || historyCode.equals(seven))) {
+			b = true;
+		}
+		if (tpCodes.equals(two) && (historyCode.equals(one) || historyCode.equals(three) ||
+				historyCode.equals(four) ||historyCode.equals(five) || historyCode.equals(six) || historyCode.equals(seven))) {
+			b = true;
+		}
+		if (tpCodes.equals(three) && (historyCode.equals(one) || historyCode.equals(two) ||
+				historyCode.equals(four) ||historyCode.equals(five) || historyCode.equals(six) || historyCode.equals(seven))) {
+			b = true;
+		}
+		if (tpCodes.equals(four) && (historyCode.equals(one) || historyCode.equals(two) ||
+				historyCode.equals(three) ||historyCode.equals(five) || historyCode.equals(six) || historyCode.equals(seven))) {
+			b = true;
+		}
+		if (tpCodes.equals(five) && (historyCode.equals(one) || historyCode.equals(two) ||
+				historyCode.equals(three) ||historyCode.equals(four) || historyCode.equals(six) || historyCode.equals(seven))) {
+			b = true;
+		}
+
+		if (tpCodes.equals(six) && (historyCode.equals(one) || historyCode.equals(two) ||
+				historyCode.equals(three) ||historyCode.equals(four) || historyCode.equals(five) || historyCode.equals(seven))) {
+			b = true;
+		}
+		if (tpCodes.equals(seven) && (historyCode.equals(one) || historyCode.equals(two) ||
+				historyCode.equals(three) ||historyCode.equals(four) || historyCode.equals(five) || historyCode.equals(six))) {
+			b = true;
+		}
+	
 		return b;
 	}
 
@@ -1868,9 +1939,11 @@ public class FreqencyUtils {
 				List<ServiceCodeIvfTimesFreqFieldDto> ln = mapFlIVFFinal.get(tooth);
 				if (ln == null) {
 					ln = new ArrayList<>();
+					scivfTFDFinal.setHistoryTooth(historyD.getHistoryTooth());
 					ln.add(scivfTFDFinal);
 					mapFlIVFFinal.put(tooth, ln);
 				} else {
+					scivfTFDFinal.setHistoryTooth(historyD.getHistoryTooth());
 					ln.add(scivfTFDFinal);
 				}
 			}

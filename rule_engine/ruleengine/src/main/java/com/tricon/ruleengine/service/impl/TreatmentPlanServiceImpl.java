@@ -1021,7 +1021,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		rule = getRulesFromList(rules, Constants.RULE_ID_5);
 		dtoRL = new ArrayList<>();
 		if (espatients != null) {
-			dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),
+			dtoRL = rb.Rule5(tListReduced,ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),
 					bw,type,dtod.getInsType());
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
@@ -2594,6 +2594,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 																		Constants.rule_log_debug, bw);
 	    //END Out of Network benefit
 		//Adult medicaid Plans are limited to offices
+		/*
 		rule = getRulesFromList(rules, Constants.RULE_ID_111);
 		dtoRL = rb.Rule111(ivfMap.get(ivx).get(0), tList,adultMedicaidSheetData,messageSource, rule, bw);
 			if (dtoRL != null) {
@@ -2605,10 +2606,11 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			}
 		  }
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_111,
-																		Constants.rule_log_debug, bw);
+															Constants.rule_log_debug, bw);
+	    */
 	    //END Adult medicaid Plans are limited to offices
 		//Humana Medicare Exception for D0230
-				rule = getRulesFromList(rules, Constants.RULE_ID_113);
+		rule = getRulesFromList(rules, Constants.RULE_ID_113);
 				dtoRL = rb.Rule113(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -2618,7 +2620,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 					}
 				  }
-				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_113,
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_113,
 																				Constants.rule_log_debug, bw);
 		//END Humana Medicare Exception for D0230
 				
@@ -2636,7 +2638,92 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		 RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_114,
 																				Constants.rule_log_debug, bw);
 		//END Fillings and Endo not paid on same tooth on same DOS		
-		
+		//Dental Procedures and Nomenclature - D4381
+		rule = getRulesFromList(rules, Constants.RULE_ID_115);
+					dtoRL = rb.Rule115(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw,type);
+						if (dtoRL != null) {
+							list.addAll(dtoRL);
+							for (TPValidationResponseDto t : dtoRL) {
+								dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+									t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+						}
+					  }
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_115,
+																					Constants.rule_log_debug, bw);
+		//END Dental Procedures and Nomenclature - D4381	
+		//D2934 in Chip plan
+		rule = getRulesFromList(rules, Constants.RULE_ID_116);
+				dtoRL = rb.Rule116(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							  }
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_116,
+																							Constants.rule_log_debug, bw);
+		//END D2934 in Chip plan
+		//Fluoride covered till age
+		/*
+		rule = getRulesFromList(rules, Constants.RULE_ID_117);
+		dtoRL = rb.Rule117(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+		if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		 }
+         RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_117,
+        		 Constants.rule_log_debug, bw);
+		//END Fluoride covered till age	
+       //Sealant covered till age
+ 		rule = getRulesFromList(rules, Constants.RULE_ID_118);
+ 		dtoRL = rb.Rule118(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+ 		if (dtoRL != null) {
+ 				list.addAll(dtoRL);
+ 				for (TPValidationResponseDto t : dtoRL) {
+ 					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+ 						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+ 						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+ 			}
+ 		 }
+          RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_118,
+         		 Constants.rule_log_debug, bw);
+ 		//END Sealant covered till age
+        //SSC and Fillings done within 12 months
+   		rule = getRulesFromList(rules, Constants.RULE_ID_119);
+   		dtoRL = rb.Rule119(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw, type);
+   		if (dtoRL != null) {
+   				list.addAll(dtoRL);
+   				for (TPValidationResponseDto t : dtoRL) {
+   					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+   						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+   						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+   			}
+   		 }
+         RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_119,
+           		 Constants.rule_log_debug, bw);
+   		//END SSC and Fillings done within 12 months				
+        //Quads Allowed Per Day for SRP
+ 		rule = getRulesFromList(rules, Constants.RULE_ID_120);
+ 		dtoRL = rb.Rule120(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+ 		if (dtoRL != null) {
+ 				list.addAll(dtoRL);
+ 				for (TPValidationResponseDto t : dtoRL) {
+ 					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+ 						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+ 						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+ 			}
+ 		 }
+         RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_120,
+             		 Constants.rule_log_debug, bw);
+         //END Quads Allowed Per Day for SRP		
+		*/			
 		// RULE_ID_79 "Insurance and Address"
 		/*
 		rule = getRulesFromList(rules, Constants.RULE_ID_79);
@@ -2685,7 +2772,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				rule = getRulesFromList(rules, Constants.RULE_ID_5);
 				dtoRL = new ArrayList<>();
 				if (espatients != null) {
-					dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),
+					dtoRL = rb.Rule5(tListReduced,ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey),
 							bw,type,dtod.getInsType());
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
@@ -3169,9 +3256,140 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 				}
 			  }
-			RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_110,
+	     RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_110,
 																			Constants.rule_log_debug, bw);
-		//END Out of Network benefit
+	//END Out of Network benefit
+	//Adult medicaid Plans are limited to offices
+	     /*
+		rule = getRulesFromList(rules, Constants.RULE_ID_111);
+		dtoRL = rb.Rule111(ivfMap.get(ivx).get(0), tList,adultMedicaidSheetData,messageSource, rule, bw);
+			if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		  }
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_111,
+																		Constants.rule_log_debug, bw);
+	    //END Adult medicaid Plans are limited to offices
+	     */
+		//Humana Medicare Exception for D0230
+				rule = getRulesFromList(rules, Constants.RULE_ID_113);
+				dtoRL = rb.Rule113(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+					if (dtoRL != null) {
+						list.addAll(dtoRL);
+						for (TPValidationResponseDto t : dtoRL) {
+							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+								t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+								// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+				  }
+				RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_113,
+																				Constants.rule_log_debug, bw);
+		//END Humana Medicare Exception for D0230
+				
+		//Fillings and Endo not paid on same tooth on same DOS
+		rule = getRulesFromList(rules, Constants.RULE_ID_114);
+				dtoRL = rb.Rule114(tList,messageSource, rule, bw);
+					if (dtoRL != null) {
+						list.addAll(dtoRL);
+						for (TPValidationResponseDto t : dtoRL) {
+							dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+								t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+								// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+					}
+				  }
+		 RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_114,
+																				Constants.rule_log_debug, bw);
+		//END Fillings and Endo not paid on same tooth on same DOS		
+		//Dental Procedures and Nomenclature - D4381
+		rule = getRulesFromList(rules, Constants.RULE_ID_115);
+					dtoRL = rb.Rule115(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw,type);
+						if (dtoRL != null) {
+							list.addAll(dtoRL);
+							for (TPValidationResponseDto t : dtoRL) {
+								dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+									t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+						}
+					  }
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_115,
+																					Constants.rule_log_debug, bw);
+		//END Dental Procedures and Nomenclature - D4381	
+		//D2934 in Chip plan
+		rule = getRulesFromList(rules, Constants.RULE_ID_116);
+				dtoRL = rb.Rule116(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+								if (dtoRL != null) {
+									list.addAll(dtoRL);
+									for (TPValidationResponseDto t : dtoRL) {
+										dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+											// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							  }
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_116,
+																							Constants.rule_log_debug, bw);
+		//END D2934 in Chip plan	
+		//Fluoride covered till age
+		/*
+		rule = getRulesFromList(rules, Constants.RULE_ID_117);
+		dtoRL = rb.Rule117(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+		if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		 }
+         RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_117,
+        		 Constants.rule_log_debug, bw);
+		//END Fluoride covered till age	
+       //Sealant covered till age
+ 		rule = getRulesFromList(rules, Constants.RULE_ID_118);
+ 		dtoRL = rb.Rule118(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+ 		if (dtoRL != null) {
+ 				list.addAll(dtoRL);
+ 				for (TPValidationResponseDto t : dtoRL) {
+ 					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+ 						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+ 						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+ 			}
+ 		 }
+          RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_118,
+         		 Constants.rule_log_debug, bw);
+ 		//END Sealant covered till age
+          //SSC and Fillings done within 12 months
+ 		rule = getRulesFromList(rules, Constants.RULE_ID_119);
+ 		dtoRL = rb.Rule119(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw, type);
+ 		if (dtoRL != null) {
+ 				list.addAll(dtoRL);
+ 				for (TPValidationResponseDto t : dtoRL) {
+ 					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+ 						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+ 						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+ 			}
+ 		 }
+          RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_119,
+         		 Constants.rule_log_debug, bw);
+        //END SSC and Fillings done within 12 months
+        //Quads Allowed Per Day for SRP
+   		rule = getRulesFromList(rules, Constants.RULE_ID_120);
+   		dtoRL = rb.Rule120(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+   		if (dtoRL != null) {
+   				list.addAll(dtoRL);
+   				for (TPValidationResponseDto t : dtoRL) {
+   					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+   						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+   						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+   			}
+   		 }
+           RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_120,
+               		 Constants.rule_log_debug, bw);
+           //END Quads Allowed Per Day for SRP		
+         */     
 		// RULE_ID_79 "Insurance and Address"
 				  /*
 				rule = getRulesFromList(rules, Constants.RULE_ID_79);
@@ -4537,7 +4755,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							// form"
 							if (type==Constants.userType_TR) {
 							rule = getRulesFromList(rules, Constants.RULE_ID_5);
-							dtoRL = rb.Rule5(ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey), null,type,iType);
+							dtoRL = rb.Rule5(null,ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey), null,type,iType);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {

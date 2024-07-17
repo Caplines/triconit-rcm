@@ -84,6 +84,19 @@ export class AppConstants {
     public static CDP_TEAM = 11;
     public CLOSED_CLAIM_STATUS = 30;
     public static AGING_ID = 20;
+
+    public static LC3_TEAM = 4;
+    public static OFFICE_TEAM = 5;
+    public static PATIENT_CALLING_TEAM = 6;
+    public static ORTHO_TEAM = 10;
+    public static PAYMENT_POSTING_TEAM = 12;
+    public static PPO_IV_TEAM = 13;
+    public static MEDICAID_IV_TEAM = 14;
+    public static NEED_TO_HOLD_TEAM = 15;
+    public static QUALITY_TEAM = 16;
+    public static PATIENT_STATEMENT_TEAM = 18;
+    public static CREDENTIALING_TEAM = 19;
+    public static AGING_TEAM = 20;
     public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims","/reconciliation"];
     // public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
 
