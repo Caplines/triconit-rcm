@@ -3117,9 +3117,11 @@ export class BillingClaimsComponent {
           res.data.originalServiceCodes.forEach((e: any) => {
             serviceCodesForMultiSelect.push({ name: e, checked: false })
           });
-          res.data.originalRequirements.forEach((e: any) => {
-            requirementsForMultiSelect.push({ name: e, checked: false })
-          });
+          if (res.data.originalRequirements != null) {
+            res.data.originalRequirements.forEach((e: any) => {
+              requirementsForMultiSelect.push({ name: e, checked: false })
+            });
+          } 
           this.claimSectionModal['REBILLING']['modal']['serviceCodesForMultiSelect'] = serviceCodesForMultiSelect;
           this.claimSectionModal['REBILLING']['modal']['requirementsForMultiSelect'] = requirementsForMultiSelect;
         }
@@ -3782,10 +3784,11 @@ export class BillingClaimsComponent {
       this.emptyFields["REBILLING"]['selectedRebillingServiceCodes'] = true;
       isSectionValidated = false;
     }
-    if (this.claimSectionModal['REBILLING']['dataModal']['rebillingStatus'] && !this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'] || this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'].length == 0) {
-      this.emptyFields["REBILLING"]['selectedRebillingRequirements'] = true;
-      isSectionValidated = false;
-    }
+    
+    // if (this.claimSectionModal['REBILLING']['dataModal']['rebillingStatus'] && !this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'] || this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'].length == 0) {
+    //   this.emptyFields["REBILLING"]['selectedRebillingRequirements'] = true;
+    //   isSectionValidated = false;
+    // }
     return isSectionValidated;
 
   }

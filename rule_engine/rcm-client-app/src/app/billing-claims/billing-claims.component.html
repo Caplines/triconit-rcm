@@ -4168,13 +4168,13 @@
                                                                 </div>
                                                             </div>
 
-                                                            <div class="col-md-4 mb-2">
+                                                            <div class="col-md-4 mb-2" *ngIf="claimSectionModal.REBILLING['modal'].requirementsForMultiSelect?.length>0">
                                                                 <div class="custom-row text-number">
                                                                     <label for="modeOfFollowUp">Attachments Required For
                                                                         Rebilling</label>
 
                                                                     <ng-container
-                                                                        *ngIf="claimSectionModal.REBILLING['modal'].requirementsForMultiSelect.length>0">
+                                                                        *ngIf="claimSectionModal.REBILLING['modal'].requirementsForMultiSelect?.length>0">
                                                                         <span class="mutliselect"
                                                                             [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['selectedRebillingRequirements']}">
                                                                             <multi-select-dropdown class="multiselect"
