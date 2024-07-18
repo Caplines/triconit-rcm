@@ -8,4 +8,5 @@ public interface ProductionForPatientCalling {
 
 	String getDesposition();
 
+	int getId();
 }

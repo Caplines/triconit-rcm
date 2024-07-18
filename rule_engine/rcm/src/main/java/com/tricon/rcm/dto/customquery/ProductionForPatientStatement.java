@@ -15,4 +15,6 @@ public interface ProductionForPatientStatement {
 	String getLName();
 
 	String getCompanyName();
+	
+	int getId();
 }

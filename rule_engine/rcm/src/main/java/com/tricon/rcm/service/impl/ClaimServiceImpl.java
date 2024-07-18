@@ -3242,7 +3242,13 @@ public class ClaimServiceImpl {
 
 	public List<?> claimsProductionReportByTeam(ClaimProductionLogDto dto,PartialHeader partialHeader) {
 
-		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
+		List<String> companies =null;
+		if (partialHeader.getCompany()==null || partialHeader.getCompany().getUuid()==null) {
+	          companies = findAssociatedCompanyIdByUserUuid(partialHeader);
+        }else {
+        	companies = new ArrayList<>();
+        	companies.add(rcmCompanyRepo.findByUuid(partialHeader.getCompany().getUuid()).getUuid());
+	    }
 		if (partialHeader.getTeamId() == RcmTeamEnum.BILLING.getId() ) {
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				return rcmClaimRepository.claimProductionByForBillingAssoicate(companies, partialHeader.getTeamId(), dto.getStartDate(),
@@ -3276,10 +3282,16 @@ public class ClaimServiceImpl {
 						dto.getStartDate(), dto.getEndDate());
 			}
 
-			// ageWise
+			
 			for (RcmOfficeDto off : offices) {
 				ProductionAgeWiseDto agingDto = new ProductionAgeWiseDto(off.getName(), "-", 0, 0, 0, 0);
-				listOfAgeWiseData.add(agingDto);
+				if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				List<ProductionForAging> filterAge = agingData.stream()
+					.filter(x -> x.getOfficeUuid().equals(off.getUuid())).collect(Collectors.toList());
+				if (filterAge.size()>0) listOfAgeWiseData.add(agingDto);
+				 }else {
+					 listOfAgeWiseData.add(agingDto);
+				 }
 			}
 
 			for (ProductionAgeWiseDto pd : listOfAgeWiseData) {
@@ -3303,7 +3315,14 @@ public class ClaimServiceImpl {
 			for (RcmOfficeDto off : offices) {
 				ProductionCurrentStatusWiseDto currentStausDto = new ProductionCurrentStatusWiseDto(off.getName(), "-",
 						0, 0, 0, 0, 0, 0, 0, 0);
-				listOfCurrentStatusWiseData.add(currentStausDto);
+				if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+				List<ProductionForAging> filterAge = agingData.stream()
+						.filter(x -> x.getOfficeUuid().equals(off.getUuid())).collect(Collectors.toList());
+					if (filterAge.size()>0) listOfCurrentStatusWiseData.add(currentStausDto);
+				}else {
+					 listOfCurrentStatusWiseData.add(currentStausDto);
+				}
+				
 			}
 
 			for (ProductionCurrentStatusWiseDto pd : listOfCurrentStatusWiseData) {
@@ -3351,9 +3370,18 @@ public class ClaimServiceImpl {
 			}
 
 			for (RcmOfficeDto off : offices) {
+
 				ProductionDispositionWiseDto dispositionDto = new ProductionDispositionWiseDto(off.getName(), 0, 0, 0,
 						0, 0, 0);
-				data.add(dispositionDto);
+				if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+					List<ProductionForPatientCalling> filterAge = patientCallingData.stream()
+							.filter(x -> x.getOfficeUuid().equals(off.getUuid())).collect(Collectors.toList());
+						if (filterAge.size()>0) data.add(dispositionDto);
+					}else {
+						data.add(dispositionDto);
+					}
+				
+				//data.add(dispositionDto);
 			}
 
 			for (ProductionDispositionWiseDto pd : data) {
@@ -3361,7 +3389,8 @@ public class ClaimServiceImpl {
 						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
 				for (ProductionForPatientCalling pc : filterData) {
 					pd.setOfficeName(pc.getOfficeName());
-					if (pc.getDesposition().equals(DispositionEnumForProduction.VOICE_MAIL_LEFT.getName())) {
+					if (pc.getDesposition()==null) {
+					}else if (pc.getDesposition().equals(DispositionEnumForProduction.VOICE_MAIL_LEFT.getName())) {
 						pd.setVoiceMailLeft(pd.getVoiceMailLeft() + 1);
 					} else if (pc.getDesposition().equals(DispositionEnumForProduction.PAYMENT_PROMISED.getName())) {
 						pd.setPaymentPromised(pd.getPaymentPromised() + 1);
@@ -3408,6 +3437,7 @@ public class ClaimServiceImpl {
 					pd.setFname(ps.getFName());
 					pd.setLname(ps.getLName());
 					pd.setTotal(ps.getTotal());
+					pd.setDays(ps.getDays());
 					if (ps.getStatementType() == 1) {
 						pd.getStatementType().setStatementType1(pd.getStatementType().getStatementType1() + 1);
 					} else if (ps.getStatementType() == 2) {
@@ -3467,14 +3497,14 @@ public class ClaimServiceImpl {
 		
 		else if (partialHeader.getTeamId() == RcmTeamEnum.PAYMENT_POSTING.getId()) {
 
-			String claimStatus = ClaimStatusEnum.POSTED.getType();
+			//String claimStatus = ClaimStatusEnum.POSTED.getType();
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				return rcmClaimRepository.claimProductionForPaymentPostingAssoicate(companies,
 						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate(),
-						partialHeader.getJwtUser().getUuid(), claimStatus);
+						partialHeader.getJwtUser().getUuid());
 			} else {
 				return rcmClaimRepository.claimProductionForPaymentPosting(companies, partialHeader.getTeamId(),
-						dto.getStartDate(), dto.getEndDate(), claimStatus);
+						dto.getStartDate(), dto.getEndDate());
 			}
 		}
 

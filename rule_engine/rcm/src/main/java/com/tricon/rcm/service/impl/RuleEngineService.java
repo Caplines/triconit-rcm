@@ -245,6 +245,9 @@ public class RuleEngineService {
 							for (ClaimsFromRuleEngine re : datas.getData()) {
 								try {
 									System.out.println(re.getClaimId() + "--<ID");
+									if (re.getClaimId().equals("5010_P") || re.getClaimId().equals("5010")) {
+										System.out.println("dd");
+									}
 									InsuranceNameTypeDto insuranceNameTypeDto=null;
 									//if (re.getClaimId().equals("5622") || re.getClaimId().equals("3018") || re.getClaimId().equals("32950")) {
 									//	System.out.println("k");
@@ -1016,13 +1019,7 @@ public class RuleEngineService {
 						rcmClaimAssignmentRepo.save(y);
 					}
 				}
-				/*List<Integer> assignmentId = rcmClaimAssignmentRepo.findIssueAssingments(claimUUid);
-				if (assignmentId.size() < 1) {
-					
-					} else {
-					logger.error("Unassigned claims(" + claimUUid + ") is already assigned to a user whose team id is: "
-							+ teamId + " ");
-				}*/
+			
 			}
 			//}
 			
