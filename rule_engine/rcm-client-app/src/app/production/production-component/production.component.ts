@@ -278,25 +278,41 @@ exportToCsv() {
   this.loader.exportCSVLoader=false;
 
 }
+  downloadPdf() {
+    this.loader.exportPDFLoader = true;
+    let data = {};
+    if (this.productionData.length != 0) {
+      if (this.currentTeamName === 'AGING') {
+        data = { "fileName": "Production", "clientName": this.clientName, "currentTeamName": this.currentTeamName, "agingPdfDto": this.productionData, "tabSwitchForAging": this.agingCategory };
+      } else if (this.currentTeamName === 'PAYMENT_POSTING') {
+        data = { "fileName": "Production", "clientName": this.clientName, "currentTeamName": this.currentTeamName, "paymentPosting": this.filteredItems };
+      }
+      else if (this.currentTeamName === 'PATIENT_CALLING') {
+        data = { "fileName": "Production", "clientName": this.clientName, "currentTeamName": this.currentTeamName, "patientCalling": this.productionData };
+      }
+      else if (this.currentTeamName === 'PATIENT_STATEMENT') {
+        data = { "fileName": "Production", "patientStatement": this.filteredItems, "clientName": this.clientName, "currentTeamName": this.currentTeamName };
+      }
+      else if (this.currentTeamName === 'CDP') {
+        data = { "fileName": "Production", "cdpPdfDto": this.productionData, "clientName": this.clientName, "currentTeamName": this.currentTeamName, "tabSwitchForCDP": this.cdpCategory };
+      } else {
+        data = { "fileName": "Production", "currentTeamName": this.currentTeamName, "data": this.productionData, "clientName": this.clientName };
+      }
 
-downloadPdf(){
-  this.loader.exportPDFLoader = true;
-  if(this.productionData.length!=0){
-  let data = {"fileName":"Production","data": this.productionData,"clientName": this.clientName};
-  this. appService.productionPdfDownload(data,"pdf",(res: any) => {
-    if (res.status === 200){
-      this.date = new Date();
-      this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-      console.log(res.body);
-      this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_Production_${this.date}.pdf`);
-      this.loader.exportPDFLoader = false;
-    }else{
-      console.log("something went wrong");
-      this.loader.exportPDFLoader = false;
+      this.appService.productionPdfDownload(data, "pdf", (res: any) => {
+        if (res.status === 200) {
+          this.date = new Date();
+          this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+          console.log(res.body);
+          this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_Production_${this.date}.pdf`);
+          this.loader.exportPDFLoader = false;
+        } else {
+          console.log("something went wrong");
+          this.loader.exportPDFLoader = false;
+        }
+      })
     }
-  })
-}
-}
+  }
 
 sortAvgDays(){
   this.isSorted['days'] =true;
