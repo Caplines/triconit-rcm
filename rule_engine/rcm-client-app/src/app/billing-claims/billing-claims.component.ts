@@ -382,7 +382,7 @@ export class BillingClaimsComponent {
         primaryPaid: '',
         claimTypeS: 'Billing',
         providerIdReport: '',
-        secondaryEstAmount: '',
+        secondaryEstAmount: '0',
         secondaryInsuranceCompany: '',
         secondaryInsuranceContactNo: '',
         secondaryInsuranceName: '',

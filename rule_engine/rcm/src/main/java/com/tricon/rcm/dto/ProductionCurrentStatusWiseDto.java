@@ -13,7 +13,7 @@ public class ProductionCurrentStatusWiseDto {
 	private int closedCount;
 	private int voidedCount;
 	private int reBillingCount;
-	private int ReviewedCount;
+	private int reviewedCount;
 	private int submittedCount;
 	public ProductionCurrentStatusWiseDto(String officeName,String associateName, int pendingForReviewCount, int pendingForBillingCount,
 			int billedCount, int closedCount, int voidedCount, int reBillingCount,
@@ -27,7 +27,7 @@ public class ProductionCurrentStatusWiseDto {
 		this.closedCount = closedCount;
 		this.voidedCount = voidedCount;
 		this.reBillingCount = reBillingCount;
-		ReviewedCount = reviewedCount;
+		this.reviewedCount = reviewedCount;
 		this.submittedCount = submittedCount;
 	}
 	

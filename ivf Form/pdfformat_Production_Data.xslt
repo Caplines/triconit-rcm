@@ -97,6 +97,8 @@
     </head>
     <body>
         <form>
+     <xsl:variable name="currentTeam" select="currentTeamName"/> 
+     <xsl:if test="$currentTeam !='PAYMENT_POSTING' and $currentTeam !='PATIENT_CALLING' and $currentTeam !='PATIENT_STATEMENT' and $currentTeam !='AGING' and $currentTeam !='CDP'">
      <table class="table" vertical-align="top">
          <tr>
              <td class="bgWhite">
@@ -106,10 +108,10 @@
                           <td colspan="7" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
                      </tr>
                      <tr class="tableView">
-                         <td>Client</td>
+                         <td>Client Name</td>
                          <td>Associate Name</td>
                          <td>Total Production</td>
-                         <td>Average Production (Per Day)</td>
+                         <td>Average Productivity</td>
                      </tr>
                     <tr style="background-color:#A9A9A9;">
                     <td >Total</td>
@@ -130,6 +132,283 @@
              </td>
          </tr>
      </table>
+  </xsl:if>
+  <xsl:if test="$currentTeam ='PATIENT_CALLING'">
+          <table class="table" vertical-align="top">
+         <tr>
+             <td class="bgWhite">
+                 <table class="inner-table">
+                     <tr class="bgWhite">
+                          <td colspan="8" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
+                     </tr>
+                     <tr class="tableView">
+                         <td>Office Name</td>
+                         <td>Payment Promised</td>
+                         <td>Payment Made</td>
+                         <td>Wrong No</td>
+                         <td>Not Ready To Pay</td>
+                         <td>Statement Requested</td>
+                     </tr>
+                    <tr style="background-color:#A9A9A9;">
+                    <td >Total</td>
+                    <td><xsl:value-of select="format-number(sum(patientCalling/paymentPromised),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(patientCalling/paymentMade),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(patientCalling/wrongNo),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(patientCalling/notReadyToPay),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(patientCalling/statementRequested),'0.0')"/></td>
+                     </tr>
+                      <xsl:for-each select="patientCalling">
+                     <tr class="whiteBg">
+                         <td><xsl:value-of select="officeName"/></td>
+                         <td><xsl:value-of select="format-number(paymentPromised,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(paymentMade,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(wrongNo,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(notReadyToPay,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(statementRequested,'0.0')"/></td>
+                     </tr>
+                    </xsl:for-each>
+
+                 </table>
+             </td>
+         </tr>
+     </table>
+ </xsl:if>
+   <xsl:if test="$currentTeam ='PATIENT_STATEMENT'">
+          <table class="table" vertical-align="top">
+         <tr>
+             <td class="bgWhite">
+                 <table class="inner-table">
+                     <tr class="bgWhite">
+                          <td colspan="10" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
+                     </tr>
+                      <tr class="tableView">
+                         <td>Client Name</td>
+                         <td>Associate Name</td>
+                         <td>Total Production</td>
+                         <td>Average Productivity</td>
+                         <td>Statement Type1</td>
+                         <td>Statement Type2</td>
+                         <td>Statement Type3</td>
+                     </tr>
+                    <tr style="background-color:#A9A9A9;">
+                    <td >Total</td>
+                    <td></td>
+                    <td><xsl:value-of select="sum(patientStatement/total)"/></td>
+                    <td><xsl:value-of select="format-number(sum(patientStatement/days),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(patientStatement/statementType/statementType1),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(patientStatement/statementType/statementType2),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(patientStatement/statementType/statementType3),'0.0')"/></td>
+                     </tr>
+                      <xsl:for-each select="patientStatement">
+                     <tr class="whiteBg">
+                          <td><xsl:value-of select="clientName"/></td>
+                          <td><xsl:value-of select="concat(fname,' ',lname)"/></td>
+                          <td><xsl:value-of select="format-number(total,'0.0')"/></td>
+                          <td><xsl:value-of select="format-number(days,'0.0')"/></td>
+                          <td><xsl:value-of select="format-number(statementType/statementType1,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(statementType/statementType2,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(statementType/statementType3,'0.0')"/></td>
+                     </tr>
+                    </xsl:for-each>
+
+                 </table>
+             </td>
+         </tr>
+     </table>
+ </xsl:if>
+
+    <xsl:if test="$currentTeam ='PAYMENT_POSTING'">
+     <table class="table" vertical-align="top">
+         <tr>
+             <td class="bgWhite">
+                 <table class="inner-table">
+                     <tr class="bgWhite">
+                          <td colspan="10" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
+                     </tr>
+                     <tr class="tableView">
+                         <td>Client Name</td>
+                         <td>Associate Name</td>
+                         <td>Total Production</td>
+                         <td>Average Productivity</td>
+                         <td>Amount Posted</td>
+                     </tr>
+                    <tr style="background-color:#A9A9A9;">
+                    <td >Total</td>
+                    <td></td>
+                    <td><xsl:value-of select="sum(paymentPosting/total)"/></td>
+                    <td><xsl:value-of select="format-number(sum(paymentPosting/days),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(paymentPosting/amountPosted),'0.0')"/></td>
+                     </tr>
+                      <xsl:for-each select="paymentPosting">
+                     <tr class="whiteBg">
+                         <td><xsl:value-of select="companyName"/></td>
+                         <td><xsl:value-of select="concat(fname,' ',lname)"/></td>
+                         <td><xsl:value-of select="total"/></td>
+                         <td><xsl:value-of select="format-number(days,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(totalAmountReceivedInBank,'0.0')"/></td>
+                     </tr>
+                    </xsl:for-each>
+
+                 </table>
+             </td>
+         </tr>
+     </table>
+  </xsl:if>
+    <xsl:if test="$currentTeam ='AGING' and  tabSwitchForAging='ageWise'">
+          <table class="table" vertical-align="top">
+         <tr>
+             <td class="bgWhite">
+                 <table class="inner-table">
+                     <tr class="bgWhite">
+                          <td colspan="8" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
+                     </tr>
+                     <tr class="tableView">
+                         <td>Office Name</td>
+                         <td>0-30</td>
+                         <td>30-60</td>
+                         <td>60-90</td>
+                         <td>90+</td>
+                     </tr>
+                    <tr style="background-color:#A9A9A9;">
+                    <td >Total</td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfAgeWiseData/countForAgeRange1),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfAgeWiseData/countForAgeRange2),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfAgeWiseData/countForAgeRange3),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfAgeWiseData/countForAgeRange4),'0.0')"/></td>
+                     </tr>
+                      <xsl:for-each select="agingPdfDto/listOfAgeWiseData">
+                     <tr class="whiteBg">
+                         <td><xsl:value-of select="officeName"/></td>
+                         <td><xsl:value-of select="format-number(countForAgeRange1,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(countForAgeRange2,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(countForAgeRange3,'0.0')"/></td>
+                         <td><xsl:value-of select="format-number(countForAgeRange4,'0.0')"/></td>
+                     </tr>
+                    </xsl:for-each>
+
+                 </table>
+             </td>
+         </tr>
+     </table>
+ </xsl:if>
+ <xsl:if test="$currentTeam ='AGING' and  tabSwitchForAging='claimWise'">
+          <table class="table" vertical-align="top">
+         <tr>
+             <td class="bgWhite">
+                 <table class="inner-table">
+                     <tr class="bgWhite">
+                          <td colspan="10" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
+                     </tr>
+                     <tr class="tableView">
+                        <td>Associate Name</td>
+                        <td>Billed Count</td>
+                        <td>Closed Count</td>
+                        <td>Pending For Billing Count</td>
+                        <td>Pending For Review Count</td>
+                        <td>Re Billing Count</td>
+                        <td>Reviewed Count</td>
+                        <td>Submitted Count</td>
+                        <td>Voided Count</td>
+                     </tr>
+                    <tr style="background-color:#A9A9A9;">
+                    <td >Total</td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/billedCount),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/closedCount),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/PendingForBillingCount),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/pendingForReviewCount),'0.0')"/></td>
+                     <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/reBillingCount),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/reviewedCount),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/submittedCount),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/voidedCount),'0.0')"/></td>
+                     </tr>
+                      <xsl:for-each select="agingPdfDto/listOfCurrentStatusWiseData">
+                     <tr class="whiteBg">
+                    <td><xsl:value-of select="associateName"/></td>
+                    <td><xsl:value-of select="format-number(billedCount,'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(closedCount,'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(pendingForBillingCount,'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(pendingForReviewCount,'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(reBillingCount,'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(reviewedCount,'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(submittedCount,'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(voidedCount,'0.0')"/></td>
+                     </tr>
+                    </xsl:for-each>
+
+                 </table>
+             </td>
+         </tr>
+     </table>
+ </xsl:if>
+
+ <xsl:if test="$currentTeam ='CDP' and  tabSwitchForCDP='followUp'">
+     <table class="table" vertical-align="top">
+         <tr>
+             <td class="bgWhite">
+                 <table class="inner-table">
+                     <tr class="bgWhite">
+                          <td colspan="10" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
+                     </tr>
+                     <tr class="tableView">
+                         <td>Client Name</td>
+                         <td>Associate Name</td>
+                         <td>Total Production</td>
+                         <td>Average Productivity</td>
+                     </tr>
+                    <tr style="background-color:#A9A9A9;">
+                    <td >Total</td>
+                    <td></td>
+                    <td><xsl:value-of select="sum(cdpPdfDto/cdpForInsuranceFollowUp/total)"/></td>
+                    <td><xsl:value-of select="format-number(sum(cdpPdfDto/cdpForInsuranceFollowUp/days),'0.0')"/></td>
+                     </tr>
+                      <xsl:for-each select="cdpPdfDto/cdpForInsuranceFollowUp">
+                     <tr class="whiteBg">
+                         <td><xsl:value-of select="companyName"/></td>
+                         <td><xsl:value-of select="concat(fname,' ',lname)"/></td>
+                         <td><xsl:value-of select="total"/></td>
+                         <td><xsl:value-of select="format-number(days,'0.0')"/></td>
+                     </tr>
+                    </xsl:for-each>
+
+                 </table>
+             </td>
+         </tr>
+     </table>
+  </xsl:if>
+  <xsl:if test="$currentTeam ='CDP' and  tabSwitchForCDP='appeal'">
+     <table class="table" vertical-align="top">
+         <tr>
+             <td class="bgWhite">
+                 <table class="inner-table">
+                     <tr class="bgWhite">
+                          <td colspan="10" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
+                     </tr>
+                     <tr class="tableView">
+                         <td>Client Name</td>
+                         <td>Associate Name</td>
+                         <td>Total Production</td>
+                         <td>Average Productivity</td>
+                     </tr>
+                    <tr style="background-color:#A9A9A9;">
+                    <td >Total</td>
+                    <td></td>
+                    <td><xsl:value-of select="sum(cdpPdfDto/cdpForAppeal/total)"/></td>
+                    <td><xsl:value-of select="format-number(sum(cdpPdfDto/cdpForAppeal/days),'0.0')"/></td>
+                     </tr>
+                      <xsl:for-each select="cdpPdfDto/cdpForAppeal">
+                     <tr class="whiteBg">
+                         <td><xsl:value-of select="companyName"/></td>
+                         <td><xsl:value-of select="concat(fname,' ',lname)"/></td>
+                         <td><xsl:value-of select="total"/></td>
+                         <td><xsl:value-of select="format-number(days,'0.0')"/></td>
+                     </tr>
+                    </xsl:for-each>
+
+                 </table>
+             </td>
+         </tr>
+     </table>
+  </xsl:if>
         </form>
 
     </body>

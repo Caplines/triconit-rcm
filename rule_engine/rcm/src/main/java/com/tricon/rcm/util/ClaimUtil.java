@@ -51,7 +51,7 @@ public class ClaimUtil {
 		claims.setOffice(off);
 		claims.setAttachmentCount(0);
 		claims.setClaimStatusType(cType);// ;mStatus("NEED TO RELOOK");// see latter
-		claims.setStatusESUpdated(ClaimStatusSearchEnum.STATUS_UNBILLED.getStatus());
+		claims.setStatusESUpdated(ClaimStatusSearchEnum.STATUS_OPEN.getStatus());
 		if (user != null)
 			claims.setCreatedBy(user);
 		claims.setCurrentTeamId(team);
@@ -143,7 +143,7 @@ public class ClaimUtil {
 		claims.setOffice(off);
 		claims.setAttachmentCount(0);
 		claims.setClaimStatusType(cType);// ;mStatus("NEED TO RELOOK");// see latter
-		claims.setStatusESUpdated(ClaimStatusSearchEnum.STATUS_UNBILLED.getStatus());
+		claims.setStatusESUpdated(ClaimStatusSearchEnum.STATUS_OPEN.getStatus());
 		if (user != null)
 			claims.setCreatedBy(user);
 		claims.setCurrentTeamId(team);
