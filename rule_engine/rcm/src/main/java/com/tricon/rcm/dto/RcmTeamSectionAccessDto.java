@@ -25,6 +25,8 @@ public class RcmTeamSectionAccessDto {
 		private RcmSectionCategory sectionCategory;
 		private Boolean editAccess;
 		private Boolean viewAccess;
+		private Boolean editAccessGlobalLevel;
+		private Boolean viewAccessGlobalLevel;
 		public Integer getSectionId() {
 			return sectionId;
 		}
@@ -64,11 +66,24 @@ public class RcmTeamSectionAccessDto {
 		public void setSectionDisplayName(String sectionDisplayName) {
 			this.sectionDisplayName = sectionDisplayName;
 		}
+		public Boolean getEditAccessGlobalLevel() {
+			return editAccessGlobalLevel;
+		}
+		public void setEditAccessGlobalLevel(Boolean editAccessGlobalLevel) {
+			this.editAccessGlobalLevel = editAccessGlobalLevel;
+		}
+		public Boolean getViewAccessGlobalLevel() {
+			return viewAccessGlobalLevel;
+		}
+		public void setViewAccessGlobalLevel(Boolean viewAccessGlobalLevel) {
+			this.viewAccessGlobalLevel = viewAccessGlobalLevel;
+		}
 		@Override
 		public String toString() {
 			return "SectionData [sectionId=" + sectionId + ", sectionDisplayName=" + sectionDisplayName
 					+ ", sectionName=" + sectionName + ", sectionCategory=" + sectionCategory + ", editAccess="
-					+ editAccess + ", viewAccess=" + viewAccess + "]";
+					+ editAccess + ", viewAccess=" + viewAccess + ", editAccessGlobalLevel=" + editAccessGlobalLevel
+					+ ", viewAccessGlobalLevel=" + viewAccessGlobalLevel + "]";
 		}
 		
 		

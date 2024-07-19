@@ -537,6 +537,12 @@ public class ClaimSectionImpl {
 										? existingSectionMappingWithClient.isViewAccess()
 												&& existingUserMappingWithClient.isViewAccess()
 										: false));
+						sectionData.setEditAccessGlobalLevel(existingSectionMappingWithClient != null
+								? existingSectionMappingWithClient.isEditAccess()
+								: false);
+						sectionData.setViewAccessGlobalLevel(existingSectionMappingWithClient != null
+								? existingSectionMappingWithClient.isViewAccess()
+								: false);
 						listOfSections.add(sectionData);
 					}
 					teamsWithSections.setSectionData(listOfSections);
