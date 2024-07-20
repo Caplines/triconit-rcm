@@ -430,7 +430,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "where cl.pending =false and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 			+ "and cast(rcsd.es_date as date) "//IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date)
-			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid,cl.claim_uuid "
 			+" union all "
 			+ "select cl.claim_uuid as claim_uuid,rcsd.created_date as dats ,"
 			+ "us.uuid as uuid,us.first_name "
@@ -444,7 +444,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "where rcsd.team_id=:teamId and  cl.pending =false and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 			+ " and cast(rcsd. created_date as date) "//IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date)
-			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid,cl.claim_uuid "
 		    +" union all "
 				+ "select  cl.claim_uuid as claim_uuid,rcsd.created_date as dats ,"
 				+ "us.uuid as uuid,us.first_name "
@@ -458,7 +458,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ "where rcsd.team_id=:teamId and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "//cl.pending =false and
 				+ " and  cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 				+ " and cast(rcsd.created_date as date) "
-				+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+				+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid,cl.claim_uuid "
 
 			+" ) as w  group by companyName,uuid "
 			
@@ -488,7 +488,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "where cl.pending =false and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "
 			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 			+ "and cast(rcsd.es_date as date) "
-			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid "
 			+" union all "
 			+ "select  cl.claim_uuid as claim_uuid,rcsd.created_date as dats ,"
 			+ "us.uuid as uuid,us.first_name "
@@ -503,7 +503,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "where  rcsd.team_id=:teamId and  cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "//cl.pending =false and
 			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 			+ " and cast(rcsd.created_date as date) "
-			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid "
 			+" union all "
 			+ "select  cl.claim_uuid as claim_uuid,rcsd.created_date as dats ,"
 			+ "us.uuid as uuid,us.first_name "
@@ -517,7 +517,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "where rcsd.team_id=:teamId and rcsd.created_by=:userId and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "//cl.pending =false and
 			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 			+ " and cast(rcsd.created_date as date) "
-			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid "
 
 			+" ) as w  group by companyName,uuid "
 			)
@@ -545,7 +545,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "and assign.action_name = 'Reviewed' " //and  assign.active=false 
 			+ "and assign.System_comment='Claim Transfered To Team( From 3 to 7)' and assign.current_team_id=7 and rut.team_id=:teamId "
 			+ "and  CAST(assign.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
-			+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') " + "group by us.uuid,comp.name"
+			+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') " + "group by us.uuid,comp.name,cl.claim_uuid"
 			+" union all "
 			+ "select  cl.claim_uuid as claim_uuid,rcsd.created_date as dats ,"
 			+ "us.uuid as uuid,us.first_name "
@@ -559,7 +559,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "where  rcsd.team_id=:teamId and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "//cl.pending =false and
 			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 			+ " and cast(rcsd.created_date as date) "
-			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid "
 			+" union all "
 			+ "select  cl.claim_uuid as claim_uuid,rcsd.created_date as dats ,"
 			+ "us.uuid as uuid,us.first_name "
@@ -573,7 +573,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "where rcsd.team_id=:teamId and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "//cl.pending =false and
 			+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 			+ " and cast(rcsd.created_date as date) "
-			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+			+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid "
 			+" ) as w  group by companyName,uuid "
 			
 			)
@@ -617,7 +617,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ " and assign.action_name = 'Reviewed' "
 				+ "and assign.System_comment='Claim Transfered To Team( From 3 to 7)' and assign.current_team_id=7 and rut.team_id=:teamId "
 				+ "and  CAST(assign.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
-				+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') " + "group by us.uuid,comp.name"
+				+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') " + "group by us.uuid,comp.name,cl.claim_uuid"
 				+" union all "
 				+ "select  cl.claim_uuid as claim_uuid,rcsd.created_date as dats ,"
 				+ "us.uuid as uuid,us.first_name "
@@ -631,7 +631,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ "where rcsd.team_id=:teamId and  rcsd.created_by=:userId and  cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "//cl.pending =false and
 				+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 				+ " and cast(rcsd.created_date as date) "
-				+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+				+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid "
 				+" union all "
 				+ "select  cl.claim_uuid as claim_uuid,rcsd.created_date as dats ,"
 				+ "us.uuid as uuid,us.first_name "
@@ -645,7 +645,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ "where rcsd.team_id=:teamId and rcsd.created_by=:userId and cl.current_state=" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " "//cl.pending =false and
 				+ " and cmp.company_id in (:companyIds) and rut.team_id=:teamId "
 				+ " and cast(rcsd.created_date as date) "
-				+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid "
+				+ "between STR_TO_DATE(:startDate, '%Y-%m-%d') and STR_TO_DATE(:endDate, '%Y-%m-%d') group by comp.name,us.uuid,cl.claim_uuid "
 				+" ) as w  group by companyName,uuid "
 				)
 		List<ProductionDto> claimProductionForInternalAuditAssoicate(@Param("companyIds") List<String> companyIds,
@@ -1261,48 +1261,36 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,"
 				+ "sum(claims.amount_received_in_bank) as totalAmountReceivedInBank,"
 				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/count(distinct cast(COALESCE(nextAction.created_date,rebillingSection.created_date) as date)) as days "
-				+ "FROM rcm_user us inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
-				+ "inner join office off on off.uuid=uoff.office_id "
-				+ "inner join company comp on comp.uuid=off.company_id "
-				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+				+ "FROM rcm_user us "
+				//+ "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
+				+ " inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid  "
+				+ "inner join  office off on off.company_id=cmp.company_id "
+				+ "inner join  company comp on comp.uuid=off.company_id   "
 				+ "left join rcm_claims claims on claims.office_id=off.uuid "
-				+ "left join rcm_next_action_required_section nextAction on nextAction.claim_uuid=claims.claim_uuid "
-				+ "left join rcm_request_rebilling_section rebillingSection on rebillingSection.claim_uuid=claims.claim_uuid "
-				+ " where cmp.company_id in (:companyIds) AND uoff.team_id =:teamId and "
-				+ " ( ( nextAction.team_id=:teamId and nextAction.final_submit=true  and "//nextAction.current_claim_status_rcm=:claimStaus
-				+ " CAST(nextAction.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
-				+ "and STR_TO_DATE(:endDate, '%Y-%m-%d'))"
-				+ " or "
-				+ " ( rebillingSection.team_id=:teamId and "
-				+ " CAST(rebillingSection.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
-				+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') ) )"
+				+ nextActionAndRebillProductionjoin
+				+ " where cmp.company_id in (:companyIds) and "// uoff.team_id =:teamId and "
+				+ nextActionAndRebillProductionwhere
 				+ " and " + "claims.current_state="
-				+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " group by us.uuid,comp.name")
+				+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED + " group by us.uuid")
 		List<ProductionForPaymentPosting> claimProductionForPaymentPosting(@Param("companyIds") List<String> companyIds,
 				@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate);
 
 		@Query(nativeQuery = true, value = "SELECT count(distinct claims.claim_uuid) as total,"
 				+ "sum(claims.amount_received_in_bank) as totalAmountReceivedInBank,"
 				+ "us.uuid as uuid,us.first_name as fName,us.last_name as lName,comp.name as companyName,FLOOR(count(distinct claims.claim_uuid))/count(distinct cast(COALESCE(nextAction.created_date,rebillingSection.created_date) as date)) as days "
-				+ "FROM rcm_user us " + "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
-				+ "inner join office off on off.uuid=uoff.office_id "
-				+ "inner join company comp on comp.uuid=off.company_id "
-				+ "inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid "
+				+ "FROM rcm_user us "
+			    //+ "inner join rcm_user_assign_office uoff on uoff.user_id=us.uuid "
+			    + " inner join rcm_user_company cmp on cmp.rcm_user_id=us.uuid  "
+				+ "inner join  office off on off.company_id=cmp.company_id "
+				+ "inner join  company comp on comp.uuid=off.company_id   "
 				+ "left join rcm_claims claims on claims.office_id=off.uuid "
-				+ "left join rcm_next_action_required_section nextAction on nextAction.claim_uuid=claims.claim_uuid "
-				+ "left join rcm_request_rebilling_section rebillingSection on rebillingSection.claim_uuid=claims.claim_uuid "
-				+ "where cmp.company_id in (:companyIds) AND uoff.team_id =:teamId and "
-				+ " ( ( nextAction.team_id=:teamId and nextAction.final_submit=true  and "//nextAction.current_claim_status_rcm=:claimStaus
-				+ "CAST(nextAction.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
-				+ "and STR_TO_DATE(:endDate, '%Y-%m-%d'))"
-				+ " or "
-				+ " ( rebillingSection.team_id=:teamId and "
-				+ " CAST(rebillingSection.created_date as DATE) between STR_TO_DATE(:startDate, '%Y-%m-%d') "
-				+ "and STR_TO_DATE(:endDate, '%Y-%m-%d') ) )"
+				+ nextActionAndRebillProductionjoin
+				+ "where cmp.company_id in (:companyIds) and "// uoff.team_id =:teamId and "
+				+ nextActionAndRebillProductionwherewithuser
 			
 				+ " and " + "claims.current_state="
 				+ Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-				+ " and uoff.user_id=:userId group by us.uuid,comp.name")
+				+ " and us.uuid=:userId group by us.uuid")
 		List<ProductionForPaymentPosting> claimProductionForPaymentPostingAssoicate(@Param("companyIds") List<String> companyIds,
 				@Param("teamId") int teamId, @Param("startDate") String stDate, @Param("endDate") String endDate,
 				@Param("userId") String userId);
