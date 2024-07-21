@@ -23,6 +23,7 @@ export class ManageSectionComponent {
   loader: boolean = false;
   userManageSectionData: any = [];
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
+  clientIndex: any = -2;
 
   // itemsPerPage: number = 1;
   // currentPage: number = 1;
@@ -106,8 +107,8 @@ export class ManageSectionComponent {
   }
 
 
-  editSelectedData(event: any, clientUuid: string, teamId: number, sectionId: number, viewAccess: any, editAccess: any, type: any) {
-    const clientIndex = this.userManageSectionData.findIndex((client: any) => client.clientUuid === clientUuid);
+  editSelectedData(event: any, clientUuid: string, teamId: number, sectionId: number, viewAccess: any, editAccess: any, index: number, type: any) {
+    let clientIndex = this.userManageSectionData.findIndex((client: any) => client.clientUuid === clientUuid);
     if (clientIndex === -1) {
       this.userManageSectionData.push({
         clientUuid,
@@ -118,33 +119,39 @@ export class ManageSectionComponent {
         }]
       });
     } else {
-      const teamIndex = this.userManageSectionData[clientIndex].teamsWithSections.findIndex((team: any) => team.teamId === teamId);
+      const teamIndex = this.userManageSectionData[index].teamsWithSections.findIndex((team: any) => team.teamId === teamId);
 
       if (teamIndex === -1) {
-        this.userManageSectionData[clientIndex].teamsWithSections.push({
+        this.userManageSectionData[index].teamsWithSections.push({
           teamId,
           sectionData: [{ sectionId, viewAccess, editAccess: event.target.checked }]
         });
       } else {
-        const sectionIndex = this.userManageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData.findIndex((section: any) => section.sectionId === sectionId);
+        const sectionIndex = this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData.findIndex((section: any) => section.sectionId === sectionId);
         if (sectionIndex === -1) {
-          this.userManageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData.push({ sectionId, viewAccess, editAccess: event.target.checked });
+          this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData.push({ sectionId, viewAccess, editAccess: event.target.checked });
         } else {
-          this.userManageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = viewAccess;
-          this.userManageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = event.target.checked;
+          if (this.clientIndex != -2) {
+            index = this.clientIndex;
+          }
+          this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = false;
+          this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = false;
 
-          if (viewAccess && type === 'view') {
-            this.userManageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = viewAccess;
-          } else if (!viewAccess && type === 'view') {
-            this.userManageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = false;
+          if (type === 'view' && event.target.checked) {
+            this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = true;
+          } 
+          else if (type === 'edit' && event.target.checked) {
+            this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = true;
+            this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = true;
+          } 
+          else if (type === 'edit' && !event.target.checked) {
+            this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = true;
+            this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = false;
           }
-          else if (event.target.checked && type === 'edit') {
-            this.userManageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = true;
-            this.userManageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = event.target.checked;
-          }
-          else if (!event.target.checked && type === 'edit') {
-            this.userManageSectionData[clientIndex].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = false;
-          }
+        }
+        if (this.clientIndex == -2) {
+          this.manageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess = this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].editAccess;
+          this.manageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess = this.userManageSectionData[index].teamsWithSections[teamIndex].sectionData[sectionIndex].viewAccess;
         }
       }
     }
@@ -162,6 +169,9 @@ export class ManageSectionComponent {
   }
 
   saveManageUserSecData(idx: any) {
+    if(this.clientIndex != -2){
+      idx = this.clientIndex;
+    }
     let params: any = this.userManageSectionData[idx];
     this._service.saveUserManageSectionData([params], (res: any) => {
       if (res) {
@@ -218,6 +228,7 @@ export class ManageSectionComponent {
 
   selectClient(event: any) {
     if (this.inputConfig && this.inputConfig?.isEditSection) {
+      this.clientIndex = this.userManageSectionData.findIndex((e: any) => e.clientName == event.target.value);
       this.manageSectionData = this.userManageSectionData.filter((e: any) => e.clientName == event.target.value);
     } else {
       this.manageSectionData = this.copiedManageSectionData.filter((e: any) => e.clientName == event.target.value);
