@@ -57,6 +57,8 @@ export class ProductionComponent implements OnInit {
   filteredCompanyName: any = [];
   filteredItems: any = [];
   filterName: any;
+  selectedHeaders: string[];
+  currentTeamId: any;
 
   constructor(private appService: ApplicationServiceService, private title: Title, private downloadService: DownLoadService, public constant: AppConstants, public datepipe: DatePipe, public pmlDatePicker: PmlDatePicker) {
     title.setTitle(Utils.defaultTitle + "Production");
@@ -65,6 +67,7 @@ export class ProductionComponent implements OnInit {
   ngOnInit(): void {
    
     this.clientName = localStorage.getItem("selected_clientName");
+    this.currentTeamId = localStorage.getItem("selected_teamId");
     window.addEventListener("resize", this.setTopOnTotalRow);
     this.getCurrentTeamName();
   }
@@ -74,13 +77,41 @@ export class ProductionComponent implements OnInit {
        this.currentTeamName = teamName.unFormatedName;
   }
 
+  clearAllTotals(){
+    this.total = 0;
+    this.days = 0;
+    this.paymentPostingTotalConfig.total = 0;
+    this.paymentPostingTotalConfig.days = 0;
+    this.paymentPostingTotalConfig.amountPosted = 0;
+    this.patientCallTotalConfig.paymentPromised = 0;
+    this.patientCallTotalConfig.paymentMade = 0;
+    this.patientCallTotalConfig.wrongNo = 0;
+    this.patientCallTotalConfig.notReadyToPay = 0;
+    this.patientCallTotalConfig.statementRequested = 0;
+    this.patientStatTotalConfig.statement1 = 0;
+    this.patientStatTotalConfig.statement2 = 0;
+    this.patientStatTotalConfig.statement3 = 0;
+    this.agingTotalConfig.countForAgeRange1 = 0;
+    this.agingTotalConfig.countForAgeRange2 = 0;
+    this.agingTotalConfig.countForAgeRange3 = 0;
+    this.agingTotalConfig.countForAgeRange4 = 0;
+    this.agingTotalConfig.billedCount = 0;
+    this.agingTotalConfig.closedCount = 0;
+    this.agingTotalConfig.pendingForBillingCount = 0;
+    this.agingTotalConfig.pendingForReviewCount = 0;
+    this.agingTotalConfig.reBillingCount = 0;
+    this.agingTotalConfig.reviewedCount = 0;
+    this.agingTotalConfig.voidedCount = 0;
+    this.cdpTotalConfig.total = 0;
+    this.cdpTotalConfig.days = 0;
+  }
+
   save(){
   this.fetchbtnDisable=false;
   this.loader.showLoader=true;
   this.loader.fetch = true;
   this.isDataAvailable=true;
-  this.total=0;
-  this.days=0;
+  this.clearAllTotals();
     this.appService.getProductionData({ "startDate": this.transformDate(this.selectedDate.startDate), "endDate": this.transformDate(this.selectedDate.endDate) }, (callback: any) => {
       if (callback.status == 200 && callback.data) {
         this.loader.showLoader = false;
@@ -165,8 +196,10 @@ export class ProductionComponent implements OnInit {
   }
 
   countTotalForAgingCdp(){
+    let count = 0;
       if(this.currentTeamName === "AGING"){
           if(this.agingCategory == 'ageWise'){
+            if (!this.productionData.listOfAgeWiseData) return;
             this.productionData.listOfAgeWiseData.forEach((e:any)=>{
                 this.agingTotalConfig.countForAgeRange1 = this.agingTotalConfig.countForAgeRange1 + e.countForAgeRange1;
                 this.agingTotalConfig.countForAgeRange2 = this.agingTotalConfig.countForAgeRange2 + e.countForAgeRange2;
@@ -184,17 +217,30 @@ export class ProductionComponent implements OnInit {
                 this.agingTotalConfig.voidedCount = this.agingTotalConfig.voidedCount + e.voidedCount;
             });
           }
-      }else if(this.currentTeamName === "CDP"){
-        if(this.cdpCategory == 'followUp'){
-              this.productionData.cdpForInsuranceFollowUp.forEach((e:any)=>{
-                  this.cdpTotalConfig.total = this.cdpTotalConfig.total + e.total;
-                  this.cdpTotalConfig.days = this.cdpTotalConfig.days + e.days;
-              });
-        }else{
+      }
+      else if (this.currentTeamName === "CDP") {
+        if (this.cdpCategory == 'followUp') {
+          if (!this.productionData.cdpForInsuranceFollowUp) return;
+          this.productionData.cdpForInsuranceFollowUp.forEach((e: any) => {
+            this.cdpTotalConfig.total = this.cdpTotalConfig.total + e.total;
+            if (e.days == '0') {
+              count++;
+            } else {
+              this.cdpTotalConfig.days = this.cdpTotalConfig.days + e.days;
+            }
+          });
+          this.cdpTotalConfig.days = this.cdpTotalConfig.days / (this.productionData.cdpForInsuranceFollowUp.length - count);
+        } 
+        else {
           this.productionData.cdpForAppeal.forEach((e: any) => {
             this.cdpTotalConfig.total = this.cdpTotalConfig.total + e.total;
-            this.cdpTotalConfig.days = this.cdpTotalConfig.days + e.days;
+            if (e.days == '0') {
+              count++;
+            } else {
+              this.cdpTotalConfig.days = this.cdpTotalConfig.days + e.days;
+            }
           });
+          this.cdpTotalConfig.days = this.cdpTotalConfig.days / (this.productionData.cdpForAppeal.length - count);
         }
       }
   }
@@ -233,51 +279,168 @@ export class ProductionComponent implements OnInit {
     }
   }
 
-exportToCsv() {
-  this.loader.exportCSVLoader=true;
-  let options: any = {
-    showLabels: true,
-    headers: ["Client","Associate Name","Total Production", "Average Production (Per Day)"]
+  get staticUtil(): any {
+    return Utils;
   }
-  let excelData: any;
-  excelData = [...this.productionData];
-  excelData = excelData.map((e: any) => {
-    if (e.cd) {
-      let date: Date = new Date(e.cd);
-      e = { ...e, cd: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` }
+
+  exportToCsv() {
+    this.loader.exportCSVLoader = true;
+
+    const headerConfigs = {
+      default: [
+        "Client",
+        "Associate Name",
+        "Total Production",
+        "Average Productivity (Per Day)",
+        this.staticUtil.isNotTeamPosting() ? "" : "Amount Posted",
+        this.staticUtil.isNotTeamPatientStatement() ? "" : "Statement Type 1",
+        this.staticUtil.isNotTeamPatientStatement() ? "" : "Statement Type 2",
+        this.staticUtil.isNotTeamPatientStatement() ? "" : "Statement Type 3",
+      ],
+      agingAgeWise: [
+        "Office Name",
+        "0 - 30",
+        "30 - 60",
+        "60 - 90",
+        "90+",
+      ],
+      agingClaimWise: [
+        "Associate Name",
+        "Billed Count",
+        "Closed Count",
+        "Pending For Billing Count",
+        "Pending For Review Count",
+        "Re Billing Count",
+        "Reviewed Count",
+        "Submitted Count",
+        "Voided Count",
+      ]
+    }
+
+    if (this.currentTeamName === "AGING") {
+      if (this.agingCategory == 'ageWise') {
+        this.selectedHeaders = headerConfigs.agingAgeWise;
+      } else {
+        this.selectedHeaders = headerConfigs.agingClaimWise;
+      }
     }
     else {
-      e = {...e,cd : ''};
+      this.selectedHeaders = headerConfigs.default;
     }
-    if(e.fname){
-      e['fullName'] = e.fname ? e.fname+ " "+ e.lname : "-";
-    }
-    return e;
-  })
-  excelData = excelData.map(({uuid,fname,lname,cd,...excelData }: any) => excelData) //to remove required properties in excel
-  excelData = excelData.map((e:any)=>{
-    return{
-      "Client":e.companyName,
-      "Associate Name":e.fullName,
-      "Total Production":e.total,
-      "Average Production (Per Day)":e.days,
-    }
-  })
-  excelData.unshift(                                        //method is used to show Total Row in CSV.
-  {
-    "OfficeName":'Total',
-    "ClientNme":'-',
-    "Total Production":this.total,
-    "Average Production (Per Day)":this.days
-  }
-) 
-  this.date = new Date();
-  this.date = `${this.date.getMonth()+1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-  
-  new ngxCsv(excelData,`${localStorage.getItem("selected_clientName")}_Production_${this.date}`, options);
-  this.loader.exportCSVLoader=false;
 
-}
+    let options: any = {
+      showLabels: true,
+      headers: this.selectedHeaders
+    }
+
+    let excelData: any;
+    if (this.currentTeamName === "AGING") {
+      if (this.agingCategory == 'ageWise') {
+        excelData = [...this.productionData.listOfAgeWiseData];
+      } else {
+        excelData = [...this.productionData.listOfCurrentStatusWiseData];
+      }
+    }
+    else if (this.currentTeamName === "CDP") {
+      if (this.cdpCategory == 'followUp') {
+        excelData = [...this.productionData.cdpForInsuranceFollowUp];
+      } else {
+        excelData = [...this.productionData.cdpForAppeal];
+      }
+    } else {
+      excelData = [...this.productionData];
+    }
+    excelData = excelData.map((e: any) => {
+      if (e.cd) {
+        let date: Date = new Date(e.cd);
+        e = { ...e, cd: `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}` }
+      }
+      else {
+        e = { ...e, cd: '' };
+      }
+      if (e.fname) {
+        e['fullName'] = e.fname ? e.fname + " " + e.lname : "-";
+      }
+      return e;
+    })
+
+    if (this.currentTeamName === "AGING") {
+      if (this.agingCategory == 'ageWise') {
+        excelData = excelData.map((e: any) => {
+          return {
+            "Office Name": e.officeName,
+            "0 - 30": e.countForAgeRange1,
+            "30 - 60": e.countForAgeRange2,
+            "60 - 90": e.countForAgeRange3,
+            "90+": e.countForAgeRange4,
+          }
+        })
+      } else {
+        excelData = excelData.map((e: any) => {
+          return {
+            "Associate Name": e.associateName,
+            "Billed Count": e.billedCount,
+            "Closed Count": e.closedCount,
+            "Pending For Billing Count": e.pendingForBillingCount,
+            "Pending For Review Count": e.pendingForReviewCount,
+            "Re Billing Count": e.reBillingCount,
+            "Reviewed Count": e.reviewedCount,
+            "Submitted Count": e.submittedCount,
+            "Voided Count": e.voidedCount,
+          }
+        })
+      }
+    }
+    else if (this.currentTeamName === "CDP") {
+      excelData = excelData.map((e: any) => {
+        return {
+          "Client": e.companyName,
+          "Associate Name": e.fullName,
+          "Total Production": e.total,
+          "Average Productivity (Per Day)": e.days,
+        }
+      })
+      excelData.unshift({           //method is used to show Total Row in CSV.
+        "Client": 'Total',
+        "Associate Name": '-',
+        "Total Production": this.cdpTotalConfig.total,
+        "Average Production (Per Day)": this.cdpTotalConfig.days,
+      })
+    }
+    else {
+      excelData = excelData.map(({ uuid, fname, lname, cd, ...excelData }: any) => excelData) //to remove required properties in excel
+      excelData = excelData.map((e: any) => {
+        return {
+          "Client": e.companyName,
+          "Associate Name": e.fullName,
+          "Total Production": e.total,
+          "Average Productivity (Per Day)": e.days,
+          "Amount Posted": this.staticUtil.isNotTeamPosting() ? "" : e.amountPosted,
+          "Statement Type 1": this.staticUtil.isNotTeamPatientStatement() ? "" : e.statementType1,
+          "Statement Type 2": this.staticUtil.isNotTeamPatientStatement() ? "" : e.statementType2,
+          "Statement Type 3": this.staticUtil.isNotTeamPatientStatement() ? "" : e.statementType3,
+        }
+      })
+      excelData.unshift({           //method is used to show Total Row in CSV.
+        "OfficeName": 'Total',
+        "ClientNme": '-',
+        "Total Production": this.total,
+        "Average Production (Per Day)": this.days,
+        "Amount Posted": this.staticUtil.isNotTeamPosting() ? "" : this.paymentPostingTotalConfig.amountPosted,
+        "Statement Type 1": this.staticUtil.isNotTeamPatientStatement() ? "" : this.patientStatTotalConfig.statement1,
+        "Statement Type 2": this.staticUtil.isNotTeamPatientStatement() ? "" : this.patientStatTotalConfig.statement2,
+        "Statement Type 3": this.staticUtil.isNotTeamPatientStatement() ? "" : this.patientStatTotalConfig.statement3,
+      })
+    }
+
+    this.date = new Date();
+    this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+
+    new ngxCsv(excelData, `${localStorage.getItem("selected_clientName")}_Production_${this.date}`, options);
+    this.loader.exportCSVLoader = false;
+
+  }
+
   downloadPdf() {
     this.loader.exportPDFLoader = true;
     let data = {};
@@ -319,9 +482,17 @@ sortAvgDays(){
     this.sortData(this.productionData,'days','asc','number');
 }
 
-sortData(data: any, sortProp: string, order: any, sortType: string) {
-  this.appService.sortData(data, sortProp, order, sortType);
-}
+  sortData(data: any, sortProp: string, order: any, sortType: string) {
+    if (this.currentTeamName === "CDP" && this.cdpCategory === 'appeal') {
+      this.appService.sortData(data.cdpForAppeal, sortProp, order, sortType);
+    }
+    else if (this.currentTeamName === "CDP" && this.cdpCategory === 'followUp') {
+      this.appService.sortData(data.cdpForInsuranceFollowUp, sortProp, order, sortType);
+    }
+    else {
+      this.appService.sortData(data, sortProp, order, sortType);
+    }
+  }
 
 
 setTopOnTotalRow(){
@@ -332,13 +503,19 @@ setTopOnTotalRow(){
    }
  } 
 
- selectAgeCategory(category:any){
-  this.agingCategory = category;
- }
+  selectAgeCategory(category: any) {
+    this.agingCategory = category;
+    this.clearAllTotals();
+    this.countTotalForAgingCdp();
+  }
 
- selectCdpCategory(category:any){
-  this.cdpCategory = category;
- }
+  selectCdpCategory(category: any) {
+    this.cdpCategory = category;
+    this.showFilterOptioncompanyName(this.productionData);
+    this.filterCompanyName();
+    this.clearAllTotals();
+    this.countTotalForAgingCdp();
+  }
 
   showHideFilteredDropdown(filterName: any) {
     filterName == 'companyName' ? this.showFilteredDropdown.companyName = true : this.showFilteredDropdown.companyName = false;
@@ -381,43 +558,182 @@ setTopOnTotalRow(){
       } 
       this.isFilterAllSelected.companyName = isAllSelected;
       if (this.currentTeamName === "CDP" && this.cdpCategory === 'appeal' ) {
-        this.filteredItems = this.productionData.cdpForAppeal.filter((item: any) => {
+        this.filteredItems.cdpForAppeal = this.productionData.cdpForAppeal.filter((item: any) => {
           return this.filteredCompanyName.some((checkbox: any) => {
             return checkbox.checked && item.companyName == checkbox.companyName;
           })
         })
+        this.clearAllTotals();
+        this.totalFilteredCount(this.filteredItems.cdpForAppeal);
       }
-      if (this.currentTeamName === "CDP" && this.cdpCategory === 'followUp') {
-        this.filteredItems = this.productionData.cdpForInsuranceFollowUp.filter((item: any) => {
+      else if (this.currentTeamName === "CDP" && this.cdpCategory === 'followUp') {
+        this.filteredItems.cdpForInsuranceFollowUp = this.productionData.cdpForInsuranceFollowUp.filter((item: any) => {
           return this.filteredCompanyName.some((checkbox: any) => {
             return checkbox.checked && item.companyName == checkbox.companyName;
           })
         })
-      }
-      this.filteredItems = this.productionData.filter((item: any) => {
-        return this.filteredCompanyName.some((checkbox: any) => {
-          return checkbox.checked && item.companyName == checkbox.companyName;
+        this.clearAllTotals();
+        this.totalFilteredCount(this.filteredItems.cdpForInsuranceFollowUp);
+      } 
+      else if (this.currentTeamName === "PATIENT_STATEMENT") {
+        this.filteredItems = this.productionData.filter((item: any) => {
+          return this.filteredCompanyName.some((checkbox: any) => {
+            return checkbox.checked && item.clientName == checkbox.clientName;
+          })
         })
-      })
+        this.clearAllTotals();
+        this.totalFilteredCount(this.filteredItems);
+      } 
+      else {
+        this.filteredItems = this.productionData.filter((item: any) => {
+          return this.filteredCompanyName.some((checkbox: any) => {
+            return checkbox.checked && item.companyName == checkbox.companyName;
+          })
+        })
+        this.clearAllTotals();
+        this.totalFilteredCount(this.filteredItems);
+      }
     }
   }
   // productionData.cdpForAppeal
   // productionData.cdpForInsuranceFollowUp;
 
+  totalFilteredCount(data: any) {
+    if (data.length > 0) {
+      let count = 0;
+      if (this.currentTeamName === "CDP"){
+        this.cdpTotalConfig.total = 0;
+        this.cdpTotalConfig.days = 0;
+        data.forEach((e: any) => {
+          this.cdpTotalConfig.total += e.total;
+          if(e.days == '0'){
+            count++;
+          } else {
+            this.cdpTotalConfig.days += e.days;
+          }
+        })
+        this.cdpTotalConfig.days = this.cdpTotalConfig.days / (data.length - count);
+      } 
+      else if (this.currentTeamName === "PAYMENT_POSTING"){
+        this.paymentPostingTotalConfig.total = 0;
+        this.paymentPostingTotalConfig.days = 0;
+        this.paymentPostingTotalConfig.amountPosted = 0;
+        data.forEach((e: any) => {
+          this.paymentPostingTotalConfig.total += e.total;
+          this.paymentPostingTotalConfig.amountPosted += e.totalAmountReceivedInBank;
+          if(e.days == '0'){
+            count++;
+          } else {
+            this.paymentPostingTotalConfig.days += e.days;
+          }
+        })
+        this.paymentPostingTotalConfig.days = this.paymentPostingTotalConfig.days / (data.length - count);
+
+      }
+      else if (this.currentTeamName === "PATIENT_STATEMENT"){
+        this.total = 0;
+        this.days = 0;
+        this.patientStatTotalConfig.statement1 = 0;
+        this.patientStatTotalConfig.statement2 = 0;
+        this.patientStatTotalConfig.statement3 = 0;
+        data.forEach((e: any) => {
+          this.total += e.total;
+          this.patientStatTotalConfig.statement1 += e.statementType.statementType1;
+          this.patientStatTotalConfig.statement2 += e.statementType.statementType2;
+          this.patientStatTotalConfig.statement3 += e.statementType.statementType3;
+          if (e.days == '0') {
+            count++;
+          } else {
+            this.days += e.days;
+          }
+        })
+        this.days = this.days / (data.length - count);
+      }
+      else{
+        this.total = 0;
+        this.days = 0;
+        data.forEach((e: any) => {
+          this.total += e.total;
+          if (e.days == '0') {
+            count++;
+          } else {
+            this.days += e.days;
+          }
+        })
+        this.days = this.days / (data.length - count);
+      }
+    }
+  }
+
   showFilterOptioncompanyName(data: any) {
     if (!this.productionData) return;
     this.filteredCompanyName = JSON.parse(JSON.stringify(data));
+    if (!this.filteredCompanyName) return;
     const newArray: any = [];
     const seencompanyNames: any = {};
-    this.filteredCompanyName.forEach((item: any) => {
-      if (!seencompanyNames.hasOwnProperty(item.companyName)) {
-        seencompanyNames[item.companyName] = true;
-        newArray.push({ 'checked': true, 'companyName': item.companyName });
+    if (this.currentTeamName === "AGING") {
+      if (this.agingCategory == 'ageWise') {
+        if (this.filteredCompanyName.listOfAgeWiseData.length == 0) return;
+        this.filteredCompanyName.listOfAgeWiseData.forEach((item: any) => {
+          if (!seencompanyNames.hasOwnProperty(item.officeName)) {
+            seencompanyNames[item.officeName] = true;
+            newArray.push({ 'checked': true, 'officeName': item.officeName });
+          }
+        });
       }
-    });
+      else {
+        if (this.filteredCompanyName.listOfCurrentStatusWiseData.length == 0) return;
+        this.filteredCompanyName.listOfCurrentStatusWiseData.forEach((item: any) => {
+          if (!seencompanyNames.hasOwnProperty(item.officeName)) {
+            seencompanyNames[item.officeName] = true;
+            newArray.push({ 'checked': true, 'officeName': item.officeName });
+          }
+        });
+      }
+    }
+    else if (this.currentTeamName === 'CDP') {
+      if (this.cdpCategory == 'followUp') {
+        if (this.filteredCompanyName.cdpForInsuranceFollowUp.length == 0) return;
+        this.filteredCompanyName.cdpForInsuranceFollowUp.forEach((item: any) => {
+          if (!seencompanyNames.hasOwnProperty(item.companyName)) {
+            seencompanyNames[item.companyName] = true;
+            newArray.push({ 'checked': true, 'companyName': item.companyName });
+          }
+        });
+      }
+      else {
+        if (this.filteredCompanyName.cdpForAppeal.length == 0) return;
+        this.filteredCompanyName.cdpForAppeal.forEach((item: any) => {
+          if (!seencompanyNames.hasOwnProperty(item.companyName)) {
+            seencompanyNames[item.companyName] = true;
+            newArray.push({ 'checked': true, 'companyName': item.companyName });
+          }
+        });
+      }
+    } 
+    else if (this.currentTeamName === "PATIENT_STATEMENT") {
+      this.filteredCompanyName.forEach((item: any) => {
+        if (!seencompanyNames.hasOwnProperty(item.clientName)) {
+          seencompanyNames[item.clientName] = true;
+          newArray.push({ 'checked': true, 'clientName': item.clientName });
+        }
+      });
+    } 
+    else{
+      this.filteredCompanyName.forEach((item: any) => {
+        if (!seencompanyNames.hasOwnProperty(item.companyName)) {
+          seencompanyNames[item.companyName] = true;
+          newArray.push({ 'checked': true, 'companyName': item.companyName });
+        }
+      });
+    }
     this.filteredCompanyName = newArray;
     console.log(newArray);
-    this.sortFilteredData(this.filteredCompanyName, 'companyName');
+    if (this.currentTeamName == "AGING" ){
+      this.sortFilteredData(this.filteredCompanyName, 'officeName');
+    } else {
+      this.sortFilteredData(this.filteredCompanyName, 'companyName');
+    }
   }
 
   sortFilteredData(filterValue: any, sortBy: any) {

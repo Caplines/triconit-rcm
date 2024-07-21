@@ -221,6 +221,8 @@ export class AllPendencyComponent {
       case this.currentTeamId == 7:
         excelData = excelData.map(({ Billing, ...newData }: any) => newData);
         return excelData;
+      default:
+        return excelData;
     }
 
   }
