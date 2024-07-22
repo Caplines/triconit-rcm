@@ -365,7 +365,7 @@
 				     <xsl:otherwise>
 					 <xsl:choose>
 					      <xsl:when test="policy12 = 'Refer Medicaid &#38; Medicare Benefits(RD0703)'">
-						  <td class="blackClr"><a href="https://docs.google.com/spreadsheets/d/13C7ph9Hal1mDdU5nioWWX2ndof6Ls2IYbVw03uRDiVM/edit#gid=2067143248" style="text-decoration:none;color: red;" traget="_blank" >Refer Medicaid &#38; Medicare Benefits(RD0703)</a></td>
+						  <td class="blackClr"><a href=" https://insurances-lookup-dashboard.vercel.app/" style="text-decoration:none;color: red;" traget="_blank" >Refer Insurance Lookup Dashboard</a></td>
 						  </xsl:when>
 				          <xsl:otherwise>
 						   <td class="">No</td>
