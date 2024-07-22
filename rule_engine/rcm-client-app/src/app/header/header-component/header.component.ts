@@ -259,7 +259,10 @@ export class HeaderComponent implements OnInit {
       this.btnDisabled = true;
     } else if (this.loginUserType == 'Admin') {
       this.selectedTeam = '';
-      this.selectedClient = 'Smilepoint';
+      let comp: any = this.staticUtil.getClientsFromLS();
+      let fil = comp.filter((n: any) => n.name == 'Smilepoint');
+      if (fil.lenght == 1) this.selectedClient = fil.name;
+      else this.selectedClient = comp[0].name;
       this.checkValidationSuperAdmin();
     }
   }
