@@ -22,8 +22,11 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 	RcmUser findByEmail(String email);
 	
 	@Query(value="select u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName,u.first_name as FirstName,u.last_name as LastName from rcm_user u join rcm_user_company ruc where ruc.company_id=:clientUuid and ruc.rcm_user_id=u.uuid and u.email=:email",nativeQuery=true)
-	RcmUserDetails findUserByClientUuid(String email,String clientUuid);
+	RcmUserDetails findUserByClientUuid(@Param("email")String email,@Param("clientUuid")String clientUuid);
 	
+	@Query(value="select distinct u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName,u.first_name as FirstName,u.last_name as LastName from rcm_user u join rcm_user_company ruc where ruc.company_id in (:clientUuids) and ruc.rcm_user_id=u.uuid and u.email=:email",nativeQuery=true)
+	RcmUserDetails findUserByClientsUuid(@Param("email")String email,@Param("clientUuids")List<String> clientUuids);
+
 	@Query(value=""+
 			" select distinct u.uuid as Uuid,u.email as Email,active as Active,concat(u.first_name,' ',u.last_name)as FullName from rcm_user "+
 			" u inner join rcm_user_team rt on rt.rcm_user_id=u.uuid "+
@@ -103,6 +106,13 @@ public interface RCMUserRepository extends JpaRepository<RcmUser, String> {
 			+ "where (first_name like %:search% or email like %:search% or last_name like %:search%) and ruc.company_id=:clientUuid", nativeQuery = true)
 	List<UserSearchDto> findByUserDetailsByAdmin(@Param("search") String search,
 			@Param("clientUuid") String clientUuid);
+	
+	@Query(value = "select distinct u.uuid as Uuid,u.email as Email,"
+			+ "u.first_name as FirstName,u.last_name as LastName from rcm_user u "
+			+ "inner join rcm_user_company ruc on ruc.rcm_user_id=u.uuid "
+			+ "where (first_name like %:search% or email like %:search% or last_name like %:search%) and ruc.company_id in (:clientUuids) ", nativeQuery = true)
+	List<UserSearchDto> findByUserDetailsByAdminCompanies(@Param("search") String search,
+			@Param("clientUuids") List<String> clientUuids);
 	
 	List<RcmUser>findByUuidIn(List<String> userId);
 	

@@ -43,6 +43,7 @@ import com.tricon.rcm.dto.EditUserTeams;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmClientDto;
 import com.tricon.rcm.dto.RcmClientGSheetDto;
@@ -218,13 +219,14 @@ public class AdminServiceImpl {
 	 * @param dto
 	 * @return user details
 	 */
-	public RcmUserDto findUserByEmail(FindUserDto dto, String roleFromHeader, RcmCompany company)
+	public RcmUserDto findUserByEmail(FindUserDto dto, String roleFromHeader, PartialHeader partialHeader)
 			throws Exception {
 		RcmUserDetails userDetails = null;
 		RcmUser user = null;
 		RcmUserDto data = null;
 		if (roleFromHeader.equals(Constants.ADMIN)) {
-			userDetails = userRepo.findUserByClientUuid(dto.getEmail(), company.getUuid());
+			List <String> companies=rcmCompanyRepo.findAllClientUUidOfAssociatedUser(partialHeader.getJwtUser().getUuid());
+			userDetails = userRepo.findUserByClientsUuid(dto.getEmail(), companies);
 			if (userDetails != null) {
 				user = userRepo.findByUuid(userDetails.getUuid());
 				if(user!=null) {
@@ -417,11 +419,12 @@ public class AdminServiceImpl {
 	 * @param searchQuery
 	 * @return List of users
 	 */
-	public List<UserSearchDto> findUserByDetail(String searchQuery, String roleFromHeader, RcmCompany company)
+	public List<UserSearchDto> findUserByDetail(String searchQuery, String roleFromHeader, PartialHeader partialHeader)
 			throws Exception {
 		List<UserSearchDto> user = null;
 		if (roleFromHeader.equals(Constants.ADMIN)) {
-			user = userRepo.findByUserDetailsByAdmin(searchQuery, company.getUuid());
+			List <String> companies=rcmCompanyRepo.findAllClientUUidOfAssociatedUser(partialHeader.getJwtUser().getUuid());
+			user = userRepo.findByUserDetailsByAdminCompanies(searchQuery, companies);
 			return user;
 		}
 		if (roleFromHeader.equals(Constants.SUPER_ADMIN)) {

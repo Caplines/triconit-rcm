@@ -128,7 +128,7 @@ public class AdminController extends BaseHeaderController{
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
 		try {
-			response = serviceImpl.findUserByEmail(dto,partialHeader.getRole(),partialHeader.getCompany());
+			response = serviceImpl.findUserByEmail(dto,partialHeader.getRole(),partialHeader);
 			if(response==null) {
 				return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST,MessageConstants.USER_NOT_EXIST,null));
 			}
@@ -197,7 +197,7 @@ public class AdminController extends BaseHeaderController{
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 
 		try {
-			response = serviceImpl.findUserByDetail(searchQuery,partialHeader.getRole(),partialHeader.getCompany());
+			response = serviceImpl.findUserByDetail(searchQuery,partialHeader.getRole(),partialHeader);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
