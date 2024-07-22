@@ -5405,12 +5405,38 @@
                         <button (click)="closeNoteModal()" type="button"
                             class="btn btn-sm btn-ligt close">&times;</button>
                     </div>
-                    <div class="modal-body">
+                    <div>
                         <ng-container *ngIf="viewNotesConfig.viewNotes!=undefined && viewNotesConfig.viewNotes.length!=0;else msg">
-                            <ul>
-                                <li *ngFor="let note of viewNotesConfig.viewNotes;let idx=index;">{{note.createdBy}}
-                                    {{note.createdDate |date :'MM/dd/YYYY'}} : {{note.notes}}</li>
-                            </ul>
+                            <div>
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th style="min-width: 160px;">
+                                                Created By
+                                            </th>
+                                            <th style="min-width: 160px;">
+                                                Created Date
+                                            </th>
+                                            <th>
+                                                Notes
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr *ngFor="let note of viewNotesConfig.viewNotes;let idx=index;">
+                                            <td>
+                                                {{note.createdBy}}
+                                            </td>
+                                            <td>
+                                                {{note.createdDate |date :'MM/dd/YYYY'}}
+                                            </td>
+                                            <td style="word-break: break-all;">
+                                                {{note.notes}}
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </ng-container>
                         <ng-template #msg>
                             No notes are available

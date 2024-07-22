@@ -1741,8 +1741,10 @@ export class BillingClaimsComponent {
     if (this.claimRcm.providerOnClaimFromSheet == null) return "";
     let ar = this.claimRcm.providerOnClaimFromSheet.split("<<<>>>");
     let temp = "";
+    let br = "";
     ar.forEach(element => {
-      temp = temp + element + "<br/>";
+      temp = temp + element + br;
+      br = "<br/>";
     });
 
     return temp;
