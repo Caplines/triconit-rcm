@@ -5408,22 +5408,24 @@
                     <div>
                         <ng-container *ngIf="viewNotesConfig.viewNotes!=undefined && viewNotesConfig.viewNotes.length!=0;else msg">
                             <div>
-                                <table class="table">
+                                <table class="table table-bordered">
                                     <thead>
                                         <tr>
+                                            <th>S.No</th>
                                             <th style="min-width: 160px;">
-                                                Created By
+                                                Name
                                             </th>
                                             <th style="min-width: 160px;">
-                                                Created Date
+                                                Date
                                             </th>
-                                            <th>
-                                                Notes
+                                            <th style="min-width: 160px;">
+                                                Note
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr *ngFor="let note of viewNotesConfig.viewNotes;let idx=index;">
+                                            <td>{{idx+1}}</td>
                                             <td>
                                                 {{note.createdBy}}
                                             </td>
@@ -5439,7 +5441,10 @@
                             </div>
                         </ng-container>
                         <ng-template #msg>
-                            No notes are available
+                            <!-- No notes are available -->
+                            <div class="text-center">
+                                <h5 class="text-light bg-secondary p-1"> No Notes Available!</h5>
+                            </div>
                         </ng-template>
                     </div>
                     <div class="modal-footer justify-content-center">
