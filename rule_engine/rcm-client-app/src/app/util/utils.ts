@@ -342,4 +342,8 @@ export default class Utils {
    static isNotTeamAging() {
       return <any>localStorage.getItem("selected_teamId") != AppConstants.AGING_TEAM ? true : false;
    }
+
+   static isNotTeamPatientStatement() {
+      return <any>localStorage.getItem("selected_teamId") != AppConstants.PATIENT_STATEMENT_TEAM ? true : false;
+   }
 }
