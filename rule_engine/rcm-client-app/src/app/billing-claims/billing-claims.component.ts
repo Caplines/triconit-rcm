@@ -1315,7 +1315,7 @@ export class BillingClaimsComponent {
     else if (!right) return true;
     //else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
-    else if(this.claimRcm.currentState==1)return true;
+    else if (this.claimRcm.currentState == 1) return true;
     if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isBilling
     ) { //use case claim->/e28dd916-4da7-45c7-9884-ee6fd3cac759
       return true;
@@ -3123,7 +3123,7 @@ export class BillingClaimsComponent {
             res.data.originalRequirements.forEach((e: any) => {
               requirementsForMultiSelect.push({ name: e, checked: false })
             });
-          } 
+          }
           this.claimSectionModal['REBILLING']['modal']['serviceCodesForMultiSelect'] = serviceCodesForMultiSelect;
           this.claimSectionModal['REBILLING']['modal']['requirementsForMultiSelect'] = requirementsForMultiSelect;
         }
@@ -3392,10 +3392,10 @@ export class BillingClaimsComponent {
         if (res.status === 200) {
           console.log(res.data);
           ths.claimSteps = this.filterConsecutiveDuplicates(res.data);
-         // ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'undone';
+          // ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'undone';
           if (ths.claimSteps[ths.claimSteps.length - 1]['status'] === 'Claim Archived') {
             ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'mk_archive';
-            ths.claimSteps[ths.claimSteps.length - 1]['statusUpdated']='Claim Archived';
+            ths.claimSteps[ths.claimSteps.length - 1]['statusUpdated'] = 'Claim Archived';
           }
           else {
             ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'undone';
@@ -3409,37 +3409,46 @@ export class BillingClaimsComponent {
     data[0]['done'] = 'done';
     let filteredData = [data[0]];
 
-    let pointer:any=[];
+    let pointer: any = [];
+    let ctr = -1;
     for (let i = 1; i < data.length; i++) {
       let prev = filteredData[filteredData.length - 1];
       let current = data[i];
-      if (prev.status === current.status && prev.name === current.name) {
-        continue;
-      } else {
 
-        //we are using this else  block and when -
-        //1- claim is Archive then we need to replace cureent next action to previous status
-        //2  when claim is Unarchive then we need to find previous next action before last claim was archive
-        if (current['statusUpdated'] === 'Claim UnArchived') {
-          current['statusUpdated'] = current['nextAction'];
-        }
-        if (current['statusUpdated'] === 'Claim Archived') {
-          pointer.push({ "i": i, "b": current['nextAction'] });
-          current['statusUpdated'] = current['nextAction'];
 
+      //we are using this else  block and when -
+      //1- claim is Archive then we need to replace cureent next action to previous status
+      //2  when claim is Unarchive then we need to find previous next action before last claim was archive
+      if (current['statusUpdated'] === 'Claim UnArchived') {
+        current['statusUpdated'] = current['nextAction'];
+      }
+      if (current['statusUpdated'] === 'Claim Archived') {
+        pointer.push({ "i": i, "b": current['nextAction'] });
+        current['statusUpdated'] = current['nextAction'];
+
+      }
+      current['done'] = 'done';
+      filteredData.push(current);
+
+      for (let i = 1; i < data.length; i++) {
+        let prev = filteredData[filteredData.length - 1];
+        let current = data[i];
+        if (prev.status === current.status && prev.name === current.name) {
+          continue;
+        } else {
+          filteredData.push(current);
         }
-        current['done'] = 'done';
-        filteredData.push(current);
       }
 
     }
     //we are using this for when -
     //1- claim is Archive then we need to replace cureent next action to previous status
     //2  when claim is Unarchive then we need to find previous next action before last claim was archive
+    // i case of mutiple archive unarchive
     for (let j = 0; j <= pointer.length - 1; j++) {
-       if(filteredData[pointer[j].i - 1]!=undefined){
-           filteredData[pointer[j].i - 1]['statusUpdated'] = pointer[j].b;
-       }
+      if (filteredData[pointer[j].i - 1] != undefined) {
+        /// filteredData[pointer[j].i - 1]['statusUpdated'] = pointer[j].b;
+      }
     }
     return filteredData;
   }
@@ -3786,7 +3795,7 @@ export class BillingClaimsComponent {
       this.emptyFields["REBILLING"]['selectedRebillingServiceCodes'] = true;
       isSectionValidated = false;
     }
-    
+
     // if (this.claimSectionModal['REBILLING']['dataModal']['rebillingStatus'] && !this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'] || this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'].length == 0) {
     //   this.emptyFields["REBILLING"]['selectedRebillingRequirements'] = true;
     //   isSectionValidated = false;
