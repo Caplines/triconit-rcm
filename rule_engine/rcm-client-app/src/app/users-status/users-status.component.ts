@@ -35,11 +35,20 @@ export class UserStatusComponent implements OnInit {
     this.getcompanyData();
     this.appService.setPaddingRightContainer();
     this.getRoles();
-    window.onscroll = ()=> {
-      if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
-           this.loadMoreData();
-       }
-  };
+  //   window.onscroll = ()=> {
+  //     if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
+  //          this.loadMoreData();
+  //      }
+  // };
+  window.onscroll = () => {
+    // Calculate the distance between the bottom of the viewport and the bottom of the document
+    const distanceToBottom = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
+    //scrolled to the bottom 20% of the document
+    if (distanceToBottom < window.innerHeight * 0.2) {
+        // Call the function to load more data
+        this.loadMoreData();
+    }
+};
   }
   logout() {
     localStorage.clear();

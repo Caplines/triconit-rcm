@@ -4346,9 +4346,9 @@ public class ClaimServiceImpl {
 						clamCycleRepo.save(previousCycleData);
 					}
 					
-					 if ( dto.getAssignToTeam()==RcmTeamEnum.BILLING.getId()) {
+					 if (dto.getAssignToTeam()==RcmTeamEnum.BILLING.getId()) {
 						 createStatus = ClaimStatusEnum.Pending_For_Billing.getType(); 
-						 nextAction =ClaimStatusEnum.Pending_For_Billing.getType();
+						 nextAction =ClaimStatusEnum.Need_to_Bill.getType();
 					 }
 					 // As per phase 2 this will never happen
 					 else if ( dto.getAssignToTeam()==RcmTeamEnum.INTERNAL_AUDIT.getId()) {
