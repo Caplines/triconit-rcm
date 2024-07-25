@@ -733,6 +733,11 @@ public class ClaimServiceImpl {
 								}
 								
 							}
+							if (ins!=null && ins.getInsuranceType() ==null) {
+								rcmInsuranceType = rcmInsuranceTypeRepo.findByName(re.getInsuranceName());
+								ins.setInsuranceType(rcmInsuranceType);
+								insuranceRepo.save(ins);
+							}
 							TimelyFilingLimitDto timely=null;
 							if (insuranceNameTypeDto!=null) {
 								timely = ClaimUtil.getTimelyLimitFromSheetListByCode(timelyFilingLimits,
@@ -1033,6 +1038,11 @@ public class ClaimServiceImpl {
 									ins.setId(insuranceRepo.save(ins).getId());
 								 }
 								 insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, re.getSecondaryInsuranceCompany().trim(),re.getClientName());
+							}
+							if (ins!=null && ins.getInsuranceType() ==null) {
+								rcmInsuranceType = rcmInsuranceTypeRepo.findByName(re.getInsuranceName());
+								ins.setInsuranceType(rcmInsuranceType);
+								insuranceRepo.save(ins);
 							}
 							TimelyFilingLimitDto timely = null;
 							if (ins.getInsuranceCode()==null || (ins.getInsuranceCode()!=null && ins.getInsuranceCode().trim().equals(""))) {
