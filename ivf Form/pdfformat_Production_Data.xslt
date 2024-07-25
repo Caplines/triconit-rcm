@@ -103,7 +103,6 @@
          <tr>
              <td class="bgWhite">
                  <table class="inner-table">
-
                      <tr class="bgWhite">
                           <td colspan="7" class="tableHeading">Production (<xsl:value-of select="clientName"/>)</td>
                      </tr>
@@ -117,7 +116,7 @@
                     <td >Total</td>
                     <td></td>
                     <td><xsl:value-of select="sum(data/data/total)"/></td>
-                    <td><xsl:value-of select="format-number(sum(data/data/days),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(data/data/days) div count(data/data/days),'0.0')"/></td>
                      </tr>
                       <xsl:for-each select="data/data">
                      <tr class="whiteBg">
@@ -151,20 +150,20 @@
                      </tr>
                     <tr style="background-color:#A9A9A9;">
                     <td >Total</td>
-                    <td><xsl:value-of select="format-number(sum(patientCalling/paymentPromised),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(patientCalling/paymentMade),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(patientCalling/wrongNo),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(patientCalling/notReadyToPay),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(patientCalling/statementRequested),'0.0')"/></td>
+                    <td><xsl:value-of select="sum(patientCalling/paymentPromised)"/></td>
+                    <td><xsl:value-of select="sum(patientCalling/paymentMade)"/></td>
+                    <td><xsl:value-of select="sum(patientCalling/wrongNo)"/></td>
+                    <td><xsl:value-of select="sum(patientCalling/notReadyToPay)"/></td>
+                    <td><xsl:value-of select="sum(patientCalling/statementRequested)"/></td>
                      </tr>
                       <xsl:for-each select="patientCalling">
                      <tr class="whiteBg">
                          <td><xsl:value-of select="officeName"/></td>
-                         <td><xsl:value-of select="format-number(paymentPromised,'0.0')"/></td>
-                         <td><xsl:value-of select="format-number(paymentMade,'0.0')"/></td>
-                         <td><xsl:value-of select="format-number(wrongNo,'0.0')"/></td>
-                         <td><xsl:value-of select="format-number(notReadyToPay,'0.0')"/></td>
-                         <td><xsl:value-of select="format-number(statementRequested,'0.0')"/></td>
+                         <td><xsl:value-of select="paymentPromised"/></td>
+                         <td><xsl:value-of select="paymentMade"/></td>
+                         <td><xsl:value-of select="wrongNo"/></td>
+                         <td><xsl:value-of select="notReadyToPay"/></td>
+                         <td><xsl:value-of select="statementRequested"/></td>
                      </tr>
                     </xsl:for-each>
 
@@ -194,20 +193,20 @@
                     <td >Total</td>
                     <td></td>
                     <td><xsl:value-of select="sum(patientStatement/total)"/></td>
-                    <td><xsl:value-of select="format-number(sum(patientStatement/days),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(patientStatement/statementType/statementType1),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(patientStatement/statementType/statementType2),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(patientStatement/statementType/statementType3),'0.0')"/></td>
+            <td><xsl:value-of select="format-number(sum(patientStatement/days) div count(patientStatement/days),'0.0')"/></td>
+                    <td><xsl:value-of select="sum(patientStatement/statementType/statementType1)"/></td>
+                    <td><xsl:value-of select="sum(patientStatement/statementType/statementType2)"/></td>
+                    <td><xsl:value-of select="sum(patientStatement/statementType/statementType3)"/></td>
                      </tr>
                       <xsl:for-each select="patientStatement">
                      <tr class="whiteBg">
                           <td><xsl:value-of select="clientName"/></td>
                           <td><xsl:value-of select="concat(fname,' ',lname)"/></td>
-                          <td><xsl:value-of select="format-number(total,'0.0')"/></td>
+                          <td><xsl:value-of select="total"/></td>
                           <td><xsl:value-of select="format-number(days,'0.0')"/></td>
-                          <td><xsl:value-of select="format-number(statementType/statementType1,'0.0')"/></td>
-                         <td><xsl:value-of select="format-number(statementType/statementType2,'0.0')"/></td>
-                         <td><xsl:value-of select="format-number(statementType/statementType3,'0.0')"/></td>
+                          <td><xsl:value-of select="statementType/statementType1"/></td>
+                         <td><xsl:value-of select="statementType/statementType2"/></td>
+                         <td><xsl:value-of select="statementType/statementType3"/></td>
                      </tr>
                     </xsl:for-each>
 
@@ -236,8 +235,8 @@
                     <td >Total</td>
                     <td></td>
                     <td><xsl:value-of select="sum(paymentPosting/total)"/></td>
-                    <td><xsl:value-of select="format-number(sum(paymentPosting/days),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(paymentPosting/amountPosted),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(paymentPosting/days) div count(paymentPosting/days),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(paymentPosting/totalAmountReceivedInBank),'0.0')"/></td>
                      </tr>
                       <xsl:for-each select="paymentPosting">
                      <tr class="whiteBg">
@@ -271,18 +270,18 @@
                      </tr>
                     <tr style="background-color:#A9A9A9;">
                     <td >Total</td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfAgeWiseData/countForAgeRange1),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfAgeWiseData/countForAgeRange2),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfAgeWiseData/countForAgeRange3),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfAgeWiseData/countForAgeRange4),'0.0')"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfAgeWiseData/countForAgeRange1)"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfAgeWiseData/countForAgeRange2)"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfAgeWiseData/countForAgeRange3)"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfAgeWiseData/countForAgeRange4)"/></td>
                      </tr>
                       <xsl:for-each select="agingPdfDto/listOfAgeWiseData">
                      <tr class="whiteBg">
                          <td><xsl:value-of select="officeName"/></td>
-                         <td><xsl:value-of select="format-number(countForAgeRange1,'0.0')"/></td>
-                         <td><xsl:value-of select="format-number(countForAgeRange2,'0.0')"/></td>
-                         <td><xsl:value-of select="format-number(countForAgeRange3,'0.0')"/></td>
-                         <td><xsl:value-of select="format-number(countForAgeRange4,'0.0')"/></td>
+                         <td><xsl:value-of select="countForAgeRange1"/></td>
+                         <td><xsl:value-of select="countForAgeRange2"/></td>
+                         <td><xsl:value-of select="countForAgeRange3"/></td>
+                         <td><xsl:value-of select="countForAgeRange4"/></td>
                      </tr>
                     </xsl:for-each>
 
@@ -312,26 +311,26 @@
                      </tr>
                     <tr style="background-color:#A9A9A9;">
                     <td >Total</td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/billedCount),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/closedCount),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/PendingForBillingCount),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/pendingForReviewCount),'0.0')"/></td>
-                     <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/reBillingCount),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/reviewedCount),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/submittedCount),'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(sum(agingPdfDto/listOfCurrentStatusWiseData/voidedCount),'0.0')"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfCurrentStatusWiseData/billedCount)"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfCurrentStatusWiseData/closedCount)"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfCurrentStatusWiseData/pendingForBillingCount)"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfCurrentStatusWiseData/pendingForReviewCount)"/></td>
+                     <td><xsl:value-of select="sum(agingPdfDto/listOfCurrentStatusWiseData/reBillingCount)"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfCurrentStatusWiseData/reviewedCount)"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfCurrentStatusWiseData/submittedCount)"/></td>
+                    <td><xsl:value-of select="sum(agingPdfDto/listOfCurrentStatusWiseData/voidedCount)"/></td>
                      </tr>
                       <xsl:for-each select="agingPdfDto/listOfCurrentStatusWiseData">
                      <tr class="whiteBg">
                     <td><xsl:value-of select="associateName"/></td>
-                    <td><xsl:value-of select="format-number(billedCount,'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(closedCount,'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(pendingForBillingCount,'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(pendingForReviewCount,'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(reBillingCount,'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(reviewedCount,'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(submittedCount,'0.0')"/></td>
-                    <td><xsl:value-of select="format-number(voidedCount,'0.0')"/></td>
+                    <td><xsl:value-of select="billedCount"/></td>
+                    <td><xsl:value-of select="closedCount"/></td>
+                    <td><xsl:value-of select="pendingForBillingCount"/></td>
+                    <td><xsl:value-of select="pendingForReviewCount"/></td>
+                    <td><xsl:value-of select="reBillingCount"/></td>
+                    <td><xsl:value-of select="reviewedCount"/></td>
+                    <td><xsl:value-of select="submittedCount"/></td>
+                    <td><xsl:value-of select="voidedCount"/></td>
                      </tr>
                     </xsl:for-each>
 
@@ -359,7 +358,7 @@
                     <td >Total</td>
                     <td></td>
                     <td><xsl:value-of select="sum(cdpPdfDto/cdpForInsuranceFollowUp/total)"/></td>
-                    <td><xsl:value-of select="format-number(sum(cdpPdfDto/cdpForInsuranceFollowUp/days),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(cdpPdfDto/cdpForInsuranceFollowUp/days) div count(cdpPdfDto/cdpForInsuranceFollowUp/days),'0.0')"/></td>
                      </tr>
                       <xsl:for-each select="cdpPdfDto/cdpForInsuranceFollowUp">
                      <tr class="whiteBg">
@@ -393,7 +392,7 @@
                     <td >Total</td>
                     <td></td>
                     <td><xsl:value-of select="sum(cdpPdfDto/cdpForAppeal/total)"/></td>
-                    <td><xsl:value-of select="format-number(sum(cdpPdfDto/cdpForAppeal/days),'0.0')"/></td>
+                    <td><xsl:value-of select="format-number(sum(cdpPdfDto/cdpForAppeal/days) div count(cdpPdfDto/cdpForAppeal/days),'0.0')"/></td>
                      </tr>
                       <xsl:for-each select="cdpPdfDto/cdpForAppeal">
                      <tr class="whiteBg">

@@ -3408,38 +3408,49 @@ export class BillingClaimsComponent {
     if (data.length === 0) return data;
     data[0]['done'] = 'done';
     let filteredData = [data[0]];
-
-    let pointer:any=[];
+ 
+    let pointer: any = [];
+    for (let i = 1; i < data.length; i++) {
+      let prev = filteredData[filteredData.length - 1];
+      let current = data[i];
+      //we are using this else  block and when -
+      //1- claim is Archive then we need to replace cureent next action to previous status
+      //2  when claim is Unarchive then we need to find previous next action before last claim was archive
+      if (current['statusUpdated'] === 'Claim UnArchived') {
+        current['statusUpdated'] = current['nextAction'];
+      }
+      if (current['statusUpdated'] === 'Claim Archived') {
+        pointer.push({ "i": i, "b": current['nextAction'] });
+        current['statusUpdated'] = current['nextAction'];
+ 
+      }
+      current['done'] = 'done';
+      filteredData.push(current);
+ 
+ 
+    }
+    //we are using this for when -
+    //1- claim is Archive then we need to replace cureent next action to previous status
+    //2  when claim is Unarchive then we need to find previous next action before last claim was archive
+    for (let j = 0; j <= pointer.length - 1; j++) {
+      if (filteredData[pointer[j].i - 1] != undefined) {
+        filteredData[pointer[j].i - 1]['statusUpdated'] = pointer[j].b;
+      }
+ 
+    }
+    
+    data = [];
+    filteredData.forEach(val => data.push(Object.assign({}, val)));
+    filteredData = [data[0]];
     for (let i = 1; i < data.length; i++) {
       let prev = filteredData[filteredData.length - 1];
       let current = data[i];
       if (prev.status === current.status && prev.name === current.name) {
         continue;
       } else {
-
-        //we are using this else  block and when -
-        //1- claim is Archive then we need to replace cureent next action to previous status
-        //2  when claim is Unarchive then we need to find previous next action before last claim was archive
-        if (current['statusUpdated'] === 'Claim UnArchived') {
-          current['statusUpdated'] = current['nextAction'];
-        }
-        if (current['statusUpdated'] === 'Claim Archived') {
-          pointer.push({ "i": i, "b": current['nextAction'] });
-          current['statusUpdated'] = current['nextAction'];
-
-        }
-        current['done'] = 'done';
         filteredData.push(current);
+ 
       }
-
-    }
-    //we are using this for when -
-    //1- claim is Archive then we need to replace cureent next action to previous status
-    //2  when claim is Unarchive then we need to find previous next action before last claim was archive
-    for (let j = 0; j <= pointer.length - 1; j++) {
-       if(filteredData[pointer[j].i - 1]!=undefined){
-           filteredData[pointer[j].i - 1]['statusUpdated'] = pointer[j].b;
-       }
     }
     return filteredData;
   }
