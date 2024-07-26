@@ -13,6 +13,7 @@ export class AttachFileComponent {
 
   showModal: boolean = false;
   selectedFiles: any = [];
+  selectedFilesClaimDetail: any = [];
   totalFile: number = 0;
   loader: boolean = false;
   formData: any = new FormData();
@@ -20,6 +21,7 @@ export class AttachFileComponent {
   @Output() emitToParent: any = new EventEmitter();
   attachmentTypeId: any;
   attachedFiles: any = [];
+  attachFileClaimDetail: any = [];
   hasAttachmentFileData: boolean = false;
   errorMessage: any;
 
@@ -60,6 +62,7 @@ export class AttachFileComponent {
         console.log(res);
         this.attachedFiles = res.data;
         this.emitToParent.emit({action:'clearAttachmentAndRemovedFiles'});
+        this.attachFileClaimDetail = res.data;
         this.isFileAttachedBySameUser();
       }
     })

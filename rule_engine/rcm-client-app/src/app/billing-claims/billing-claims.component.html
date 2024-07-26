@@ -464,7 +464,7 @@
                                             <ng-container
                                                 *ngIf="(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'view'))">
                                                 <app-attach-file
-                                                    [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(actionButtons && claimRcm.allowEdit  && claimRcm.currentState==0),'isDetailPage':true ,'isDeleteAllowed': claimRcm.allowEdit  && claimRcm.currentState==0}"
+                                                    [inputConfig]="{'claimUuid':claimUUid,'attachmentCount': attachmentConfig['attachmentCount'],'allowUpload':!(checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0),'isDetailPage':true ,'isDeleteAllowed': checkForSectionAccess(sectionIds['ATTACHMENT']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0}"
                                                     (emitToParent)="receiveChildEvent($event)"></app-attach-file>
                                             </ng-container>
                                         </div>

@@ -10,7 +10,7 @@
 <button type="button" class="btn btn-primary btn-sm px-2 mb-2" (click)="openModal()" *ngIf="inputConfig['isDetailPage']"
     id="attach{{inputConfig.claimUuid}}">View Attachments</button> -->
 <div class="modal attachModal" id="{{inputConfig.claimUuid}}" *ngIf="showModal">
-    <div class="modal-content rounded-0" [ngClass]="{'opacityLow':loader}">
+    <div class="modal-content rounded-0" [ngClass]="{'opacityLow':loader, 'modal-content-claim-detail': inputConfig['isDetailPage']}">
         <span class="close" (click)="closeModal()">&times;</span>
         <h5>{{inputConfig['isDetailPage'] ? 'Upload/View':'Upload'}} Attachment <small *ngIf="errorMessage"
                 class="text-danger">({{errorMessage}})</small></h5>
@@ -73,7 +73,7 @@
                                 </tr> -->
                                 <ng-container *ngIf="selectedFiles.length > 0">
                                     <tr *ngFor="let file of selectedFiles;let i=index;">
-                                        <td *ngIf="this.inputConfig['isDetailPage']">{{i+1}}</td>
+                                        <td *ngIf="this.inputConfig['isDetailPage']">{{attachFileClaimDetail.length+1}}</td>
                                         <td><div class="fileEllipsis">{{file.file.name}}</div></td>
                                         <td *ngIf="this.inputConfig['isDetailPage']"> {{file.uploadedBy}}</td>
                                         <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedByTeam}}</td>
@@ -92,35 +92,6 @@
                                 </ng-container>
                                 </tbody>
                             </table>
-                            <!-- <div *ngIf="attachedFiles.length > 0" class="text-danger text-left">(Already Attached)</div>
-                            <ol class="file-list" *ngIf="attachedFiles.length > 0">
-                                <li *ngFor="let file of attachedFiles;let i=index;">
-                                    <span
-                                        style="display: inline-flex; align-items: center; justify-content: space-between;">
-                                        <span class="fileEllipsis" title="{{ file.file.name }}">{{ file.file.name }}
-                                        </span>
-                                    </span>
-                                </li>
-                            </ol>
-                            <div *ngIf="selectedFiles.length > 0" class="text-left text-success mt-2"> (New Attached)</div>
-                            <ol class="file-list" *ngIf="selectedFiles.length > 0">
-                                <li *ngFor="let file of selectedFiles;let i=index;">
-                                    <span
-                                        style="display: inline-flex; align-items: center; justify-content: space-between;">
-                                        <span class="fileEllipsis" title="{{ file.file.name }}">{{ file.file.name }}
-                                        </span>
-                                        <select class="form-control" [(ngModel)]="file.attachmentTypeId"
-                                            style="width: 300px; margin-left: 15px;" name="type">
-                                            <ng-container *ngFor="let item of constant.attachmentType">
-                                                <option value="" selected="true" hidden="true">Select Attachment Type
-                                                </option>
-                                                <option [value]="item.id">{{item.value}}</option>
-                                            </ng-container>
-                                        </select>
-                                    </span>
-                                    <span class="close" (click)="removeItem(file.file)">&times;</span>
-                                </li>
-                            </ol> -->
                         </div>
                         <button type="button" class="btn btn btn-primary file-button" *ngIf="!allowUpload"
                             [disabled]="selectedFiles.length==0 || uploadButton"
@@ -141,13 +112,6 @@
         <div class="container detail-attachment-container">
             <div class="upload-container">
                 <div class="table-responsive">
-                    <div class="dragDrop" *ngIf="!allowUpload">
-                        <button type="button" class="btn btn-success file-button-attachment"
-                            (click)="fileInput.click()">Select
-                            Files</button>
-                        <input type="file" id="fileInput{{inputConfig.claimUuid}}" #fileInput multiple
-                            (change)="onFileChange($event)" class="file-input" />
-                    </div>
                     <table class="table">
                         <thead>
                             <tr>
@@ -161,9 +125,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <ng-container *ngIf="attachedFiles.length > 0">
+                            <ng-container *ngIf="attachFileClaimDetail.length > 0">
 
-                            <tr  *ngFor="let file of attachedFiles;let i=index;">
+                            <tr  *ngFor="let file of attachFileClaimDetail;let i=index;">
                                 <td *ngIf="this.inputConfig['isDetailPage']">{{i+1}}</td>
                                 <td > <div class="fileEllipsis">{{file.file.name}}</div></td>
                                 <td *ngIf="this.inputConfig['isDetailPage']">{{file.uploadedBy}}</td>
@@ -177,7 +141,7 @@
                                     </ng-container>
                                 </select></td>
                                 <td style="vertical-align: middle;"> <div class="action-flex">
-                                    <span class="closeBtn" [ngStyle]="{'pointer-events': loader? 'none': ''}" title="Remove" *ngIf="(this.inputConfig['isDetailPage'] || this.inputConfig['isDeleteAllowed'] || this.inputConfig['isOtherTeam']) && (userEmail|uppercase) == (file.uploadedByUserUuid|uppercase) " (click)="removePreSelectedFile(file)">&times;</span>
+                                    <span class="closeBtn" [ngStyle]="{'pointer-events': loader? 'none': ''}" title="Remove" *ngIf="(this.inputConfig['isDeleteAllowed']) && (userEmail|uppercase) == (file.uploadedByUserUuid|uppercase) " (click)="removePreSelectedFile(file)">&times;</span>
                                     <ng-container *ngIf="inputConfig['attachmentCount']>0">
                                         <button type="button" class="icon-btn download-button"
                                             (click)="downloadAttachment(file)" title="Download">
@@ -187,11 +151,8 @@
                             </td>
                             </tr>
                         </ng-container>
-                        <!-- <tr *ngIf="selectedFiles.length > 0">
-                            <td class="text-success" colspan="7">(New Attached)</td>
-                        </tr> -->
-                        <ng-container *ngIf="selectedFiles.length > 0">
-                            <tr *ngFor="let file of selectedFiles;let i=index;">
+                        <ng-container *ngIf="selectedFilesClaimDetail.length > 0">
+                            <tr *ngFor="let file of selectedFilesClaimDetail;let i=index;">
                                 <td>{{i+1}}</td>
                                 <td ><div class="fileEllipsis">{{file.file.name}}</div></td>
                                 <td>{{file.uploadedBy}}</td>
@@ -211,41 +172,13 @@
                         </ng-container>
                         </tbody>
                     </table>
-                    <!-- <div *ngIf="attachedFiles.length > 0" class="text-danger text-left">(Already Attached)</div>
-                    <ol class="file-list" *ngIf="attachedFiles.length > 0">
-                        <li *ngFor="let file of attachedFiles;let i=index;">
-                            <span
-                                style="display: inline-flex; align-items: center; justify-content: space-between;">
-                                <span class="fileEllipsis" title="{{ file.file.name }}">{{ file.file.name }}
-                                </span>
-                            </span>
-                        </li>
-                    </ol>
-                    <div *ngIf="selectedFiles.length > 0" class="text-left text-success mt-2"> (New Attached)</div>
-                    <ol class="file-list" *ngIf="selectedFiles.length > 0">
-                        <li *ngFor="let file of selectedFiles;let i=index;">
-                            <span
-                                style="display: inline-flex; align-items: center; justify-content: space-between;">
-                                <span class="fileEllipsis" title="{{ file.file.name }}">{{ file.file.name }}
-                                </span>
-                                <select class="form-control" [(ngModel)]="file.attachmentTypeId"
-                                    style="width: 300px; margin-left: 15px;" name="type">
-                                    <ng-container *ngFor="let item of constant.attachmentType">
-                                        <option value="" selected="true" hidden="true">Select Attachment Type
-                                        </option>
-                                        <option [value]="item.id">{{item.value}}</option>
-                                    </ng-container>
-                                </select>
-                            </span>
-                            <span class="close" (click)="removeItem(file.file)">&times;</span>
-                        </li>
-                    </ol> -->
-                    <small *ngIf="errorMessage"
-                class="text-danger">({{errorMessage}})</small>
+                    <small *ngIf="errorMessage" class="text-danger">({{errorMessage}})</small>
                 </div>
-                <button type="button" class="btn btn btn-primary file-button" *ngIf="!allowUpload"
-                    [disabled]="selectedFiles.length==0 || uploadButton"
-                    (click)="uploadItem(inputConfig.claimUuid)">Upload</button>
+                <div class="dragDrop" *ngIf="!allowUpload">
+                    <button (click)="openModal()" type="button" class="btn btn-success file-button-attachment">
+                        Upload Files
+                    </button>
+                </div>
             </div>
         </div>
     </div>
