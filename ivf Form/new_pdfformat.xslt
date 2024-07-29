@@ -982,7 +982,16 @@
             </tr>
             <tr>
                <td class="dullBlue">Sealants Covered till Age</td>
-                <td class="dullBlue align-right" colspan="2"><xsl:value-of select="sealants2"/></td>
+              <xsl:choose>
+    <xsl:when test="translate(policy1, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'children medicaid' or translate(policy1, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='chip'
+                     or translate(policy1, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='adult medicaid'
+                     or translate(policy1, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') ='medicare' ">
+                     <td class="blackClr" colspan="2"><a href="https://insurances-lookup-dashboard.vercel.app/dashboard" style="text-decoration:none;color: red;" traget="_blank" >Refer to Insurance Lookup Dashboard</a></td>
+                     </xsl:when>
+                     <xsl:otherwise>
+                           <td class="dullBlue align-right" colspan="2"><xsl:value-of select="sealants2"/></td>
+                     </xsl:otherwise>
+                </xsl:choose> 
                 <td class="borderNone"></td>
                 <td class="dullYellow">
                    Max.# of Ext./Year
