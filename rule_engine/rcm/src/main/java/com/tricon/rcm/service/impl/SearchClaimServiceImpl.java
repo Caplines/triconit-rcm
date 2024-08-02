@@ -51,7 +51,7 @@ public class SearchClaimServiceImpl {
 		jwtUser.getCompanies().stream().forEach(data -> {
 			if (data != null && !data.getUuid().isEmpty()) {
 				RcmUserClientWithOfficeDto officesdata = new RcmUserClientWithOfficeDto();
-				List<RcmOfficeDto> offices = commonService.getOfficesByUuid(data.getUuid());
+				List<RcmOfficeDto> offices = commonService.getAllOfficesByClientUuid(data.getUuid());
 				officesdata.setClientUuid(data.getUuid());
 				officesdata.setClientName(data.getName());
 				officesdata.setOffices(offices);

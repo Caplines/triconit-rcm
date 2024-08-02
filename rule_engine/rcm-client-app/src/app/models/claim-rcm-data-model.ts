@@ -111,6 +111,7 @@ export interface ClaimRcmDataModel {
 	statusESUpdated?: string;
 	nextFollowUpDate?: String;
     lastTeamWorkId?: number;
+	officeActive?: boolean;
 
 }
 

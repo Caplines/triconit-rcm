@@ -2723,6 +2723,11 @@ public class ClaimServiceImpl {
 				rcmClaimRepository.save(claim);
 			}
 			
+			// set allowEdit false when office is active=false
+			if (!dto.getOfficeActive()) {
+				implDto.setAllowEdit(false);
+			}
+			
 			// Run Auto Rules
 			//runAutomatedRules(jwtUser, claimUuid);//not from here 
 		
@@ -3282,7 +3287,7 @@ public class ClaimServiceImpl {
 			List<ProductionForAging> agingData = null;
 			List<ProductionAgeWiseDto> listOfAgeWiseData = new ArrayList<>();
 			List<ProductionCurrentStatusWiseDto> listOfCurrentStatusWiseData = new ArrayList<>();
-			List<RcmOfficeDto> offices = officeRepo.findByCompanyUuidIn(companies);
+			List<RcmOfficeDto> offices = officeRepo.findByCompanyUuidInAndActiveTrue(companies);
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				agingData = rcmClaimRepository.claimProductionForAgingAssoicate(companies, partialHeader.getTeamId(),
 						dto.getStartDate(), dto.getEndDate(), partialHeader.getJwtUser().getUuid());

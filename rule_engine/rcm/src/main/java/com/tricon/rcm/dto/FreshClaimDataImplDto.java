@@ -167,5 +167,7 @@ public class FreshClaimDataImplDto {
     List<AssignOfficeResponseDto>userAssignOfficeData;
     
     int lastTeamWorkId;
+    
+    boolean officeActive;
 }
 

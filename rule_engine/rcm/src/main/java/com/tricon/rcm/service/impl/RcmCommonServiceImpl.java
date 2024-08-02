@@ -728,4 +728,13 @@ public class RcmCommonServiceImpl {
 		}
 		return response;
 	}
+	
+	public List<RcmOfficeDto> getAllOfficesByClientUuid(String companyUuid) {
+		RcmCompany company = rcmCompanyRepo.findByUuid(companyUuid);
+		if (company != null) {
+			List<RcmOfficeDto> office = officeRepo.findByCompanyOrderByNameAsc(company);
+			return office;
+		}
+		return null;
+	}
 }

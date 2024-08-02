@@ -111,4 +111,6 @@ public interface RcmClaimDetailDto {
 	Date getNextFollowUpDate();
 	
 	int getLastTeamWorkId();
+	
+	boolean getOfficeActive();
 }

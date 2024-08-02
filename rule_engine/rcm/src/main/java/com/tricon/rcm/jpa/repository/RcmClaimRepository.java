@@ -121,7 +121,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=1 "
-			+ " where claims.first_worked_team_id=:teamid and claims.last_work_team_id is null and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
+			+ " where claims.first_worked_team_id=:teamid and off.active is true and claims.last_work_team_id is null and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and (primary_status = "+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+" )  "
@@ -146,7 +146,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=true  "
-			+ " where claims.first_worked_team_id<>:teamid  and claims.last_work_team_id!=:teamid and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
+			+ " where claims.first_worked_team_id<>:teamid and off.active is true and claims.last_work_team_id!=:teamid and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
 			+ " and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and (primary_status = "+Constants.Primary_Status_Primary+" or primary_status = "+Constants.Primary_Status_Primary_submit+" ))a order by ust-claimAge,primeSecSubmittedTotal asc  "
@@ -172,7 +172,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and rca.assigned_to=:userid and rca.active=1  and pending=true"
+			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid and rca.active=1  and pending=true"
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
 			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc ")
@@ -204,7 +204,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + "  and rca.active=true "
+			+ "  where claims.current_team_id=:teamid and off.active is true and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + "  and rca.active=true "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
@@ -226,7 +226,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + " and  rca.active=1"
+			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.active is true and off.company_id=:companyId " + " and  rca.active=1"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " order by ust-claimAge,primeSecSubmittedTotal asc ")
@@ -250,7 +250,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
-			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId " + " and pending=true "
+			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId " + " and pending=true "
 			+"  and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 					+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
@@ -273,7 +273,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
-			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId " + " and pending=false "
+			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId " + " and pending=false "
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 					+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
@@ -297,7 +297,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ "  where claims.current_team_id=:teamid and off.active is true and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ "  and off.company_id=:companyId and rca.assigned_to=:userId and pending=true "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED +" order by ust-claimAge asc "
 			+ "")
@@ -320,7 +320,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and off.company_id=:companyId and rca.assigned_to=:userId and pending=false "
+			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId and rca.assigned_to=:userId and pending=false "
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED +" order by ust-claimAge asc "
 			+ "")
@@ -678,7 +678,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" prim_date_sent primDateSent, prim_status primeStatus,prim_total_paid primeTotalPaid,"+
 			" rcm_source source, sec_date_sent secDateSend,sec_status secStatus,"+
 			" sec_submitted_total secSubmittedTotal,submitted_total submittedTotal, timely_fil_lmt_dt timeFilLimitDay,"+
-			" off.name officeName,off.uuid officeUuid,ct.id claimStatus,lTeam.name lastTeam,Cteam.name currentTeam,Cteam.id currentTeamId,"+
+			" off.name officeName,off.uuid officeUuid,off.active officeActive,ct.id claimStatus,lTeam.name lastTeam,Cteam.name currentTeam,Cteam.id currentTeamId,"+
 			" pins.name primInsurance,sins.name secInsurance, cl.group_number groupNumber,cl.prime_policy_holder primePolicyHolder,"+
 			" prime_sec_submitted_total primeSecSubmittedTotal,sec_policy_holder_dob secPolicyHolderDob,"+
 			" cl.created_date createdDate,assign.assigned_to assignedTo,us.email,us.first_name firstName,us.last_name lastName,"+
