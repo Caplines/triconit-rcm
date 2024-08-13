@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -41,11 +43,14 @@ import com.tricon.rcm.dto.RcmUserStatusDto;
 import com.tricon.rcm.dto.RoleResponseDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
+import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.service.impl.AdminServiceImpl;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
+
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @CrossOrigin
@@ -667,4 +672,30 @@ public class AdminController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
+	@ApiOperation(value = "Api For Fetching All Client Names and uuid associated from user", response = ClientCustomDto.class, responseContainer = "List")
+	@GetMapping("/api/user-clients/{uuid}")
+	public ResponseEntity<Object> getAllClientsAssociatedUser(@PathVariable("uuid") String userUuid, Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		List<ClientCustomDto> response = null;
+		if (partialHeader == null)
+			return ResponseEntity
+					.ok(new GenericResponse(HttpStatus.UNAUTHORIZED, MessageConstants.UNAUTHORIZED_USER, null));
+		else {
+			if (!StringUtils.isNoneBlank(userUuid))
+				return ResponseEntity
+						.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+			else {
+				try {
+					response = serviceImpl.findClientsOfAssociatedUser(userUuid);
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e.getMessage());
+					return ResponseEntity.badRequest()
+							.body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+				}
+			}
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+
 }

@@ -218,12 +218,19 @@ export class ManageSectionComponent {
   }
 
   fetchClientNames() {
-    this._service.getClientsName((res: any) => {
-      if (res) {
-        console.log(res);
-        this.clients = res.data;
-      }
-    })
+    if (this.inputConfig && this.inputConfig?.isEditSection) {
+      this._service.getClientsAssociatedUser(this.inputConfig.uuid, (res: any) => {
+        if (res) {
+          this.clients = res.data;
+        }
+      })
+    } else {
+      this._service.getClientsName((res: any) => {
+        if (res) {
+          this.clients = res.data;
+        }
+      })
+    }
   }
 
   selectClient(event: any) {

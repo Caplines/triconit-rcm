@@ -644,4 +644,7 @@ export class ApplicationServiceService extends BaseService {
     this.postData(params, this.httpUrl['verify-tl-exist'], callback);
   }
 
+  getClientsAssociatedUser(claimUuid: any, callback: any) {
+    this.getData({}, this.httpUrl['get-clientsAssociatedUser'] + "/" + claimUuid, callback)
+ }
 }

@@ -62,6 +62,7 @@ import com.tricon.rcm.dto.RoleResponseDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.dto.customquery.AssignOfficeDto;
+import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.ExistingClaimDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.dto.customquery.RcmUserDetails;
@@ -1193,5 +1194,9 @@ public class AdminServiceImpl {
 			}
 		}
 		return nonExistingTLteamIds;
+	}
+
+	public List<ClientCustomDto> findClientsOfAssociatedUser(String userUuid) {
+		return rcmCompanyRepo.findAllClientsOfAssociatedUser(userUuid);
 	}
 }

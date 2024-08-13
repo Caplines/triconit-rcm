@@ -138,7 +138,8 @@ export class BaseService {
     'validate-secondary-claim-creation': "/api/validate-secondary-claim-creation",
     'fetch-reconcile-data': "/api/reconciliation",
     'claim-transfer-to-aging':"/api/claim-transfer-to-aging",
-    'verify-tl-exist':"/api/tl-exist-by-claims"
+    'verify-tl-exist':"/api/tl-exist-by-claims",
+    'get-clientsAssociatedUser':"/api/user-clients"
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {
