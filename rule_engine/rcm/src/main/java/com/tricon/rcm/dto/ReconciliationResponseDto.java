@@ -11,8 +11,9 @@ public class ReconciliationResponseDto {
 	private String office;
 	private int claimsES;
 	private int claimsRCM;
-	private Set<String> claimsNotFoundRCM;
+	private Set<ReconcillationClaimDto> claimsNotFoundPMS;
+	private Set<ReconcillationClaimDto> claimsNotFoundRCM;
 	private Set<Discrepancy> claimInUploadErrors;
-	private Set<Discrepancy> discrepancies;
-	private Set<com.tricon.rcm.dto.ReconcillationClaimDto> discrepanciesAll;
+	private Set<Discrepancy> claimArchived;
+	//private Set<com.tricon.rcm.dto.ReconcillationClaimDto> discrepanciesAll;
 }

@@ -1355,5 +1355,37 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ " " )//select * from rcm_claims where claim_id  REGEXP '_arc_13767_P';
 		List<String> getClaimbyOfficeAndClaimIdsArchivedForBatch(@Param("officeId") String officeId,
 				@Param("claimsId") String claimsId);
+		
+		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_uuid as claimUuid,"
+				+ "cl.claim_id as claimId ,cl.current_status as currentStatus,"
+				+ "cl.current_state as currentState,cl.patient_id as patientId,cl.patient_name as patientName "
+				+"  from  rcm_claims  cl where "
+				+ " cl.office_id=:officeId and cl.pending = :pend and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id  like :type "
+				+ " " )
+		List<ReconcillationClaimDto> getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNot(@Param("officeId") String officeId,
+				@Param("type") String type,@Param("pend") boolean pend);
+		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_uuid as claimUuid,"
+				+ "cl.claim_id as claimId ,cl.current_status as currentStatus,"
+				+ "cl.current_state as currentState,cl.patient_id as patientId,cl.patient_name as patientName "
+				+"  from  rcm_claims  cl where "
+				+ " cl.office_id=:officeId and status_es_updated=:esUpdatedStatus and cl.pending = :pend and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id  like :type "
+				+ " " )
+		List<ReconcillationClaimDto> getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNotEsUpdatedStatus(@Param("officeId") String officeId,
+				@Param("type") String type,@Param("pend") boolean pend,@Param("esUpdatedStatus") String esUpdatedStatus);
+	
+		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId from  rcm_claims  cl where "
+				+ " cl.office_id=:officeId and (pending is true or status_es_updated=:esUpdatedStatus) and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id  REGEXP :claimsId "
+				+ " " )//select * from rcm_claims where claim_id  REGEXP '_arc_13767_P';
+		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsEsUpdatedStatusOrNotSubmittedByBilling(@Param("officeId") String officeId,
+				@Param("claimsId") String claimsId,@Param("esUpdatedStatus") String esUpdatedStatus);
+
+		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId from  rcm_claims  cl where "
+				+ " cl.office_id=:officeId and status_es_updated=:esUpdatedStatus and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id  REGEXP :claimsId "
+				+ " " )//select * from rcm_claims where claim_id  REGEXP '_arc_13767_P';
+		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsEsUpdatedStatus(@Param("officeId") String officeId,
+				@Param("claimsId") String claimsId,@Param("esUpdatedStatus") String esUpdatedStatus);
+
 
 }

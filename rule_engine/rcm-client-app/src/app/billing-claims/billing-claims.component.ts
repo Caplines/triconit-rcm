@@ -5,7 +5,8 @@ import { Router } from '@angular/router';
 import {
   ClaimRcmDataModel, ClaimEditModel, ServiceLevelCodeModel, SubmissionDetailModel,
   ClaimRuleModel, ClaimRuleRemarkModel, RuleEngineValModel, ServiceLevelCodeDataModel,
-  ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem, ClaimDetailModel, ClaimSettingDataModel, ClaimStep
+  ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem, ClaimDetailModel, ClaimSettingDataModel, ClaimStep,
+  SectonRightDataModel
 } from '../models/claim-rcm-data-model';
 
 import { Title } from '@angular/platform-browser';
@@ -459,6 +460,22 @@ export class BillingClaimsComponent {
     ths.claimService.getClaimSectionRights(
       (res: any) => {
         if (res.status === 200) {
+          //res.data[0].teamsWithSections[0].sectionData.filter(x:any=>{x. });
+          //Once we add section 28 in Claim Section we will remove this code
+          const result28 = res.data[0].teamsWithSections[0].sectionData.filter((obj: any) => obj.sectionId === 28);
+          const result6 = res.data[0].teamsWithSections[0].sectionData.filter((obj: any) => obj.sectionId === 6);
+          //debugger;
+          if (result28 && result28.length == 0 && result6 && result6.length == 1) {
+            let x: SectonRightDataModel = {
+              editAccess: result6[0].editAccess,
+              sectionCategory: result6[0].sectionCategory,
+              sectionId: 28,
+              sectionName: 'NOTES_RELATED_VALIDATION',
+              viewAccess: result6[0].viewAccess,
+              sectionDisplayName: 'Notes Level Validations'
+            }
+            res.data[0].teamsWithSections[0].sectionData.push(x);
+          }
           console.log(res.data);
           this.sectionLevelData = res.data;
           ths.setClaimSectionRights(res);
@@ -1142,7 +1159,7 @@ export class BillingClaimsComponent {
         ctr = ctr + 1;
       }
     });
-
+    ctr = 0;//Reset now as we have neew section
     ths.claimRules.forEach((rule: any) => {
       if (rule.ruleId == 300) {
         rule.srNo = ctr + 1;
@@ -1315,7 +1332,7 @@ export class BillingClaimsComponent {
     else if (!right) return true;
     //else if (!this.claimRcm.pending) return true;
     else if (!this.claimRcm.allowEdit) return true;
-    else if(this.claimRcm.currentState==1)return true;
+    else if (this.claimRcm.currentState == 1) return true;
     if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isBilling
     ) { //use case claim->/e28dd916-4da7-45c7-9884-ee6fd3cac759
       return true;
@@ -3123,7 +3140,7 @@ export class BillingClaimsComponent {
             res.data.originalRequirements.forEach((e: any) => {
               requirementsForMultiSelect.push({ name: e, checked: false })
             });
-          } 
+          }
           this.claimSectionModal['REBILLING']['modal']['serviceCodesForMultiSelect'] = serviceCodesForMultiSelect;
           this.claimSectionModal['REBILLING']['modal']['requirementsForMultiSelect'] = requirementsForMultiSelect;
         }
@@ -3392,13 +3409,15 @@ export class BillingClaimsComponent {
         if (res.status === 200) {
           console.log(res.data);
           ths.claimSteps = this.filterConsecutiveDuplicates(res.data);
-         // ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'undone';
-          if (ths.claimSteps[ths.claimSteps.length - 1]['status'] === 'Claim Archived') {
-            ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'mk_archive';
-            ths.claimSteps[ths.claimSteps.length - 1]['statusUpdated']='Claim Archived';
-          }
-          else {
-            ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'undone';
+          if (ths.claimSteps != undefined && ths.claimSteps.length > 0) {
+            // ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'undone';
+            if (ths.claimSteps[ths.claimSteps.length - 1]['status'] === 'Claim Archived') {
+              ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'mk_archive';
+              ths.claimSteps[ths.claimSteps.length - 1]['statusUpdated'] = 'Claim Archived';
+            }
+            else {
+              ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'undone';
+            }
           }
         }
       });
@@ -3408,7 +3427,7 @@ export class BillingClaimsComponent {
     if (data.length === 0) return data;
     data[0]['done'] = 'done';
     let filteredData = [data[0]];
- 
+
     let pointer: any = [];
     for (let i = 1; i < data.length; i++) {
       let prev = filteredData[filteredData.length - 1];
@@ -3422,12 +3441,12 @@ export class BillingClaimsComponent {
       if (current['statusUpdated'] === 'Claim Archived') {
         pointer.push({ "i": i, "b": current['nextAction'] });
         current['statusUpdated'] = current['nextAction'];
- 
+
       }
       current['done'] = 'done';
       filteredData.push(current);
- 
- 
+
+
     }
     //we are using this for when -
     //1- claim is Archive then we need to replace cureent next action to previous status
@@ -3436,9 +3455,9 @@ export class BillingClaimsComponent {
       if (filteredData[pointer[j].i - 1] != undefined) {
         filteredData[pointer[j].i - 1]['statusUpdated'] = pointer[j].b;
       }
- 
+
     }
-    
+
     data = [];
     filteredData.forEach(val => data.push(Object.assign({}, val)));
     filteredData = [data[0]];
@@ -3449,7 +3468,7 @@ export class BillingClaimsComponent {
         continue;
       } else {
         filteredData.push(current);
- 
+
       }
     }
     return filteredData;
@@ -3797,7 +3816,7 @@ export class BillingClaimsComponent {
       this.emptyFields["REBILLING"]['selectedRebillingServiceCodes'] = true;
       isSectionValidated = false;
     }
-    
+
     // if (this.claimSectionModal['REBILLING']['dataModal']['rebillingStatus'] && !this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'] || this.claimSectionModal.REBILLING['dataModal']['selectedRebillingRequirements'].length == 0) {
     //   this.emptyFields["REBILLING"]['selectedRebillingRequirements'] = true;
     //   isSectionValidated = false;

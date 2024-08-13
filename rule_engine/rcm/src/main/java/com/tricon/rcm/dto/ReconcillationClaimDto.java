@@ -9,5 +9,7 @@ public class ReconcillationClaimDto {
 	String claimUuid;
 	int currentState;//Archive /Unarchive
 	int currentStatus; 
+	String patientId;
 	String statusEsUpdated;//billed unbilled closed
+	String patientName;
 }

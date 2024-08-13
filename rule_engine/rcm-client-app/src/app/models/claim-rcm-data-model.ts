@@ -110,7 +110,7 @@ export interface ClaimRcmDataModel {
 	amountCollectedClaims?: number;
 	statusESUpdated?: string;
 	nextFollowUpDate?: String;
-    lastTeamWorkId?: number;
+	lastTeamWorkId?: number;
 	officeActive?: boolean;
 
 }
@@ -291,6 +291,7 @@ export interface SectonRightDataModel {
 	sectionId?: number;
 	sectionName?: string;
 	viewAccess?: boolean;
+	sectionDisplayName?: string;
 
 }
 export interface ClaimSettingDataModel {
@@ -315,7 +316,7 @@ export interface ClaimStep {
 	status?: string;
 	statusUpdated?: string;
 	done?: string;
-	nextAction?:string;
+	nextAction?: string;
 }
 
 export interface linkedClaim {

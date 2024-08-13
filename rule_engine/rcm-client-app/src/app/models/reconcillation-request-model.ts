@@ -9,8 +9,8 @@ export class ReconcilltationResponseModel {
     office?: string;
     claimsES?: number;
     claimsRCM?: number;
-    claimsNotFoundRCM?: string[];
+    claimsNotFoundRCM?: any[];
     claimInUploadErrors?: any[];
-    discrepancies?: any[];
-    discrepanciesAll?: any[];
+    claimsNotFoundPMS?: any[];
+    claimArchived?: any[];
 }
