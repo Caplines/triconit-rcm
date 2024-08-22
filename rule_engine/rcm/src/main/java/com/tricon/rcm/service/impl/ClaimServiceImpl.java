@@ -4263,8 +4263,9 @@ public class ClaimServiceImpl {
 					
 				    
 				}
-				else if ((claim.getFirstWorkedTeamId().getId()==RcmTeamEnum.INTERNAL_AUDIT.getId()) && 
-						partialHeader.getTeamId()==RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+				
+				
+				else if (partialHeader.getTeamId()==RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				    //TO DO
 					if(dto.getClaimManualRuleValidationList() != null)	saveClaimManualRules(dto.getClaimManualRuleValidationList(), user, claim, partialHeader);
 					
@@ -4289,8 +4290,8 @@ public class ClaimServiceImpl {
 						saveClaimRemark(dto.getClaimRemark(), claim, user, partialHeader);
 					}
 					
-					if (dto.getSubmissionDto() != null)
-						saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
+//					if (dto.getSubmissionDto() != null)
+//						saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
 				}
 				
 				
