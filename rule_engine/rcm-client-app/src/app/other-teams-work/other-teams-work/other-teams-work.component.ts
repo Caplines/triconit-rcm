@@ -78,6 +78,7 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   showTooltipConfig:any={};
   selectAllAging:any=null;
+  selectedHeaders: string[];
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -737,29 +738,65 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   exportToCsv() {
     this.loader.exportCSVLoader = true;
+
+    const headerConfigs = {
+      default: [ // medical iv , need to hold, ortho, patient calling, ppo iv, quality, lc3
+        "Office", "Claim ID", "Patient ID", "Patient Name",
+        "DOS", "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
+        "Insurance Type", "Claim Type", "Estimated Amount", "Assigned By", 
+        "Last Team's Remarks", "Pending Since Date", "Due Date",
+      ],
+      teamCdp: [ 
+        "Office", "Claim ID", "Patient ID", "Patient Name", 
+        "DOS", "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
+        "Insurance Type", "Claim Type", "Estimated Amount", "Assigned By", 
+        "Last Team's Remarks", "Pending Since Date", "Current Status", 
+        "Current Action Required", "Due Date", "Provider Speciality"
+      ],
+      teamAging: [ 
+        "Office", "Claim ID", "Patient ID", "Patient Name", 
+        'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
+        "Insurance Type", "Claim Type", "Est. Amount", "Assigned By", 
+        "Last Team's Remarks", "Pending Since Date", "Current Status", 
+        "Current Action Required", "Due Date", "Provider Speciality"
+      ],
+      teamOffice: [ 
+        "Office", "Patient Name", 'DOS', "TFL", "Age Bracket", 
+        "Insurance Name", "Insurance Type", "Claim Type", "Est. Amount", 
+        "Assigned By", "Last Team's Remarks", "Pending Since Date", "Due Date",
+      ],
+      teamPosting: [ 
+        "Office", "Claim ID", "Patient ID", "Patient Name", 
+        'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
+        "Insurance Type", "Claim Type", "Est. Amount", "Pending Since Date", 
+        "Current Status", "Current Action Required", "Due Date", "Provider Speciality"
+      ],
+      teamCredentialing: [ 
+        "Office", "Claim ID", "Patient ID", "Patient Name", 
+        'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
+        "Insurance Type", "Claim Type", "Est. Amount", "Assigned By", 
+        "Last Team's Remarks", "Pending Since Date", "Current Status", 
+        "Current Action Required", "Due Date",
+      ],
+    };
+
+    if (this.staticUtil.selectedTeam() == AppConstants.CDP_TEAM) {
+      this.selectedHeaders = headerConfigs.teamCdp;
+    } else if (this.staticUtil.selectedTeam() == AppConstants.AGING_TEAM) {
+      this.selectedHeaders = headerConfigs.teamAging;
+    } else if (this.staticUtil.selectedTeam() == AppConstants.OFFICE_TEAM) {
+      this.selectedHeaders = headerConfigs.teamOffice;
+    } else if (this.staticUtil.selectedTeam() == AppConstants.PAYMENT_POSTING_TEAM) {
+      this.selectedHeaders = headerConfigs.teamPosting;
+    } else if (this.staticUtil.selectedTeam() == AppConstants.CREDENTIALING_TEAM) {
+      this.selectedHeaders = headerConfigs.teamCredentialing;
+    } else {
+      this.selectedHeaders = headerConfigs.default;
+    }
+
     let options: any = {
       showLabels: true,
-      headers: [
-        "Office",
-        this.staticUtil.isNotTeamOffice() ? "Claim ID" : "",
-        this.staticUtil.isNotTeamOffice() ? "Patient ID" : "",
-        "Patient Name",
-        'DOS',
-        this.staticUtil.isNotTeamOffice() ? "Claim Age" : "",
-        "TFL",
-        "Age Bracket",
-        "Insurance Name",
-        "Insurance Type",
-        "Claim Type",
-        "Est. Amount",
-        this.staticUtil.isNotTeamPosting() ? "Assigned By" : "",
-        this.staticUtil.isNotTeamPosting() ? "Last Team's Remarks" : "",
-        "Pending Since Date",
-        !this.staticUtil.isNotTeamPosting() || !this.staticUtil.isNotTeamCredentialing() || !this.staticUtil.isNotTeamAging() ? "Current Status" : "",
-        !this.staticUtil.isNotTeamPosting() || !this.staticUtil.isNotTeamCredentialing() || !this.staticUtil.isNotTeamAging() ? "Current Action Required" : "",
-        "Due Date",
-        !this.staticUtil.isNotTeamPosting() || !this.staticUtil.isNotTeamAging() ? "Provider Speciality" : "",
-      ]
+      headers: this.selectedHeaders
     }
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
@@ -804,30 +841,144 @@ export class OtherTeamsWorkComponent implements OnInit {
       return e;
     })      //method add value as "-" or "0", if its empty or null.
 
-
-    excelData = excelData.map((e: any) => {
-      return {
-        "Office Name": e.officeName,
-        "Claim ID": this.staticUtil.isNotTeamOffice()?e.newClaimId:"",
-        "Patient ID":this.staticUtil.isNotTeamOffice()? e.patientId:"",
-        "Patient Name": e.patientName,
-        'DOS': e.dos,
-        "Claim Age": this.staticUtil.isNotTeamOffice()?e.claimAge:"",
-        "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
-        'Age Bracket': e.ageBracket,
-        "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
-        "Insurance Type": e.prName ? e.prName : e.secName,
-        "Claim Type": e.claimType,
-        "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
-        "Assigned By": this.staticUtil.isNotTeamPosting()?e.lastTeam:"",
-        "Last Team's Remarks":this.staticUtil.isNotTeamPosting()? e.lastTeamRemark:"",
-        "Pending Since Date": e.pendingSince,
-        "Current Status": !this.staticUtil.isNotTeamPosting() || !this.staticUtil.isNotTeamCredentialing() || !this.staticUtil.isNotTeamAging() ? e.claimStatus ? e.claimStatus : "N/A" : "",
-        "Current Action Required": !this.staticUtil.isNotTeamPosting() || !this.staticUtil.isNotTeamCredentialing() || !this.staticUtil.isNotTeamAging() ? e.nextAction ? e.nextAction : "N/A" : "",
-        "Due Date": e.dueDateSort,
-        "Provider Speciality": !this.staticUtil.isNotTeamPosting() || !this.staticUtil.isNotTeamAging() ? e.providerSpeciality ? e.providerSpeciality : "N/A" : "",
-      }
-    })  //method aligns the header to the value in CSV.
+    if (this.staticUtil.selectedTeam() == AppConstants.CDP_TEAM) {
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Claim ID":  e.newClaimId,
+          "Patient ID": e.patientId,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "Claim Age": e.claimAge,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          'Age Bracket': e.ageBracket,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Claim Type": e.claimType,
+          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Assigned By": e.lastTeam,
+          "Last Team's Remarks": e.lastTeamRemark,
+          "Pending Since Date": e.pendingSince,
+          "Current Status": e.claimStatus ? e.claimStatus : "N/A",
+          "Current Action Required": e.nextAction ? e.nextAction : "N/A",
+          "Due Date": e.dueDateSort,
+          "Provider Speciality": e.providerSpeciality ? e.providerSpeciality : "N/A",
+        }
+      })
+    }
+    else if (this.staticUtil.selectedTeam() == AppConstants.AGING_TEAM) {
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Claim ID": e.newClaimId,
+          "Patient ID": e.patientId,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "Claim Age": e.claimAge,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          'Age Bracket': e.ageBracket,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Claim Type": e.claimType,
+          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Assigned By": e.lastTeam,
+          "Last Team's Remarks": e.lastTeamRemark,
+          "Pending Since Date": e.pendingSince,
+          "Current Status": e.claimStatus ? e.claimStatus : "N/A",
+          "Current Action Required": e.nextAction ? e.nextAction : "N/A",
+          "Due Date": e.dueDateSort,
+          "Provider Speciality": e.providerSpeciality ? e.providerSpeciality : "N/A",
+        }
+      })
+    }
+    else if (this.staticUtil.selectedTeam() == AppConstants.OFFICE_TEAM){
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          'Age Bracket': e.ageBracket,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Claim Type": e.claimType,
+          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Assigned By": e.lastTeam,
+          "Last Team's Remarks": e.lastTeamRemark,
+          "Pending Since Date": e.pendingSince,
+          "Due Date": e.dueDateSort,
+        }
+      })
+    } 
+    else if (this.staticUtil.selectedTeam() == AppConstants.PAYMENT_POSTING_TEAM) {
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Claim ID": e.newClaimId,
+          "Patient ID": e.patientId,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "Claim Age": e.claimAge,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          'Age Bracket': e.ageBracket,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Claim Type": e.claimType,
+          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Pending Since Date": e.pendingSince,
+          "Current Status": e.claimStatus ? e.claimStatus : "N/A",
+          "Current Action Required": e.nextAction ? e.nextAction : "N/A",
+          "Due Date": e.dueDateSort,
+          "Provider Speciality": e.providerSpeciality ? e.providerSpeciality : "N/A",
+        }
+      }) 
+    } 
+    else if (this.staticUtil.selectedTeam() == AppConstants.CREDENTIALING_TEAM) {
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Claim ID": e.newClaimId,
+          "Patient ID": e.patientId,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "Claim Age": e.claimAge,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          'Age Bracket': e.ageBracket,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Claim Type": e.claimType,
+          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Assigned By": e.lastTeam,
+          "Last Team's Remarks": e.lastTeamRemark,
+          "Pending Since Date": e.pendingSince,
+          "Current Status": e.claimStatus ? e.claimStatus : "N/A",
+          "Current Action Required": e.nextAction ? e.nextAction : "N/A",
+          "Due Date": e.dueDateSort,
+        }
+      })
+    } 
+    else {
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Claim ID": e.newClaimId,
+          "Patient ID": e.patientId,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "Claim Age": e.claimAge,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          'Age Bracket': e.ageBracket,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Claim Type": e.claimType,
+          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Assigned By": e.lastTeam,
+          "Last Team's Remarks": e.lastTeamRemark,
+          "Pending Since Date": e.pendingSince,
+          "Due Date": e.dueDateSort,
+        }
+      }) //method aligns the header to the value in CSV.
+    }
     // excelData = excelData.map(
     //   ({ claimId, opdos, opdt, secTotal, uuid, statusType, EstAmount, ...newClaimData }: any) => newClaimData);    //methods removes unwanted properties that are not going to display in CSV.  // values which excluded are coming as undefined so that's why its commented out.
 

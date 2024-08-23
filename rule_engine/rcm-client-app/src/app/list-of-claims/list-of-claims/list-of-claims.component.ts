@@ -39,7 +39,8 @@ export class ListOfClaimsComponent implements OnInit {
   tabValue: any;
   accessToListOfClaims: any;
   currentTeamId: number;
-  showTooltipConfig:any={}
+  showTooltipConfig:any={};
+  selectedHeaders: string[];
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
       setTimeout(() => {
@@ -619,9 +620,8 @@ export class ListOfClaimsComponent implements OnInit {
 
   exportToCsv() {
     this.loader.exportCSVLoader = true;
-    let options: any = {
-      showLabels: true,
-      headers: [
+    const headerConfigs = {
+      Fresh: [
         "Office",
         "Claim Id",
         "Patient ID",
@@ -636,11 +636,40 @@ export class ListOfClaimsComponent implements OnInit {
         "Insurance Name",
         "Insurance Type",
         "Estimated Amount",
-        this.tabSwitch.sendBack ? "BillingAmount" : "",
-        this.isLastTeam ? "Assigned By" : "",
+        "Due Date"
+      ],
+      sendBack: [
+        "Office",
+        "Claim Id",
+        "Patient ID",
+        "Patient Name",
+        'DOS',
+        "Claim Age",
+        "TFL",
+        "Pending Since Date",
+        "Age Bracket",
+        "Claim Type",
+        "Action Required",
+        "Insurance Name",
+        "Insurance Type",
+        "Estimated Amount",
+        "BillingAmount",
+        "Assigned By",
         "Due Date"
       ]
     }
+
+    if (this.tabSwitch.Fresh || this.tabSwitch.MyClaims) {
+      this.selectedHeaders = headerConfigs.Fresh;
+    } else {
+      this.selectedHeaders = headerConfigs.sendBack;
+    }
+
+    let options: any = {
+      showLabels: true,
+      headers: this.selectedHeaders
+    }
+    
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
     excelData = excelData.map((e: any) => {
@@ -706,7 +735,6 @@ export class ListOfClaimsComponent implements OnInit {
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
           "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
-          "Assigned By": this.isLastTeam ? e.lastTeam : "",
           "Due Date":e.dueDateSort
         }
       })

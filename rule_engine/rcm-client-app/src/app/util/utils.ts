@@ -335,14 +335,6 @@ export default class Utils {
       return false;
    }
 
-   static isNotTeamCredentialing() {
-      return <any>localStorage.getItem("selected_teamId") != AppConstants.CREDENTIALING_TEAM ? true : false;
-   }
-
-   static isNotTeamAging() {
-      return <any>localStorage.getItem("selected_teamId") != AppConstants.AGING_TEAM ? true : false;
-   }
-
    static isNotTeamPatientStatement() {
       return <any>localStorage.getItem("selected_teamId") != AppConstants.PATIENT_STATEMENT_TEAM ? true : false;
    }
