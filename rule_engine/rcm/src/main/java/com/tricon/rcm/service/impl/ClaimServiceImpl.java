@@ -6120,9 +6120,9 @@ public class ClaimServiceImpl {
 			pend=false;//1. Billing Team has submitted the claim.
 		}
 		List<ReconcillationClaimDto> rcmClaims = null;
-		if (title.equals("Primary Open") | title.equals("Secondary Open")) {
+		if (title.equals("Primary Open") || title.equals("Secondary Open")) {
 			rcmClaims = rcmClaimRepository.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNotEsUpdatedStatus(office.getUuid(), type, pend,ClaimStatusSearchEnum.STATUS_OPEN.getStatus());
-		}else if (title.equals("Primary Closed") | title.equals("Secondary Closed")) {
+		}else if (title.equals("Primary Closed") || title.equals("Secondary Closed")) {
 			rcmClaims = rcmClaimRepository.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNotEsUpdatedStatus(office.getUuid(), type, pend,ClaimStatusSearchEnum.STATUS_CLOSED.getStatus());
 					
 		}else {

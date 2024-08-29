@@ -16,5 +16,11 @@ public class ClaimReconcillationDto {
 	
 	@JsonProperty("c3")
 	String status;
+	
+	@JsonProperty("c4")
+	String transDate;
+	
+	@JsonProperty("c5")
+	String type;
 
 }
