@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 import org.springframework.context.MessageSource;
 
-import com.itextpdf.text.log.SysoCounter;
+
 import com.tricon.ruleengine.dto.FreqencyDto;
 import com.tricon.ruleengine.dto.ServiceCodeIvfTimesFreqFieldDto;
 import com.tricon.ruleengine.dto.TPValidationResponseDto;

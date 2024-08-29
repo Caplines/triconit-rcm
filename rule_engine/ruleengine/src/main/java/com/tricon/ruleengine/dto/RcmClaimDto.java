@@ -14,6 +14,9 @@ public class RcmClaimDto {
 	private String dateCheckType;
 	private int team1;
 	private int team2;
+	private String teamName1;
+	private String teamName2;
+	private String currentAction;
 	
 	public String getColumns() {
 		return columns;
@@ -86,6 +89,24 @@ public class RcmClaimDto {
 	}
 	public void setTeam2(int team2) {
 		this.team2 = team2;
+	}
+	public String getTeamName1() {
+		return teamName1;
+	}
+	public void setTeamName1(String teamName1) {
+		this.teamName1 = teamName1;
+	}
+	public String getTeamName2() {
+		return teamName2;
+	}
+	public void setTeamName2(String teamName2) {
+		this.teamName2 = teamName2;
+	}
+	public String getCurrentAction() {
+		return currentAction;
+	}
+	public void setCurrentAction(String currentAction) {
+		this.currentAction = currentAction;
 	}
 	
 	

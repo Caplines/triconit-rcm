@@ -778,6 +778,13 @@ export class OtherTeamsWorkComponent implements OnInit {
         "Last Team's Remarks", "Pending Since Date", "Current Status", 
         "Current Action Required", "Due Date",
       ],
+      teamPatientStatement: [
+        "Office", "Claim ID", "Patient ID", "Patient Name",
+        "DOS", "Claim Age", "TFL", "Age Bracket", "Insurance Name",
+        "Insurance Type", "Claim Type", "Estimated Amount", "Assigned By",
+        "Last Team's Remarks", "Pending Since Date", "Current Status",
+        "Current Action Required", "Due Date", "Provider Speciality", "Due Balance"
+      ],
     };
 
     if (this.staticUtil.selectedTeam() == AppConstants.CDP_TEAM) {
@@ -790,6 +797,8 @@ export class OtherTeamsWorkComponent implements OnInit {
       this.selectedHeaders = headerConfigs.teamPosting;
     } else if (this.staticUtil.selectedTeam() == AppConstants.CREDENTIALING_TEAM) {
       this.selectedHeaders = headerConfigs.teamCredentialing;
+    } else if (this.staticUtil.selectedTeam() == AppConstants.PATIENT_STATEMENT_TEAM) {
+      this.selectedHeaders = headerConfigs.teamPatientStatement;
     } else {
       this.selectedHeaders = headerConfigs.default;
     }
@@ -957,6 +966,32 @@ export class OtherTeamsWorkComponent implements OnInit {
         }
       })
     } 
+    else if (this.staticUtil.selectedTeam() == AppConstants.PATIENT_STATEMENT_TEAM) {
+      excelData = excelData.map((e: any) => {
+        return {
+          "Office Name": e.officeName,
+          "Claim ID": e.newClaimId,
+          "Patient ID": e.patientId,
+          "Patient Name": e.patientName,
+          'DOS': e.dos,
+          "Claim Age": e.claimAge,
+          "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
+          'Age Bracket': e.ageBracket,
+          "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
+          "Insurance Type": e.prName ? e.prName : e.secName,
+          "Claim Type": e.claimType,
+          "Est. Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
+          "Assigned By": e.lastTeam,
+          "Last Team's Remarks": e.lastTeamRemark,
+          "Pending Since Date": e.pendingSince,
+          "Current Status": e.claimStatus ? e.claimStatus : "N/A",
+          "Current Action Required": e.nextAction ? e.nextAction : "N/A",
+          "Due Date": e.dueDateSort,
+          "Provider Speciality": e.providerSpeciality ? e.providerSpeciality : "N/A",
+          "Due Balance": e.dueBalance ? '$' + formatNumber(e.dueBalance, this.locale, '.0-0').toString() : "$0",
+        }
+      })
+    }
     else {
       excelData = excelData.map((e: any) => {
         return {

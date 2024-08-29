@@ -934,7 +934,10 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	
 	@Override
 	public Object searchRcmClaimData(RcmClaimDto d,Office office) throws Exception{
-		
+		if (d.getQueryName().equals(Constants.QUERY_FOR_RCMCALIM_TRANSFER_DATE_FROM_A_TO_B)) {
+			d.setTeam1(rcmClaimDao.getTeamIdByName(d.getTeamName1()));
+			d.setTeam2(rcmClaimDao.getTeamIdByName(d.getTeamName2()));
+		}
 		List<Object> data=rcmClaimDao.getRcmClaimData(d, office);
 		
 		if (d.getQueryName().equals(Constants.QUERY_FOR_RCMCALIM_AUDITED)) {
@@ -963,19 +966,19 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 							p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Sedation Record Availibility")).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
-						    		if (a[8]==null) a[8]="";
-						    		if (a[8].toString().length()==0)
-						    		a[8]=a[8] + x.getService_code()+"="+x.getVal();
-						    		else a[8]=a[8] +";"+ x.getService_code()+"="+x.getVal();
+						    		if (a[10]==null) a[10]="";
+						    		if (a[10].toString().length()==0)
+						    		a[10]=a[10] + x.getService_code()+"="+x.getVal();
+						    		else a[10]=a[10] +";"+ x.getService_code()+"="+x.getVal();
 						    	});
 						    }
 						   p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("Consent Form for Major Service")).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
-						    		if (a[9]==null) a[9]="";
-						    		if (a[9].toString().length()==0)
-						    		a[9]=a[9] + x.getService_code()+"="+x.getVal();
-						    		else a[9]=a[9] +";"+ x.getService_code()+"="+x.getVal();
+						    		if (a[11]==null) a[11]="";
+						    		if (a[11].toString().length()==0)
+						    		a[11]=a[11] + x.getService_code()+"="+x.getVal();
+						    		else a[11]=a[11] +";"+ x.getService_code()+"="+x.getVal();
 						    	});
 						    }
 						    /*
@@ -991,42 +994,60 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 						    p1=data1.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getName().equals("CRA Form Availability")).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
-						    		if (a[11]==null) a[11]="";
-						    		if (a[11].toString().length()==0)
-						    		a[11]=a[11] + x.getService_code()+"="+x.getVal();
-						    		else a[11]=a[11] +";"+ x.getService_code()+"="+x.getVal();
+						    		if (a[13]==null) a[13]="";
+						    		if (a[13].toString().length()==0)
+						    		a[13]=a[13] + x.getService_code()+"="+x.getVal();
+						    		else a[13]=a[13] +";"+ x.getService_code()+"="+x.getVal();
 						    	});
 						    }
 						}
 						if (data3!=null) {
+							//provider notes: Copy Paste notes
 							p2=data3.stream().filter(x->x.getClaim_id().equals(a[5].toString()) ).collect(Collectors.toList());
-						    if (p2!=null && p1.size()>0) {
+						    if (p2!=null && p2.size()>0) {
 						    	p2.forEach(x->{
-						    		if (a[10]==null) a[10]="";
-						    		if (a[10].toString().length()==0)
-						    		a[10]=a[10] + x.getName();
-						    		else a[10]=a[10] +";"+ x.getName();
+						    		if (a[12]==null) a[12]="";
+						    		if (a[12].toString().length()==0)
+						    		a[12]=a[12] + x.getName();
+						    		else a[12]=a[12] +";"+ x.getName();
 						    	});
 						    }
 						}
                         if (data2!=null) {
-                        	
-						    p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 319).collect(Collectors.toList());
+                           p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 319).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
-						    	p1.forEach(x->{
-						    		if (a[12]==null) a[12]="";
-						    		if (a[12].toString().length()==0)
-						    		a[12]=a[12] + x.getMessage_type();
-						    		else a[12]=a[12] +";"+ x.getMessage_type();
+						    	p1.forEach(x->{//Consent Form 
+						    		if (a[14]==null) a[14]="";
+						    		if (a[14].toString().length()==0)
+						    		a[14]=a[14] + x.getMessage_type();
+						    		else a[14]=a[14] +";"+ x.getMessage_type();
 						    	});
 						    }
 						    p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 320).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {//is Patient
+						    	p1.forEach(x->{
+						    		if (a[15]==null) a[15]="";
+						    		if (a[15].toString().length()==0)
+						    		a[15]=a[15] + x.getMessage_type();
+						    		else a[15]=a[15] +";"+ x.getMessage_type();
+						    	});
+						    }//
+						    p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 300).collect(Collectors.toList());
+						    if (p1!=null && p1.size()>0) {//provider notes validation
+						    	p1.forEach(x->{
+						    		if (a[16]==null) a[16]="";
+						    		if (a[16].toString().length()==0)
+						    		a[16]=a[16] + x.getMessage_type();
+						    		else a[16]=a[16] +";"+ x.getMessage_type();
+						    	});
+						    }
+						    p1=data2.stream().filter(x->x.getClaim_id().equals(a[5].toString()) && x.getRule_id()== 318).collect(Collectors.toList());
 						    if (p1!=null && p1.size()>0) {
 						    	p1.forEach(x->{
-						    		if (a[13]==null) a[13]="";
-						    		if (a[13].toString().length()==0)
-						    		a[13]=a[13] + x.getMessage_type();
-						    		else a[13]=a[13] +";"+ x.getMessage_type();
+						    		if (a[9]==null) a[9]="";
+						    		if (a[9].toString().length()==0)
+						    		a[9]=a[9] + x.getMessage_type();
+						    		else a[9]=a[9] +";"+ x.getMessage_type();
 						    	});
 						    }
 						}
