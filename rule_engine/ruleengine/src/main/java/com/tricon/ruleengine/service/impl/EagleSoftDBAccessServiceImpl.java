@@ -37,6 +37,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceDetail;
+import com.tricon.ruleengine.model.sheet.PatientDeductiblewithBenefits;
 import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
@@ -1404,6 +1405,95 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 				}
 			}
 		  // }
+
+		}
+
+		return returnMap;
+	}
+	
+	@Override
+	public Map<String, List<?>> getPatientDeductibelWithBenefits(String insuranceType,Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,
+			BufferedWriter bw) {
+		// TODO Auto-generated method stub
+		EagleSoftFetchData d = new EagleSoftFetchData();
+		Map<String, List<?>> returnMap = null;
+		RuleEngineLogger.generateLogs(clazz, "Patient Data Start ", Constants.rule_log_debug, bw);
+
+		if (ivfMap != null) {
+			List<String> ids = new ArrayList<>();
+			for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
+				if (entry.getValue() != null) {
+
+					IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
+					ids.add(ivfSheet.getPatientId());
+				}
+			}
+
+			String[] pids = ids.toArray(new String[ids.size()]);
+
+			EagleSoftQueryObject q = null;
+			if (insuranceType==null) q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.primary_deductible,
+					EagleSoftQuery.primary_deductible_CL_COUNT);
+			else if (insuranceType!=null && insuranceType.equals(Constants.INSURANCE_TYPE_PRI) || insuranceType.equals(""))q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.primary_deductible,
+					EagleSoftQuery.primary_deductible_CL_COUNT);
+			else q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.secondary_deductible,
+					EagleSoftQuery.secondary_deductible_CL_COUNT);
+			String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
+			if (data != null) {
+				PatientDeductiblewithBenefits pat = null;
+				try {
+					ObjectMapper map = new ObjectMapper();
+					// Patient patQ = map.readValue(r, Patient.class);
+					Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
+					});
+
+					RuleEngineLogger.generateLogs(clazz, "Patient Benefits DATA-" + cMap.get("dataMap").toString(),
+							Constants.rule_log_debug, bw);
+					Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+					List<Object> list = null;
+					for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+						if (entry.getValue() != null) {
+							List<String> des = (List<String>) (entry.getValue());
+							pat = new PatientDeductiblewithBenefits();
+
+							pat.setPatientId(des.get(0));
+							pat.setServiceDescription(des.get(1));
+							pat.setBenefitPrecentage(des.get(2));
+							pat.setBenefitDeductible(des.get(3));
+							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
+								if (entry.getValue() != null) {
+
+									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
+									if ((pat.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+										if (returnMap == null)
+											returnMap = new HashMap<>();
+										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
+											// if the key has already been used,
+											// we'll just grab the array list and add the value to it
+											list = (List<Object>) (List<?>) returnMap.get(ivfSheet.getUniqueID());
+											list.add(pat);
+										} else {
+											// if the key hasn't been used yet,
+											// we'll create a new ArrayList<String> object, add the value
+											// and put it in the array list with the new key
+											list = new ArrayList<>();
+											list.add(pat);
+											returnMap.put(ivfSheet.getUniqueID(), list);
+										}
+									}
+								}
+							}
+
+							//
+
+						}
+					}
+
+				} catch (Exception e) {
+					RuleEngineLogger.generateLogs(clazz, "Patient Benefits DATA- ERROR- " + e.getMessage(),
+							Constants.rule_log_debug, bw);
+				}
+			}
 
 		}
 

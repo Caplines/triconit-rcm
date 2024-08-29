@@ -20,4 +20,6 @@ public interface RcmClaimDao {
 	
 	//For NOTES
 	public List<RCMQuerySubData1> getAuditQueryFieldsFromClaimData_3(String claimIds);
+		
+	public int getTeamIdByName(String teamName);
 }

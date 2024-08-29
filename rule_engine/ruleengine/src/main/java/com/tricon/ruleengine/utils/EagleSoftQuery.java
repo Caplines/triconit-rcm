@@ -73,9 +73,23 @@ public class EagleSoftQuery {
 			+ ",ben.deductible_applies as deductibleapplies,ins.name as insurancename "
 			+ "  from employer emp left outer join insurance_company ins on ins.insurance_company_id=emp.insurance_company_id, benefits ben ,service_type ser where emp.employer_id in ("+contstant_REP+") and ben.employer_id=emp.employer_id"
 		    + " and ben.service_type_id=ser.service_type_id ";
-
-
+	
 	public final static int  employeemaster_query_CL_COUNT=9;
+
+	public final static String primary_deductible="select p.patient_id, st.description, b.percentage, b.deductible_applies "
+			 + " from patient p JOIN employer e on "
+	         + " p.prim_employer_id = e.employer_id JOIN benefits b ON e.employer_id = b.employer_id JOIN service_type st on"
+	         + " b.service_type_id =st.service_type_id where p.patient_id in ("+contstant_REP+")";
+	
+	public final static int  primary_deductible_CL_COUNT=4;
+	
+	public final static String secondary_deductible="select p.patient_id, st.description, b.percentage, b.deductible_applies from "
+			 + " patient p JOIN employer e on "
+			 + " p.sec_employer_id = e.employer_id JOIN benefits b ON e.employer_id = b.employer_id JOIN service_type st on"
+			 + "b.service_type_id = st.service_type_id where p.patient_id  ("+contstant_REP+")";
+			
+	public final static int  secondary_deductible_CL_COUNT=4;
+	
 
 	public final static String  feeShedule_query=" select fe.fee_id as feeid, fs.name as name,"
 			+ " fe.service_code as feeservicecode , fe.fee  as feesfee from "

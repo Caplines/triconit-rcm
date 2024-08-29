@@ -640,14 +640,17 @@ public class CaplineIVFGoogleFormController {
 			@RequestParam(value = "columns", required = false) String columns,
 			@RequestParam(value = "password", required = false) String password,
             @RequestParam(value = "columnCount", required = false, defaultValue = "0") int columnCount,
-            @RequestParam(value = "date1", required = true) String date1,
-            @RequestParam(value = "date2", required = true) String date2,
+            @RequestParam(value = "date1", required = false) String date1,
+            @RequestParam(value = "date2", required = false) String date2,
             @RequestParam(value = "client", required = true) String client,
             @RequestParam(value = "submited", required = false) boolean  submited,//QUERY_FOR_RCMCALIM_1
             @RequestParam(value = "queryName", required = true) String  queryName,
             @RequestParam(value = "dateCheckType", required = false) String  dateCheckType,
             @RequestParam(value = "team1", required = false,defaultValue = "0") int  team1,
             @RequestParam(value = "team2", required = false ,defaultValue = "0") int  team2,
+            @RequestParam(value = "teamName1", required = false,defaultValue = "") String  teamName1,
+            @RequestParam(value = "teamName2", required = false ,defaultValue = "") String  teamName2,
+            @RequestParam(value = "currentAction", required = false ,defaultValue = "") String  currentAction,
             @RequestParam(value = "office", required = false) String office, HttpServletRequest request,
 			HttpServletResponse response) {
 		//Example
@@ -670,6 +673,9 @@ public class CaplineIVFGoogleFormController {
 		dto.setDateCheckType(dateCheckType);
 		dto.setTeam1(team1);
 		dto.setTeam2(team2);
+		dto.setTeamName1(teamName1);
+		dto.setTeamName2(teamName2);
+		dto.setCurrentAction(currentAction);
 		try {
 			Company cmp = companyDao.getCompanyByName(client);
 			Office off = od.getOfficeByName(office,cmp.getUuid());

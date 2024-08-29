@@ -161,6 +161,8 @@ public class Constants {
 	public static final String RULE_ID_118="Sealant covered till age";
 	public static final String RULE_ID_119="SSC and Fillings done within 12 months";
 	public static final String RULE_ID_120="Quads Allowed Per Day for SRP";
+	public static final String RULE_ID_121="D4346 Frequency Sharing with Prophy - DQ(NM)";
+	//public static final String RULE_ID_RuleXXX="Deductible Coverage Match";
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
 
@@ -458,5 +460,8 @@ public class Constants {
 	public static final String QUERY_FOR_RCMCALIM_1="QUERY_FOR_RCMCALIM_1";
 	public static final String QUERY_FOR_RCMCALIM_AUDITED="QUERY_FOR_RCMCALIM_AUDITED";
 	public static final String QUERY_FOR_RCMCALIM_FROM_A_TO_B="QUERY_FOR_RCMCALIM_FROM_A_TO_B";
+	
+	public static final String QUERY_FOR_RCMCALIM_PENDING_TEAM_ACTION="QUERY_FOR_RCMCALIM_PENDING_TEAM_ACTION";
+	public static final String QUERY_FOR_RCMCALIM_TRANSFER_DATE_FROM_A_TO_B="QUERY_FOR_RCMCALIM_TRANSFER_DATE_FROM_A_TO_B";
 	
 }
