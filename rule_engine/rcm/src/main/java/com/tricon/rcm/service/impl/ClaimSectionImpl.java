@@ -415,7 +415,7 @@ public class ClaimSectionImpl {
 	
 	
 	public List<ClientSectionMappingDto> getClientsWithAllSectionsAndTeam(PartialHeader partialHeader) throws Exception {
-		List<ClientSectionMappingDto> response = new ArrayList<>(50);
+		List<ClientSectionMappingDto> response = new ArrayList<>();
 		List<RcmClaimSection> claimSections = claimSectionRepo.findAllWithSectionCategory().stream()
 				.filter(x -> x.isActive() == true).collect(Collectors.toList());
 		List<ClientCustomDto> clients = null;
@@ -427,7 +427,7 @@ public class ClaimSectionImpl {
 		List<RcmTeamDto> teamData = RcmTeamEnum.getAllTeamsIsRoleVisible();
 		clients.forEach(client -> {
 			ClientSectionMappingDto responseDto = new ClientSectionMappingDto();
-			List<RcmTeamSectionAccessDto> teamsWithSectionsList = new ArrayList<>(50);
+			List<RcmTeamSectionAccessDto> teamsWithSectionsList = new ArrayList<>();
 			responseDto.setClientName(client.getClientName());
 			responseDto.setClientUuid(client.getUuid());
 			List<RcmClientSectionMapping> existingClientMapping = clientSectionMappingRepo
@@ -436,7 +436,7 @@ public class ClaimSectionImpl {
 				RcmTeamSectionAccessDto teamsWithSections = new RcmTeamSectionAccessDto();
 				teamsWithSections.setTeamId(t.getTeamId());
 				teamsWithSections.setTeamName(t.getTeamName());
-				List<SectionData> listOfSections = new ArrayList<>(50);
+				List<SectionData> listOfSections = new ArrayList<>();
 				for (RcmClaimSection section : claimSections) {
 					RcmClientSectionMapping existingSectionMappingWithClient = existingClientMapping.stream()
 							.filter(x -> x.getTeamId().getId() == t.getTeamId()
