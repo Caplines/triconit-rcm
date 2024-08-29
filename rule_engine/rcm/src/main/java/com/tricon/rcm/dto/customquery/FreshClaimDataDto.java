@@ -37,4 +37,6 @@ public interface FreshClaimDataDto {
 	String getProviderSpeciality();
 	
 	String getClaimStatus();
+	
+	boolean getClaimTypeStatus();
 }

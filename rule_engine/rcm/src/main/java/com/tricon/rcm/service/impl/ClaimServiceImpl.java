@@ -18,6 +18,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -2072,7 +2073,11 @@ public class ClaimServiceImpl {
 				listView.add(dataView);
 				});
 		}
-          return listView;
+		
+		  // search secondary claims from listView for some extra manipulations
+		  String filterStatus= ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getType();
+		  List<FreshClaimDataViewDto> listOfClaims=filterPrimarySecondaryClaimsWithUsingPrimaryStatus(listView,filterStatus);
+		  return listOfClaims;
 	}
 	
 	public List<FreshClaimDataDto> fetchFreshClaimDetailsLead(int teamId, int billingORRebill, String sub,
@@ -6372,5 +6377,38 @@ public class ClaimServiceImpl {
 			if (surfaces.size()>0 && !byTooth)data=String.join(",", surfaces);
 		}
 		return data;
+	}
+	
+	/* @Note- Filter Secondary Claims and remove those Secondary Claims from final list
+	 * where below Conditions will fulfill
+	 */
+	private List<FreshClaimDataViewDto> filterPrimarySecondaryClaimsWithUsingPrimaryStatus(
+			List<FreshClaimDataViewDto> listView, String status) {
+
+		// Filter secondary claims where nextAction is need to bill insurance of primary
+		// claims
+		// if claim is primary then ClaimTypeStatus=1 otherwise will be 0
+
+		List<FreshClaimDataViewDto> secondaryClaims = listView.stream().filter(x -> !x.isClaimTypeStatus())
+				.collect(Collectors.toList());
+
+		LinkedList<FreshClaimDataViewDto> listOfPrimaryClaims = new LinkedList<>(listView);
+		logger.info("ListOfClaims:" + listOfPrimaryClaims);
+		logger.info("SecondaryClaimList:" + secondaryClaims);
+		secondaryClaims.forEach(secondary -> {
+			try {
+				String secondaryClaimId[] = secondary.getClaimId().split("_");
+				listOfPrimaryClaims.removeIf(primary -> (primary.getOfficeName().equals(secondary.getOfficeName())
+						&& primary.getPatientId().equals(secondary.getPatientId())
+						&& secondaryClaimId[0].equals(primary.getClaimId().split("_")[0])
+						&& !primary.isClaimTypeStatus()) && !primary.getNextAction().equals(status));
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Inside filterPrimarySecondaryClaimsWithUsingPrimaryStatus:" + e.getMessage());
+			}
+		});
+		List<FreshClaimDataViewDto> finalList = new ArrayList<>(listOfPrimaryClaims.size());
+		finalList.addAll(listOfPrimaryClaims);
+		return finalList;
 	}
 }

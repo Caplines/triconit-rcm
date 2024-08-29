@@ -563,6 +563,14 @@
                                                 <th *ngIf="showColumns.dueBalance">
                                                     <div class="dFlex">
                                                         Due Balance
+                                                        <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['dueBalance']}"
+                                                                (click)="sortData(filteredItems,'dueBalance','asc','number'); isSorted['dueBalance'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['dueBalance']}"
+                                                                (click)="sortData(filteredItems,'dueBalance','desc','number');isSorted['dueBalance'] = true"></a>
+                                                        </span>
                                                     </div>
                                                 </th>
                                                 <th class="remarks-bg" *ngIf="showColumns.showAttach" [ngStyle]="{'z-index':showTooltipConfig['remark'] ? 999 : 99}">

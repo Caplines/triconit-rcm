@@ -3465,6 +3465,11 @@ export class BillingClaimsComponent {
       let prev = filteredData[filteredData.length - 1];
       let current = data[i];
       if (prev.status === current.status && prev.name === current.name) {
+        filteredData.filter((x: any) => {
+          if (x.status === prev.status && x.name === prev.name) {
+             x.statusUpdated = current.statusUpdated;
+          }
+        });
         continue;
       } else {
         filteredData.push(current);

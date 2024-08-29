@@ -39,4 +39,5 @@ public class FreshClaimDataViewDto {
 	Date updatedDate;
 	String providerSpeciality;
 	String claimStatus;
+	boolean claimTypeStatus;
 }
