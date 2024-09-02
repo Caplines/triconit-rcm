@@ -1482,7 +1482,7 @@
                                                             <div data-toggle="buttons"
                                                                 class="btn-group btn-group-toggle" id="SUB_DET_CHA">
                                                                 <label class="btn btn-light"
-                                                                    [ngClass]="{active:submissionDto.channel=='RemoteLite'}">
+                                                                    [ngClass]="{active:submissionDto.channel=='RemoteLite' || submissionDto.channel=='Remote lite'}">
                                                                     <input type="radio" name="channel"
                                                                         value="RemoteLite"
                                                                         (click)="submissionDto.channel='RemoteLite';overidePreferredSubmission=false;removeErrorDisplayKeyById('SUB_DET_CHA');removeErrorDisplayKeyById('SUB_DET_CLA');claimNoEnable();"
