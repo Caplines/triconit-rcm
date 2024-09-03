@@ -738,7 +738,7 @@
                 <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior11"/></xsl:call-template></td>
             </tr>
             <tr>
-                <td class="dullBlue">Does Exams Share Freq? </td>
+                <td class="dullBlue">Does D0120/D0150 Share Freq?</td>
                 <td class="dullBlue" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="shareFr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4346(Gingivitis)</td>
