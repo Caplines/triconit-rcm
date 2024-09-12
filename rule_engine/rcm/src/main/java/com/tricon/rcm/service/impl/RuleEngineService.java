@@ -1048,9 +1048,10 @@ public class RuleEngineService {
 		for(Object c:claims) {
 			logger.info("MY COUNT--"+ (++ct));
 			Object s[] = (Object[]) c;
-			RcmClaims claim = rcmClaimRepository.findByClaimUuid(s[0].toString());
+			//
 			int recordCount = rcmClaimAssignmentRepo.countTotalActiveEntiresinClaimAssignment(s[0].toString());
-			if (recordCount == 0 && teamId == claim.getCurrentTeamId().getId()) {
+			if (recordCount == 0 ) {
+				RcmClaims claim = rcmClaimRepository.findByClaimUuid(s[0].toString());
 				UserAssignOffice assignedUser =	usersOffices.get(s[1].toString());
 				if (assignedUser == null) {  
 					assignedUser = userAssignOfficeRepo

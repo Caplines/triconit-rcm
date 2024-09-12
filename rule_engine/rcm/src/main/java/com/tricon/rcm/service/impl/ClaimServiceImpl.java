@@ -2769,6 +2769,8 @@ public class ClaimServiceImpl {
 			RcmTPDetail det= null;
 			RcmClaimDetail clDet= null;
 			for(ClaimDetailDto d:cdList) {
+				//double pp=Double.parseDouble(d.getPatientPortion());
+				//d.setPatientPortion(""+Math.round(pp * 1000 )/1000);
 				det= new RcmTPDetail();
 				clDet= new RcmClaimDetail();
 				BeanUtils.copyProperties(d, det);

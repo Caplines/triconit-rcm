@@ -827,7 +827,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	@Query(nativeQuery = true, value = ""
 			+" select cl.claim_uuid,cl.office_id from rcm_claims cl inner join office off on off.uuid=cl.office_id "
-			+"  where cl.current_state=0 and cl.current_team_id=:teamId and off.company_id=:companyId "
+			+"  where cl.current_state=0 and cl.current_team_id=:teamId and off.company_id=:companyId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+"  and cl.current_status<>:currentStatusClosed")
 			List<Object> getValidClaimWithCompanyTeams(@Param("companyId") String companyId,@Param("teamId") int teamId ,@Param("currentStatusClosed")int currentStatusClosed);
 	
