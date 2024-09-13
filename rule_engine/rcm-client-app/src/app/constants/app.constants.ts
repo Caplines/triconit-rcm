@@ -14,7 +14,7 @@ export class AppConstants {
             "id": 1, "name": "NA", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', '/tool-update', '/tool-update/issue-claims',"/reconciliation"], "defaultpath": "/register"
         }],
         [2, {
-            "id": 2, "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client',"/reconciliation"], "defaultpath": "/register"
+            "id": 2, "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client',"/reconciliation", "/unopenedclaim"], "defaultpath": "/register"
         }],
         [3, {
             "id": 3, "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production", "/search-claims", '/tool-update/issue-claims',"/reconciliation"], "defaultpath": "/claim-assignment"

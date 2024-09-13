@@ -1,0 +1,52 @@
+.table-wrapper-scroll-y {
+    display: block;
+}
+
+.table-inner-scrollbar-prod {
+    position: relative;
+    overflow-y: auto;
+    height: 60vh;
+    min-width: 100%;
+}
+
+.table-inner-scrollbar-prod thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-top: 0px !important;
+    width: 33vw;
+}
+
+.right-container-opclaim {
+    margin-left: 0px !important;
+    padding-top: 70px !important;
+}
+
+.form-control-opclaim {
+    width: 600px;
+    font-size: 14px;
+    height: 38px;
+}
+
+strong {
+    color: red;
+    font-weight: 600;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+}
+
+.table-responsive {
+    display: block;
+    width: 100%;
+}
+
+.common-info {
+    display: flex;
+    align-items: center;
+}
+
+.info-item {
+    margin-right: 20px;
+}

@@ -115,6 +115,11 @@ const routes: Routes = [
     path: 'reconciliation',
     loadComponent: () => import("./reconciliation/reconciliation.component").then(m => m.ReconciliationComponent),
   },
+  {
+    path: 'unopenedclaim',
+    loadChildren: () => import("./unopenedclaim/unopenedclaim.module").then(m => m.unopenedclaimModule),
+    canActivate: [ReigsterPermission]
+  },
 
 
   { path: '**', redirectTo: '/login' }

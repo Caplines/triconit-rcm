@@ -647,4 +647,12 @@ export class ApplicationServiceService extends BaseService {
   getClientsAssociatedUser(claimUuid: any, callback: any) {
     this.getData({}, this.httpUrl['get-clientsAssociatedUser'] + "/" + claimUuid, callback)
  }
+
+  searchUnopenedClaim(claimUuid: any, callback: any) {
+    this.getData({}, this.httpUrl['unopenedclaim'] + "/" + claimUuid, callback)
+  }
+
+  updateUnopenedClaim(params: any, callback: any) {
+    this.postData(params, this.httpUrl['update-unopenedclaim-status'], callback)
+  }
 }

@@ -139,7 +139,9 @@ export class BaseService {
     'fetch-reconcile-data': "/api/reconciliation",
     'claim-transfer-to-aging':"/api/claim-transfer-to-aging",
     'verify-tl-exist':"/api/tl-exist-by-claims",
-    'get-clientsAssociatedUser':"/api/user-clients"
+    'get-clientsAssociatedUser':"/api/user-clients",
+    'unopenedclaim': "/api/unopenedclaim",
+    'update-unopenedclaim-status': "/api/update-unopenedclaim-status"
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {
