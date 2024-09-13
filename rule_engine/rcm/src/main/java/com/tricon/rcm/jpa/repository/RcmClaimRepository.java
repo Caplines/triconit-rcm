@@ -31,6 +31,7 @@ import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDateDto;
 import com.tricon.rcm.dto.customquery.AllPendencyDto;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsDto;
+import com.tricon.rcm.dto.customquery.ClaimDetailsDto;
 import com.tricon.rcm.dto.customquery.ClaimXDaysDto;
 import com.tricon.rcm.dto.customquery.DataPatientRuleDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
@@ -1387,5 +1388,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsEsUpdatedStatus(@Param("officeId") String officeId,
 				@Param("claimsId") String claimsId,@Param("esUpdatedStatus") String esUpdatedStatus);
 
-
+		@Query(nativeQuery = true, value = " select  cl.claim_id  as claimId,cl.claim_uuid as claimUuid,off.name as officeName,cmp.name as clientName "
+				+ "  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "
+				+ "  inner join company cmp on cmp.uuid=off.company_id" + "  where claim_uuid=:claimId")
+		ClaimDetailsDto fetchClaimDetailsByClaimUuid(@Param("claimId") String claimId);
 }

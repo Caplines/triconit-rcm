@@ -29,6 +29,8 @@ import com.tricon.rcm.dto.EditUserRoleDto;
 import com.tricon.rcm.dto.EditUserTeams;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.OpenAndUnopenClaimsDto;
+import com.tricon.rcm.dto.OpenAndUnopenClaimsResponseDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmClientDto;
@@ -44,6 +46,7 @@ import com.tricon.rcm.dto.RoleResponseDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
+import com.tricon.rcm.dto.customquery.OpenAndUnopendClaimStatusDto;
 import com.tricon.rcm.enums.RcmRoleEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.service.impl.AdminServiceImpl;
@@ -698,4 +701,39 @@ public class AdminController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 
+	
+	@GetMapping(value = "api/unopenedclaim/{uuid}")
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+	public ResponseEntity<?> unOpenedClaimsByClaimUuid(@PathVariable("uuid")String claimUuid,Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		List<OpenAndUnopenClaimsResponseDto> response = null;
+		try {
+			response = serviceImpl.getClaimAssignmentData(claimUuid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@PostMapping(value = "api/update-unopenedclaim-status")
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+	public ResponseEntity<?> unOpenedClaimsActiveStatus(@RequestBody OpenAndUnopenClaimsDto openUnopenClaims,
+			Model model) {
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader == null)
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		String response = null;
+		if (!StringUtils.isNoneBlank(openUnopenClaims.getClaimUuid())) {
+			return ResponseEntity.badRequest()
+					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
+		}
+		response = serviceImpl.updateOpenAndUnopenClaimsActiveStatus(openUnopenClaims);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
 }

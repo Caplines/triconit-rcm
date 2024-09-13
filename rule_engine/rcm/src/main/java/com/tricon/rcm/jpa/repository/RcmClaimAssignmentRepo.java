@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.dto.customquery.KeyValueDto;
+import com.tricon.rcm.dto.customquery.OpenAndUnopendClaimStatusDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
 import com.tricon.rcm.dto.customquery.ExistingClaimDto;
 import com.tricon.rcm.util.Constants;
@@ -136,5 +137,13 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 		
 			@Query(value = "select pending_since from rcm_claim_assignment where claim_id=:claimUuid and active =false and current_team_id=:teamId order by pending_since desc limit 1",nativeQuery = true)
 			Object findPendingSinceDateByClaimUuidAndCurrentTeamId(@Param("claimUuid") String claimUuid,@Param("teamId")int teamId);
-  
+			
+			@Query(value = "select ra.claim_id as claimUuid,ra.id as id,ra.created_date as createdDate,ra.updated_date as updatedDate,ra.active as active,"
+					+ "ra.system_comment as comments,ra.current_team_id AS teamId from rcm_claim_assignment ra "
+					+ "where ra.claim_id=:claimUuid order by ra.id", nativeQuery = true)
+			List<OpenAndUnopendClaimStatusDto> findopenAndUnOpendClaims(@Param("claimUuid") String claimUuid);
+			
+			@Modifying
+			@Query(value = "update rcm_claim_assignment set active =:status where id=:id and claim_id=:claimUuid", nativeQuery = true)
+			void updateOpenAndUnOpendClaimsActiveStatus(@Param("id")int id, @Param("status") boolean status,@Param("claimUuid") String claimUuid);
 }

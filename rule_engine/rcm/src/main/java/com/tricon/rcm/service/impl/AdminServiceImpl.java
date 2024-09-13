@@ -43,6 +43,8 @@ import com.tricon.rcm.dto.EditUserTeams;
 //import com.tricon.rcm.db.entity.RcmUserTemp;
 import com.tricon.rcm.dto.FindUserDto;
 import com.tricon.rcm.dto.GenericResponse;
+import com.tricon.rcm.dto.OpenAndUnopenClaimsDto;
+import com.tricon.rcm.dto.OpenAndUnopenClaimsResponseDto;
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PasswordResetDto;
 import com.tricon.rcm.dto.RcmClientDto;
@@ -62,8 +64,10 @@ import com.tricon.rcm.dto.RoleResponseDto;
 import com.tricon.rcm.dto.UserRegistrationDto;
 import com.tricon.rcm.dto.UserSearchDto;
 import com.tricon.rcm.dto.customquery.AssignOfficeDto;
+import com.tricon.rcm.dto.customquery.ClaimDetailsDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
 import com.tricon.rcm.dto.customquery.ExistingClaimDto;
+import com.tricon.rcm.dto.customquery.OpenAndUnopendClaimStatusDto;
 import com.tricon.rcm.dto.customquery.RcmCompanyWithGsheetDto;
 import com.tricon.rcm.dto.customquery.RcmUserDetails;
 import com.tricon.rcm.email.EmailUtil;
@@ -1198,5 +1202,49 @@ public class AdminServiceImpl {
 
 	public List<ClientCustomDto> findClientsOfAssociatedUser(String userUuid) {
 		return rcmCompanyRepo.findAllClientsOfAssociatedUser(userUuid);
+	}
+
+
+	/*
+	 * Handle for Incorrect Active claims status inside claim assignment table that
+	 * creates a problem in claim detail page.
+	 *  only for Tricon not visible to client
+	 */
+	public List<OpenAndUnopenClaimsResponseDto> getClaimAssignmentData(String claimUuid) throws Exception {
+		ClaimDetailsDto claimDetail = rcmClaimRepository.fetchClaimDetailsByClaimUuid(claimUuid);
+		List<OpenAndUnopendClaimStatusDto> assignClaims = null;
+		List<OpenAndUnopenClaimsResponseDto> responseDto = null;
+		if (claimDetail != null) {
+			assignClaims = claimAssignmentRepo.findopenAndUnOpendClaims(claimUuid);
+			if (assignClaims != null && !assignClaims.isEmpty()) {
+				responseDto = new ArrayList<>();
+				for (OpenAndUnopendClaimStatusDto assignClaim : assignClaims) {
+					OpenAndUnopenClaimsResponseDto mappingDto = new OpenAndUnopenClaimsResponseDto();
+					BeanUtils.copyProperties(assignClaim, mappingDto);
+					mappingDto.setClaimId(claimDetail.getClaimId());
+					mappingDto.setClientName(claimDetail.getClientName());
+					mappingDto.setOfficeName(claimDetail.getOfficeName());
+					responseDto.add(mappingDto);
+				}
+			}
+		}
+		return responseDto;
+	}
+
+	/*
+	 * Handle for Incorrect Active claims status inside claim assignment table that
+	 * creates a problem for claim detail page.
+	 *  only for Tricon not visible to client
+	 */
+	@Transactional(rollbackOn = Exception.class)
+	public String updateOpenAndUnopenClaimsActiveStatus(OpenAndUnopenClaimsDto dto) {
+		try {
+			claimAssignmentRepo.updateOpenAndUnOpendClaimsActiveStatus(dto.getId(), dto.isActive(), dto.getClaimUuid());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getCause().getMessage());
+			return MessageConstants.UPDATION_FAIL;
+		}
+		return MessageConstants.RECORDS_UPDATE;
 	}
 }
