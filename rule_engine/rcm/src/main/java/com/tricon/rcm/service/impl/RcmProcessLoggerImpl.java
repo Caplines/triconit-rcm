@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import com.tricon.rcm.db.entity.RcmProcessLogger;
 import com.tricon.rcm.jpa.repository.RcmProcessLoggerRepo;
@@ -20,7 +19,7 @@ public class RcmProcessLoggerImpl {
 	@Autowired
 	RcmProcessLoggerRepo rcmProcessLoggerRepo;
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class)
 	public RcmProcessLogger startProcessLogger(String processName, String parametres, JwtUser jwtUser) {
 		RcmProcessLogger processLogger = setProcessLoggerInformation(processName, parametres, jwtUser);
 		processLogger.setStartTime(LocalTime.now());
@@ -30,7 +29,7 @@ public class RcmProcessLoggerImpl {
 		return processLogger;
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class)
 	public void endProcessLogger(RcmProcessLogger processLogger) {
 		if (processLogger != null) {
 			processLogger.setEndTime(LocalTime.now());
@@ -42,7 +41,7 @@ public class RcmProcessLoggerImpl {
 		}
 	}
 
-	@Transactional(propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+	@Transactional(rollbackFor = Exception.class)
 	public void resetProcessLoggerStatus(RcmProcessLogger processLogger) {
 		processLogger.setStatus(false);
 		rcmProcessLoggerRepo.save(processLogger);
