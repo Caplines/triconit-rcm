@@ -21,6 +21,9 @@ public class ApplicationStartupService {
 	@Autowired
 	Environment env;
 	
+	@Autowired
+	RcmProcessLoggerImpl rcmProcessLoggerImpl;
+	
 	private final Logger logger = LoggerFactory.getLogger(ApplicationStartupService.class);
 	
 	@EventListener
@@ -28,7 +31,8 @@ public class ApplicationStartupService {
 		logger.info("Application Started ..do any start up task if needed ");
 		String[] p=env.getActiveProfiles();
 		if (p[0].equalsIgnoreCase("prod")) {
-		
+			// when application will start then we need to reset all active processes
+			rcmProcessLoggerImpl.resetAllActiveProcesses();
 		}
 		
 		

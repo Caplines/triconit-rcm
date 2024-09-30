@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tricon.rcm.db.entity.RcmProcessLogger;
 import com.tricon.rcm.dto.AssignOfficesToBillingUserDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.PartialHeader;
@@ -29,6 +30,7 @@ import com.tricon.rcm.dto.UsersByTeamsAndCompanyDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.service.impl.ManageOfficeServiceImpl;
+import com.tricon.rcm.service.impl.RcmProcessLoggerImpl;
 import com.tricon.rcm.service.impl.UserServiceImpl;
 import com.tricon.rcm.util.MessageConstants;
 
@@ -50,6 +52,9 @@ public class ManageOfficeController extends BaseHeaderController {
 	@Autowired
 	private UserServiceImpl userService;
 	
+	@Autowired
+	RcmProcessLoggerImpl rcmProcessLoggerImpl;
+	
 	@RequestMapping(value = "assignOffice", method = RequestMethod.POST)
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ADMIN')")
 	public ResponseEntity<?> assignOfficesToBillingUser(@RequestBody AssignOfficesToBillingUserDto dto,Model model) {
@@ -59,15 +64,24 @@ public class ManageOfficeController extends BaseHeaderController {
 					.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, null));
 		}
 		GenericResponse response = null;
+		RcmProcessLogger processLogger=null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		try {
-			response = officeService.assignOfficeByAdmin(dto, partialHeader.getCompany(),partialHeader.getTeamId(),
-					partialHeader.getJwtUser());//why is this in ADMIN
+			logger.info("------------------Start Process (Manage Offce) ---------------------");
+			processLogger = rcmProcessLoggerImpl.startProcessLogger("Manage Office", dto.toString(),
+					partialHeader.getJwtUser());
+			response = officeService.assignOfficeByAdmin(dto, partialHeader.getCompany(), partialHeader.getTeamId(),
+					partialHeader.getJwtUser());// why is this in ADMIN
+			rcmProcessLoggerImpl.endProcessLogger(processLogger);
+			logger.info("------------------End Process---------------------");
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
+			// We need to reset RcmProcessLogger status InCase of any failure
+			if (processLogger != null)
+				rcmProcessLoggerImpl.resetProcessLoggerStatus(processLogger);
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(response);
