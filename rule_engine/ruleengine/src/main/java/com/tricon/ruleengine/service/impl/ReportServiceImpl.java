@@ -321,7 +321,7 @@ public class ReportServiceImpl implements ReportService {
 		   }
 		   r.setMessageType(4);// for Heading..
 		   for(Rules rule:ruleList) {
-			   if (rule.getId()==20 || rule.getId()==2 || rule.getId()==3 
+			   if (!rule.getRuleType().equals("R") || rule.getId()==20 || rule.getId()==2 || rule.getId()==3 
 				||  rule.getId()==45 || rule.getId()==41 
 				||rule.getId()==0 || rule.getId()==12 ||rule.getId()==51 || rule.getId()==52 || rule.getId()==43
 				||rule.getId()==69 || rule.getId()==70 ||rule.getId()==71 || rule.getId()==72 || rule.getId()==73
@@ -803,7 +803,8 @@ public class ReportServiceImpl implements ReportService {
     	   cell.setCellValue("Date Created");
     	   cell = row.createCell(++columnCount);
     	   cell.setCellValue("Unique Id");
-
+    	   cell = row.createCell(++columnCount);
+    	   cell.setCellValue("Fail");
       	  
       	  
 	        Map<String, List<ReportResponseDto>> data = dto.getData(); 
@@ -832,6 +833,8 @@ public class ReportServiceImpl implements ReportService {
 	        	  cell.setCellValue(d.getRep_create_date());
 	        	  cell = row.createCell(++columnCount);
 	        	  cell.setCellValue(d.getUnique_id());
+	        	  cell = row.createCell(++columnCount);
+	        	  cell.setCellValue(d.getFail()+"");
 	        	  cell = row.createCell(++columnCount);
 	        	  
 	          }

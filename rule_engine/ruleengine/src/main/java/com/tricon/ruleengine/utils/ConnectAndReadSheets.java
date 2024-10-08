@@ -485,11 +485,16 @@ public class ConnectAndReadSheets {
 			r=r+convertRowToRange(2); //77 BZ  77-26-26=>25
 			//r=r+convertRowToRange(n-26-26-26);
 			r=r+convertRowToRange(n-(26*(2+1)));
-		}else if (n>=78 && n<=103) {
+		}else if (n>=104 && n<=129) {
 			
 			r=r+convertRowToRange(3); //77 BZ  77-26-26=>25
 			//r=r+convertRowToRange(n-26-26-26-26);
 			r=r+convertRowToRange(n-(26*(3+1)));
+		}else if (n>=130 && n<=155) {
+			
+			r=r+convertRowToRange(4); //77 BZ  77-26-26=>25
+			//r=r+convertRowToRange(n-26-26-26-26);
+			r=r+convertRowToRange(n-(26*(4+1)));
 		}	
 		return r;
 		
@@ -596,8 +601,8 @@ public class ConnectAndReadSheets {
 			int c=0;
 			while(obj.hasNext()) {
 				obj.next();
-				String p=convertRowToRange(c)+(rowCounter+1);
-				///System.out.println("-----------------------------"+"'"+sheetName+"'!"+p);
+				String p=convertRowToRange(c)+(rowCounter+1);//if column increase .. add logic here
+				//System.out.println("-----------------------------"+"'"+sheetName+"'!"+p);
 				rangesClear.add("'"+sheetName+"'!"+p);
 				c++;
                   				

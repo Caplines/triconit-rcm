@@ -203,8 +203,8 @@ public class FreqencyUtils {
 	}
 
 	public static Object[] getError(List<ServiceCodeIvfTimesFreqFieldDto> l1, List<ServiceCodeIvfTimesFreqFieldDto> l2,
-			List<ServiceCodeIvfTimesFreqFieldDto> l3, String s1, String s2, String s3, String tooth) {
-		int ct = 0;
+			List<ServiceCodeIvfTimesFreqFieldDto> l3, String s1, String s2, String s3, String tooth,int currentCount) {
+		int ct = currentCount;
 		int ti = 0;
 		int actualmax = -1;
 		Object[] mess = null;
@@ -1401,7 +1401,7 @@ public class FreqencyUtils {
 		return mess;
 	}
 	
-	public static boolean checkforAlikeCodesNew1(String tpCodes, String historyCode) {
+	public static boolean checkforAlikeCodesNew1(String tpCodes, String historyCode,String shareFr) {
 		boolean alikecodepresent = false;
 		/*
 		 * if ( (tpCodes.equals("D0150") || tpCodes.equals("D0120") ||
@@ -1410,12 +1410,17 @@ public class FreqencyUtils {
 		 * historyCode.equals("D0145") || historyCode.equals("D0160")) ) {
 		 * alikecodepresent = true; }
 		 */
-		if ((tpCodes.equals("D0150") || tpCodes.equals("D0120") || tpCodes.equals("D0145") || tpCodes.equals("D0140")
+		/*if ((tpCodes.equals("D0150") || tpCodes.equals("D0120") || tpCodes.equals("D0145") || tpCodes.equals("D0140")
 				|| tpCodes.equals("D0160"))
 				&& (historyCode.equals("D0150") || historyCode.equals("D0120") || historyCode.equals("D0145")
 						|| historyCode.equals("D0140") || historyCode.equals("D0160"))) {
 			alikecodepresent = true;
+		}*/
+		if (shareFr.equalsIgnoreCase("yes") &&  ((tpCodes.equals("D0120") || tpCodes.equals("D0150"))
+				&& (historyCode.equals("D0150") || historyCode.equals("D0120")) )) {
+			alikecodepresent = true;
 		}
+
 		if ((tpCodes.equals("D0210") || tpCodes.equals("D0330"))
 				&& (historyCode.equals("D0210") || historyCode.equals("D0330"))) {
 			alikecodepresent = true;
@@ -1453,7 +1458,7 @@ public class FreqencyUtils {
 		return alikecodepresent;
 	}
 
-	public static boolean checkforAlikeCodes(String tpCodes, String historyCode) {
+	public static boolean checkforAlikeCodes(String tpCodes, String historyCode, String shareFr) {
 		boolean alikecodepresent = false;
 		// 2 C D1206 and D1208
 		if (tpCodes.equals("D1206") && historyCode.equals("D1208")) {
@@ -1518,10 +1523,10 @@ public class FreqencyUtils {
 		}
 
 		// 3C D0150, D0120, and D0140
-		if (tpCodes.equals("D0150") && historyCode.equals("D0120")) {
+		if (shareFr.equalsIgnoreCase("yes") && (tpCodes.equals("D0150") && historyCode.equals("D0120"))) {
 			alikecodepresent = true;
 		}
-		if (tpCodes.equals("D0120") && historyCode.equals("D0150")) {
+		if (shareFr.equalsIgnoreCase("yes") && (tpCodes.equals("D0120") && historyCode.equals("D0150"))) {
 			alikecodepresent = true;
 		}
 		if (tpCodes.equals("D0120") && historyCode.equals("D0140")) {
@@ -1530,12 +1535,12 @@ public class FreqencyUtils {
 		if (tpCodes.equals("D0140") && historyCode.equals("D0120")) {
 			alikecodepresent = true;
 		}
-		if (tpCodes.equals("D0150") && historyCode.equals("D0140")) {
+		/*if (tpCodes.equals("D0150") && historyCode.equals("D0140")) {
 			alikecodepresent = true;
 		}
 		if (tpCodes.equals("D0140") && historyCode.equals("D0150")) {
 			alikecodepresent = true;
-		}
+		}*/
 		//
 		if (tpCodes.equals("D5110") && historyCode.equals("D5130")) {
 			alikecodepresent = true;
@@ -1665,6 +1670,8 @@ public class FreqencyUtils {
 			Set<String> teethC, String ruleMessageName) {
 		//ruleMessageName="rule21";
 		boolean present = false;
+		String benefitPeriodYear=ivf.getPlanCalendarFiscalYear();
+		if (benefitPeriodYear==null) benefitPeriodYear="";
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		RuleEngineLogger.generateLogs(clazz, "planDate :" + planDate, Constants.rule_log_debug, bw);
 		for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF) {
@@ -1718,18 +1725,26 @@ public class FreqencyUtils {
 					// expCount = expCount + 1;
 				}
 			} else if (FDTO.getCy() > 0) {// Calendar Year
-				RuleEngineLogger.generateLogs(clazz, "Calendar Year:" + FDTO.getCy(), Constants.rule_log_debug, bw);
-				RuleEngineLogger.generateLogs(clazz, "CurrentYear:" + CurrentYear, Constants.rule_log_debug, bw);
-				Date[] calcy = DateUtils.getCalendarYear(FDTO.getCy());
-				RuleEngineLogger.generateLogs(clazz, "DATE RANGE: FROM -" + calcy[0], Constants.rule_log_debug, bw);
-				RuleEngineLogger.generateLogs(clazz, "DATE RANGE: TO -" + calcy[1], Constants.rule_log_debug, bw);
-
-				// isCalPresent=true;
-				// CurrentYear
-				if (DateUtils.isDatesBetweenDates(calcy[0], calcy[1], dos)) {
+				
+				if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
-				}
+				}else {
+					
+				
+					RuleEngineLogger.generateLogs(clazz, "Calendar Year:" + FDTO.getCy(), Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "CurrentYear:" + CurrentYear, Constants.rule_log_debug, bw);
+					Date[] calcy = DateUtils.getCalendarYear(FDTO.getCy());
+					RuleEngineLogger.generateLogs(clazz, "DATE RANGE: FROM -" + calcy[0], Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "DATE RANGE: TO -" + calcy[1], Constants.rule_log_debug, bw);
+	
+					// isCalPresent=true;
+					// CurrentYear
+					if (DateUtils.isDatesBetweenDates(calcy[0], calcy[1], dos)) {
+						present = true;
+						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+					}
+			   }
 				/*
 				 * present=true;//Remove after testing..
 				 * scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);//Remove after testing..
@@ -1763,6 +1778,10 @@ public class FreqencyUtils {
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 				}
 			} else if (FDTO.getCalendarMonth() > 0) {// Calendar Months Done (cal.mo)
+				if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+				}else {
 				RuleEngineLogger.generateLogs(clazz, "Calendar Months:" + FDTO.getCalendarMonth(),
 						Constants.rule_log_debug, bw);
 				// (1X6cal.mo) Plan Date 1 Jan - 31 JAN --> jan-june and july-Dec. two
@@ -1827,10 +1846,14 @@ public class FreqencyUtils {
 						present = true;
 						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 					}
+				 }
 				}
 
 			} else if (FDTO.getDays() > 0) {// Months & Days (1x6Mo_1D)
-
+				if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+				}else {
 				RuleEngineLogger.generateLogs(clazz, " Days:" + FDTO.getDays(), Constants.rule_log_debug, bw);
 				RuleEngineLogger.generateLogs(clazz, "Months :" + FDTO.getMonths(), Constants.rule_log_debug, bw);
 				//
@@ -1867,8 +1890,12 @@ public class FreqencyUtils {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 				}
-
+			  }
 			} else if (FDTO.getOnlyDays() > 0) {// Days
+				if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+				}else {
 				RuleEngineLogger.generateLogs(clazz, "ONLY DAYS :" + FDTO.getOnlyDays(), Constants.rule_log_debug, bw);
 				if (planDate == null) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1900,8 +1927,13 @@ public class FreqencyUtils {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 				}
+			 }
 
 			} else if (FDTO.getMonths() > 0) {// Months
+				if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
+					present = true;
+					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
+				}else {
 				RuleEngineLogger.generateLogs(clazz, "MONTHS :" + FDTO.getMonths(), Constants.rule_log_debug, bw);
 				if (planDate == null) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1932,6 +1964,7 @@ public class FreqencyUtils {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 				}
+			  }
 			}
 
 			////
@@ -1958,6 +1991,8 @@ public class FreqencyUtils {
 			Set<String> teethC, String ruleMessageName) {
 		ruleMessageName="rule57";
 		boolean present = false;
+		String benefitPeriodYear=ivf.getPlanCalendarFiscalYear();
+		if (benefitPeriodYear==null) benefitPeriodYear="";
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF) {
 			String freq = scivfTFD.getFreqency();
@@ -2902,6 +2937,8 @@ public class FreqencyUtils {
 			Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVFFinal, String thKEY) {
 		boolean present = false;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
+		String benefitPeriodYear=ivf.getPlanCalendarFiscalYear();
+		if (benefitPeriodYear==null) benefitPeriodYear="";
 		for (ServiceCodeIvfTimesFreqFieldDto scivfTFD : dataIVF) {
 			String freq = scivfTFD.getFreqency();
 
@@ -3156,7 +3193,7 @@ public class FreqencyUtils {
 				if (ln == null) {
 					ln = new ArrayList<>();
 					ln.add(scivfTFDFinal);
-					mapFlIVFFinal.put("PANO_FMX", ln);
+					mapFlIVFFinal.put(thKEY, ln);
 				} else {
 					ln.add(scivfTFDFinal);
 				}

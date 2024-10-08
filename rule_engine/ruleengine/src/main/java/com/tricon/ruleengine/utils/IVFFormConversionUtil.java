@@ -973,6 +973,7 @@ public class IVFFormConversionUtil {
 			for(String h:ab) {
 				
 			if (h.equals("BLANK"))h="";
+			h=h.trim();
 			if (x == 0)
 				ph = new IVFHistorySheet();
 			x++;

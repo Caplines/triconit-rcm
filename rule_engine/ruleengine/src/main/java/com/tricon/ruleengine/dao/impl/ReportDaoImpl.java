@@ -183,7 +183,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 					 queryString= queryString + " and " +batchrest;
 						 
 			 }else if(dto.getReportType().equals(ReportTypeEnum.ReportType.Teamwise.toString())) {
-				 queryString="SELECT DATE_FORMAT(rd.updated_date,'%m/%d/%Y %T') as rep_create_date,rd.created_by as rep_created_by, "+
+				 queryString="SELECT SUM(if(rd.message_type =2, 1, 0)) AS pass,SUM(if(rd.message_type =1, 1, 0)) AS fail,DATE_FORMAT(rd.updated_date,'%m/%d/%Y %T') as rep_create_date,rd.created_by as rep_created_by, "+
 						 " CONCAT( first_name ,' ' ,last_name ) as name ,CAST(COALESCE(rd.message_type, -200) as UNSIGNED) as messageType "
 				 		+ ", DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as rd_created_date," + 
 				 		"us.email as email,offi.name as office_name,rep.group_run as rep_group_run,rd.group_run as rd_group_run, " + 
