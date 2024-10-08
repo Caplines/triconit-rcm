@@ -8,7 +8,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
-import org.apache.commons.collections4.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -23,10 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import java.util.TreeSet;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
@@ -101,7 +97,6 @@ import com.tricon.rcm.dto.ProductionDispositionWiseDto;
 import com.tricon.rcm.dto.ProductionDtoFrorAging;
 import com.tricon.rcm.dto.ProductionForCDP;
 import com.tricon.rcm.dto.ProductionStatementTypeWiseDto;
-import com.tricon.rcm.dto.ProductionStatementTypeWiseDto.StatementType;
 import com.tricon.rcm.dto.ProivderHelpingSheetDto;
 import com.tricon.rcm.dto.ProviderCodeWithOffice;
 import com.tricon.rcm.dto.ProviderCodeWithSpecialty;
@@ -151,7 +146,6 @@ import com.tricon.rcm.dto.customquery.ReconcillationClaimDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmResponseMessageDto;
-import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
 import com.tricon.rcm.dto.ReconciliationDto;
 import com.tricon.rcm.dto.ReconciliationResponseDto;
@@ -2729,6 +2723,23 @@ public class ClaimServiceImpl {
 				rcmClaimRepository.save(claim);
 			}
 			
+			if (implDto.getPreferredModeOfSubmission()==null && implDto.getClientName()!=null ) {
+				//Reading Sheet Again
+				if (claim==null) claim = rcmClaimRepository.findByClaimUuid(claimUuid);
+				RcmInsurance ins =implDto.isPrimary()?claim.getPrimInsuranceCompanyId():claim.getSecInsuranceCompanyId();
+				if (ins!=null) {
+					Optional<RcmInsurance> nn= insuranceRepo.findById(ins.getId());
+					String insName= nn.get().getName();
+					List<InsuranceNameTypeDto> insuranceTypeDto = ruleEngineService.pullInsuranceMappingFromSheet(
+							partialHeader.getCompany());
+					InsuranceNameTypeDto insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, insName,implDto.getClientName());
+					claim.setPreferredModeOfSubmission(insuranceNameTypeDto.getPreferredModeOfSubmission());
+					implDto.setPreferredModeOfSubmission(insuranceNameTypeDto.getPreferredModeOfSubmission());
+					rcmClaimRepository.save(claim);
+				}
+				
+			}
+			
 			// set allowEdit false when office is active=false
 			if (!dto.getOfficeActive()) {
 				implDto.setAllowEdit(false);
@@ -2769,9 +2780,10 @@ public class ClaimServiceImpl {
 			RcmTPDetail det= null;
 			RcmClaimDetail clDet= null;
 			for(ClaimDetailDto d:cdList) {
-				//double pp=Double.parseDouble(d.getPatientPortion());
-				//d.setPatientPortion(""+Math.round(pp * 1000 )/1000);
+				double pp=Double.parseDouble(d.getPatientPortion());
+				d.setPatientPortion(""+Math.round(pp * 1000 )/1000);
 				det= new RcmTPDetail();
+				
 				clDet= new RcmClaimDetail();
 				BeanUtils.copyProperties(d, det);
 				BeanUtils.copyProperties(d, clDet);
@@ -2779,6 +2791,7 @@ public class ClaimServiceImpl {
 				clDet.setClaim(claim);
 				tpList.add(clDet);
 				rcmTPDetailRepo.save(det);
+				
 			}
 			
 			

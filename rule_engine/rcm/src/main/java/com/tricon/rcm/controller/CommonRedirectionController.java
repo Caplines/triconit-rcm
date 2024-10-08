@@ -29,7 +29,7 @@ public class CommonRedirectionController {
 	
 	@RequestMapping(value = { "/login", "/tool-update", "/fetch-claims", "/users-status", "/register", "/manage-office",
 			"/manage-client", "/user-setting", "/claim-assignment","/list-of-claims","/update-pass", "/billing-claims/*",
-			"/all-pendency","/production","/tool-update/issue-claims","/search-claims","/reconciliation"}, method = RequestMethod.GET)
+			"/all-pendency","/production","/tool-update/issue-claims","/search-claims","/reconciliation","/unopenedclaim"}, method = RequestMethod.GET)
 	public void forward(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("IP ---> " + request.getServerName());
 		System.out.println("Scheme-->" + request.getScheme());
