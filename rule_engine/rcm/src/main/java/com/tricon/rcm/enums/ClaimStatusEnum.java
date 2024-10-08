@@ -83,7 +83,10 @@ public enum ClaimStatusEnum {
 	Need_to_Follow_Up_For_Void_Request(75,"Need to follow up for Void Request"),
 	Need_to_Get_Provider_Credentialed(76,"Need to get Provider Credentialed"),
 	Need_to_Call_Insurance_For_reprocessing(77,"Need to call Insurance for reprocessing"),
-	NEED_TO_REBILL(78,"Need to re-bill");
+	NEED_TO_REBILL(78,"Need to re-bill"),
+	APPEAL_UPHELD(79,"Appeal Upheld"),
+	NEED_TO_FOLLOWUP_ON_VOID(80,"Need to followup on void");
+	
 	
 	
 	

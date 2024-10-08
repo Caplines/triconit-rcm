@@ -237,6 +237,7 @@ export class AppConstants {
         { reasonName: "Other"},
         { reasonName: "Pre-auth Denied"},
         { reasonName: "Payment issued to patient"},
+        { reasonName: "N/A"}
 
     ];
 
@@ -262,6 +263,8 @@ export class AppConstants {
         { name: "Claim Processed in PMS but not billed" },
         { name: "Payment Issued to Patient" },
         { name: "EOB Requested" },
+        { name: "Appeal Upheld" },
+       
     ];
 
 
@@ -291,6 +294,8 @@ export class AppConstants {
         { name: "Need to follow up for Void Request"},
         { name: "Need to get Provider Credentialed"},
         { name: "Need to call Insurance for reprocessing"},
+        { name: "Need to Bill"},
+        { name: "Need to followup on void"},
 
     ]
 
@@ -425,6 +430,9 @@ export class AppConstants {
         { reasonName: "Incorrect FS"},
         { reasonName: "Incorrect Fee"},
         { reasonName: "Other"},
+        { reasonName: "Interest Receivced"},
+        { reasonName: "Pre-auth Missing"},
+        { reasonName: "Exam & Xray Denial"},
 
     ];
 
@@ -451,6 +459,8 @@ export class AppConstants {
         { reasonName: "Additional Info Needed"},
         { reasonName: "Claim not on file"},
         { reasonName: "Need Primary EOB"},
+        { reasonName: "Incorrect Billing"},
+        { reasonName: "Incorrect patient/Insurance"},
 
     ];
 
