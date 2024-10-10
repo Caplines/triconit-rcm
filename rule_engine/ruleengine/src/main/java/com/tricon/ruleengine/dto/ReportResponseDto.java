@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.dto;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.sql.Timestamp;
 
@@ -28,6 +29,9 @@ public class ReportResponseDto {
     private String ins_name;
     private String plan_type;
     private String unique_id;
+    private BigDecimal pass;
+    private BigDecimal fail;
+    
     
     
 	
@@ -173,6 +177,18 @@ public class ReportResponseDto {
 	}
 	public void setUnique_id(String unique_id) {
 		this.unique_id = unique_id;
+	}
+	public BigDecimal getPass() {
+		return pass;
+	}
+	public void setPass(BigDecimal pass) {
+		this.pass = pass;
+	}
+	public BigDecimal getFail() {
+		return fail;
+	}
+	public void setFail(BigDecimal fail) {
+		this.fail = fail;
 	}
 
 	

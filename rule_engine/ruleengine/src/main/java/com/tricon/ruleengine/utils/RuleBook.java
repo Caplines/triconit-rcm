@@ -1188,7 +1188,7 @@ public class RuleBook {
 				Constants.rule_log_debug, bw);
 
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
-		String fl = ivf.getFlourideAgeLimit();
+		//String fl = ivf.getFlourideAgeLimit();
 		// fl= ivf.getName1201110RollOverAgYe().trim();
 
 		//String var = ivf.getVarnishD1206AgeLimit();
@@ -1239,8 +1239,8 @@ public class RuleBook {
 			 * codestoCheckO.add("D8080"); codestoCheckO.add("D8090");
 			 */
 			// codestoCheck.add("D1110");//Remove ME
-			boolean d1208 = false;
-			boolean d1206 = false;
+			//boolean d1208 = false;
+			//boolean d1206 = false;
 			boolean d1351 = false;
 			boolean rest = false;
 
@@ -1270,7 +1270,10 @@ public class RuleBook {
 						|| tp.getEstInsurance().equals("0.00") || tp.getEstInsurance().equals("0.0")))
 					continue;
                 */
+				
 				if (tp.getServiceCode().equals("D1208")) {
+					//REMOVe LOGIC for D1208/D1206 same covered in Fluoride covered till age.
+					/*
 					if (!d1208) {
 						try {
 							int f = Integer.parseInt(fl);
@@ -1300,7 +1303,9 @@ public class RuleBook {
 						}
 					}
 					d1208 = true;
+					*/
 				} else if (tp.getServiceCode().equals("D1206")) {
+					/*
 					if (!d1206) {
 						try {
 							int v = Integer.parseInt(fl);
@@ -1330,6 +1335,7 @@ public class RuleBook {
 						}
 					}
 					d1206 = true;
+					*/
 				} else if (tp.getServiceCode().equals("D1351")) {
 					if (!d1351) {
 						try {
@@ -4429,7 +4435,8 @@ public class RuleBook {
 			addInMapForFrequencyLimiation("D7220", "Extractions2FR", ivf.getExtractions2fr(), mapFlIVF);
 			addInMapForFrequencyLimiation("D7230", "Extractions2FR", ivf.getExtractions2fr(), mapFlIVF);
 			addInMapForFrequencyLimiation("D7240", "Extractions2FR", ivf.getExtractions2fr(), mapFlIVF);
-			addInMapForFrequencyLimiation("D7250", "D7250fr", ivf.getD7250fr(), mapFlIVF);	
+			addInMapForFrequencyLimiation("D7250", "D7250fr", ivf.getD7250fr(), mapFlIVF);
+			//addInMapForFrequencyLimiation("D1330", "d1330Freq", ivf.getD1330Freq(), mapFlIVF);	
 			
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D2392", "PostComposites_D2391_FL",
 					ivf.getPostCompositesD2391FL(), 0, 0, "");
@@ -15464,15 +15471,15 @@ public class RuleBook {
 					if (comment == null)  comment = "";
 					if (comment.trim().equals("")) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule105.error.message", new Object[] {}, locale), Constants.FAIL,
+								messageSource.getMessage("rule105.error.message", new Object[] {}, locale), Constants.PASS,
 								String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
 					}else if (comment.toLowerCase().contains("this member does not have other coverages")){
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule105.pass.message", new Object[] {comment}, locale), Constants.PASS,
+								messageSource.getMessage("rule105.pass.message", new Object[] {comment}, locale), Constants.ALERT,
 								String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
 					}else {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-								messageSource.getMessage("rule105.error1.message", new Object[] {comment}, locale), Constants.FAIL,
+								messageSource.getMessage("rule105.error1.message", new Object[] {comment}, locale), Constants.ALERT,
 								String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
 					}
 					
