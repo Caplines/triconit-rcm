@@ -271,6 +271,7 @@ export class AppConstants {
 
 
     public Need_to_call_Insurance: string = "Need to Call Insurance";
+    public Need_to_bill_Secondary_Insurance: string = "Need to Bill Secondary Insurance";
     public nextActionStatusRcm: any = [
         { name: "Need to Void Partial Claim"},
         { name: "Need to Void Full Claim"},

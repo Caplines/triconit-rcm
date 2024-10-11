@@ -102,6 +102,7 @@ export class BillingClaimsComponent {
   showAssignToTeamLead: boolean = false;
   showAToPNextActionRequired: boolean = true;
   showSubmitPopup: boolean = false;
+  errorMsgForNextAction:any="";
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -2836,6 +2837,7 @@ export class BillingClaimsComponent {
   validate_CURRENT_STATUS_AND_NEXT_ACTION() {
     let buttonType = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'];
     let isSectionValidated = true;
+    this.errorMsgForNextAction="";
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"] = {};
 
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusRcm = false;
@@ -2868,6 +2870,12 @@ export class BillingClaimsComponent {
         this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
         isSectionValidated = false;
       }
+      if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.nextAction === this.appConstants.Need_to_bill_Secondary_Insurance
+         && !this.claimRcm.assoicatedClaimStatus) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
+        isSectionValidated = false;
+        this.errorMsgForNextAction = "Secondary claim not on file";
+      }
       if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.assignToTeamId == -1) {
         this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeamId = true;
         isSectionValidated = false;
@@ -2887,13 +2895,25 @@ export class BillingClaimsComponent {
         this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
         isSectionValidated = false;
       }
-
+      if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.nextAction === this.appConstants.Need_to_bill_Secondary_Insurance
+        && !this.claimRcm.assoicatedClaimStatus) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
+        isSectionValidated = false;
+        this.errorMsgForNextAction = "Secondary claim not on file";
+      }
     }
     else if (buttonType == 'assignToTeamLead') {
 
       if (!this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.assignToTeamLead) {
         this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].assignToTeamLead = true;
         isSectionValidated = false;
+      }
+
+      if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.nextAction === this.appConstants.Need_to_bill_Secondary_Insurance
+        && !this.claimRcm.assoicatedClaimStatus) {
+        this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
+        isSectionValidated = false;
+        this.errorMsgForNextAction = "Secondary claim not on file";
       }
 
     }
