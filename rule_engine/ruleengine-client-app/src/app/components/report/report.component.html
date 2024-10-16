@@ -1286,6 +1286,12 @@
 						<td class="borderNone"></td>
 					</tr>
 		
+					<tr class="lightGray">
+						<ng-container *ngIf="reportDataInd.basicInfo3.toLowerCase()==='physicians mutual'">
+							<td>Applicable Schedule</td>
+							<td><span class="redText">{{reportDataInd.policy21}}</span></td>
+						</ng-container>
+					</tr>
 				</table>
 				<table class="table" vertical-align="top">
 					<tr class="lightGray">
@@ -1305,6 +1311,12 @@
 						<ng-container *ngIf="reportDataInd.policy12.toLowerCase()==='yes'">
 							<td colspan="9" class="red">
 								Refer to Medicaid, Adult Medicaid & Medicare Benefits (RD0703) for the full list of services applicable for Pre-auths.
+							</td>
+						</ng-container>
+						<ng-container *ngIf="reportDataInd.pdfAlert==='bcbsoftexasfederalgovernment'">
+							<td colspan="9" class="red">
+								For BCBS - Federal plans the fee schedule will be having limited coverage, please use the secondary insurance
+								schedule for the TX plan.
 							</td>
 						</ng-container>
 						<td class="width-5 borderNone"></td>

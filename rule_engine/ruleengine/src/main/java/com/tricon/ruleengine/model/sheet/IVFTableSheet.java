@@ -439,6 +439,7 @@ public class IVFTableSheet {
 	private String d5213142625fr;
 	private String d2954;
 	private String d2954fr;
+	private String policy21;
 
     public String getsRemarks() {
 		return sRemarks;
@@ -3011,6 +3012,12 @@ public class IVFTableSheet {
 	}
 	public void setD2954fr(String d2954fr) {
 		this.d2954fr = d2954fr;
+	}
+	public String getPolicy21() {
+		return policy21;
+	}
+	public void setPolicy21(String policy21) {
+		this.policy21 = policy21;
 	}
 	
 	

@@ -596,6 +596,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		if (capD!=null && capD.size() > 0) {
 			for(CaplineIVFFormDto form :capD) {
 			form.setPlanTypeChipOrChildrenMedicaid(false);
+			form.setPdfAlert("");
 			if (form.getPolicy1()!=null ) {
 				if (form.getPolicy1().toLowerCase().contains("chip")
 					|| form.getPolicy1().toLowerCase().contains("children medicaid")	)
@@ -647,6 +648,12 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				form.setHdto3(l3);
 				if (form.getHistoryCount()==null)form.setHistoryCount(hdto.size()+"");
 				form.setHistory(null);
+				if (form.getBasicInfo3() != null) {
+					String insName = form.getBasicInfo3().toLowerCase();
+					if (insName.replaceAll("\\s", "").replaceAll("-", "").contains("bcbsoftexasfederalgovernment")) {
+						form.setPdfAlert("bcbsoftexasfederalgovernment");
+					}
+				}
 			 }
 			}
 		 }
@@ -679,6 +686,10 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 					if (insName.contains("geha") || insName.contains("connection dental") ||
 							insName.contains("fep blue dental") || insName.contains("fed blue") ) {
 						form.setPdfAlert("Patients have BCBS Medical policy as primary & we can directly bill them even if we do not have insurance details.");	
+					}
+					if (insName.replaceAll("\\s", "").replaceAll("-", "").contains("bcbsoftexasfederalgovernment")) {
+						form.setPdfAlert(
+								"bcbsoftexasfederalgovernment");
 					}
 				}
 				//remove $ sign
@@ -743,6 +754,8 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				
 				}
 				
+				//replace \n to <br/> inside the comments
+				form.setComments(form.getComments().replaceAll("\\n", "<br/>"));								
 				CaplineIVFFormDtoToXML xml = new CaplineIVFFormDtoToXML();
 				String filePath = xml.convertToXML(form, XSLT_PATH);
 				File file = new File(filePath);

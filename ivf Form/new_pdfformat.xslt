@@ -390,6 +390,13 @@
 				</xsl:choose>					
             </tr>
 
+             <tr class="lightGray">
+                   <xsl:if test="contains(translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'physicians mutual')">
+                 <td>Applicable Schedule</td>
+                 <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy21"/></xsl:call-template></td>
+             </xsl:if>
+             </tr>
+
         </table>
         <br />
         <br />
@@ -409,12 +416,18 @@
         <strong>Alert-</strong> D0140 only Covered with x rays, If performed with other treatment amounts to be collected from patient and WO to insurance at $0.
         </div>
         </xsl:if>
+        
+        <xsl:if test="pdfAlert='bcbsoftexasfederalgovernment'">
+        <div class="red-clr">
+        <strong>Alert-</strong> For BCBS - Federal plans the fee schedule will be having limited coverage, please use the secondary insurance schedule for the TX plan.
+        </div>
+        </xsl:if>
         <br />
         <br />
         <table class="table" vertical-align="top">
             <tr class="lightGray">
                 <td class="width-15 red tableHeading text-left">Remarks for Office/LC3</td>
-                <td colspan="10"><xsl:value-of select="comments"/></td>
+                <td colspan="10"><xsl:value-of select="comments" disable-output-escaping="yes"/></td>
             </tr>
         </table>
         <br />

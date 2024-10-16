@@ -778,6 +778,7 @@ public class CaplineIVFFormDto {
 	private String d5213142625fr;
 	private String d2954;
 	private String d2954fr;
+	private String policy21;
 	
 	private boolean planTypeChipOrChildrenMedicaid;
 	
@@ -4071,6 +4072,14 @@ public class CaplineIVFFormDto {
 
 	public void setPlanTypeChipOrChildrenMedicaid(boolean planTypeChipOrChildrenMedicaid) {
 		this.planTypeChipOrChildrenMedicaid = planTypeChipOrChildrenMedicaid;
+	}
+
+	public String getPolicy21() {
+		return policy21;
+	}
+
+	public void setPolicy21(String policy21) {
+		this.policy21 = policy21;
 	}
 
 	
