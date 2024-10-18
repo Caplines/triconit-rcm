@@ -1303,7 +1303,7 @@
 								AOB No means, Insurance will pay to the subscriber, collect from the pt upfront for the treatment rendered.
 							</td>
 						</ng-container>
-						<ng-container *ngIf="reportDataInd.policy17.toLowerCase()==='yes'">
+						<ng-container *ngIf="reportDataInd.policy17!=null && reportDataInd.policy17.toLowerCase()==='yes'">
 							<td colspan="9" class="red">
 								Refer to CRA Information for Medicaid Plans (RD2405) to confirm if the patient plan requires CRA for claim submission.
 							</td>
