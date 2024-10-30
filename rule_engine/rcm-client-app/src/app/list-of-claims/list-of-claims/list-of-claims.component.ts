@@ -41,6 +41,7 @@ export class ListOfClaimsComponent implements OnInit {
   currentTeamId: number;
   showTooltipConfig:any={};
   selectedHeaders: string[];
+  isRoleAssociate: boolean;
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
       setTimeout(() => {
@@ -59,6 +60,7 @@ export class ListOfClaimsComponent implements OnInit {
     this.isAccessToListOfClaims();
     this.clientName = localStorage.getItem("selected_clientName");
     this.currentTeamId = Utils.selectedTeam();
+    this.isRoleAssociate = Utils.isRoleAsso();
   }
 
   isAccessToListOfClaims() {

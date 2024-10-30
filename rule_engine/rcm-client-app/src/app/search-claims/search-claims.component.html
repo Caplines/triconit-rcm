@@ -15,7 +15,7 @@
                                     <button type="button" class="btn btn-info" [class.active]="activeFilter==2" (click)="quickFilter(2)"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> Overdue Unbilled Medicaid </button>
                                     <button type="button" class="btn btn-info" [class.active]="activeFilter==3" (click)="quickFilter(3)"><img _ngcontent-fcp-c53="" src="../assets/img/filterIcon.png" class="filteraicon"> Overdue Unbilled Non-Medicaid </button>
                                 </div>
-                                <div class="download-btn">
+                                <div class="download-btn" *ngIf="!isRoleAssociate"> <!--hide for associate-->
                                     <button type="button" class="icon-btn" (click)="downloadPdf()"
                                         [disabled]="listOfClaimsData.length==0 || loader.exportPDFLoader">
                                         <img src="../../assets/img/pdf.png" /></button><span

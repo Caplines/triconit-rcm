@@ -52,6 +52,7 @@ export class SearchClaimsComponent {
   @ViewChild(DateRangePickerComponent)dateRangeChild!:DateRangePickerComponent;
   @ViewChild('archiveSelect')archiveSelect!:ElementRef;
   exportPDFLoader: boolean=false;
+  isRoleAssociate: boolean;
 
   constructor(public appService: ApplicationServiceService, private title: Title, public constants: AppConstants,
     private datePipe: DatePipe,private downloadService:DownLoadService) {
@@ -87,6 +88,7 @@ export class SearchClaimsComponent {
     this.getSerachParams();
     this.sortTeamData();
     // this.setDefaultDate();
+    this.isRoleAssociate = Utils.isRoleAsso();
   }
 
 

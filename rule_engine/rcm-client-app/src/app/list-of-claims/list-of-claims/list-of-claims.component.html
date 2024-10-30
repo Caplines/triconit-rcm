@@ -38,7 +38,7 @@
                                             <label class="form-check-label" for="flexRadioDefault1">My Claims</label>
                                         </div> -->
                                         </div>
-                                        <div>
+                                        <div *ngIf="!isRoleAssociate"> <!--hide for associate-->
                                             <button type="button" class="icon-btn" (click)="downloadPdf()"
                                                 [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
                                                 <img src="../../assets/img/pdf.png" /></button><span
