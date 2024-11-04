@@ -407,8 +407,7 @@
                                                             <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                                 <td>{{idx+1}}</td>
                                                                 <td>{{rem.teamName}}</td>
-                                                                <td>{{rem.cd | date:'MM/dd/YYYY hh:mm
-                                                                    a':'UTC'+timeZone}}
+                                                                <td>{{rem.cd | date:'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}
                                                                 </td>
                                                                 <td>{{rem.comment}}</td>
                                                                 <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}
@@ -2692,8 +2691,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm
-                                                                a':'UTC'+timeZone}}</td>
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>

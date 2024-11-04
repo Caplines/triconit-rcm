@@ -764,7 +764,7 @@ export class BillingClaimsComponent {
       ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
         ths.finalSaveSection(true, true);
       });
-    } else if ("reviewedafterpendingbyinternalaudit") {
+    } else if (type === "reviewedafterpendingbyinternalaudit") {
       let valid = true;
       ths.claimEditModel.submission = false;
       if (!this.isSuperAdmin) valid = ths.validateData();
@@ -2272,7 +2272,7 @@ export class BillingClaimsComponent {
         let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
         //method names are creates using convention  validate_{sectioname}
         console.log(!isSectionVal);
-        if (methodName == 'validate_APPEAL' || methodName == 'validate_SERVICE_LEVEL_INFORMATION' || methodName == 'validate_CLAIM_LEVEL_INFORMATION'
+        if (methodName == 'validate_APPEAL' || (!moveToNextTeam && methodName == 'validate_SERVICE_LEVEL_INFORMATION') || methodName == 'validate_CLAIM_LEVEL_INFORMATION'
           || methodName == 'validate_INSURANCE_PAYMENT_INFORMATION' ||
           methodName == 'validate_INSURANCE_FOLLOW_UP' || methodName == 'validate_PATIENT_STATEMENT'
           || methodName == 'validate_PATIENT_COMMUNICATION'
