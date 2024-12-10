@@ -16,6 +16,10 @@
                                         <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader"
                                             name="options" id="option2" (change)="switchTab('submitted')">Billed Claims
                                     </label>
+                                    <label class="btn btn-light" [ngClass]="{'active':tabSwitch.myClaims}" *ngIf="isRoleLead">
+                                        <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader" name="options" id="option3"
+                                            (change)="switchTab('myClaims')">My Claims
+                                    </label>
                                 </div>
                                 <div class="otherTeamBox mt-2 mb-2" *ngIf="!isRoleAssociate">
                                     <button type="button" class="icon-btn" (click)="downloadPdf()"
@@ -78,8 +82,7 @@
                                                                             [checked]="isFilterAllSelected.officeName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'officeName')">
-                                                                        {{isFilterAllSelected.officeName ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.officeName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -226,8 +229,7 @@
                                                                             [checked]="isFilterAllSelected.ageBracket"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'ageBracket')">
-                                                                        {{isFilterAllSelected.ageBracket ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.ageBracket ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.ageBracket=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -269,8 +271,7 @@
                                                                             [checked]="isFilterAllSelected.insuranceName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceName')">
-                                                                        {{isFilterAllSelected.insuranceName ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceName ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -313,8 +314,7 @@
                                                                             [checked]="isFilterAllSelected.insuranceType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceType')">
-                                                                        {{isFilterAllSelected.insuranceType ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -357,8 +357,7 @@
                                                                             [checked]="isFilterAllSelected.claimType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'claimType')">
-                                                                        {{isFilterAllSelected.claimType ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.claimType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -405,8 +404,7 @@
                                                                             [checked]="isFilterAllSelected.lastTeam"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'lastTeam')">
-                                                                        {{isFilterAllSelected.lastTeam ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.lastTeam ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.lastTeam=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -487,8 +485,7 @@
                                                                             [checked]="isFilterAllSelected.currentStatus"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'currentStatus')">
-                                                                        {{isFilterAllSelected.currentStatus ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.currentStatus ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.currentStatus=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -730,8 +727,7 @@
                                                                             [checked]="isFilterAllSelected.selectAging"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'selectAging')">
-                                                                        {{isFilterAllSelected.selectAging ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.selectAging ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.selectAging=false;"
                                                                         type="button" class="close" data-dismiss="modal"

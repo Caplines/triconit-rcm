@@ -58,7 +58,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredNextActionRequired: any = [];
   filteredProviderSpeciality: any = [];
   filteredSelectAging: any = [];
-  tabSwitch: any = { 'submitted': false, 'unSubmitted': true };
+  tabSwitch: any = { 'submitted': false, 'unSubmitted': true, 'myClaims': false };
   tabValue: any;
   showColumns: any = { "currentStatus": false, "nextActionRequired": false, "dueDate": false, "providerSpeciality": false, "dueBalance": false, "showAttach": false, "dueDateSort": false };
   columnPermissionsByTeam: any = {
@@ -1594,19 +1594,66 @@ export class OtherTeamsWorkComponent implements OnInit {
     });
   }
 
+  fetchClaimsLead(subType: string) {
+    this.loader.listClaimLoader = true;
+    let ths = this;
+    
+    ths.appService.fetchLeadClaimDet(ths.selectedBtype, subType, (res: any) => {
+      if (res.status === 200) {
+        ths.claimDetail = this.removePrefix(res.data);
+        let data: any = ths.claimDetail.map((e: any) => {
+          if (e.claimId.endsWith("_P")) {
+            e['EstAmount'] = e.primeSecSubmittedTotal;
+          } else {
+            e['EstAmount'] = e.secTotal;
+          }
+          e['dueDateSort'] = e.followUpDate == null ? e.pendingSince : e.followUpDate;
+          return e;
+        })
+        ths.claimDetail = data;
+        // ths.claimDetail =  res.data;
+        ths.loader.listClaimLoader = false;
+
+        this.filterOfficeName();
+        this.fetchOfficeByUuid();
+        this.filterOptionAgeBracket();
+        this.filterOptionInsuranceName();
+        this.filterOptionInsuranceType();
+        this.filterOptionClaimType();
+        this.filterOptionLastTeam();
+        this.filterOptionCurrentStatus();
+        this.filterOptionNextActionRequired();
+        this.filterOptionProviderSpeciality();
+        //this.showClaimIdWithDigits();
+        this.showAgeBracket_WithColor_AndClaimIdDigits();
+        this.checkDiffForPaymentPosting();
+        this.filterOptionSelectAging();
+      }
+    });
+  }
+
   switchTab(tab: any) {
     if (!this.claimDetail) return;
     if (tab == 'unSubmitted') {
       this.tabValue = 'unSubmitted';
       this.tabSwitch.unSubmitted = true;
       this.tabSwitch.submitted = false;
+      this.tabSwitch.myClaims = false;
       this.fetchClaims("unSubmitted");
     }
     if (tab == 'submitted') {
       this.tabValue = 'submitted';
       this.tabSwitch.unSubmitted = false;
       this.tabSwitch.submitted = true;
+      this.tabSwitch.myClaims = false;
       this.fetchClaims("submitted");
+    }
+    if (tab == 'myClaims') {
+      this.tabValue = 'myClaims';
+      this.tabSwitch.unSubmitted = false;
+      this.tabSwitch.submitted = false;
+      this.tabSwitch.myClaims = true;
+      this.fetchClaimsLead('Fresh');
     }
   }
 

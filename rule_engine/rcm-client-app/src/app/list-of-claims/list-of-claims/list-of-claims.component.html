@@ -27,7 +27,7 @@
                                                         (change)="switchTab('sendBack')">Claims Sent back by Other Teams
                                                 </label>
                                                 <label class="btn btn-light" [ngClass]="{'active':tabSwitch.MyClaims}"
-                                                    *ngIf="isRoleLead && staticUtil.isBilling()">
+                                                    *ngIf="isRoleLead">
                                                     <input class="form-check-input" type="radio"
                                                         [disabled]="loader.listClaimLoader" name="options" id="option3"
                                                         (change)="switchTab('MyClaims')">My Claims
@@ -74,8 +74,7 @@
                                                                                 [checked]="isFilterAllSelected.officeName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear
-                                                                            All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.officeName=false;"
                                                                             type="button" class="close"
@@ -267,8 +266,7 @@
                                                                                 [checked]="isFilterAllSelected.ageBracket"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'ageBracket')">
-                                                                            {{isFilterAllSelected.ageBracket ? 'Clear
-                                                                            All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.ageBracket ? 'Clear All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.ageBracket=false;"
                                                                             type="button" class="close"
@@ -312,8 +310,7 @@
                                                                                 [checked]="isFilterAllSelected.claimType"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'claimType')">
-                                                                            {{isFilterAllSelected.claimType ? 'Clear
-                                                                            All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.claimType=false;"
                                                                             type="button" class="close"
@@ -396,8 +393,7 @@
                                                                                 [checked]="isFilterAllSelected.insuranceName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'insuranceName')">
-                                                                            {{isFilterAllSelected.insuranceName? 'Clear
-                                                                            All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.insuranceName? 'Clear All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.insuranceName=false;"
                                                                             type="button" class="close"
@@ -444,8 +440,7 @@
                                                                                 [checked]="isFilterAllSelected.insuranceType"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'insuranceType')">
-                                                                            {{isFilterAllSelected.insuranceType ? 'Clear
-                                                                            All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.insuranceType=false;"
                                                                             type="button" class="close"
@@ -603,8 +598,7 @@
                                                             <td [ngClass]="{'changeColor' : det.colorChange}">
                                                                 {{det.timelyFilingLimitData}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                                class="noWrape">{{det.pendingSince | date: 'MMM dd,
-                                                                YYYY'}}</td>
+                                                                class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
                                                                 class="noWrape">{{det.ageBracket}}</td>
                                                             <!-- Claim Type START-->
