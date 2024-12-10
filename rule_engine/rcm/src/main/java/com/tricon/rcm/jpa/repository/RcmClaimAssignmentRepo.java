@@ -131,8 +131,15 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	          + " and rc.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED,nativeQuery=true)
 	      List<ExistingClaimDto> findExistingUserAssignClaimsAndClientStatus(@Param("assignTo")String assignTo);
 	
-			@Query(value = "select comment_assigned_by as value,claim_id as keyy from rcm_claim_assignment where active =false and current_team_id<>:teamId and claim_id in :claimUuid order by created_date desc limit 1", nativeQuery = true)
-			List<KeyValueDto> findLatestClaimCommentByOtherTeam(@Param("claimUuid") List<String> claimUUid,
+			@Query(value = ""
+					+ " select claim_id as keyy,comment_assigned_by AS value,created_date,updated_date from rcm_claim_assignment rca "
+					+ " inner join ( "
+					+ " select claim_id as keyy,max(created_date) as maxDate from rcm_claim_assignment where "
+					+ " active =false and "
+					+ " current_team_id<>:teamId and claim_id  in :claimUUids "
+					+ " group by keyy) rca1  on rca.claim_id=rca1.keyy and rca1.maxDate=rca.created_date and rca.active=false",
+					nativeQuery = true)
+			List<KeyValueDto> findLatestClaimCommentByOtherTeam(@Param("claimUUids") List<String> claimUUids,
 					@Param("teamId") int teamId);
 		
 			@Query(value = "select pending_since from rcm_claim_assignment where claim_id=:claimUuid and active =false and current_team_id=:teamId order by pending_since desc limit 1",nativeQuery = true)

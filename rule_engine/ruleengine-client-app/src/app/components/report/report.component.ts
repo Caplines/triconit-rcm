@@ -21,7 +21,9 @@ export class ReportComponent implements OnInit {
     ivformTypes: any;
 	users: any;
 	reportData: any;
+    reportDataFilter: any;
 	arrayOfKeys: any;
+    arrayOfKeysFilter: any;
 	showLoading: boolean = false;
 	showReportForm: boolean = false;
 	showReportData: boolean = false;
@@ -72,7 +74,8 @@ export class ReportComponent implements OnInit {
 		ivfRDBMSWebsiteParse:false,ruledatasheet:false,sealantElig:false,
 		Teamwise: false,TeamwiseDOS:false
 	}
-
+    runByFilterUser:string="All";
+    runByFilterUsers = [];
 	constructor(public applicationService: ApplicationService, public router: Router, private datePipe: DatePipe, private route: ActivatedRoute) {
 		this.offices = this.route.snapshot.data['offsAndIVType'].data.offices;
 		this.ivformTypes=this.route.snapshot.data['offsAndIVType'].data.ivforms;
@@ -223,6 +226,7 @@ export class ReportComponent implements OnInit {
 				this.report.reportField1 = this.datePipe.transform(this.report.reportField1, 'MM/dd/yyyy');
 			}
 			this.showLoading = true;
+			this.runByFilterUsers=[];
 			this.applicationService.validateReport(this.report, this.ur, (result) => {
 				this.showLoading = false;
 				let ths=this;
@@ -245,7 +249,11 @@ export class ReportComponent implements OnInit {
 						this.parseData(result.data);
 
 					} else {
+						
 						this.arrayOfKeys = Object.keys(this.reportData);
+						this.arrayOfKeysFilter=Object.keys(this.reportData);
+						this.createUsersFromData(this.reportData);
+						this.reportDataFilter={...this.reportData};
 
 					}
 					
@@ -294,15 +302,15 @@ export class ReportComponent implements OnInit {
 			 let date1 = new Date(ths.report.reportField1);
 			 let date3 = date1.setDate(date1.getDate()+1);
 			   let mm= new Date(date3);
-			   console.log(mm.getDate());
 			   ths.report.reportField1=(mm.getMonth()+1)+"/"+mm.getDate()+"/"+mm.getFullYear();
-			   console.log("this.showLoadingMoreDate",this.showLoadingMoreDate);
 			   if (!this.showLoadingMoreDate) {
 				   return;//in case back is pressed.
 			   }
 			   let old=	ths.applicationService.validateReport(ths.report, ths.ur, (result) => {
 				
 		        ths.reportData ={...ths.reportData, ...result.data};
+		        this.reportDataFilter={...ths.reportData};
+		        
 		        if (!this.isEmpty(this.reportData)){
 					this.showReportData = true;
 					this.showLoading = false;
@@ -311,6 +319,8 @@ export class ReportComponent implements OnInit {
 					this.showReportData = false;
 				}
 		        ths.arrayOfKeys = Object.keys(ths.reportData);
+		        ths.arrayOfKeysFilter = Object.keys(ths.reportData);
+		        this.createUsersFromData(ths.reportData);
 				ths.loadMoreforMutipleDates(n-1,oldD);
 			});
 			  
@@ -534,7 +544,8 @@ downloadPdfSeal(){
 	this.showReportData=false;
 	this.showLoadingMoreDate=false;
 	this.reportData={};
-	
+	this.runByFilterUser='All';
+	this.runByFilterUsers=[];
    }
 
    dateRange(range:number){
@@ -555,7 +566,7 @@ downloadPdfSeal(){
    
    downloadTeamWiseCSV(){
 	   this.showLoading = true;
-	   this.applicationService.downloadExcelTeamData({ "data":  this.reportData, "d1": this.report.reportField1,"d2":this.report.reportField2 },"/generateTeamwiseExcel", (result) => {
+	   this.applicationService.downloadExcelTeamData({ "data":  this.reportDataFilter, "d1": this.report.reportField1,"d2":this.report.reportField2 },"/generateTeamwiseExcel", (result) => {
 			this.showLoading = false;
 			if (result.status == '200') {
 				//const filename = result.headers.get('filename');
@@ -565,6 +576,76 @@ downloadPdfSeal(){
 			}
 		});
    }
+   
+   createUsersFromData(data:any){
+	   
+	   let th=this;
+	   Object.keys(data).forEach(function (key){
+		    data[key].forEach((value: any) => {
+		    	if (!th.runByFilterUsers.includes(value['name'])){
+			    th.runByFilterUsers.push(value['name']);
+		    	}
+			});
+		});
+	   
+	   
+   }
 
+   filterUserDataFromTo(){
+	   if (this.report.reportType=='Teamwise'){
+		   this.filterUserDataFromToTEAM();
+	   }else if (this.report.reportType=='DateFromTo'){
+		   this.filterUserDataFromToDATERUN();
+	   }
+	   
+	   
+   }
+   
+   filterUserDataFromToTEAM(){
+	   let th=this;
+	   th.reportDataFilter={};
+	   th.arrayOfKeysFilter=[];
+	   if (th.runByFilterUser === 'All'){
+		   th.reportDataFilter={...th.reportData};
+	   }else{
+	   Object.keys(th.reportData).forEach(function (key){
+		   th.reportData[key].forEach((value: any) => {
+		    	if (value['name'] === th.runByFilterUser){
+		    		if (!Object.keys(th.reportDataFilter).includes(key)){
+		    			let x=[];
+		    			x.push(value);
+		    			th.reportDataFilter[key]=x;
+		    		}else{
+		    			th.reportDataFilter[key].push(value);
+		    		}
+		    	}
+			});
+		});
+	   }
+	   th.arrayOfKeysFilter=Object.keys(th.reportDataFilter);
+   }
+   filterUserDataFromToDATERUN(){
+	   let th=this;
+	   th.reportDataFilter={};
+	   th.arrayOfKeysFilter=[];
+	   if (th.runByFilterUser === 'All'){
+		   th.reportDataFilter={...th.reportData};
+	   }else{
+	   Object.keys(th.reportData).forEach(function (key){
+		   th.reportData[key].forEach((value: any) => {
+		    	if (value['name'] === th.runByFilterUser){
+		    		if (!Object.keys(th.reportDataFilter).includes(key)){
+		    			let x=[];
+		    			x.push(value);
+		    			th.reportDataFilter[key]=x;
+		    		}else{
+		    			th.reportDataFilter[key].push(value);
+		    		}
+		    	}
+			});
+		});
+	   }
+	   th.arrayOfKeysFilter=Object.keys(th.reportDataFilter);
+   }
 
 }

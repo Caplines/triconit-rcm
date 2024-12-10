@@ -11,13 +11,13 @@ export class AppConstants {
 
     public TEAMS_CONFIG = new Map<Number, TeamModel>([
         [1, {
-            "id": 1, "name": "NA", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', '/tool-update', '/tool-update/issue-claims',"/reconciliation"], "defaultpath": "/register"
+            "id": 1, "name": "NA", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', '/tool-update', '/tool-update/issue-claims', "/reconciliation"], "defaultpath": "/register"
         }],
         [2, {
-            "id": 2, "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client',"/reconciliation", "/unopenedclaim"], "defaultpath": "/register"
+            "id": 2, "name": "Admin", "paths": ["/register", '/user-setting', '/manage-office', '/users-status', '/manage-client', "/reconciliation", "/unopenedclaim"], "defaultpath": "/register"
         }],
         [3, {
-            "id": 3, "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production", "/search-claims", '/tool-update/issue-claims',"/reconciliation"], "defaultpath": "/claim-assignment"
+            "id": 3, "name": "Internal Audit Team", "paths": ["/list-of-claims", "/claim-assignment", "/update-pass", "/all-pendency", "/tool-update", "/production", "/search-claims", '/tool-update/issue-claims', "/reconciliation"], "defaultpath": "/claim-assignment"
         }],
         [4, {
             "id": 4, "name": "LC3", "paths": AppConstants.commonPath, "defaultpath": "/update-pass"
@@ -29,7 +29,7 @@ export class AppConstants {
             "id": 6, "name": "Patient Calling", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
         [7, {
-            "id": 7, "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims',"/reconciliation"], "defaultpath": "/claim-assignment"
+            "id": 7, "name": "Billing Team", "paths": ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims', "/reconciliation"], "defaultpath": "/claim-assignment"
         }],
         [8, {
             "id": 8, "name": "Super Admin", "paths": AppConstants.commonPath, "defaultpath": "/claim-assignment"
@@ -71,14 +71,15 @@ export class AppConstants {
             "id": 20, "name": "Aging", "paths": AppConstants.commonPath, "defaultpath": "/list-of-claims"
         }],
 
-        [9,{
-            "id": 9, "name":"Reporting","paths":["/update-pass","/search-claims","/reconciliation","/tool-update",'/tool-update/issue-claims'],"defaultpath":"/tool-update"
+        [9, {
+            "id": 9, "name": "Reporting", "paths": ["/update-pass", "/search-claims", "/reconciliation", "/tool-update", '/tool-update/issue-claims'], "defaultpath": "/tool-update"
         }],
 
     ]);
 
     public BILLING_ID = 1;
     public RE_BILLING_ID = 2;
+    public NEED_TO_RE_BILL = "Need to re-bill";
     public static INTERNAL_AUDIT_TEAM = 3;
     public static BILLING_TEAM = 7;
     public static CDP_TEAM = 11;
@@ -97,7 +98,7 @@ export class AppConstants {
     public static PATIENT_STATEMENT_TEAM = 18;
     public static CREDENTIALING_TEAM = 19;
     public static AGING_TEAM = 20;
-    public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims","/reconciliation"];
+    public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", "/reconciliation"];
     // public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
 
 
@@ -220,24 +221,24 @@ export class AppConstants {
     public static inputRequiredForTeams: any = { "Aging": false, "CDP": false, "Payment Posting": false, "Patient Statement": false }
 
     public claimInitialDenialReason: any = [
-        { reasonName: "Benefit Maximum Met"},
-        { reasonName: "COB Info Required"},
-        { reasonName: "Frequency Limitation"},
-        { reasonName: "Member Not Eligible"},
-        { reasonName: "Coinsurance Applied"},
-        { reasonName: "Deductible Applied"},
-        { reasonName: "Alternate Benefit Applied"},
-        { reasonName: "Provider Out of Network"},
-        { reasonName: "Service Not Covered"},
-        { reasonName: "Provider not authorized for service"},
-        { reasonName: "Waiting Period Applied"},
-        { reasonName: "Medical Necessity Not Met"},
-        { reasonName: "Copay Applied"},
-        { reasonName: "Services Bundled"},
-        { reasonName: "Other"},
-        { reasonName: "Pre-auth Denied"},
-        { reasonName: "Payment issued to patient"},
-        { reasonName: "N/A"}
+        { reasonName: "Benefit Maximum Met" },
+        { reasonName: "COB Info Required" },
+        { reasonName: "Frequency Limitation" },
+        { reasonName: "Member Not Eligible" },
+        { reasonName: "Coinsurance Applied" },
+        { reasonName: "Deductible Applied" },
+        { reasonName: "Alternate Benefit Applied" },
+        { reasonName: "Provider Out of Network" },
+        { reasonName: "Service Not Covered" },
+        { reasonName: "Provider not authorized for service" },
+        { reasonName: "Waiting Period Applied" },
+        { reasonName: "Medical Necessity Not Met" },
+        { reasonName: "Copay Applied" },
+        { reasonName: "Services Bundled" },
+        { reasonName: "Other" },
+        { reasonName: "Pre-auth Denied" },
+        { reasonName: "Payment issued to patient" },
+        { reasonName: "N/A" }
 
     ];
 
@@ -264,7 +265,7 @@ export class AppConstants {
         { name: "Payment Issued to Patient" },
         { name: "EOB Requested" },
         { name: "Appeal Upheld" },
-       
+
     ];
 
 
@@ -273,30 +274,30 @@ export class AppConstants {
     public Need_to_call_Insurance: string = "Need to Call Insurance";
     public Need_to_bill_Secondary_Insurance: string = "Need to Bill Secondary Insurance";
     public nextActionStatusRcm: any = [
-        { name: "Need to Void Partial Claim"},
-        { name: "Need to Void Full Claim"},
-        { name: "Close the Claim"},
-        { name: "Need to Follow up"},
-        { name: "Need to Call Insurance for Follow up"},
-        { name: "Need to send Appeal"},
-        { name: "Need to Follow up on Appeal"},
-        { name: "Need to Review"},
-        { name: "Need to Adjust post Approval"},
-        { name: "Need to Post"},
-        { name: "Need to Send Statement"},
-        { name: "Need to Send Text to Patient for Payment"},
-        { name: "No Action Needed"},
-        { name: "Need to send to Collections"},
-        { name: "Need to Call Insurance for EOB"},
-        { name: "Need to Check Payment Status"},
-        { name: "Need to Check Claim Status on Web"},
-        { name: "Need to Bill Secondary Insurance"},
-        { name: "Need Additional Information For Claim"},
-        { name: "Need to follow up for Void Request"},
-        { name: "Need to get Provider Credentialed"},
-        { name: "Need to call Insurance for reprocessing"},
-        { name: "Need to Bill"},
-        { name: "Need to followup on void"},
+        { name: "Need to Void Partial Claim" },
+        { name: "Need to Void Full Claim" },
+        { name: "Close the Claim" },
+        { name: "Need to Follow up" },
+        { name: "Need to Call Insurance for Follow up" },
+        { name: "Need to send Appeal" },
+        { name: "Need to Follow up on Appeal" },
+        { name: "Need to Review" },
+        { name: "Need to Adjust post Approval" },
+        { name: "Need to Post" },
+        { name: "Need to Send Statement" },
+        { name: "Need to Send Text to Patient for Payment" },
+        { name: "No Action Needed" },
+        { name: "Need to send to Collections" },
+        { name: "Need to Call Insurance for EOB" },
+        { name: "Need to Check Payment Status" },
+        { name: "Need to Check Claim Status on Web" },
+        { name: "Need to Bill Secondary Insurance" },
+        { name: "Need Additional Information For Claim" },
+        { name: "Need to follow up for Void Request" },
+        { name: "Need to get Provider Credentialed" },
+        { name: "Need to call Insurance for reprocessing" },
+        { name: "Need to Bill" },
+        { name: "Need to followup on void" },
 
     ]
 
@@ -308,12 +309,12 @@ export class AppConstants {
         "P": "Unbilled",
         "O": "Open",
         "U": "Primary Open - Secondary Unsubmitted",
-        "Closed":"Closed",
-        "Unbilled":"Unbilled",
-        "Open":"Open",
-        "Billed":"Billed"
+        "Closed": "Closed",
+        "Unbilled": "Unbilled",
+        "Open": "Open",
+        "Billed": "Billed"
 
-      };
+    };
 
     public helpLinks: any = {
         "/tool-update": "/tool-update",
@@ -330,138 +331,138 @@ export class AppConstants {
         "/manage-section": "/manage-section",
         "/reconciliation": "/reconciliation"
     };
-    
-      public requestRebillingRequirement:any=[
+
+    public requestRebillingRequirement: any = [
         {
-            name:'Perio Chart',
-            checked:false
+            name: 'Perio Chart',
+            checked: false
         },
         {
-            name:'Bitewings',
-            checked:false
+            name: 'Bitewings',
+            checked: false
         },
         {
-            name:'PAs',
-            checked:false
+            name: 'PAs',
+            checked: false
         },
         {
-            name:'FMX',
-            checked:false
+            name: 'FMX',
+            checked: false
         },
         {
-            name:'PANO',
-            checked:false
+            name: 'PANO',
+            checked: false
         },
         {
-            name:'Pre-Op X-ray',
-            checked:false
+            name: 'Pre-Op X-ray',
+            checked: false
         },
         {
-            name:'Post-Op X-ray',
-            checked:false
+            name: 'Post-Op X-ray',
+            checked: false
         },
         {
-            name:'Intra Oral Photos',
-            checked:false
+            name: 'Intra Oral Photos',
+            checked: false
         },
         {
-            name:'Cephlo',
-            checked:false
+            name: 'Cephlo',
+            checked: false
         },
         {
-            name:'CRA Code',
-            checked:false
+            name: 'CRA Code',
+            checked: false
         },
         {
-            name:'CRA Form',
-            checked:false
+            name: 'CRA Form',
+            checked: false
         },
         {
-            name:'Lab Slip',
-            checked:false
+            name: 'Lab Slip',
+            checked: false
         },
         {
-            name:'Sedation Record',
-            checked:false
+            name: 'Sedation Record',
+            checked: false
         },
         {
             name: 'Other',
             checked: false
         },
-      ]
+    ]
 
 
-      public btpReason: any = [
-        { reasonName:"Benefit Maximum Met"},
-        { reasonName:"Frequency Limitation"},
-        { reasonName:"Member Not Eligible"},
-        { reasonName:"Coinsurance Applied"},
-        { reasonName:"Deductible Applied"},
-        { reasonName:"Alternate Benefit Applied"},
-        { reasonName:"Provider Out of Network"},
-        { reasonName:"Service Not Covered"},
-        { reasonName:"Provider not authorized for service"},
-        { reasonName:"Waiting Period Applied"},
-        { reasonName:"Medical Necessity Not Met"},
-        { reasonName:"Copay Applied"},
-        { reasonName:"Services Bundled"},
-        { reasonName:"Other"},
-        { reasonName:"Pre-auth Denied"},
-        { reasonName:"Payment issued to patient"},
+    public btpReason: any = [
+        { reasonName: "Benefit Maximum Met" },
+        { reasonName: "Frequency Limitation" },
+        { reasonName: "Member Not Eligible" },
+        { reasonName: "Coinsurance Applied" },
+        { reasonName: "Deductible Applied" },
+        { reasonName: "Alternate Benefit Applied" },
+        { reasonName: "Provider Out of Network" },
+        { reasonName: "Service Not Covered" },
+        { reasonName: "Provider not authorized for service" },
+        { reasonName: "Waiting Period Applied" },
+        { reasonName: "Medical Necessity Not Met" },
+        { reasonName: "Copay Applied" },
+        { reasonName: "Services Bundled" },
+        { reasonName: "Other" },
+        { reasonName: "Pre-auth Denied" },
+        { reasonName: "Payment issued to patient" },
     ];
 
     public adjustmentReason: any = [
-        { reasonName: "Benefit Maximum Met"},
-        { reasonName: "Frequency Limitation"},
-        { reasonName: "Member Not Eligible - Medicaid"},
-        { reasonName: "Coinsurance Applied"},
-        { reasonName: "Deductible Applied"},
-        { reasonName: "Alternate Benefit Applied"},
-        { reasonName: "Provider Out of Network"},
-        { reasonName: "Service Not Covered"},
-        { reasonName: "Provider not authorized for service"},
-        { reasonName: "Waiting Period"},
-        { reasonName: "Medical Necessity Not Met"},
-        { reasonName: "Copay"},
-        { reasonName: "Service Bundled"},
-        { reasonName: "Processed under Capitaion"},
-        { reasonName: "Untimely Filing"},
-        { reasonName: "Pre-auth Denied"},
-        { reasonName: "Patient Not Assigned To The Facility"},
-        { reasonName: "Incorrect FS"},
-        { reasonName: "Incorrect Fee"},
-        { reasonName: "Other"},
-        { reasonName: "Interest Receivced"},
-        { reasonName: "Pre-auth Missing"},
-        { reasonName: "Exam & Xray Denial"},
+        { reasonName: "Benefit Maximum Met" },
+        { reasonName: "Frequency Limitation" },
+        { reasonName: "Member Not Eligible - Medicaid" },
+        { reasonName: "Coinsurance Applied" },
+        { reasonName: "Deductible Applied" },
+        { reasonName: "Alternate Benefit Applied" },
+        { reasonName: "Provider Out of Network" },
+        { reasonName: "Service Not Covered" },
+        { reasonName: "Provider not authorized for service" },
+        { reasonName: "Waiting Period" },
+        { reasonName: "Medical Necessity Not Met" },
+        { reasonName: "Copay" },
+        { reasonName: "Service Bundled" },
+        { reasonName: "Processed under Capitaion" },
+        { reasonName: "Untimely Filing" },
+        { reasonName: "Pre-auth Denied" },
+        { reasonName: "Patient Not Assigned To The Facility" },
+        { reasonName: "Incorrect FS" },
+        { reasonName: "Incorrect Fee" },
+        { reasonName: "Other" },
+        { reasonName: "Interest Receivced" },
+        { reasonName: "Pre-auth Missing" },
+        { reasonName: "Exam & Xray Denial" },
 
     ];
 
     public desposition: any = [
-        {reasonName:"Voice Mail Left"},
-        {reasonName:"Call not Connected"},
-        {reasonName:"Payment Promised"},
-        {reasonName:"Full Payment Made"},
-        {reasonName:"Wrong No."},
-        {reasonName:"Not Ready to Pay"},
-        {reasonName:"Statement Requested"},
-        {reasonName:"Call Back Requested"},
-        {reasonName:"Statement Emailed"},
-        {reasonName:"Patient is Bankrupt"},
-        {reasonName:"Partial Payment Made"},
-        {reasonName:"Deceased/Passed Away"},
-        {reasonName:"Patient Disputed Balance"},
-        {reasonName:"Patient speaks other Language "},
-        {reasonName:"Others"},
+        { reasonName: "Voice Mail Left" },
+        { reasonName: "Call not Connected" },
+        { reasonName: "Payment Promised" },
+        { reasonName: "Full Payment Made" },
+        { reasonName: "Wrong No." },
+        { reasonName: "Not Ready to Pay" },
+        { reasonName: "Statement Requested" },
+        { reasonName: "Call Back Requested" },
+        { reasonName: "Statement Emailed" },
+        { reasonName: "Patient is Bankrupt" },
+        { reasonName: "Partial Payment Made" },
+        { reasonName: "Deceased/Passed Away" },
+        { reasonName: "Patient Disputed Balance" },
+        { reasonName: "Patient speaks other Language " },
+        { reasonName: "Others" },
     ];
 
     public reasonForRebilling: any = [
-        { reasonName: "COB Info Required"},
-        { reasonName: "Additional Info Needed"},
-        { reasonName: "Claim not on file"},
-        { reasonName: "Need Primary EOB"},
-        { reasonName: "Incorrect Billing"},
-        { reasonName: "Incorrect patient/Insurance"},
+        { reasonName: "COB Info Required" },
+        { reasonName: "Additional Info Needed" },
+        { reasonName: "Claim not on file" },
+        { reasonName: "Need Primary EOB" },
+        { reasonName: "Incorrect Billing" },
+        { reasonName: "Incorrect patient/Insurance" },
 
     ];
 
@@ -485,7 +486,7 @@ export class AppConstants {
         { status: "Pending with Offshore" },
     ];
 
-    public paymentFrequency :any = [
+    public paymentFrequency: any = [
         { frequency: "Monthly" },
         { frequency: "Quaterly" },
         { frequency: "Half - Yearly" },

@@ -1726,10 +1726,10 @@ public class FreqencyUtils {
 				}
 			} else if (FDTO.getCy() > 0) {// Calendar Year
 				
-				if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
+				/*if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
-				}else {
+				}else {*/
 					
 				
 					RuleEngineLogger.generateLogs(clazz, "Calendar Year:" + FDTO.getCy(), Constants.rule_log_debug, bw);
@@ -1744,7 +1744,7 @@ public class FreqencyUtils {
 						present = true;
 						scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 					}
-			   }
+			   //}
 				/*
 				 * present=true;//Remove after testing..
 				 * scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);//Remove after testing..
@@ -1850,10 +1850,10 @@ public class FreqencyUtils {
 				}
 
 			} else if (FDTO.getDays() > 0) {// Months & Days (1x6Mo_1D)
-				if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
+				/*if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
-				}else {
+				}else {*/
 				RuleEngineLogger.generateLogs(clazz, " Days:" + FDTO.getDays(), Constants.rule_log_debug, bw);
 				RuleEngineLogger.generateLogs(clazz, "Months :" + FDTO.getMonths(), Constants.rule_log_debug, bw);
 				//
@@ -1890,12 +1890,12 @@ public class FreqencyUtils {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 				}
-			  }
+			  //}
 			} else if (FDTO.getOnlyDays() > 0) {// Days
-				if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
+				/*if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
-				}else {
+				}else {*/
 				RuleEngineLogger.generateLogs(clazz, "ONLY DAYS :" + FDTO.getOnlyDays(), Constants.rule_log_debug, bw);
 				if (planDate == null) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1927,13 +1927,14 @@ public class FreqencyUtils {
 					present = true;
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 				}
-			 }
+			 //}
 
 			} else if (FDTO.getMonths() > 0) {// Months
 				if (benefitPeriodYear.equalsIgnoreCase("PY") || benefitPeriodYear.equalsIgnoreCase("FY")) {
-					present = true;
-					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
-				}else {
+					planDate= new Date();
+					RuleEngineLogger.generateLogs(clazz, " benefitPeriodYear is "+benefitPeriodYear,
+							Constants.rule_log_debug, bw);
+				}
 				RuleEngineLogger.generateLogs(clazz, "MONTHS :" + FDTO.getMonths(), Constants.rule_log_debug, bw);
 				if (planDate == null) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1944,8 +1945,8 @@ public class FreqencyUtils {
 					return dList;
 				}
 				if (dos.compareTo(planDate) < 0) {
-					RuleEngineLogger.generateLogs(clazz, " HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
-							Constants.rule_log_debug, bw);
+					//RuleEngineLogger.generateLogs(clazz, " HISTORY DATE PRIOR TO PLANDATE  IGNORE IT :",
+					//		Constants.rule_log_debug, bw);
 
 					// continue;
 				}
@@ -1965,7 +1966,7 @@ public class FreqencyUtils {
 					scivfTFDFinal.setCount(scivfTFDFinal.getCount() + 1);
 				}
 			  }
-			}
+			
 
 			////
 			if (present) {

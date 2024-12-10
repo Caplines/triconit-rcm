@@ -10,7 +10,8 @@
                     <div class="main-container">
                         <div class="detail-box">
                             <div class="detail-box-form">
-                                <div class="form-row  collapse" [ngClass]="{'show':expandCollapse}" id="ruleEngine" style="margin-bottom: 0px;">
+                                <div class="form-row  collapse" [ngClass]="{'show':expandCollapse}" id="ruleEngine"
+                                    style="margin-bottom: 0px;">
                                     <div class="listClaimBox mt-2 mb-1">
                                         <div>
                                             <div class="btn-group btn-group-toggle" data-toggle="buttons">
@@ -20,12 +21,12 @@
                                                         (change)="switchTab('Fresh')">Fresh
                                                     Claims
                                                 </label>
-                                                <label class="btn btn-light"  [ngClass]="{'active':tabSwitch.sendBack}">
+                                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.sendBack}">
                                                     <input class="form-check-input" type="radio" name="options"
                                                         [disabled]="loader.listClaimLoader" id="option2"
                                                         (change)="switchTab('sendBack')">Claims Sent back by Other Teams
                                                 </label>
-                                                <label class="btn btn-light"  [ngClass]="{'active':tabSwitch.MyClaims}"
+                                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.MyClaims}"
                                                     *ngIf="isRoleLead && staticUtil.isBilling()">
                                                     <input class="form-check-input" type="radio"
                                                         [disabled]="loader.listClaimLoader" name="options" id="option3"
@@ -73,7 +74,8 @@
                                                                                 [checked]="isFilterAllSelected.officeName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.officeName ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.officeName=false;"
                                                                             type="button" class="close"
@@ -156,17 +158,21 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th [ngStyle]="{'z-index':showTooltipConfig['claimAge'] ? 999999 : 99}" class="sm-width">
-                                                        <div class="dFlex" >
+                                                    <th [ngStyle]="{'z-index':showTooltipConfig['claimAge'] ? 999999 : 99}"
+                                                        class="sm-width">
+                                                        <div class="dFlex">
                                                             Claim Age
                                                             <ng-container *ngIf="showTooltipConfig['claimAge']">
-                                                                <div class="tooltip-backdrop" ></div>
+                                                                <div class="tooltip-backdrop"></div>
                                                             </ng-container>
-                                                            <div class="tooltip2 ml-1" >
-                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('claimAge');" />
-                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['claimAge']">
-                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['claimAge']=false;">×</span>
-                                                                       Shows how long it has been since the date of service
+                                                            <div class="tooltip2 ml-1">
+                                                                <img src="../../assets/img/question-icon.png"
+                                                                    (click)="toggleTooltip('claimAge');" />
+                                                                <span class="tooltiptext"
+                                                                    *ngIf="showTooltipConfig['claimAge']">
+                                                                    <span class="tooltip-cross-btn"
+                                                                        (click)="showTooltipConfig['claimAge']=false;">×</span>
+                                                                    Shows how long it has been since the date of service
                                                                 </span>
                                                             </div>
                                                             <span class="sorting">
@@ -179,17 +185,21 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th [ngStyle]="{'z-index':showTooltipConfig['tfl'] ? 999999 : 99}" class="sm-width">
+                                                    <th [ngStyle]="{'z-index':showTooltipConfig['tfl'] ? 999999 : 99}"
+                                                        class="sm-width">
                                                         <div class="dFlex">
                                                             TFL
                                                             <ng-container *ngIf="showTooltipConfig['tfl']">
-                                                                <div class="tooltip-backdrop" ></div>
+                                                                <div class="tooltip-backdrop"></div>
                                                             </ng-container>
-                                                            <div class="tooltip2 ml-1" >
-                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('tfl');" />
-                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['tfl']">
-                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['tfl']=false;">×</span>
-                                                                       Timely Filing Limit
+                                                            <div class="tooltip2 ml-1">
+                                                                <img src="../../assets/img/question-icon.png"
+                                                                    (click)="toggleTooltip('tfl');" />
+                                                                <span class="tooltiptext"
+                                                                    *ngIf="showTooltipConfig['tfl']">
+                                                                    <span class="tooltip-cross-btn"
+                                                                        (click)="showTooltipConfig['tfl']=false;">×</span>
+                                                                    Timely Filing Limit
                                                                 </span>
                                                             </div>
                                                             <!-- <span class="sorting">
@@ -198,17 +208,22 @@
                                                         </span> -->
                                                         </div>
                                                     </th>
-                                                    <th class="md-width" [ngStyle]="{'z-index':showTooltipConfig['psd'] ? 999999 : 99}">
+                                                    <th class="md-width"
+                                                        [ngStyle]="{'z-index':showTooltipConfig['psd'] ? 999999 : 99}">
                                                         <div class="dFlex">
                                                             Pending Since Date
                                                             <ng-container *ngIf="showTooltipConfig['psd']">
-                                                                <div class="tooltip-backdrop" ></div>
+                                                                <div class="tooltip-backdrop"></div>
                                                             </ng-container>
                                                             <div class="tooltip2 ml-1">
-                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('psd');" />
-                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['psd']">
-                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['psd']=false;">×</span>
-                                                                       Shows the date since when a claim is pending with the Office.
+                                                                <img src="../../assets/img/question-icon.png"
+                                                                    (click)="toggleTooltip('psd');" />
+                                                                <span class="tooltiptext"
+                                                                    *ngIf="showTooltipConfig['psd']">
+                                                                    <span class="tooltip-cross-btn"
+                                                                        (click)="showTooltipConfig['psd']=false;">×</span>
+                                                                    Shows the date since when a claim is pending with
+                                                                    the Office.
                                                                 </span>
                                                             </div>
                                                             <span class="sorting">
@@ -221,17 +236,22 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th class="width-115" [ngStyle]="{'z-index':showTooltipConfig['age'] ? 999999 : 99}">
+                                                    <th class="width-115"
+                                                        [ngStyle]="{'z-index':showTooltipConfig['age'] ? 999999 : 99}">
                                                         <div class="dFlex">
                                                             Age Bracket
                                                             <ng-container *ngIf="showTooltipConfig['age']">
-                                                                <div class="tooltip-backdrop" ></div>
+                                                                <div class="tooltip-backdrop"></div>
                                                             </ng-container>
-                                                            <div class="tooltip2" >
-                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('age');" />
-                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig['age']">
-                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig['age']=false;">×</span>
-                                                                       Categorizes claims based on their age (e.g., 0-29 days, 30-59 days, etc.).
+                                                            <div class="tooltip2">
+                                                                <img src="../../assets/img/question-icon.png"
+                                                                    (click)="toggleTooltip('age');" />
+                                                                <span class="tooltiptext"
+                                                                    *ngIf="showTooltipConfig['age']">
+                                                                    <span class="tooltip-cross-btn"
+                                                                        (click)="showTooltipConfig['age']=false;">×</span>
+                                                                    Categorizes claims based on their age (e.g., 0-29
+                                                                    days, 30-59 days, etc.).
                                                                 </span>
                                                             </div>
                                                             <div class="dropdown">
@@ -247,7 +267,8 @@
                                                                                 [checked]="isFilterAllSelected.ageBracket"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'ageBracket')">
-                                                                            {{isFilterAllSelected.ageBracket ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.ageBracket ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.ageBracket=false;"
                                                                             type="button" class="close"
@@ -291,7 +312,8 @@
                                                                                 [checked]="isFilterAllSelected.claimType"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'claimType')">
-                                                                            {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.claimType ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.claimType=false;"
                                                                             type="button" class="close"
@@ -374,7 +396,8 @@
                                                                                 [checked]="isFilterAllSelected.insuranceName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'insuranceName')">
-                                                                            {{isFilterAllSelected.insuranceName? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.insuranceName? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.insuranceName=false;"
                                                                             type="button" class="close"
@@ -421,7 +444,8 @@
                                                                                 [checked]="isFilterAllSelected.insuranceType"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'insuranceType')">
-                                                                            {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.insuranceType ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.insuranceType=false;"
                                                                             type="button" class="close"
@@ -526,9 +550,11 @@
                                                         <div class="dFlex">
                                                             Due Date
                                                             <span class="sorting">
-                                                                <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['dueDateSort']}"
+                                                                <a href="javascript:void(0);" class="arrow-up"
+                                                                    [ngClass]="{'selected': !isSorted['dueDateSort']}"
                                                                     (click)="sortData(filteredItems,'dueDateSort','asc','dateOnly'); isSorted['dueDateSort'] = false"></a>
-                                                                <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['dueDateSort']}"
+                                                                <a href="javascript:void(0);" class="arrow-down"
+                                                                    [ngClass]="{'selected': isSorted['dueDateSort']}"
                                                                     (click)="sortData(filteredItems,'dueDateSort','desc','dateOnly');isSorted['dueDateSort'] = true"></a>
                                                             </span>
                                                         </div>
@@ -577,7 +603,8 @@
                                                             <td [ngClass]="{'changeColor' : det.colorChange}">
                                                                 {{det.timelyFilingLimitData}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                                class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}</td>
+                                                                class="noWrape">{{det.pendingSince | date: 'MMM dd,
+                                                                YYYY'}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
                                                                 class="noWrape">{{det.ageBracket}}</td>
                                                             <!-- Claim Type START-->
@@ -593,12 +620,12 @@
                                                                 </td>
                                                             </ng-container>
                                                             <ng-template #others>
-                                                                <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                                    *ngIf="det.statusType == appConstants.BILLING_ID">
+                                                                <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.statusType == appConstants.BILLING_ID &&
+                                                                    det.nextAction !=appConstants.NEED_TO_RE_BILL">
                                                                     Billing
                                                                 </td>
-                                                                <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                                    *ngIf="det.statusType == appConstants.RE_BILLING_ID">
+                                                                <td [ngClass]="{'changeColor' : det.colorChange}" *ngIf="det.statusType == appConstants.RE_BILLING_ID
+                                                                    || det.nextAction==appConstants.NEED_TO_RE_BILL">
                                                                     Re-Billing</td>
                                                             </ng-template>
 
@@ -640,7 +667,8 @@
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
                                                                 *ngIf="isLastTeam" class="NA">
                                                                 {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}">{{(det.dueDateSort) | date:'MMM dd, YYYY'}}</td>
+                                                            <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                                {{(det.dueDateSort) | date:'MMM dd, YYYY'}}</td>
                                                         </tr>
                                                     </ng-container>
                                                 </ng-container>

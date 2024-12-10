@@ -39,7 +39,7 @@ export class ListOfClaimsComponent implements OnInit {
   tabValue: any;
   accessToListOfClaims: any;
   currentTeamId: number;
-  showTooltipConfig:any={};
+  showTooltipConfig: any = {};
   selectedHeaders: string[];
   isRoleAssociate: boolean;
   @HostListener('mouseleave') onMouseLeave(event: Event) {
@@ -109,6 +109,7 @@ export class ListOfClaimsComponent implements OnInit {
             e['EstAmount'] = e.secTotal;
           }
           e['dueDateSort'] = e.followUpDate == null ? e.pendingSince : e.followUpDate;
+          if (e['nextAction'] == ths.appConstants.NEED_TO_RE_BILL) e['statusType'] = ths.appConstants.RE_BILLING_ID;
           return e;
         })
         ths.claimDetail = data;
@@ -671,7 +672,7 @@ export class ListOfClaimsComponent implements OnInit {
       showLabels: true,
       headers: this.selectedHeaders
     }
-    
+
     let excelData: any;
     excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
     excelData = excelData.map((e: any) => {
@@ -737,7 +738,7 @@ export class ListOfClaimsComponent implements OnInit {
           "Insurance Name": e.primaryInsurance ? e.primaryInsurance : e.secondaryInsurance,
           "Insurance Type": e.prName ? e.prName : e.secName,
           "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
-          "Due Date":e.dueDateSort
+          "Due Date": e.dueDateSort
         }
       })
       excelData = excelData.map(
@@ -762,7 +763,7 @@ export class ListOfClaimsComponent implements OnInit {
           "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
           "BillingAmount": this.tabSwitch.sendBack ? e.billedAmount ? '$' + formatNumber(e.billedAmount, this.locale, '.0-0').toString() : "$0" : "",
           "Last Team that Worked on this claim": this.isLastTeam ? e.lastTeam : "",
-          "Due Date":e.dueDateSort
+          "Due Date": e.dueDateSort
 
         }
       })  //method aligns the header to the value in CSV.
@@ -1000,19 +1001,19 @@ export class ListOfClaimsComponent implements OnInit {
     });
   }
 
-  toggleTooltip(tooltip:any){
+  toggleTooltip(tooltip: any) {
     this.showTooltipConfig[tooltip] = !this.showTooltipConfig[tooltip];
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' || event.keyCode === 27) {
         this.showTooltipConfig[tooltip] = false;
       }
     })
-    if(!this.showTooltipConfig[tooltip]){
+    if (!this.showTooltipConfig[tooltip]) {
       document.removeAllListeners('keydown');
     }
   }
 
-  get staticUtil():any {
+  get staticUtil(): any {
 
     return Utils;
   }

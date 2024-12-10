@@ -26,6 +26,7 @@ import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
 import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
@@ -512,6 +513,15 @@ public class ConnectAndReadSheets {
 
 		return list;
 	}
+	
+	private static HttpRequestInitializer setTimeout(final HttpRequestInitializer initializer, final int timeout) {
+	    return request -> {
+	        initializer.initialize(request);
+	        request.setReadTimeout(timeout);
+	    };
+	}
+	
+	
 
 	/**
 	 * Service Code based validations
@@ -522,9 +532,10 @@ public class ConnectAndReadSheets {
 	 * @return
 	 * @throws IOException
 	 */
+	
 	public static HashMap<String, List<ClaimServiceValidationGSheetData>> readServiceValidationFromGSheet(
 			String spreadsheetId, String sheetName, String clientDir, String clientFolder) throws IOException {
-		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
+		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, setTimeout(getCredentials(clientDir, clientFolder),0))
 				.setApplicationName(APPLICATION_NAME).build();
 		ValueRange response = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
 		List<List<Object>> values = response.getValues();

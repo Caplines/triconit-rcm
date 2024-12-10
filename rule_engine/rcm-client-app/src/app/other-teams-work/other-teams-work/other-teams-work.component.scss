@@ -102,6 +102,7 @@ a.arrow-down.selected {
     thead {
         th {
             min-width: 180px;
+
             .filter-dropdown-menu {
                 width: 280px;
                 line-height: normal;
@@ -118,7 +119,7 @@ a.arrow-down.selected {
             }
 
             &:first-child {
-                z-index: 99999;
+                z-index: 9999;
                 width: 170px;
                 min-width: 170px;
                 max-width: 170px;
@@ -132,6 +133,7 @@ a.arrow-down.selected {
                 left: 170px;
                 z-index: 9999;
             }
+
             &:nth-child(3) {
                 width: 150px;
                 min-width: 150px;
@@ -158,6 +160,7 @@ a.arrow-down.selected {
                 z-index: 99;
 
             }
+
             &:nth-child(11) {
 
                 z-index: 9;
@@ -166,63 +169,72 @@ a.arrow-down.selected {
         }
     }
 
-        tbody {
-            td {
-                &:first-child {
-                    width: 170px;
-                    min-width: 170px;
-                    max-width: 170px;
-                    left: 0px;
-                    position: sticky;
-                }
-    
-                &:nth-child(2) {
-                    width: 150px;
-                    min-width: 150px;
-                    max-width: 150px;
-                    left: 170px;
-                    position: sticky;
-                }
-    
-                &:nth-child(3) {
-                    width: 150px;
-                    min-width: 150px;
-                    max-width: 150px;
-                    left: 320px;
-                    position: sticky;
-                }
+    tbody {
+        td {
+            &:first-child {
+                width: 170px;
+                min-width: 170px;
+                max-width: 170px;
+                left: 0px;
+                position: sticky;
             }
 
-        }
-        &.table-striped {
-            tbody tr:nth-of-type(even) {
-                td:first-child, td:nth-child(2), td:nth-child(3) {
-                    background-color: #fff;
-                }
-                // &.blueBgBackground {
-                
-                //     td {
-                //         color: #000;
-                //         background-color: #a0cafa !important;
-                //     }
-                //   }
+            &:nth-child(2) {
+                width: 150px;
+                min-width: 150px;
+                max-width: 150px;
+                left: 170px;
+                position: sticky;
             }
-            tbody tr:nth-of-type(odd) {
-               
-             
-                td:first-child, td:nth-child(2), td:nth-child(3) {
-                    background-color: #f7f7f7;
-                }
-                // &.blueBgBackground {
-                
-                //     td {
-                //         color: #000;
-                //         background-color: #a0cafa !important;
-                //     }
-                //   }
+
+            &:nth-child(3) {
+                width: 150px;
+                min-width: 150px;
+                max-width: 150px;
+                left: 320px;
+                position: sticky;
             }
-            
         }
+
+    }
+
+    &.table-striped {
+        tbody tr:nth-of-type(even) {
+
+            td:first-child,
+            td:nth-child(2),
+            td:nth-child(3) {
+                background-color: #fff;
+            }
+
+            // &.blueBgBackground {
+
+            //     td {
+            //         color: #000;
+            //         background-color: #a0cafa !important;
+            //     }
+            //   }
+        }
+
+        tbody tr:nth-of-type(odd) {
+
+
+            td:first-child,
+            td:nth-child(2),
+            td:nth-child(3) {
+                background-color: #f7f7f7;
+            }
+
+            // &.blueBgBackground {
+
+            //     td {
+            //         color: #000;
+            //         background-color: #a0cafa !important;
+            //     }
+            //   }
+        }
+
+    }
 }
 
 
@@ -449,7 +461,7 @@ h1 {
                     font-size: 16px;
                 }
 
-               
+
             }
         }
 
@@ -506,20 +518,21 @@ h1 {
     }
 }
 
-.is-invalid{
+.is-invalid {
     border: 1px solid red !important;
 }
 
-.otherTeamBox{
+.otherTeamBox {
     display: flex;
     width: 100%;
     justify-content: flex-end;
 }
+
 .changeColor {
-    color:#dc3545 !important;
+    color: #dc3545 !important;
 }
 
-.remarks-bg{
+.remarks-bg {
     background: #d9d9d9 !important;
     color: rgb(0, 0, 0) !important;
 }
@@ -529,56 +542,69 @@ h1 {
 // }
 
 .modal {
-    display: block; /* Hidden by default */
-    position: fixed; /* Stay in place */
-    z-index: 9999; /* Sit on top */
-    padding-top: 100px; /* Location of the box */
+    display: block;
+    /* Hidden by default */
+    position: fixed;
+    /* Stay in place */
+    z-index: 9999;
+    /* Sit on top */
+    padding-top: 100px;
+    /* Location of the box */
     left: 0;
     top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgb(0,0,0); /* Fallback color */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-  }
-  
-  /* Modal Content */
-  .modal-content {
+    width: 100%;
+    /* Full width */
+    height: 100%;
+    /* Full height */
+    overflow: auto;
+    /* Enable scroll if needed */
+    background-color: rgb(0, 0, 0);
+    /* Fallback color */
+    background-color: rgba(0, 0, 0, 0.4);
+    /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
     background-color: #fefefe;
     margin: auto;
     padding: 0px;
     border: 1px solid #888;
     max-width: 40%;
-  }
-  .modal-header {
+}
+
+.modal-header {
     padding-top: 10px;
     padding-bottom: 5px;
-  }
-  .modal-title {
+}
+
+.modal-title {
     font-size: 16px;
     font-weight: 700;
     padding-top: 2px;
-  }
-  .delete-modal{
+}
+
+.delete-modal {
     max-width: 70% !important;
-  }
-  
-  /* The Close Button */
-  .close {
+}
+
+/* The Close Button */
+.close {
     color: #aaaaaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
-  }
+}
 
-  .modal-backdrop.fade.show{
+.modal-backdrop.fade.show {
     display: none;
-  }
-  .modal-backdrop.fade.modalShow{
-    display: block;
-  }
+}
 
-  
+.modal-backdrop.fade.modalShow {
+    display: block;
+}
+
+
 
 .filterDropdown {
     thead {
@@ -589,4 +615,3 @@ h1 {
         }
     }
 }
-

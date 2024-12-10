@@ -102,7 +102,7 @@ export class BillingClaimsComponent {
   showAssignToTeamLead: boolean = false;
   showAToPNextActionRequired: boolean = true;
   showSubmitPopup: boolean = false;
-  errorMsgForNextAction:any="";
+  errorMsgForNextAction: any = "";
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -764,7 +764,7 @@ export class BillingClaimsComponent {
       ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
         ths.finalSaveSection(true, true);
       });
-    } else if (type === "reviewedafterpendingbyinternalaudit") {
+    } else if ("reviewedafterpendingbyinternalaudit") {
       let valid = true;
       ths.claimEditModel.submission = false;
       if (!this.isSuperAdmin) valid = ths.validateData();
@@ -2272,7 +2272,7 @@ export class BillingClaimsComponent {
         let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
         //method names are creates using convention  validate_{sectioname}
         console.log(!isSectionVal);
-        if (methodName == 'validate_APPEAL' || (!moveToNextTeam && methodName == 'validate_SERVICE_LEVEL_INFORMATION') || methodName == 'validate_CLAIM_LEVEL_INFORMATION'
+        if (methodName == 'validate_APPEAL' || methodName == 'validate_SERVICE_LEVEL_INFORMATION' || methodName == 'validate_CLAIM_LEVEL_INFORMATION'
           || methodName == 'validate_INSURANCE_PAYMENT_INFORMATION' ||
           methodName == 'validate_INSURANCE_FOLLOW_UP' || methodName == 'validate_PATIENT_STATEMENT'
           || methodName == 'validate_PATIENT_COMMUNICATION'
@@ -2837,7 +2837,7 @@ export class BillingClaimsComponent {
   validate_CURRENT_STATUS_AND_NEXT_ACTION() {
     let buttonType = this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['buttonType'];
     let isSectionValidated = true;
-    this.errorMsgForNextAction="";
+    this.errorMsgForNextAction = "";
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"] = {};
 
     this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].currentClaimStatusRcm = false;
@@ -2871,7 +2871,7 @@ export class BillingClaimsComponent {
         isSectionValidated = false;
       }
       if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.nextAction === this.appConstants.Need_to_bill_Secondary_Insurance
-         && !this.claimRcm.assoicatedClaimStatus) {
+        && !this.claimRcm.assoicatedClaimStatus) {
         this.emptyFields["CURRENT_STATUS_AND_NEXT_ACTION"].nextAction = true;
         isSectionValidated = false;
         this.errorMsgForNextAction = "Secondary claim not on file";
@@ -3487,7 +3487,7 @@ export class BillingClaimsComponent {
       if (prev.status === current.status && prev.name === current.name) {
         filteredData.filter((x: any) => {
           if (x.status === prev.status && x.name === prev.name) {
-             x.statusUpdated = current.statusUpdated;
+            x.statusUpdated = current.statusUpdated;
           }
         });
         continue;

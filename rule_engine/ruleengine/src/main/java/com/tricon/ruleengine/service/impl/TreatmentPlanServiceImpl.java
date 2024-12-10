@@ -1762,7 +1762,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//MVP VAP
 		if (type==Constants.userType_TR){
 		rule = getRulesFromList(rules, Constants.RULE_ID_41);
-		dtoRL = rb.Rule41(tListReduced,mvpVapList ,messageSource, rule, bw);
+		dtoRL = rb.Rule41(tListReduced,mvpVapList ,messageSource, rule, bw, type);
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
 			for (TPValidationResponseDto t : dtoRL) {
@@ -1952,7 +1952,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		// Perio Depth Checker
 		rule = getRulesFromList(rules, Constants.RULE_ID_55);
-		dtoRL = rb.Rule55(tList,ansL,perios,patKey ,messageSource, rule, bw);
+		dtoRL = rb.Rule55(tList,ansL,perios,patKey ,messageSource, rule, bw, type);
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
 			for (TPValidationResponseDto t : dtoRL) {
@@ -1987,7 +1987,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		// RULE_ID_58 "// Exam Frequency Limitation (D0145)
 		rule = getRulesFromList(rules, Constants.RULE_ID_58);
-		dtoRL = rb.Rule58(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw);
+		dtoRL = rb.Rule58(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw, type);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
@@ -2005,7 +2005,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		// RULE_ID_59 "// BWX Age Limitation
 
 		rule = getRulesFromList(rules, Constants.RULE_ID_59);
-		dtoRL = rb.Rule59(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw);
+		dtoRL = rb.Rule59(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw, type);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
@@ -2245,7 +2245,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		// Provider Certification
 		
 		rule = getRulesFromList(rules, Constants.RULE_ID_87);
-			dtoRL = rb.Rule87(tList,ivfMap.get(ivx).get(0),insuranceData ,messageSource, rule, bw);
+			dtoRL = rb.Rule87(tList,ivfMap.get(ivx).get(0),insuranceData ,messageSource, rule, bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -2263,7 +2263,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//  D0140 with Treatment
 		
 				rule = getRulesFromList(rules, Constants.RULE_ID_88);
-					dtoRL = rb.Rule88(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+					dtoRL = rb.Rule88(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
 						for (TPValidationResponseDto t : dtoRL) {
@@ -2281,7 +2281,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//  D0140 with D0220
 				
 				rule = getRulesFromList(rules, Constants.RULE_ID_89);
-				dtoRL = rb.Rule89(tList,messageSource, rule, bw);
+				dtoRL = rb.Rule89(tList,messageSource, rule, bw, type);
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
 						for (TPValidationResponseDto t : dtoRL) {
@@ -2298,7 +2298,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		 //Schedule Charges
 				
 							rule = getRulesFromList(rules, Constants.RULE_ID_90);
-							dtoRL = rb.Rule90(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw);
+							dtoRL = rb.Rule90(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2315,7 +2315,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//Immediate Dentures with Extraction
 							
 							rule = getRulesFromList(rules, Constants.RULE_ID_91);
-							dtoRL = rb.Rule91(tList,messageSource, rule, bw);
+							dtoRL = rb.Rule91(tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2332,7 +2332,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
         //Complete Denture with Extraction
 							
 							rule = getRulesFromList(rules, Constants.RULE_ID_92);
-							dtoRL = rb.Rule92(tList,messageSource, rule, bw);
+							dtoRL = rb.Rule92(tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2349,7 +2349,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//Prophy, Sealants and Fluoride on same DOS with D0140
 							
 							rule = getRulesFromList(rules, Constants.RULE_ID_93);
-							dtoRL = rb.Rule93(tList,messageSource, rule, bw);
+							dtoRL = rb.Rule93(tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2363,7 +2363,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Prophy, Sealants and Fluoride on same DOS with D0140
 		//Sealant Age limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_94);
-							dtoRL = rb.Rule94(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+							dtoRL = rb.Rule94(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2377,7 +2377,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Sealant Age limitation
 		//Space Maintainer age and Frq limitation
 							rule = getRulesFromList(rules, Constants.RULE_ID_95);
-							dtoRL = rb.Rule95(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+							dtoRL = rb.Rule95(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2433,7 +2433,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Recementation Frq Limit D1553        
 		//Space Maintainer Tooth Compatibility for Quads
 						rule = getRulesFromList(rules, Constants.RULE_ID_99);
-						dtoRL = rb.Rule99(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+						dtoRL = rb.Rule99(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2447,7 +2447,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	    //END Space Maintainer Tooth Compatibility for Quads        
 	    //Space Maintainer Tooth Compatibility for Arch
 						rule = getRulesFromList(rules, Constants.RULE_ID_100);
-						dtoRL = rb.Rule100(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+						dtoRL = rb.Rule100(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2461,7 +2461,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Space Maintainer Tooth Compatibility for Arch        
 		//Unspecified periodontal procedure - D4999
 						rule = getRulesFromList(rules, Constants.RULE_ID_101);
-						dtoRL = rb.Rule101(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+						dtoRL = rb.Rule101(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2475,7 +2475,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Unspecified periodontal procedure - D4999        
 		//FCL Dental Plan
 						rule = getRulesFromList(rules, Constants.RULE_ID_102);
-						dtoRL = rb.Rule102(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+						dtoRL = rb.Rule102(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2490,7 +2490,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						
 		//Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation
 						rule = getRulesFromList(rules, Constants.RULE_ID_103);
-						dtoRL = rb.Rule103(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+						dtoRL = rb.Rule103(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2504,7 +2504,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation        
 		//Codes not covered in IV
 		rule = getRulesFromList(rules, Constants.RULE_ID_104);
-		dtoRL = rb.Rule104(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+		dtoRL = rb.Rule104(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -2532,7 +2532,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END IV Comments
 		//Codes Compatible with Arch
 		rule = getRulesFromList(rules, Constants.RULE_ID_106);
-		dtoRL = rb.Rule106(tList,messageSource, rule, bw);
+		dtoRL = rb.Rule106(tList,messageSource, rule, bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -2546,7 +2546,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Codes Compatible with Arch
 		//Codes compatible with quads
 		rule = getRulesFromList(rules, Constants.RULE_ID_107);
-		dtoRL = rb.Rule107(tList,messageSource, rule, bw);
+		dtoRL = rb.Rule107(tList,messageSource, rule, bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -2560,7 +2560,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	   //END Codes Compatible with Arch
 	   //Ortho treatment not given
 		rule = getRulesFromList(rules, Constants.RULE_ID_108);
-		dtoRL = rb.Rule108(ivfMap.get(ivx).get(0),tList,orthoData,messageSource, rule, bw);
+		dtoRL = rb.Rule108(ivfMap.get(ivx).get(0),tList,orthoData,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -2574,7 +2574,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Ortho treatment not given
 		//D9999 for above to $100
 		rule = getRulesFromList(rules, Constants.RULE_ID_109);
-		dtoRL = rb.Rule109(tList,messageSource, rule, bw);
+		dtoRL = rb.Rule109(tList,messageSource, rule, bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -2618,7 +2618,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	    //END Adult medicaid Plans are limited to offices
 		//Humana Medicare Exception for D0230
 		rule = getRulesFromList(rules, Constants.RULE_ID_113);
-				dtoRL = rb.Rule113(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+				dtoRL = rb.Rule113(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw, type);
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
 						for (TPValidationResponseDto t : dtoRL) {
@@ -2633,7 +2633,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				
 		//Fillings and Endo not paid on same tooth on same DOS
 		rule = getRulesFromList(rules, Constants.RULE_ID_114);
-				dtoRL = rb.Rule114(tList,messageSource, rule, bw);
+				dtoRL = rb.Rule114(tList,messageSource, rule, bw, type);
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
 						for (TPValidationResponseDto t : dtoRL) {
@@ -2661,7 +2661,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Dental Procedures and Nomenclature - D4381	
 		//D2934 in Chip plan
 		rule = getRulesFromList(rules, Constants.RULE_ID_116);
-				dtoRL = rb.Rule116(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+				dtoRL = rb.Rule116(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -2676,7 +2676,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//Fluoride covered till age
 		
 		rule = getRulesFromList(rules, Constants.RULE_ID_117);
-		dtoRL = rb.Rule117(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+		dtoRL = rb.Rule117(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw, type);
 		if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -2691,7 +2691,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
          
        //Sealant covered till age
  		rule = getRulesFromList(rules, Constants.RULE_ID_118);
- 		dtoRL = rb.Rule118(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+ 		dtoRL = rb.Rule118(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw, type);
  		if (dtoRL != null) {
  				list.addAll(dtoRL);
  				for (TPValidationResponseDto t : dtoRL) {
@@ -2719,7 +2719,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
    		//END SSC and Fillings done within 12 months				
         //Quads Allowed Per Day for SRP
  		rule = getRulesFromList(rules, Constants.RULE_ID_120);
- 		dtoRL = rb.Rule120(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+ 		dtoRL = rb.Rule120(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw, type);
  		if (dtoRL != null) {
  				list.addAll(dtoRL);
  				for (TPValidationResponseDto t : dtoRL) {
@@ -2946,7 +2946,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			// Provider Certification
 			
 			rule = getRulesFromList(rules, Constants.RULE_ID_87);
-				dtoRL = rb.Rule87(tList,ivfMap.get(ivx).get(0),insuranceData ,messageSource, rule, bw);
+				dtoRL = rb.Rule87(tList,ivfMap.get(ivx).get(0),insuranceData ,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -2965,7 +2965,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  // D0140 with Treatment
 			
 			rule = getRulesFromList(rules, Constants.RULE_ID_88);
-						dtoRL = rb.Rule88(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+						dtoRL = rb.Rule88(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 						if (dtoRL != null) {
 							list.addAll(dtoRL);
 							for (TPValidationResponseDto t : dtoRL) {
@@ -2983,7 +2983,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//  D0140 with D0220
 			
 			rule = getRulesFromList(rules, Constants.RULE_ID_89);
-			dtoRL = rb.Rule89(tList,messageSource, rule, bw);
+			dtoRL = rb.Rule89(tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3000,7 +3000,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	  //Schedule Charges
 			
 			rule = getRulesFromList(rules, Constants.RULE_ID_90);
-			dtoRL = rb.Rule90(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw);
+			dtoRL = rb.Rule90(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3017,7 +3017,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
            //Immediate Dentures with Extraction
 			
 			rule = getRulesFromList(rules, Constants.RULE_ID_91);
-			dtoRL = rb.Rule91(tList,messageSource, rule, bw);
+			dtoRL = rb.Rule91(tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3034,7 +3034,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
            //Immediate Dentures with Extraction
 			
 			rule = getRulesFromList(rules, Constants.RULE_ID_92);
-			dtoRL = rb.Rule92(tList,messageSource, rule, bw);
+			dtoRL = rb.Rule92(tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3051,7 +3051,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
           //Prophy, Sealants and Fluoride on same DOS with D0140
 			
 			rule = getRulesFromList(rules, Constants.RULE_ID_93);
-			dtoRL = rb.Rule93(tList,messageSource, rule, bw);
+			dtoRL = rb.Rule93(tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3065,7 +3065,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Prophy, Sealants and Fluoride on same DOS with D0140
         //Sealant Age limitation
 			rule = getRulesFromList(rules, Constants.RULE_ID_94);
-			dtoRL = rb.Rule94(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+			dtoRL = rb.Rule94(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3079,7 +3079,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Sealant Age limitation
 		//Space Maintainer age and Frq limitation
 			rule = getRulesFromList(rules, Constants.RULE_ID_95);
-			dtoRL = rb.Rule95(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+			dtoRL = rb.Rule95(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3135,7 +3135,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Recementation Frq Limit D1553        
 		//Space Maintainer Tooth Compatibility for Quads
 		rule = getRulesFromList(rules, Constants.RULE_ID_99);
-		dtoRL = rb.Rule99(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+		dtoRL = rb.Rule99(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3149,7 +3149,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Space Maintainer Tooth Compatibility for Quads        
 		//Space Maintainer Tooth Compatibility for Arch
 		rule = getRulesFromList(rules, Constants.RULE_ID_100);
-		dtoRL = rb.Rule100(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+		dtoRL = rb.Rule100(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3163,7 +3163,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Space Maintainer Tooth Compatibility for Arch        
 		//Unspecified periodontal procedure - D4999
 		rule = getRulesFromList(rules, Constants.RULE_ID_101);
-		dtoRL = rb.Rule101(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+		dtoRL = rb.Rule101(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3177,7 +3177,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Unspecified periodontal procedure - D4999        
 		//FCL Dental Plan
 		rule = getRulesFromList(rules, Constants.RULE_ID_102);
-		dtoRL = rb.Rule102(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+		dtoRL = rb.Rule102(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3192,7 +3192,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		//Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation
 		rule = getRulesFromList(rules, Constants.RULE_ID_103);
-		dtoRL = rb.Rule103(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+		dtoRL = rb.Rule103(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3206,7 +3206,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Distal Shoe Space Maintainer - Fixed - Unilateral Age Limitation        
 		//Codes not covered in IV
 		rule = getRulesFromList(rules, Constants.RULE_ID_104);
-		dtoRL = rb.Rule104(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw);
+		dtoRL = rb.Rule104(ivfMap.get(ivx).get(0),tList,messageSource, rule, bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -3234,7 +3234,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END IV Comments
 		//Codes Compatible with Arch
 		rule = getRulesFromList(rules, Constants.RULE_ID_106);
-		dtoRL = rb.Rule106(tList,messageSource, rule, bw);
+		dtoRL = rb.Rule106(tList,messageSource, rule, bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -3248,7 +3248,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Codes Compatible with Arch
 		//Codes compatible with quads
 		rule = getRulesFromList(rules, Constants.RULE_ID_107);
-		dtoRL = rb.Rule107(tList,messageSource, rule, bw);
+		dtoRL = rb.Rule107(tList,messageSource, rule, bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -3262,7 +3262,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	   //END Codes Compatible with Arch
 	   //Ortho treatment not given
 		rule = getRulesFromList(rules, Constants.RULE_ID_108);
-		dtoRL = rb.Rule108(ivfMap.get(ivx).get(0),tList,orthoData,messageSource, rule, bw);
+		dtoRL = rb.Rule108(ivfMap.get(ivx).get(0),tList,orthoData,messageSource, rule, bw, type);
 				if (dtoRL != null) {
 					list.addAll(dtoRL);
 					for (TPValidationResponseDto t : dtoRL) {
@@ -3276,7 +3276,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Ortho treatment not given
 		//D9999 for above to $100
 		rule = getRulesFromList(rules, Constants.RULE_ID_109);
-		dtoRL = rb.Rule109(tList,messageSource, rule, bw);
+		dtoRL = rb.Rule109(tList,messageSource, rule, bw, type);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -3320,7 +3320,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	     */
 		//Humana Medicare Exception for D0230
 				rule = getRulesFromList(rules, Constants.RULE_ID_113);
-				dtoRL = rb.Rule113(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+				dtoRL = rb.Rule113(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw, type);
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
 						for (TPValidationResponseDto t : dtoRL) {
@@ -3335,7 +3335,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				
 		//Fillings and Endo not paid on same tooth on same DOS
 		rule = getRulesFromList(rules, Constants.RULE_ID_114);
-				dtoRL = rb.Rule114(tList,messageSource, rule, bw);
+				dtoRL = rb.Rule114(tList,messageSource, rule, bw, type);
 					if (dtoRL != null) {
 						list.addAll(dtoRL);
 						for (TPValidationResponseDto t : dtoRL) {
@@ -3363,7 +3363,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Dental Procedures and Nomenclature - D4381	
 		//D2934 in Chip plan
 		rule = getRulesFromList(rules, Constants.RULE_ID_116);
-				dtoRL = rb.Rule116(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw);
+				dtoRL = rb.Rule116(ivfMap.get(ivx).get(0), tList,messageSource, rule, bw, type);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {

@@ -16,6 +16,7 @@ import { formatNumber } from '@angular/common';
 export class OtherTeamsWorkComponent implements OnInit {
 
   selectedBtype: number = 0;
+  isRoleAssociate: boolean;
   claimDetail: Array<ClaimAssociateDetailModel>;
   expandCollapse: boolean = true;
   isSorted: any = {};
@@ -48,7 +49,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   hasAttachedFilesWithRemark: boolean = false;
   alert: any = { 'alertMsg': '', 'showAlert': false };
   showTransferClaimModal = false;
-  selectedClaimsTransfer:any = {"claimUuid":[],"remarks":""};
+  selectedClaimsTransfer: any = { "claimUuid": [], "remarks": "" };
   filteredInsuranceName: any = [];
   filteredInsuranceType: any = [];
   filteredClaimType: any = [];
@@ -63,23 +64,23 @@ export class OtherTeamsWorkComponent implements OnInit {
   columnPermissionsByTeam: any = {
     'Aging': ['currentStatus', 'nextActionRequired', 'dueDateSort', 'providerSpeciality'],
     'CDP': ['currentStatus', 'nextActionRequired', 'dueDateSort', 'providerSpeciality'],
-    'Credentialing': ['currentStatus', 'nextActionRequired', 'showAttach','dueDateSort'],
-    'Patient Statement': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueBalance','dueDateSort'],
-    'Payment Posting': ['currentStatus', 'nextActionRequired', 'providerSpeciality','dueDateSort'],
-    'LC3': ['showAttach','dueDateSort'],
-    'Office': ['showAttach','dueDateSort'],
-    'Ortho': ['showAttach','dueDateSort'],
-    'PPO IV': ['showAttach','dueDateSort'],
-    'Medicaid IV': ['showAttach','dueDateSort'],
-    'Need to hold': ['showAttach','dueDateSort'],
-    'Quality': ['showAttach','dueDateSort'],
-    'Patient Calling': ['showAttach','dueDateSort'],
+    'Credentialing': ['currentStatus', 'nextActionRequired', 'showAttach', 'dueDateSort'],
+    'Patient Statement': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueBalance', 'dueDateSort'],
+    'Payment Posting': ['currentStatus', 'nextActionRequired', 'providerSpeciality', 'dueDateSort'],
+    'LC3': ['showAttach', 'dueDateSort'],
+    'Office': ['showAttach', 'dueDateSort'],
+    'Ortho': ['showAttach', 'dueDateSort'],
+    'PPO IV': ['showAttach', 'dueDateSort'],
+    'Medicaid IV': ['showAttach', 'dueDateSort'],
+    'Need to hold': ['showAttach', 'dueDateSort'],
+    'Quality': ['showAttach', 'dueDateSort'],
+    'Patient Calling': ['showAttach', 'dueDateSort'],
   };
 
-  showTooltipConfig:any={};
-  selectAllAging:any=null;
+  showTooltipConfig: any = {};
+  selectAllAging: any = null;
   selectedHeaders: string[];
-
+  sendToAging: boolean = false;
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
       setTimeout(() => {
@@ -96,10 +97,11 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   ngOnInit(): void {
     this.clientName = localStorage.getItem("selected_clientName");
+    this.isRoleAssociate = Utils.isRoleAsso();
     this.currentTeamName = this.appConstants.teamData.find((e: any) => e.teamId == Utils.selectedTeam());
     this.tabSwitch.unSubmitted = false;
     this.tabSwitch.submitted = true;
-    this.tabValue='submitted';
+    this.tabValue = 'submitted';
     this.fetchClaims("submitted");
     this.fetchOtherTeams();
     this.showOrHideColumns(this.currentTeamName);
@@ -144,9 +146,9 @@ export class OtherTeamsWorkComponent implements OnInit {
           return e;
         })
         ths.claimDetail = data;
-        console.log(ths.claimDetail);
+        //console.log(ths.claimDetail);
 
-        ths.loader.listClaimLoader = false;
+
         this.filterOfficeName();
         this.fetchOfficeByUuid();
         this.filterOptionAgeBracket();
@@ -157,10 +159,11 @@ export class OtherTeamsWorkComponent implements OnInit {
         this.filterOptionCurrentStatus();
         this.filterOptionNextActionRequired();
         this.filterOptionProviderSpeciality();
-        this.showClaimIdWithDigits();
+        //this.showClaimIdWithDigits();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
         this.checkDiffForPaymentPosting();
         this.filterOptionSelectAging();
+        ths.loader.listClaimLoader = false;
       }
     });
   }
@@ -708,7 +711,7 @@ export class OtherTeamsWorkComponent implements OnInit {
         if (e.claimId) {
           e.newClaimId = e.claimId.replace(/\D/g, "");
         }
-        if (e.dueBalance==null) {
+        if (e.dueBalance == null) {
           e.dueBalance = 0;
         }
       })
@@ -742,40 +745,40 @@ export class OtherTeamsWorkComponent implements OnInit {
     const headerConfigs = {
       default: [ // medical iv , need to hold, ortho, patient calling, ppo iv, quality, lc3
         "Office", "Claim ID", "Patient ID", "Patient Name",
-        "DOS", "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
-        "Insurance Type", "Claim Type", "Estimated Amount", "Assigned By", 
+        "DOS", "Claim Age", "TFL", "Age Bracket", "Insurance Name",
+        "Insurance Type", "Claim Type", "Estimated Amount", "Assigned By",
         "Last Team's Remarks", "Pending Since Date", "Due Date",
       ],
-      teamCdp: [ 
-        "Office", "Claim ID", "Patient ID", "Patient Name", 
-        "DOS", "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
-        "Insurance Type", "Claim Type", "Estimated Amount", "Assigned By", 
-        "Last Team's Remarks", "Pending Since Date", "Current Status", 
+      teamCdp: [
+        "Office", "Claim ID", "Patient ID", "Patient Name",
+        "DOS", "Claim Age", "TFL", "Age Bracket", "Insurance Name",
+        "Insurance Type", "Claim Type", "Estimated Amount", "Assigned By",
+        "Last Team's Remarks", "Pending Since Date", "Current Status",
         "Current Action Required", "Due Date", "Provider Speciality"
       ],
-      teamAging: [ 
-        "Office", "Claim ID", "Patient ID", "Patient Name", 
-        'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
-        "Insurance Type", "Claim Type", "Est. Amount", "Assigned By", 
-        "Last Team's Remarks", "Pending Since Date", "Current Status", 
+      teamAging: [
+        "Office", "Claim ID", "Patient ID", "Patient Name",
+        'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name",
+        "Insurance Type", "Claim Type", "Est. Amount", "Assigned By",
+        "Last Team's Remarks", "Pending Since Date", "Current Status",
         "Current Action Required", "Due Date", "Provider Speciality"
       ],
-      teamOffice: [ 
-        "Office", "Patient Name", 'DOS', "TFL", "Age Bracket", 
-        "Insurance Name", "Insurance Type", "Claim Type", "Est. Amount", 
+      teamOffice: [
+        "Office", "Patient Name", 'DOS', "TFL", "Age Bracket",
+        "Insurance Name", "Insurance Type", "Claim Type", "Est. Amount",
         "Assigned By", "Last Team's Remarks", "Pending Since Date", "Due Date",
       ],
-      teamPosting: [ 
-        "Office", "Claim ID", "Patient ID", "Patient Name", 
-        'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
-        "Insurance Type", "Claim Type", "Est. Amount", "Pending Since Date", 
+      teamPosting: [
+        "Office", "Claim ID", "Patient ID", "Patient Name",
+        'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name",
+        "Insurance Type", "Claim Type", "Est. Amount", "Pending Since Date",
         "Current Status", "Current Action Required", "Due Date", "Provider Speciality"
       ],
-      teamCredentialing: [ 
-        "Office", "Claim ID", "Patient ID", "Patient Name", 
-        'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name", 
-        "Insurance Type", "Claim Type", "Est. Amount", "Assigned By", 
-        "Last Team's Remarks", "Pending Since Date", "Current Status", 
+      teamCredentialing: [
+        "Office", "Claim ID", "Patient ID", "Patient Name",
+        'DOS', "Claim Age", "TFL", "Age Bracket", "Insurance Name",
+        "Insurance Type", "Claim Type", "Est. Amount", "Assigned By",
+        "Last Team's Remarks", "Pending Since Date", "Current Status",
         "Current Action Required", "Due Date",
       ],
       teamPatientStatement: [
@@ -854,7 +857,7 @@ export class OtherTeamsWorkComponent implements OnInit {
       excelData = excelData.map((e: any) => {
         return {
           "Office Name": e.officeName,
-          "Claim ID":  e.newClaimId,
+          "Claim ID": e.newClaimId,
           "Patient ID": e.patientId,
           "Patient Name": e.patientName,
           'DOS': e.dos,
@@ -900,7 +903,7 @@ export class OtherTeamsWorkComponent implements OnInit {
         }
       })
     }
-    else if (this.staticUtil.selectedTeam() == AppConstants.OFFICE_TEAM){
+    else if (this.staticUtil.selectedTeam() == AppConstants.OFFICE_TEAM) {
       excelData = excelData.map((e: any) => {
         return {
           "Office Name": e.officeName,
@@ -918,7 +921,7 @@ export class OtherTeamsWorkComponent implements OnInit {
           "Due Date": e.dueDateSort,
         }
       })
-    } 
+    }
     else if (this.staticUtil.selectedTeam() == AppConstants.PAYMENT_POSTING_TEAM) {
       excelData = excelData.map((e: any) => {
         return {
@@ -940,8 +943,8 @@ export class OtherTeamsWorkComponent implements OnInit {
           "Due Date": e.dueDateSort,
           "Provider Speciality": e.providerSpeciality ? e.providerSpeciality : "N/A",
         }
-      }) 
-    } 
+      })
+    }
     else if (this.staticUtil.selectedTeam() == AppConstants.CREDENTIALING_TEAM) {
       excelData = excelData.map((e: any) => {
         return {
@@ -965,7 +968,7 @@ export class OtherTeamsWorkComponent implements OnInit {
           "Due Date": e.dueDateSort,
         }
       })
-    } 
+    }
     else if (this.staticUtil.selectedTeam() == AppConstants.PATIENT_STATEMENT_TEAM) {
       excelData = excelData.map((e: any) => {
         return {
@@ -1024,14 +1027,14 @@ export class OtherTeamsWorkComponent implements OnInit {
     this.loader.exportCSVLoader = false;
   }
 
-  showClaimIdWithDigits() {
+  /*showClaimIdWithDigits() {
     this.filteredItems.forEach((e: any) => {
       if (e.claimId) {
         e.newClaimId = e.claimId.replace(/\D/g, "");  // returns only digits
       }
     });
 
-  }
+  }**/
 
   showAgeBracket_WithColor_AndClaimIdDigits() {
     let currentDate: any = new Date().setHours(0, 0, 0, 0); // To set the time equal
@@ -1233,7 +1236,7 @@ export class OtherTeamsWorkComponent implements OnInit {
           isAllSelected = false;
           break;
         }
-      } 
+      }
       this.isFilterAllSelected.selectAging = isAllSelected;
       this.filteredItems = this.claimDetail.filter((item: any) => {
         return this.filteredSelectAging.some((checkbox: any) => {
@@ -1615,29 +1618,37 @@ export class OtherTeamsWorkComponent implements OnInit {
     });
   }
 
-  toggleTooltip(tooltip:any){
+  toggleTooltip(tooltip: any) {
     this.showTooltipConfig[tooltip] = !this.showTooltipConfig[tooltip];
     document.addEventListener('keydown', (event) => {
       if (event.key === 'Escape' || event.keyCode === 27) {
         this.showTooltipConfig[tooltip] = false;
       }
     })
-    if(!this.showTooltipConfig[tooltip]){
+    if (!this.showTooltipConfig[tooltip]) {
       document.removeAllListeners('keydown');
     }
   }
 
-  get staticUtil():any{
-      return Utils;
+  get staticUtil(): any {
+    return Utils;
   }
 
   checkDiffForPaymentPosting() {
     let currentDate: any = new Date();
+    //moved from showClaimIdWithDigits method : e.newClaimId = e.claimId.replace(/\D/g, "") line
     this.filteredItems.forEach((e: any) => {
+      if (e.claimId) {
+        e.newClaimId = e.claimId.replace(/\D/g, "");  // returns only digits
+      }
+
       if (e.updatedDate && this.currentTeamName.unFormatedName == 'PAYMENT_POSTING') {
-        let updateDate: any = new Date(e.updatedDate);
-        var diffDays: any = Math.floor((currentDate - updateDate) / (1000 * 60 * 60 * 24));
-        if (diffDays > 7) {
+
+        //let updateDate: any = new Date(e.updatedDate);
+        let updateDate1: any = new Date(e.dos);
+        var diffDays: any = Math.floor((currentDate - updateDate1) / (1000 * 60 * 60 * 24));
+
+        if (diffDays > 15) {
           e.diffForPaymentPosting = true;
         } else {
           e.diffForPaymentPosting = false;
@@ -1658,8 +1669,8 @@ export class OtherTeamsWorkComponent implements OnInit {
     }
     let all: any = true;
     this.filteredItems.forEach((x: any) => {
-      if(x.diffForPaymentPosting){
-        if (x.selectAging == null || x.selectAging == false) 
+      if (x.diffForPaymentPosting) {
+        if (x.selectAging == null || x.selectAging == false)
           all = null;
       }
     });
@@ -1667,11 +1678,11 @@ export class OtherTeamsWorkComponent implements OnInit {
   }
 
   transferClaimsConfirmModal() {
-    this.selectedClaimsTransfer.remarks=''
+    this.selectedClaimsTransfer.remarks = ''
     if (this.selectedClaimsTransfer.claimUuid.length > 0) {
       this.showTransferClaimModal = true;
     }
-    else{
+    else {
       this.errorMessage = "Please select at least one claim";
       setTimeout(() => {
         this.errorMessage = '';
@@ -1687,6 +1698,7 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   transferClaim() {
     if (this.selectedClaimsTransfer.claimUuid.length > 0) {
+      this.sendToAging = true;
       this.appService.checkAnyTLOrAssoExist({ "claimUuids": this.selectedClaimsTransfer.claimUuid, "teamId": AppConstants.AGING_ID }, (res: any) => {
         if (res.data.responseStatus) {
           this.appService.claimTransferToAging(this.selectedClaimsTransfer, (res: any) => {
@@ -1700,13 +1712,14 @@ export class OtherTeamsWorkComponent implements OnInit {
               this.errorMessage = 'Failed to Transfer the claims';
               setTimeout(() => {
                 this.errorMessage = '';
-              },2000);
+              }, 2000);
             }
           });
         }
         else {
           this.closeConfirmationModal();
           this.errorMessage = res.data.message;
+          this.sendToAging = false;
           setTimeout(() => {
             this.errorMessage = '';
           }, 2000);
@@ -1718,7 +1731,7 @@ export class OtherTeamsWorkComponent implements OnInit {
       this.errorMessage = "Please select at least one claim";
       setTimeout(() => {
         this.errorMessage = '';
-      },2000);
+      }, 2000);
       this.showTransferClaimModal = false;
     }
   }
@@ -1731,9 +1744,9 @@ export class OtherTeamsWorkComponent implements OnInit {
     if (isSelected) {
       this.selectAllAging = true;
       this.filteredItems.forEach((x: any) => {
-        if(x.diffForPaymentPosting){
-        this.selectedClaimsTransfer.claimUuid.push(x.uuid);
-        x.selectAging = true;
+        if (x.diffForPaymentPosting) {
+          this.selectedClaimsTransfer.claimUuid.push(x.uuid);
+          x.selectAging = true;
         }
       });
     } else {

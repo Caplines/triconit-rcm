@@ -1605,7 +1605,8 @@ public class ClaimSectionImpl {
 				String assignActionName = "Assign To Team";
 				String claimTransfer = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
 						claim.getClaimUuid(), nextTeam, requestRebillingInfoModel.getRemarks(), claim, assign,
-						createdBy, office, null, ClaimStatusEnum.NEED_TO_REBILL.getType(),ClaimStatusEnum.NEED_TO_REBILL.getType(), assignActionName);
+						createdBy, office, null, ClaimStatusEnum.NEED_TO_REBILL.getType(),ClaimStatusEnum.NEED_TO_REBILL.getType(), assignActionName,
+						rcmTeamRepo.findById(partialHeader.getTeamId()));
 				
 				rcmClaimAssignmentRepo.save(assign);
 				logger.info("claim transfer response->" + claimTransfer);
@@ -1759,7 +1760,8 @@ public class ClaimSectionImpl {
 					String assignActionName = "Assign To Team";
 					String claimTransfer = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
 							claim.getClaimUuid(), nextTeam, rebillingInfoModel.getRebillingRemarks(), claim, assign,
-							createdBy, office, null, newCycleStatus, nextAction.getType(), assignActionName);
+							createdBy, office, null, newCycleStatus, nextAction.getType(), assignActionName,
+							rcmTeamRepo.findById(partialHeader.getTeamId()));
 					rcmClaimAssignmentRepo.save(assign);
 					logger.info("claim transfer response->" + claimTransfer);
 					

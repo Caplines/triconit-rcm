@@ -833,7 +833,7 @@ public class RcmController extends BaseHeaderController{
 		}
 
 		try {
-			response = claimServiceImpl.findTeamLeadExistForOtherTeams(dto, partialHeader.getJwtUser());
+			response = claimServiceImpl.findTeamLeadExistForOtherTeams(dto, partialHeader.getJwtUser(),null);
 		} catch (Exception e) {
 		    response.setResponseStatus(false);
 			e.printStackTrace();

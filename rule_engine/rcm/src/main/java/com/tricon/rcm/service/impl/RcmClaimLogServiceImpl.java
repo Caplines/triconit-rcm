@@ -60,7 +60,7 @@ public class RcmClaimLogServiceImpl {
 	public String assignClaimToOtherTeamWithRemarkCommon(PartialHeader partialHeader,String claimUuid,
 			int assignToTeam,String assignToComment,RcmClaims claim,
 			RcmClaimAssignment assign,RcmUser user,RcmOffice office,String attachmentsWithRemarks,String newCycleStatus,
-			String nextAction, String assignmentStatus) {
+			String nextAction, String assignmentStatus,RcmTeam lastTeam) {
           
 		if (!claim.isPending() && claim.getCurrentStatus()==0) {
 			
@@ -71,7 +71,7 @@ public class RcmClaimLogServiceImpl {
 			return "Claim is Archived";
 		}
 		
-		RcmTeam lastTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
+		//RcmTeam lastTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
 		if (assignToTeam == -1) {
 			claim.setUpdatedBy(user);
 			claim.setLastWorkTeamId(lastTeam);

@@ -56,5 +56,13 @@ public class RcmOffice implements Serializable{
 	
 	@Column(name = "active", columnDefinition = "BIT default 0")
 	private boolean active;
+
+	@Override
+	public String toString() {
+		return "RcmOffice [uuid=" + uuid + ", name=" + name + ", active=" + active + "]";
+	}
+	
+	
+	
 	
 }
