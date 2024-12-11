@@ -814,7 +814,7 @@ public class CaplineIVFFormDto {
     
     private String benefits;
     
-    
+    private String shareFr2;
     
     
     @XmlElementWrapper
@@ -4080,6 +4080,14 @@ public class CaplineIVFFormDto {
 
 	public void setPolicy21(String policy21) {
 		this.policy21 = policy21;
+	}
+
+	public String getShareFr2() {
+		return shareFr2;
+	}
+
+	public void setShareFr2(String shareFr2) {
+		this.shareFr2 = shareFr2;
 	}
 
 	

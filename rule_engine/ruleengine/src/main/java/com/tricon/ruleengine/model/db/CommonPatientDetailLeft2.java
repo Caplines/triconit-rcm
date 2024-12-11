@@ -646,6 +646,9 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	
 	@Column(name = "policy21")
 	private String policy21;
+	
+	@Column(name = "share_fr2",length = 15)
+	private String shareFr2;
 
 	public String getD2954() {
 		return d2954;
@@ -2312,6 +2315,16 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setPolicy21(String policy21) {
 		this.policy21 = policy21;
+	}
+
+	public String getShareFr2() {
+		if (shareFr2==null) shareFr2="";
+		return shareFr2;
+	}
+
+	public void setShareFr2(String shareFr2) {
+		if (shareFr2==null) shareFr2="";
+		this.shareFr2 = shareFr2;
 	}
 
 	

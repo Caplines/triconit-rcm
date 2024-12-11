@@ -1,6 +1,7 @@
 package com.tricon.ruleengine.dao.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -148,7 +149,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " does_exam_share_freq as doesExamShareFreq,d5110_20_percentage as d511020Percentage, "
 			+ " d5130_40_percentage as d513040Percentage,d5810_c_percentage as d5810CPercentage,d9310 as d9310,d9310_fr as d9310fr,"
 			+ " d6011 as d6011,d6011_fr as d6011fr,d5862 as d5862,d5862_fr as d5862fr,d7311_select as d7311Select,d5213142625 as d5213142625,d5213142625_fr as d5213142625fr,d2954 as d2954,d2954_fr as d2954fr,"
-			+ " policy21 as policy21 ";
+			+ " policy21 as policy21,share_fr2 as shareFr2 ";
 	
 	@Override
 	public Patient checkforPatientWithId(String patientid, Office off) {
@@ -898,5 +899,26 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 		}
 		return data;
 	}
+	
+	 public static void main(String[] args) {
+
+	        // unsorted array
+	        int[] integerList = {-55, -44, -33, -88, -99};
+
+	        // Getting the natural (ascending) order of the array
+	        Arrays.sort(integerList);
+
+	        // Getting the last item of the now sorted array (which represents the maximum, in other words: highest number)
+	        int max = integerList.length-1;
+
+	        // reversing the order with a simple for-loop
+	        System.out.println("Array in descending order:");
+	        for(int i=max; i>=0; i--) {
+	            System.out.println(integerList[i]);
+	        }
+
+	        // You could make the code even shorter skipping the variable max and use
+	        // "int i=integerList.length-1" instead of int "i=max" in the parentheses of the for-loop
+	    }
 	
 }

@@ -143,6 +143,7 @@ export class OtherTeamsWorkComponent implements OnInit {
             e['EstAmount'] = e.secTotal;
           }
           e['dueDateSort'] = e.followUpDate == null ? e.pendingSince : e.followUpDate;
+          if (e['nextAction'] == ths.appConstants.NEED_TO_RE_BILL) e['statusType'] = ths.appConstants.RE_BILLING_ID;
           return e;
         })
         ths.claimDetail = data;
@@ -1597,7 +1598,7 @@ export class OtherTeamsWorkComponent implements OnInit {
   fetchClaimsLead(subType: string) {
     this.loader.listClaimLoader = true;
     let ths = this;
-    
+
     ths.appService.fetchLeadClaimDet(ths.selectedBtype, subType, (res: any) => {
       if (res.status === 200) {
         ths.claimDetail = this.removePrefix(res.data);

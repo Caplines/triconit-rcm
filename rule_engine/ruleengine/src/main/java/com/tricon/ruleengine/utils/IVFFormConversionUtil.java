@@ -477,6 +477,7 @@ public class IVFFormConversionUtil {
 		pd2.setD2954(d.getD2954());	
 		pd2.setD2954fr(d.getD2954fr());	
 		pd2.setPolicy21(d.getPolicy21());
+		pd2.setShareFr2(d.getShareFr2());
 		pd.setPatientDetails2(pd2);
 		
 		Set<PatientDetail2> p2Set = new HashSet<>();
@@ -938,6 +939,7 @@ public class IVFFormConversionUtil {
 				pd.setD2954fr(d.getD2954fr());	
 				
 				pd.setPolicy21(d.getPolicy21());
+				pd.setShareFr2(d.getShareFr2());
 
 		if (off != null)
 			pd.setUniqueID(off.getName() + "_"+d.getId());// -- will set latter;
@@ -950,7 +952,7 @@ public class IVFFormConversionUtil {
 		pd.setxRaysPAD0230FL(d.getXrays3());
 		///////////////////////////
 		pd.setComments(d.getComments());
-        pd.setGeneralBenefitsVerifiedBy(d.getBenefits());
+		pd.setGeneralBenefitsVerifiedBy(d.getBenefits());
         
 		// p.setDob(d.getBasicInfo6());
 		/*
@@ -1488,7 +1490,7 @@ public class IVFFormConversionUtil {
 		pd2.setD2954(d.getD2954());	
 		pd2.setD2954fr(d.getD2954fr());	
 		pd2.setPolicy21(d.getPolicy21());
-		
+		pd2.setShareFr2(d.getShareFr2());
 		pd.setPatientDetails2(pd2);
 		Set<PatientDetail2> p2Set = new HashSet<>();
 		p2Set.add(pd2);
