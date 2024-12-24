@@ -114,7 +114,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Fetching Claims From  ES or GSheet", response = String.class, responseContainer = "Map")
 	@PostMapping("/api/fetch-claims-from-source")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ADMIN','ASSO')")
 	public ResponseEntity<Object> fetchClaimsFromSource(@RequestBody ClaimSourceDto dto,
 			Model model) {
 
@@ -136,7 +136,7 @@ public class RcmController extends BaseHeaderController{
 
 	@ApiOperation(value = "Api For Fetching Fresh Claims Logs (Billing Pendency Dashboard)", response = FreshClaimLogDto.class, responseContainer = "List")
 	@GetMapping("/api/fetch-fresh-claims-logs/{uuid}")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','REPORTING','ADMIN','ASSO')")
 	public ResponseEntity<Object> fetchFreshClaimLogs(@PathVariable("uuid") String companyUuid
 			,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
