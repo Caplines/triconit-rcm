@@ -2724,6 +2724,23 @@ export class BillingClaimsComponent {
       isSectionValidated = false;
     }
 
+    if (this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Check') {
+      let checkNumber = this.claimSectionModal['PATIENT_PAYMENT']['checkNumber'];
+      if (!checkNumber || checkNumber.toString().length != 4 || isNaN(checkNumber)) {
+        this.emptyFields["PATIENT_PAYMENT"]['checkNumber'] = true;
+        isSectionValidated = false;
+      }
+    }
+
+    if (this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Debit Card' ||
+      this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Credit Card') {
+      let cardNumber = this.claimSectionModal['PATIENT_PAYMENT']['cardNumber'];
+      if (!cardNumber || cardNumber.toString().length != 4 || isNaN(cardNumber)) {
+        this.emptyFields["PATIENT_PAYMENT"]['cardNumber'] = true;
+        isSectionValidated = false;
+      }
+    }
+
     return isSectionValidated;
   }
   validate_PATIENT_COMMUNICATION() {
@@ -4376,6 +4393,11 @@ export class BillingClaimsComponent {
     } else if (hasViewAccess) {
       return "Read";
     }
+  }
+
+  clearPaymentFields(){
+    this.claimSectionModal.PATIENT_PAYMENT['checkNumber'] = null;
+    this.claimSectionModal.PATIENT_PAYMENT['cardNumber'] = null;
   }
 }
 

@@ -3269,6 +3269,7 @@
                                                             <label for="modeOfPayment">Mode of Payment &nbsp;<span
                                                                     class="text-danger">*</span></label>
                                                             <select id="modeOfPayment" class="form-control"
+                                                                (change)="clearPaymentFields()"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment']"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['modeOfPayment']}">
@@ -3294,6 +3295,22 @@
                                                         </div>
                                                     </div>
 
+                                                    <div *ngIf="claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Check'" class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="checkNumber">Check# &nbsp;<span class="text-danger">*</span></label>
+                                                            <input type="number" id="checkNumber" [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['checkNumber']"
+                                                                class="form-control" placeholder="Enter last 4 digits" maxLength=4
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['checkNumber']}">
+                                                        </div>
+                                                    </div>
+
+                                                    <div *ngIf="claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Debit Card' || claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Credit Card'" class="col-md-4 mb-2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="cardNumber">Card# &nbsp;<span class="text-danger">*</span></label>
+                                                            <input type="number" id="cardNumber" [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['cardNumber']" class="form-control" placeholder="Enter last 4 digits" maxLength=4
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['cardNumber']}">
+                                                        </div>
+                                                    </div>
                                                     <div class="col-md-4 mb-2"></div>
 
                                                     <div class="col-md-12 mb-2 btn-align-right">
