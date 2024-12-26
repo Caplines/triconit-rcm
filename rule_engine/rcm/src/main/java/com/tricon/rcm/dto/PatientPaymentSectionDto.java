@@ -11,4 +11,6 @@ public class PatientPaymentSectionDto {
 	private String modeOfPayment;
 	private double dueBalanceInPMS;
 	private int sectionId;
+	private String checkNumber;
+	private String cardNumber;
 }

@@ -115,7 +115,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " timely_fil_lmt_dt as timelyFilingLimitData, "
 			+ " claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal, "
-			+ " case when assign.pending_since is not null then assign.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus from rcm_claims claims "
+			+ " case when assign.pending_since is not null then assign.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname "
+			+ " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " left join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id  and last_work_team_id!=:teamid "
@@ -124,6 +126,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=1 "
+			+ " left join rcm_user rcau on rcau.uuid=assign.assigned_to "
 			+ " where claims.first_worked_team_id=:teamid and off.active is true and claims.last_work_team_id is null and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
@@ -140,7 +143,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " timely_fil_lmt_dt as timelyFilingLimitData, "
 			+ " claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal, "
-			+ " case when assign.pending_since is not null then assign.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus from rcm_claims claims "
+			+ " case when assign.pending_since is not null then assign.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname "
+			+" from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
@@ -149,6 +154,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=true  "
+			+ " left join rcm_user rcau on rcau.uuid=assign.assigned_to "
 			+ " where claims.first_worked_team_id<>:teamid and off.active is true and claims.last_work_team_id!=:teamid and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
 			+ " and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
@@ -165,17 +171,20 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal, prime_sec_submitted_total primeSecSubmittedTotal, "
 			+ " case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,"
-			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus from rcm_claims claims "
+			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname "
+			+ " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
-			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid "
-			+ " inner join rcm_user ru on ru.uuid=rca.assigned_to "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1  "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			//+ " inner join rcm_user ru on ru.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid and rca.active=1  and pending=true"
+			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid   and pending=true"
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
 			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc ")
@@ -198,16 +207,19 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
 			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
-			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus from rcm_claims claims "
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname "
+			+ " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id "
-			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  and rca.active=true "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and off.active is true and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + "  and rca.active=true "
+			+ "  where claims.current_team_id=:teamid and off.active is true and claims.last_work_team_id!=:teamid and off.company_id=:companyId " + "  "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
@@ -243,7 +255,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
 			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
-			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus from rcm_claims claims "
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname "
+			+"  from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
@@ -252,7 +266,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId " + " and pending=true "
 			+"  and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
@@ -266,7 +281,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
 			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
-			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance ,claims.is_primary as claimTypeStatus from rcm_claims claims "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance ,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname "
+			+ " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status"
@@ -275,7 +292,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId " + " and pending=false "
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
@@ -825,7 +843,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " off.company_id=:companyId  where cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_uuid "
 			+ " not in (select cl.claim_uuid ascl from rcm_claims cl inner join rcm_claim_assignment ass on "
 			+ " ass.claim_id=cl.claim_uuid inner join office off on off.uuid=cl.office_id  where  "
-			+ " ass.active=1 and ass.assigned_to is not null and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and off.company_id=:companyId )")
+			+ " ass.active=1 and is_force_unassigned=0 and  ass.assigned_to is not null and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and off.company_id=:companyId )")
 	List<String> getUnAsignedClaims(@Param("companyId") String companyId);
 	
 	@Query(nativeQuery = true, value = ""
@@ -1394,4 +1412,25 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ "  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "
 				+ "  inner join company cmp on cmp.uuid=off.company_id" + "  where claim_uuid=:claimId")
 		ClaimDetailsDto fetchClaimDetailsByClaimUuid(@Param("claimId") String claimId);
+		
+		
+		@Modifying
+		@Transactional
+		@Query(value = "update rcm_claims set is_force_unassigned=true,force_unassigned_comment=:comment,"
+		       +" unassigned_team_id=:teamId,unassigned_by=:unassignedBy where claim_uuid in (:claimUuids) ", nativeQuery = true)
+		void updateClaimUnAssignments(@Param("comment")String comment,@Param("teamId")int teamId,@Param("unassignedBy")String unassignedBy,
+				                     @Param("claimUuids")List<String> claimUuids);
+		
+		@Modifying
+		@Transactional
+		@Query(value = "update rcm_claims set current_team_id=:teamId,is_force_unassigned=false,"
+		       +" updated_by=:updatedBy where claim_uuid = :claimUuid ", nativeQuery = true)
+		void updateClaimCurrentTeamWithForceUnassign(@Param("teamId")int teamId,@Param("updatedBy")String updatedBy,
+				                     @Param("claimUuid")String claimUuid);
+		
+		
+
+		
+		
+
 }

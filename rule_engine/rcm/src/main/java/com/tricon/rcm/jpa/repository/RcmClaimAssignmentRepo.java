@@ -153,4 +153,14 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			@Modifying
 			@Query(value = "update rcm_claim_assignment set active =:status where id=:id and claim_id=:claimUuid", nativeQuery = true)
 			void updateOpenAndUnOpendClaimsActiveStatus(@Param("id")int id, @Param("status") boolean status,@Param("claimUuid") String claimUuid);
+
+			@Modifying
+			@Query(value = "update rcm_claim_assignment set active=false,is_force_unassigned=true,updated_date=sysdate()  where claim_id in (:claimUuids) and active is true  ", nativeQuery = true)
+			void updateClaimsUnAssignment(@Param("claimUuids")List<String> claimUuids);
+			
+			RcmClaimAssignment findFirstByClaimsClaimUuidAndActiveIsTrueOrderByIdDesc(String claimUuid);
+			
+			RcmClaimAssignment findFirstByClaimsClaimUuidAndActiveIsFalseOrderByIdDesc(String claimUuid);
+			
+			
 }

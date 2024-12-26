@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FetchClaimsComponent } from './fetch-claims.component';
+import { ListOfClaimsComponent } from './list-of-claims.component';
 
 describe('FetchClaimsComponent', () => {
-  let component: FetchClaimsComponent;
-  let fixture: ComponentFixture<FetchClaimsComponent>;
+  let component: ListOfClaimsComponent;
+  let fixture: ComponentFixture<ListOfClaimsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ FetchClaimsComponent ]
+      declarations: [ListOfClaimsComponent]
     })
-    .compileComponents();
+      .compileComponents();
 
-    fixture = TestBed.createComponent(FetchClaimsComponent);
+    fixture = TestBed.createComponent(ListOfClaimsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

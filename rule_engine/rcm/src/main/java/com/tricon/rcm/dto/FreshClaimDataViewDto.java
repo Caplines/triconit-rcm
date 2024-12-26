@@ -40,4 +40,16 @@ public class FreshClaimDataViewDto {
 	String providerSpeciality;
 	String claimStatus;
 	boolean claimTypeStatus;
+	String assignedToFName;
+	String assignedToLName;
+	String assignedTo;
+	
+	public String getAssignedTo() {
+		String name="";
+		if (assignedToFName!=null)name =name + assignedToFName;
+		if (assignedToLName!=null)name =name +" "+ assignedToLName;
+		return name;
+	}
+	
+	
 }

@@ -1,9 +1,8 @@
 package com.tricon.rcm.api.controller;
 
-import java.io.InputStream;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -23,9 +22,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.AllPendencyReportDto;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
+import com.tricon.rcm.dto.AssignUnAssignResAsignClaimsDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
 import com.tricon.rcm.dto.ClaimAssignWithRemarkAndTeam;
+import com.tricon.rcm.dto.ClaimAssignmentsOfficeDto;
 import com.tricon.rcm.dto.ClaimEditDto;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.KeyValueDto;
@@ -59,7 +60,6 @@ import com.tricon.rcm.dto.EobLink;
 import com.tricon.rcm.dto.FindRulesDto;
 import com.tricon.rcm.dto.FindTLExistDto;
 import com.tricon.rcm.dto.FreshClaimDataImplDto;
-import com.tricon.rcm.dto.FreshClaimDataViewDto;
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.dto.customquery.AssignFreshClaimLogsImplDto;
 import com.tricon.rcm.dto.customquery.ClaimRemarksDto;
@@ -74,12 +74,12 @@ import com.tricon.rcm.dto.customquery.FreshClaimLogDto;
 import com.tricon.rcm.dto.customquery.ProductionDto;
 import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
+import com.tricon.rcm.dto.customquery.UserClaimsAssignmentResponseDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.service.impl.ClaimSectionImpl;
 import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.RcmCommonServiceImpl;
 import com.tricon.rcm.service.impl.RuleEngineService;
-import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.MessageConstants;
 
 import io.swagger.annotations.ApiOperation;
@@ -1028,5 +1028,43 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
+	@ApiOperation(value = "Api For Multiple Claim Assigmentment/UnAssigmentment by TL (Same Team /Other Team/Same team Other member)", response = String.class)
+	@PostMapping("/api/assign_unassign_reassign_claimbytl")
+	@PreAuthorize("hasAnyRole('TL')")
+	public ResponseEntity<Object> assignResAssignClaimByTLLead(
+			@RequestBody AssignUnAssignResAsignClaimsDto dto, Model model) {
+		
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		try {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+					claimServiceImpl.assignReAssignClaimByTL(dto,partialHeader)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+	}
+	
+	@ApiOperation(value = "Api For List for user for claim Assgignments", response = UserClaimsAssignmentResponseDto.class, responseContainer = "List")
+	@PostMapping("/api/usersbyTeam")
+	@PreAuthorize("hasAnyRole('TL')")
+	public ResponseEntity<Object> getUsersByTeamForClaimAssignment(
+			@RequestBody ClaimAssignmentsOfficeDto dto, Model model) {
+		
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		try {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+					claimServiceImpl.getUsersForClaimAssignment(dto,partialHeader)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
 	}
 }

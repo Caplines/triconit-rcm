@@ -241,7 +241,7 @@ export class ApplicationServiceService extends BaseService {
         else return <any>new Date(b.dates1[teamName.toUpperCase()]) - <any>new Date(a.dates1[teamName.toUpperCase()]);
       })
     }
-    else if (sortType === 'bool'){
+    else if (sortType === 'bool') {
       order === 'asc' ? data.sort((a: any, b: any) => {
         return (a[sortBy] === b[sortBy]) ? 0 : a[sortBy] ? -1 : 1;
       }) : data.sort((a: any, b: any) => {
@@ -373,7 +373,7 @@ export class ApplicationServiceService extends BaseService {
 
   setPaddingRightContainer() {
     let m: any = document.getElementsByClassName("gray-bar");
-    if(m !== undefined && m.length > 0){ // On claim detail page gray bar is not shown.
+    if (m !== undefined && m.length > 0) { // On claim detail page gray bar is not shown.
       if (m[0].clientHeight > 55) {
         return this.setPaddingContainer = true;
       }
@@ -646,7 +646,7 @@ export class ApplicationServiceService extends BaseService {
 
   getClientsAssociatedUser(claimUuid: any, callback: any) {
     this.getData({}, this.httpUrl['get-clientsAssociatedUser'] + "/" + claimUuid, callback)
- }
+  }
 
   searchUnopenedClaim(claimUuid: any, callback: any) {
     this.getData({}, this.httpUrl['unopenedclaim'] + "/" + claimUuid, callback)
@@ -654,5 +654,13 @@ export class ApplicationServiceService extends BaseService {
 
   updateUnopenedClaim(params: any, callback: any) {
     this.postData(params, this.httpUrl['update-unopenedclaim-status'], callback)
+  }
+
+  fetchUserNamesByTeam(params: any, callback: any) {
+    this.postData(params, this.httpUrl['user_by_team'], callback);
+  }
+
+  reAssignClaimFromList(params: any, callback: any) {
+    this.postData(params, this.httpUrl['assign_unassign_reassign'], callback);
   }
 }

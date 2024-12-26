@@ -1052,6 +1052,7 @@ public class RuleEngineService {
 			int recordCount = rcmClaimAssignmentRepo.countTotalActiveEntiresinClaimAssignment(s[0].toString());
 			if (recordCount == 0 ) {
 				RcmClaims claim = rcmClaimRepository.findByClaimUuid(s[0].toString());
+				if (claim.isForceUnassigned()) continue;
 				UserAssignOffice assignedUser =	usersOffices.get(s[1].toString());
 				if (assignedUser == null) {  
 					assignedUser = userAssignOfficeRepo

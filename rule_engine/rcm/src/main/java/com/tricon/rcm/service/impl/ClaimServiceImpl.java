@@ -8,6 +8,7 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -76,10 +77,12 @@ import com.tricon.rcm.dto.AllPendencyReportDto;
 import com.tricon.rcm.dto.ArchiveClaimsPayloadDto;
 import com.tricon.rcm.dto.AssigmentClaimListDto;
 import com.tricon.rcm.dto.AssignOfficeResponseDto;
+import com.tricon.rcm.dto.AssignUnAssignResAsignClaimsDto;
 import com.tricon.rcm.dto.AutoRunClaimReponseDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAssignDto;
 import com.tricon.rcm.dto.ClaimAssignWithRemarkAndTeam;
+import com.tricon.rcm.dto.ClaimAssignmentsOfficeDto;
 import com.tricon.rcm.dto.ClaimDataDetails;
 import com.tricon.rcm.dto.ClaimDetailDto;
 import com.tricon.rcm.dto.ClaimEditDetailDto;
@@ -145,6 +148,7 @@ import com.tricon.rcm.dto.customquery.RcmClaimNoteDto;
 import com.tricon.rcm.dto.customquery.RcmClaimSubmissionDto;
 import com.tricon.rcm.dto.customquery.ReconcillationClaimDto;
 import com.tricon.rcm.dto.customquery.RuleEngineClaimDto;
+import com.tricon.rcm.dto.customquery.UserClaimsAssignmentResponseDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmResponseMessageDto;
 import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
@@ -175,6 +179,7 @@ import com.tricon.rcm.dto.customquery.DataPatientRuleDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDataDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsDto;
 import com.tricon.rcm.dto.customquery.FreshClaimDetailsImplDto;
+import com.tricon.rcm.enums.ClaimAssignTypeEnum;
 import com.tricon.rcm.enums.ClaimSourceEnum;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimStatusSearchEnum;
@@ -212,6 +217,7 @@ import com.tricon.rcm.jpa.repository.RcmRuleRepo;
 import com.tricon.rcm.jpa.repository.RcmTPDetailRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
+import com.tricon.rcm.jpa.repository.RcmUserTeamRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.ClaimMovementUtil;
@@ -325,6 +331,9 @@ public class ClaimServiceImpl {
 	
 	@Autowired
 	RcmTPDetailRepo rcmTPDetailRepo;
+	
+	@Autowired
+	RcmUserTeamRepo rcmUserTeamRepo;
 	
 	@Value("${data.archiveClaims.totalRecordperPage}")
 	private int totalRecordsperPage;
@@ -6407,6 +6416,13 @@ public class ClaimServiceImpl {
 		}
 		return message;
 	}
+	
+	public List<UserClaimsAssignmentResponseDto> getUsersForClaimAssignment(ClaimAssignmentsOfficeDto dto, PartialHeader partialHeader) throws Exception {
+		List<UserClaimsAssignmentResponseDto> list=null;
+		
+		list= rcmUserTeamRepo.getAllActiveUsersByTeam(partialHeader.getTeamId(),partialHeader.getClientName());
+		return list;
+	}
 
 	public RcmResponseMessageDto checkAnyTLOrAssoExist(ListOfClaimsDto dto, PartialHeader partialHeader)
 			throws Exception {
@@ -6422,6 +6438,171 @@ public class ClaimServiceImpl {
 		}
 		//response.setOffice(null);
 		return response;
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	public String assignReAssignClaimByTL(AssignUnAssignResAsignClaimsDto dto, PartialHeader partialHeader)
+			throws Exception {
+		String message = "Success";
+		RcmUser user = userRepo.findByEmail(partialHeader.getJwtUser().getUsername());
+		//updateClaimUnAssignments
+		ClaimAssignTypeEnum val= ClaimAssignTypeEnum.getTypeOfValue(dto.getType());
+		if (val!=null) {
+			String clientUuid= partialHeader.getCompany().getUuid();
+			
+			if (val.getName().equals(ClaimAssignTypeEnum.ASSIGNOTHERTEAM.getName())) {
+				List<RcmClaims> claims= populateClaimListWithUUids(dto.getClaimIds(), dto.getTeamId());
+				RcmTeam newTeam = rcmTeamRepo.findById(dto.getTeamId());
+				
+				//List<RcmClaims> claims = populateClaimListWithUUids(dto.getClaimIds(), partialHeader.getTeamId());
+					//update current team Id in Rcm  table
+				    // active=0, in claim Assignment table 
+				    //Insert data in claim Assignment table from Same Data where active was true.
+				Map<String,RcmOffice> offices= new HashMap<>();
+				Map<String,UserAssignOffice> uaofs= new HashMap<>();
+				claims.forEach( claim-> {
+					//claim.getOffice().getUuid();
+					RcmOffice office = offices.get(claim.getOffice().getUuid());
+					if (office==null) {
+						office = officeRepo.findByUuid(claim.getOffice().getUuid());
+						offices.put(office.getUuid(),office);
+					}
+					UserAssignOffice uaof= uaofs.get(office.getUuid());
+					if (uaof==null) {
+						uaof = userAssignOfficeRepo.findByOfficeUuidAndTeamId(office.getUuid(),dto.getTeamId());
+						uaofs.put(office.getUuid(),uaof);
+					}
+					if (!clientUuid.equals(office.getCompany().getUuid())){
+						return;
+					}
+					if (claim.getCurrentTeamId().getId()== dto.getTeamId()) {
+						return;
+					}
+					
+					rcmClaimRepository.updateClaimCurrentTeamWithForceUnassign(dto.getTeamId(), user.getUuid(), claim.getClaimUuid());
+					RcmClaimAssignment assignOld= rcmClaimAssignmentRepo.findFirstByClaimsClaimUuidAndActiveIsTrueOrderByIdDesc(claim.getClaimUuid());
+					assignOld.setActive(false);
+					rcmClaimAssignmentRepo.save(assignOld);
+					RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
+							.findByStatus(claim.getClaimStatusType().getStatus());
+					RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
+					if (uaof != null) {
+					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, uaof.getUser(),
+							claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT);
+						rcmAssigment.setPendingSince(assignOld.getPendingSince());
+					}else {
+					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, null,
+								claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT);
+							rcmAssigment.setPendingSince(assignOld.getPendingSince());
+					}
+					
+					rcmClaimAssignmentRepo.save(rcmAssigment);
+					ClaimStatusEnum status = null;
+					ClaimStatusEnum nextAction = null;
+					if (dto.getTeamId() == RcmTeamEnum.BILLING.getId()) {
+						status=ClaimStatusEnum.Pending_For_Billing;
+						nextAction= ClaimStatusEnum.Need_to_Bill;
+					}
+					else if (dto.getTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+						status=ClaimStatusEnum.Pending_For_Review;
+						nextAction = ClaimStatusEnum.Need_to_Audit;
+					}
+					if (status!= null) {
+						rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), claim.getClaimUuid());		
+						claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),newTeam, user);
+						}
+					});
+				
+				
+			}else if (val.getName().equals(ClaimAssignTypeEnum.ASSIGNSAMETEAM.getName())) {
+				RcmUser assignedTo = userRepo.findByUuid(dto.getUserId());
+				List<RcmClaims> claims = populateClaimListWithUUids(dto.getClaimIds(), partialHeader.getTeamId());
+				 // active=0, in claim Assignment table 
+			    //Insert data in claim Assignment table from Same Data where active was true. update user Name
+				//RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
+				//rcmClaimAssignmentRepo.save(rcmAssigment);
+				Map<String,RcmOffice> offices= new HashMap<>();
+				claims.forEach( claim-> {
+					//claim.getOffice().getUuid();
+					RcmOffice office = offices.get(claim.getOffice().getUuid());
+					if (office==null) {
+						office = officeRepo.findByUuid(claim.getOffice().getUuid());
+						offices.put(office.getUuid(),office);
+					}
+					if (!clientUuid.equals(office.getCompany().getUuid())){
+						return;
+					}
+					if (claim.getCurrentTeamId().getId()!= partialHeader.getTeamId()) {
+						return;
+					}
+					rcmClaimRepository.updateClaimCurrentTeamWithForceUnassign(partialHeader.getTeamId(), user.getUuid(), claim.getClaimUuid());
+					RcmClaimAssignment assignOld= rcmClaimAssignmentRepo.findFirstByClaimsClaimUuidAndActiveIsTrueOrderByIdDesc(claim.getClaimUuid());
+					if (assignOld==null) assignOld= rcmClaimAssignmentRepo.findFirstByClaimsClaimUuidAndActiveIsFalseOrderByIdDesc(claim.getClaimUuid());
+					if (assignOld==null) {
+							RcmTeam newTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
+							RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
+									.findByStatus(claim.getClaimStatusType().getStatus());
+							RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
+							rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, null,
+									claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT);
+							rcmAssigment.setPendingSince(claim.getCreatedDate());
+		                     rcmClaimAssignmentRepo.save(rcmAssigment);
+							ClaimStatusEnum status = null;
+							ClaimStatusEnum nextAction = null;
+							if (dto.getTeamId() == RcmTeamEnum.BILLING.getId()) {
+								status=ClaimStatusEnum.Pending_For_Billing;
+								nextAction= ClaimStatusEnum.Need_to_Bill;
+							}
+							else if (dto.getTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+								status=ClaimStatusEnum.Pending_For_Review;
+								nextAction = ClaimStatusEnum.Need_to_Audit;
+							}
+							if (status!= null) {
+								rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), claim.getClaimUuid());		
+								claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),newTeam, user);
+								}
+						
+					 }else {
+							RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
+							BeanUtils.copyProperties(assignOld, rcmAssigment, new String[] {"id"});
+							rcmAssigment.setAssignedBy(user);
+							rcmAssigment.setCreatedBy(user);
+							rcmAssigment.setUpdatedBy(user);
+							rcmAssigment.setAssignedTo(assignedTo);
+							rcmAssigment.setCommentAssignedBy(dto.getComment());
+							rcmAssigment.setActive(true);
+							rcmAssigment.setForceUnassigned(false);
+							rcmClaimAssignmentRepo.save(rcmAssigment);
+							assignOld.setActive(false);
+							rcmClaimAssignmentRepo.save(assignOld);
+					 }
+					
+					});
+				
+			}else if (val.getName().equals(ClaimAssignTypeEnum.UNASSIGN.getName())) {
+				
+				unAssignMultipleClaimsWithUUids(partialHeader.getTeamId(), dto.getComment(), user.getUuid(), dto.getClaimIds());
+				
+			}
+		}else {
+			message="Type not found";
+		}
+		return message;
+	}
+	
+	private void unAssignMultipleClaimsWithUUids(int teamId,
+			 String comment,String unAssignedBy,List<String> claimIds) {
+		int ctr = 0;
+		//List<RcmClaims> claims = new ArrayList<>();
+		while (true) {
+			List<String> claimUuids = claimIds.stream().skip(ctr).limit(Constants.MAX_CLAIM_FETCH_DATA_PER_QUERY).collect(Collectors.toList());
+			rcmClaimRepository.updateClaimUnAssignments(comment,teamId,unAssignedBy,claimUuids);
+			rcmClaimAssignmentRepo.updateClaimsUnAssignment(claimUuids);
+			//if (clms!=null && clms.size()>0) claims.addAll(clms);
+			ctr = ctr + Constants.MAX_CLAIM_FETCH_DATA_PER_QUERY;
+			if (ctr >= claimIds.size())
+				break;
+		}
 	}
 	
 	private String getToothOrSurfaceFromClaimDetails(List<RcmClaimDetail> cList,boolean byTooth) {

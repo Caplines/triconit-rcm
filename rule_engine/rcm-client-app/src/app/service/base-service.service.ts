@@ -137,11 +137,13 @@ export class BaseService {
     'rebiiling-info': "/api/rebiiling-info",
     'validate-secondary-claim-creation': "/api/validate-secondary-claim-creation",
     'fetch-reconcile-data': "/api/reconciliation",
-    'claim-transfer-to-aging':"/api/claim-transfer-to-aging",
-    'verify-tl-exist':"/api/tl-exist-by-claims",
-    'get-clientsAssociatedUser':"/api/user-clients",
+    'claim-transfer-to-aging': "/api/claim-transfer-to-aging",
+    'verify-tl-exist': "/api/tl-exist-by-claims",
+    'get-clientsAssociatedUser': "/api/user-clients",
     'unopenedclaim': "/api/unopenedclaim",
-    'update-unopenedclaim-status': "/api/update-unopenedclaim-status"
+    'update-unopenedclaim-status': "/api/update-unopenedclaim-status",
+    'user_by_team': "/api/usersbyTeam",
+    'assign_unassign_reassign': "/api/assign_unassign_reassign_claimbytl"
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

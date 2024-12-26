@@ -759,6 +759,8 @@ public class ClaimSectionImpl {
 			patientPaymentInformation.setCreatedBy(createdBy);
 			patientPaymentInformation.setFinalSubmit(finalSubmit);
 			patientPaymentInformation.setTeamId(team);
+			patientPaymentInformation.setCheckNumber(patientPaymentInfoModel.getCheckNumber());
+			patientPaymentInformation.setCardNumber(patientPaymentInfoModel.getCardNumber());
 			patientPaymentInformation = patientPaymentRepo.save(patientPaymentInformation);
 			//update AmountCollectedClaims in rcm_claim tables
 			if(finalSubmit) {

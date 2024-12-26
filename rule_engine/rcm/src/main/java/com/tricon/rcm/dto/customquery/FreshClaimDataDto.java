@@ -39,4 +39,6 @@ public interface FreshClaimDataDto {
 	String getClaimStatus();
 	
 	boolean getClaimTypeStatus();
+	String getAssignedToFName();
+	String getAssignedToLName();
 }

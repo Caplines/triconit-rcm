@@ -54,6 +54,12 @@ public class RcmPatientPayment extends BaseAuditEntity implements java.io.Serial
 	@Column(name = "due_balance_in_pms")
 	private double dueBalanceInPMS;
 	
+	@Column(name = "check_number")
+	private String checkNumber;
+	
+	@Column(name = "card_number")
+	private String cardNumber;
+	
 	@Column(name = "final_submit")
 	private boolean finalSubmit;
 

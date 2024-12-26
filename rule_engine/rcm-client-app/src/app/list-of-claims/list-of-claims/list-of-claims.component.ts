@@ -1,7 +1,8 @@
-import { Component, OnInit, LOCALE_ID, Inject, HostListener } from '@angular/core';
+import { Component, OnInit, LOCALE_ID, Inject, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
+import { TeamsM, TLUser } from '../../models/claim-rcm-data-model';
 import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
 import { Title } from '@angular/platform-browser';
@@ -21,12 +22,20 @@ export class ListOfClaimsComponent implements OnInit {
   expandCollapse: boolean = true;
   switchBox: any = { 'billing': true, 'reBilling': false };
   isSorted: any = {};
-  loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false };
+  loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false, 'assignLoader': false };
   showFilteredDropdown: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket': false };
   filteredItems: any = [];
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
   date: any;
+  modelElement: any = { 'modal': '', 'span': '' }
+  @ViewChild('reassignmentSelectBox') reassignmentSelectBox!: ElementRef;
+  teamsMs: Array<TeamsM>;
+  assgnmentUsers: Array<TLUser>;
+  @ViewChild('radiox1') radiox1!: ElementRef;
+  @ViewChild('radiox2') radiox2!: ElementRef;
+  @ViewChild('radiox3') radiox3!: ElementRef;
+  @ViewChild('assignreason') assignreason!: ElementRef;
 
   isFilterAllSelected: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket': false };
 
@@ -36,12 +45,16 @@ export class ListOfClaimsComponent implements OnInit {
   isLastTeam: boolean = false;
   fliterName: string = '';
   tabSwitch: any = { 'Fresh': true, 'sendBack': false, 'MyClaims': false };
+  assignmentType: any = { 'assignSameTeam': 1, 'assignOtherTeam': 2, 'unAssign': 3 };
+  assignmentTypeSelect: number = -1;
   tabValue: any;
   accessToListOfClaims: any;
   currentTeamId: number;
   showTooltipConfig: any = {};
   selectedHeaders: string[];
   isRoleAssociate: boolean;
+  listofClaimsForAssignAction: any = [];
+  selectedOfficeNames: Array<string> = [];
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
       setTimeout(() => {
@@ -58,6 +71,7 @@ export class ListOfClaimsComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAccessToListOfClaims();
+    this.fetchOtherTeams();
     this.clientName = localStorage.getItem("selected_clientName");
     this.currentTeamId = Utils.selectedTeam();
     this.isRoleAssociate = Utils.isRoleAsso();
@@ -329,6 +343,7 @@ export class ListOfClaimsComponent implements OnInit {
         });
       });
       this.addOrRemoveFilterOffice();
+      this.clearAssigmentArray();
     }
   }
 
@@ -535,6 +550,7 @@ export class ListOfClaimsComponent implements OnInit {
       });
     });
     this.addOrRemoveFilterClaimType();
+    this.clearAssigmentArray();
   }
 
   filterAgeBracket(filterProperty: any) {
@@ -552,6 +568,7 @@ export class ListOfClaimsComponent implements OnInit {
       });
     });
     this.addOrRemoveFilterAgeBracket();
+    this.clearAssigmentArray();
   }
 
   filterActionRequired(filterProperty: any) {
@@ -569,6 +586,7 @@ export class ListOfClaimsComponent implements OnInit {
       });
     });
     this.addOrRemoveFilterStatus();
+    this.clearAssigmentArray();
   }
 
   filterInsuranceName(filterProperty: any) {
@@ -586,6 +604,7 @@ export class ListOfClaimsComponent implements OnInit {
       });
     });
     this.addOrRemoveFilterInsName();
+    this.clearAssigmentArray();
   }
 
   filterInsuranceType(filterProperty: any) {
@@ -603,6 +622,7 @@ export class ListOfClaimsComponent implements OnInit {
       });
     });
     this.addOrRemoveFilterInsType();
+    this.clearAssigmentArray();
   }
 
   filterLastTeamWorked(filterProperty: any) {
@@ -619,7 +639,9 @@ export class ListOfClaimsComponent implements OnInit {
         return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
       });
     });
+    this.clearAssigmentArray();
   }
+
 
   exportToCsv() {
     this.loader.exportCSVLoader = true;
@@ -860,10 +882,14 @@ export class ListOfClaimsComponent implements OnInit {
     filterValue.sort((a: any, b: any) => {
       const nameA = Object.keys(filterValue[0])[1] == 'insuranceType' ? a.insuranceType?.toUpperCase()
         : Object.keys(filterValue[0])[1] == 'insuranceName' ? a.insuranceName?.toUpperCase()
-          : Object.keys(filterValue[0])[4] == 'officeName' ? a.officeName?.toUpperCase() : '';// ignore upper and lowercase
+          : Object.keys(filterValue[0])[4] == 'officeName' ? a.officeName?.toUpperCase()
+            //: Object.keys(filterValue[0])[4] == 'assignedTo' ? b.officeName?.toUpperCase()
+            : '';// ignore upper and lowercase
       const nameB = Object.keys(filterValue[0])[1] == 'insuranceType' ? b.insuranceType?.toUpperCase()
         : Object.keys(filterValue[0])[1] == 'insuranceName' ? b.insuranceName?.toUpperCase()
-          : Object.keys(filterValue[0])[4] == 'officeName' ? b.officeName?.toUpperCase() : '';// ignore upper and lowercase
+          : Object.keys(filterValue[0])[4] == 'officeName' ? b.officeName?.toUpperCase()
+            //: Object.keys(filterValue[0])[4] == 'assignedTo' ? b.officeName?.toUpperCase()  
+            : '';// ignore upper and lowercase
       if (nameA < nameB) {
         return -1;
       }
@@ -967,7 +993,7 @@ export class ListOfClaimsComponent implements OnInit {
         if (res.status === 200) {
           this.date = new Date();
           this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-          console.log(res.body);
+          //console.log(res.body);
           this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}.pdf`);
           this.loader.exportPDFLoader = false;
         } else {
@@ -1018,4 +1044,165 @@ export class ListOfClaimsComponent implements OnInit {
     return Utils;
   }
 
+  createClaimAssignmentList(event: any, data: any) {
+
+    if (event.srcElement.checked) {
+      this.listofClaimsForAssignAction.push(data);
+      data.assignAction = true;
+      if (this.listofClaimsForAssignAction.length == this.filteredItems.length) {
+        this.reassignmentSelectBox.nativeElement.checked = true;
+      }
+    } else {
+      this.reassignmentSelectBox.nativeElement.checked = false;
+      this.listofClaimsForAssignAction = this.listofClaimsForAssignAction.filter((obj: any) => { return obj.uuid !== data.uuid });
+    }
+
+  }
+
+  selectAllReAssigment(event: any) {
+
+    let ths = this;
+    ths.selectedOfficeNames = [];
+    ths.listofClaimsForAssignAction = [];
+    ths.filteredItems.forEach((element: any) => {
+      element.assignAction = false;
+    });
+    //listofClaimsForAssignAction
+    if (event.srcElement.checked) {
+      ths.filteredItems.forEach((element: any) => {
+        element.assignAction = true;
+      });
+      ths.listofClaimsForAssignAction = ths.filteredItems;
+    }
+
+  }
+
+  openAssigmentPopUp() {
+    this.openAssignmentModal();
+  }
+
+  clearAssigmentArray() {
+    this.listofClaimsForAssignAction = [];
+    this.reassignmentSelectBox.nativeElement.checked = false;
+    this.filteredItems.forEach((element: any) => {
+      element.assignAction = false;
+    });
+  }
+
+  openAssignmentModal() {
+    this.modelElement.modal = document.getElementById("assgn-modal");
+    this.modelElement.span = document.getElementsByClassName("close")[0];
+    this.modelElement.modal.style.display = "block";
+    this.radiox1.nativeElement.checked = false;
+    this.radiox2.nativeElement.checked = false;
+    this.radiox3.nativeElement.checked = false;
+    this.radiox1.nativeElement.parentNode.classList.remove("active");
+    this.radiox2.nativeElement.parentNode.classList.remove("active");
+    this.radiox3.nativeElement.parentNode.classList.remove("active");
+
+  }
+
+  setAssignType(type: number) {
+    this.assignmentTypeSelect = type;
+    if (this.assignmentType.assignSameTeam == type) {
+      this.fetchUserNamesForOffices();
+    } else if (this.assignmentType.assignOtherTeam == type) {
+
+    } else if (this.assignmentType.unAssign == type) {
+
+    }
+  }
+
+  closeModal() {
+    this.modelElement.modal.style.display = "none";
+  }
+
+  fetchOtherTeams() {
+    let ths = this;
+    ths.appService.fetchOtherTeams((res: any) => {
+      if (res.status === 200) {
+        ths.teamsMs = res.data;
+
+      }
+    })
+  }
+
+  makeAsssignment(type: string) {
+    let ths = this;
+    if (ths.assignreason.nativeElement.value.trim() === '') return;
+    let teamId = -1;
+    let userId = "";
+    let claimIds: Array<string> = [];
+
+    if (ths.assignmentType.assignSameTeam === type) {
+      let e: any = document.getElementById("selectUserAs");
+      if (e.value.trim() === 'Select User') return;
+      userId = e.value;
+    } else if (ths.assignmentType.assignOtherTeam === type) {
+      let e: any = document.getElementById("selectTeamAs");
+      if (e.value.trim() === '') return;
+
+      teamId = e.value;
+    } else if (ths.assignmentType.unAssign === type) {
+
+    }
+    ths.listofClaimsForAssignAction.forEach((element: any) => {
+      claimIds.push(element.uuid);
+    });
+    ths.loader.assignLoader = true;
+    let obj: any = { "claimIds": claimIds, "teamId": teamId, "userId": userId, "type": type, "comment": ths.assignreason.nativeElement.value };
+
+    ths.appService.reAssignClaimFromList(obj, (res: any) => {
+      if (res.status === 200) {
+        ths.closeModal();
+        ths.radiox1.nativeElement.parentNode.classList.remove("active");
+        ths.radiox2.nativeElement.parentNode.classList.remove("active");
+        ths.radiox3.nativeElement.parentNode.classList.remove("active");
+        ths.clearAssigmentArray();
+        ths.loader.assignLoader = false;
+        if (ths.tabSwitch.Fresh) {
+          ths.switchTab("Fresh");
+        } else if (ths.tabSwitch.sendBack) {
+          ths.switchTab("sendBack");
+        } else if (ths.tabSwitch.MyClaims) {
+          ths.switchTab("MyClaims");
+        }
+
+
+      }
+    });
+
+
+  }
+
+  fetchUserNamesForOffices() {
+    let ths = this;
+    const removeDups: any = null;//not needed for now incase needed uncomment the code
+    /*ths.selectedOfficeNames = [];
+    ths.listofClaimsForAssignAction.forEach((element: any) => {
+      ths.selectedOfficeNames.push(element.officeName);
+    });
+    const removeDups = (arr: string[]): string[] => {
+      return [...new Set(ths.selectedOfficeNames)];
+    };*/
+    ths.loader.assignLoader = true;
+    ths.appService.fetchUserNamesByTeam({ "offices": removeDups }, (res: any) => {
+      if (res.status === 200) {
+        ths.assgnmentUsers = res.data;
+        ths.loader.assignLoader = false;
+
+      }
+    });
+  }
+
+  assignSwitch(type: number) {
+    if (type == this.assignmentTypeSelect) {
+      return true;
+    } else if (type == this.assignmentTypeSelect) {
+      return true;
+    } else if (type == this.assignmentTypeSelect) {
+      return true;
+    }
+    return false;
+  }
 }

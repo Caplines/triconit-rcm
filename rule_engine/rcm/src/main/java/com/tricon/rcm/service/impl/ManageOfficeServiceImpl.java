@@ -110,7 +110,7 @@ public class ManageOfficeServiceImpl {
 				}
 			}
 			RcmUser user= userRepo.findByEmail(Constants.SYSTEM_USER_EMAIL);
-			ruleEngineService.reAssignClaimToUserByOffices( logedIncompany, teamId, jwtUser); 
+			ruleEngineService.reAssignClaimToUserByOffices( logedIncompany, teamId, jwtUser);  
 			//ruleEngineService.assignedUnsAssignedClaimsByTeam(logedIncompany.getUuid(),user,teamId);
 			ruleEngineService.assignedClaimsByTeamWithNoActiveInClaimAssigments(user, teamId, logedIncompany.getUuid());
 			return new GenericResponse(HttpStatus.OK, MessageConstants.RECORDS_UPDATE, null);

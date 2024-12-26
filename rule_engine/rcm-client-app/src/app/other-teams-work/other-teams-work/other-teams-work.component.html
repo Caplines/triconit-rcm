@@ -1,5 +1,5 @@
 <div class="right-container">
-    <div class="container-fluid">
+    <div class="container-fluid cldet">
         <div class="row">
             <div class="col-lg-12 pt-3">
                 <div class="main-container">
@@ -16,12 +16,14 @@
                                         <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader"
                                             name="options" id="option2" (change)="switchTab('submitted')">Billed Claims
                                     </label>
-                                    <label class="btn btn-light" [ngClass]="{'active':tabSwitch.myClaims}" *ngIf="isRoleLead">
-                                        <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader" name="options" id="option3"
-                                            (change)="switchTab('myClaims')">My Claims
+                                    <label class="btn btn-light" [ngClass]="{'active':tabSwitch.myClaims}"
+                                        *ngIf="isRoleLead">
+                                        <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader"
+                                            name="options" id="option3" (change)="switchTab('myClaims')">My Claims
                                     </label>
                                 </div>
                                 <div class="otherTeamBox mt-2 mb-2" *ngIf="!isRoleAssociate">
+
                                     <button type="button" class="icon-btn" (click)="downloadPdf()"
                                         [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
                                         <img src="../../assets/img/pdf.png" /></button><span
@@ -35,6 +37,11 @@
                                         type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()"
                                         style="margin-left: 15px;">
                                         <strong>Send to Aging</strong> </button>
+                                    <div class="update-button" style="float: right;"><a href="javascript:void(0);"
+                                            class="btn btn-success"
+                                            [ngClass]="{'disabled':listofClaimsForAssignAction.length==0}"
+                                            (click)="openAssigmentPopUp()">
+                                            Reassignment Actions</a></div>
                                 </div>
                             </div>
                             <ng-container *ngIf="errorMessage">
@@ -82,7 +89,8 @@
                                                                             [checked]="isFilterAllSelected.officeName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'officeName')">
-                                                                        {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.officeName ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.officeName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -229,7 +237,8 @@
                                                                             [checked]="isFilterAllSelected.ageBracket"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'ageBracket')">
-                                                                        {{isFilterAllSelected.ageBracket ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.ageBracket ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.ageBracket=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -271,7 +280,8 @@
                                                                             [checked]="isFilterAllSelected.insuranceName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceName')">
-                                                                        {{isFilterAllSelected.insuranceName ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceName ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -314,7 +324,8 @@
                                                                             [checked]="isFilterAllSelected.insuranceType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'insuranceType')">
-                                                                        {{isFilterAllSelected.insuranceType ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.insuranceType ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.insuranceType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -357,7 +368,8 @@
                                                                             [checked]="isFilterAllSelected.claimType"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'claimType')">
-                                                                        {{isFilterAllSelected.claimType ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.claimType ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.claimType=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -404,7 +416,8 @@
                                                                             [checked]="isFilterAllSelected.lastTeam"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'lastTeam')">
-                                                                        {{isFilterAllSelected.lastTeam ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.lastTeam ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.lastTeam=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -485,7 +498,8 @@
                                                                             [checked]="isFilterAllSelected.currentStatus"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'currentStatus')">
-                                                                        {{isFilterAllSelected.currentStatus ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.currentStatus ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.currentStatus=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -727,7 +741,8 @@
                                                                             [checked]="isFilterAllSelected.selectAging"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'selectAging')">
-                                                                        {{isFilterAllSelected.selectAging ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.selectAging ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.selectAging=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -769,6 +784,44 @@
                                                                        <img src="../../assets/img/lock-icon.png"/>&nbsp;Not eligible for sending to Aging Team.
                                                                 </span>
                                                             </div> -->
+                                                    </div>
+                                                </th>
+                                                <th>
+                                                    <div class="dFlex">
+                                                        Assigned To
+                                                        <span class="sorting">
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['assignedTo']}"
+                                                                (click)="sortData(filteredItems,'assignedTo','asc','string'); isSorted['assignedTo'] = false"></a>
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['assignedTo']}"
+                                                                (click)="sortData(filteredItems,'assignedTo','desc','string');isSorted['assignedTo'] = true"></a>
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                <th *ngIf="isRoleLead" style="z-index:9999">
+                                                    <div class="dFlex">
+                                                        <label for="reassignment" class="reassignmentcl"
+                                                            (change)="selectAllReAssigment($event)">
+                                                            <input type="checkbox" id="reassignment"
+                                                                #reassignmentSelectBox>
+                                                            {{reassignmentSelectBox.checked ? 'Deselect All
+                                                            For Reassignment':'Select All For Reassignment'}}
+                                                        </label>
+                                                        <ng-container *ngIf="showTooltipConfig['reassign']">
+                                                            <div class="tooltip-backdrop"></div>
+                                                        </ng-container>
+                                                        <div class="tooltip2">
+                                                            <img src="../../assets/img/question-icon.png"
+                                                                (click)="toggleTooltip('reassign');" />
+                                                            <span class="tooltiptext tooltiptextlast"
+                                                                *ngIf="showTooltipConfig['reassign']">
+                                                                <span class="tooltip-cross-btn"
+                                                                    (click)="showTooltipConfig['reassign']=false;">×</span>
+                                                                Assign/Reassign/unAssign Claims
+                                                            </span>
+                                                        </div>
+
                                                     </div>
                                                 </th>
                                             </tr>
@@ -922,6 +975,14 @@
                                                                 </ng-template>
                                                             </div>
                                                         </td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                            {{det.assignedTo}}
+                                                        </td>
+                                                        <td [ngClass]="{'changeColor' : det.colorChange}"
+                                                            *ngIf="isRoleLead">
+                                                            <input type="checkbox" [(ngModel)]="det.assignAction"
+                                                                (change)="createClaimAssignmentList($event,det)">
+                                                        </td>
                                                     </tr>
                                                 </ng-container>
                                             </ng-container>
@@ -936,6 +997,126 @@
                         </div>
                     </div>
 
+                    <div id="assgn-modal" class="modal assignmd">
+                        <div class="modal-content">
+                            <div class="modal-header detail-box">
+                                <h5 class="modal-title">Claim Action</h5>
+                                <button type="button" (click)="closeModalAs()" class="close"><span>×</span></button>
+                            </div>
+                            <div class="modal-body mcont">
+                                <div class="table-responsive">
+                                    <div data-toggle="buttons" class="btn-group btn-group-toggle">
+                                        <label class="btn btn-light" [ngClass]="{'active':assignSwitch(1)}">
+                                            <input type="radio" name="channel" value="assignmentType.assignSameTeam"
+                                                #radiox1 class="form-check-input"
+                                                (click)="setAssignType(assignmentType.assignSameTeam)">Assign claim
+                                            To same team
+                                        </label>
+                                        <label class="btn btn-light" [ngClass]="{'active':assignSwitch(2)}">
+                                            <input type="radio" name="channel" class="form-check-input"
+                                                value="assignmentType.assignOtherTeam" #radiox2
+                                                (click)="setAssignType(assignmentType.assignOtherTeam)">
+                                            Assign claim to other team
+                                        </label>
+                                        <label class="btn btn-light" [ngClass]="{'active':assignSwitch(3)}">
+                                            <input type="radio" name="channel" value="assignmentType.unAssign"
+                                                class="form-check-input" #radiox3
+                                                (click)="setAssignType(assignmentType.unAssign)">
+                                            Unassign claim
+                                        </label>
+                                    </div>
+                                    <ng-container *ngIf="radiox2.checked">
+                                        <div style="margin-top: 10px;" class="required-field">
+                                            <select class="form-control formastrix" id="selectTeamAs" name="w">
+                                                <option [value]="-1">
+                                                    Select Team
+                                                </option>
+                                                <ng-container *ngFor="let tl of teamsMs">
+                                                    <option [value]="tl.teamId">
+                                                        {{tl.teamName}}
+                                                    </option>
+                                                </ng-container>
+                                            </select>
+                                        </div>
+                                        <div style="margin-top: 10px;" class="required-field">
+
+                                            <textarea nam="assignReason" #assignreason cols="40" placeholder="Reason"
+                                                class="form-control formastrix"></textarea>
+
+                                        </div>
+                                        <div style="margin-top: 10px;">
+
+                                            <div class="update-button" style="float: left; margin-left: 8px;"
+                                                [class.disabled]="loader.assignLoader"><a href="javascript:void(0);"
+                                                    class="btn btn-success"
+                                                    (click)="makeAsssignment(assignmentType.assignOtherTeam)">
+                                                    Assign</a>
+                                                <span *ngIf="loader.assignLoader"
+                                                    class="spinner-border text-success mx-1"></span>
+                                            </div>
+
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="radiox1.checked">
+                                        <div style="margin-top: 10px;" class="required-field">
+                                            <select class="form-control formastrix" id="selectUserAs" name="w">
+                                                <option value="Select User">
+                                                    Select User
+                                                </option>
+                                                <ng-container *ngFor="let us of assgnmentUsers">
+                                                    <option [value]="us.uuid">
+                                                        {{us.firstName}} {{us.lastName}}
+                                                    </option>
+                                                </ng-container>
+                                            </select>
+                                        </div>
+                                        <div style="margin-top: 10px;" class="required-field">
+
+                                            <textarea nam="assignReason" #assignreason cols="40" placeholder="Reason"
+                                                class="form-control formastrix"></textarea>
+
+                                        </div>
+                                        <div style="margin-top: 10px;">
+
+                                            <div class="update-button" style="float: left; margin-left: 8px;"
+                                                [class.disabled]="loader.assignLoader"><a href="javascript:void(0);"
+                                                    class="btn btn-success"
+                                                    (click)="makeAsssignment(assignmentType.assignSameTeam)">
+                                                    Assign</a>
+                                                <span *ngIf="loader.assignLoader"
+                                                    class="spinner-border text-success mx-1"></span>
+                                            </div>
+
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="radiox3.checked">
+
+                                        <div style="margin-top: 10px;" class="required-field">
+
+                                            <textarea nam="assignReason" #assignreason cols="40" placeholder="Reason"
+                                                class="form-control formastrix"></textarea>
+
+                                        </div>
+                                        <div style="margin-top: 10px;">
+
+                                            <div class="update-button" style="float: left; margin-left: 8px;"
+                                                [class.disabled]="loader.assignLoader"><a href="javascript:void(0);"
+                                                    class="btn btn-success"
+                                                    (click)="makeAsssignment(assignmentType.unAssign)">
+                                                    Unassign</a>
+                                                <span *ngIf="loader.assignLoader"
+                                                    class="spinner-border text-success mx-1"></span>
+                                            </div>
+
+                                        </div>
+                                    </ng-container>
+
+                                </div>
+                            </div>
+
+
+                        </div>
+                    </div>
                 </div>
 
             </div>

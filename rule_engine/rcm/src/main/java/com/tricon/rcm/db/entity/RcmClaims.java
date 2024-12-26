@@ -316,4 +316,20 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "is_primary",columnDefinition = "BIT default 0")
 	private boolean primary;
+	
+	//Same in rcm claim Assignment
+	@Column(name = "is_force_unassigned",columnDefinition = "BIT default 0")
+	private boolean forceUnassigned;
+	
+	//This claim will not be assigned to any one from Automated process/ claim Assignment screen
+	@Column(name = "force_unassigned_comment")
+	private String forceUnassignedComment;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "unassigned_team_id", referencedColumnName = "id")
+	private RcmTeam unassignedTeamId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "unassigned_by",referencedColumnName="uuid")
+	private RcmUser unAssignedBy;
 }
