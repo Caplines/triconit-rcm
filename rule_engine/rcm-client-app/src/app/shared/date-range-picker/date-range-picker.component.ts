@@ -13,6 +13,7 @@ export class DateRangePickerComponent {
 
   ngOnInit() {
     this.updateRangeConfig();
+    this.emitDefaultDate();
   }
 
   ngAfterViewInit() {
@@ -27,19 +28,30 @@ export class DateRangePickerComponent {
 
   }
 
-  updateRangeConfig() {
-    //debugger;
-    let options: any = {};
+  ngOnDestroy() {
+    const dateRangePicker = document.querySelector('.daterangepicker');
+    if (dateRangePicker) {
+      dateRangePicker.remove();
+    }
+  }
 
+  updateRangeConfig() {
+    let options: any = {
+      autoUpdateInput: true
+    };
     options.ranges = {
       'Clear': [null, null],
       'Today': [new Date(), new Date()],
       'Yesterday': [new Date(new Date().getTime() - 24 * 60 * 60 * 1000), new Date(new Date().getTime() - 24 * 60 * 60 * 1000)],
-      'Last 7 Days': [new Date(new Date().getTime() - 6 * 24 * 60 * 60 * 1000), new Date()],
+      'Last Week': [new Date(new Date().getTime() - 6 * 24 * 60 * 60 * 1000), new Date()],
       'Last 30 Days': [new Date(new Date().getTime() - 29 * 24 * 60 * 60 * 1000), new Date()],
+      'Month to Date': [new Date(new Date().getFullYear(), new Date().getMonth(), 1), new Date()],
       'This Month': [new Date(new Date().getFullYear(), new Date().getMonth(), 1), new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)],
       'Last Month': [new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1), new Date(new Date().getFullYear(), new Date().getMonth(), 0)]
     };
+
+    options.startDate = options.ranges['Month to Date'][0];
+    options.endDate = options.ranges['Month to Date'][1];
 
     $('#config-demo').daterangepicker(options, (start: any, end: any, label: any) => {
       //TRICON if condition
@@ -49,13 +61,25 @@ export class DateRangePickerComponent {
         this.emitToParent.emit({ action: 'getSelectedDateRange', value: { startDate: start.format("YYYY-MM-DD"), endDate: end.format("YYYY-MM-DD") } });
       // }
 
-    }).click();;
-
+    }).click();
   }
 
   clearField(){
     let inputDateEl:any = document.querySelector("#config-demo");
-        inputDateEl.value = ''; 
+    inputDateEl.value = '';
+  }
+
+  emitDefaultDate(){
+    let sDate = new Date(Date.UTC(new Date().getFullYear(), new Date().getMonth(), 1));
+    let eDate = new Date();
+
+    this.emitToParent.emit({
+      action: 'getSelectedDateRange',
+      value: {
+        startDate: sDate.toISOString().split('T')[0],
+        endDate: eDate.toISOString().split('T')[0]
+      }
+    });
   }
 
 }

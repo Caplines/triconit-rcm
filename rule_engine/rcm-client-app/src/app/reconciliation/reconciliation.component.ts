@@ -1,4 +1,4 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -8,11 +8,11 @@ import { ReconcilltationRequestModel } from '../models/reconcillation-request-mo
 import { ReconcilltationResponseModel } from '../models/reconcillation-request-model';
 import { DatePipe } from '@angular/common';
 import { PmlDatePicker } from '../shared/date-picker/datepicker-options';
-import { RcmDatePickerModule } from '../shared/date-picker/date-picker/rcm-date-picker.module';
+import { DateRangeModule } from '../shared/date-range-picker/date-range-picker.module';
 @Component({
   selector: 'app-reconciliation',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, RcmDatePickerModule],
+  imports: [CommonModule, FormsModule, RouterModule, DateRangeModule],
   templateUrl: './reconciliation.component.html',
   styleUrls: ['./reconciliation.component.scss']
 })
@@ -46,7 +46,6 @@ export class ReconciliationComponent {
   fetchOffice() {
     this._service.fetchOfficeData((res: any) => {
       if (res) {
-        console.log(res);
         this.officeData = res.data;
       }
     })
@@ -97,7 +96,6 @@ export class ReconciliationComponent {
       endDate: this.transformDate(this.reconcilltationRequestModel.endDate)
     }, (res: any) => {
       if (res.status === 200) {
-        console.log(res.data);
         setTimeout(() => {
           this.reconcileResponseData = res.data;
           this.loader = false;
@@ -110,21 +108,15 @@ export class ReconciliationComponent {
     return this.datepipe.transform(date, 'yyyy-MM-dd');
   }
 
-  receiveChildEvent(event: any) {
-    if (event['action'] === 'changeDatePicker') {
-      if (event.model == 'startDate') {
-        if (event.value != null){
-          this.reconcilltationRequestModel.startDate = new Date(event.value);
-        }
-        else
-          this.reconcilltationRequestModel.startDate = null;
+  receiveChildrenEvent(event: any) {
+    if (event['action'] == 'getSelectedDateRange') {
+      if (event.value?.startDate == 'Invalid date') {
+        this.reconcilltationRequestModel.startDate = null;
+        this.reconcilltationRequestModel.endDate = null;
       }
-      if (event.model == 'endDate') {
-        if (event.value != null){
-          this.reconcilltationRequestModel.endDate = new Date(event.value);
-        }
-        else
-          this.reconcilltationRequestModel.endDate = null;
+      else {
+        this.reconcilltationRequestModel.startDate = new Date(event.value.startDate);
+        this.reconcilltationRequestModel.endDate = new Date(event.value.endDate);
       }
     }
     this.calculateDateDiff();

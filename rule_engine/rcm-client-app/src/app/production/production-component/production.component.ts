@@ -119,14 +119,12 @@ export class ProductionComponent implements OnInit {
         this.fetchbtnDisable = false;
         if (this.currentTeamName === "AGING" || this.currentTeamName === 'CDP') {
           this.productionData = callback.data[0];
-          console.log(this.productionData);
           this.showFilterOptioncompanyName(this.productionData);
           this.filterCompanyName();
           this.countTotalForAgingCdp();
         }
          else {
           this.productionData = callback.data;
-          console.log(this.productionData);
           this.showFilterOptioncompanyName(this.productionData);
           this.filterCompanyName();
           this.countTotalForTeamExceptAgingCdp();
@@ -249,19 +247,15 @@ export class ProductionComponent implements OnInit {
     return this.datepipe.transform(date, 'yyyy-MM-dd');
   }
 
-  receiveChildEvent(event: any) {
-    if (event['action'] === 'changeDatePicker') {
-      if (event.model == 'startDate') {
-        if (event.value != null)
-          this.selectedDate['startDate'] = new Date(event.value);
-        else
-          this.selectedDate['startDate'] = null;
+  receiveChildrenEvent(event: any) {
+    if (event['action'] == 'getSelectedDateRange') {
+      if (event.value?.startDate == 'Invalid date') {
+        this.selectedDate['startDate'] = null;
+        this.selectedDate['endDate'] = null;
       }
-      if (event.model == 'endDate') {
-        if (event.value != null)
-          this.selectedDate['endDate'] = new Date(event.value);
-        else
-          this.selectedDate['endDate'] = null;
+      else {
+        this.selectedDate['startDate'] = new Date(event.value.startDate);
+        this.selectedDate['endDate'] = new Date(event.value.endDate);
       }
     }
     this.selectDate();
@@ -466,11 +460,9 @@ export class ProductionComponent implements OnInit {
         if (res.status === 200) {
           this.date = new Date();
           this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-          console.log(res.body);
           this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_Production_${this.date}.pdf`);
           this.loader.exportPDFLoader = false;
         } else {
-          console.log("something went wrong");
           this.loader.exportPDFLoader = false;
         }
       })
@@ -728,7 +720,6 @@ setTopOnTotalRow(){
       });
     }
     this.filteredCompanyName = newArray;
-    console.log(newArray);
     if (this.currentTeamName == "AGING" ){
       this.sortFilteredData(this.filteredCompanyName, 'officeName');
     } else {
