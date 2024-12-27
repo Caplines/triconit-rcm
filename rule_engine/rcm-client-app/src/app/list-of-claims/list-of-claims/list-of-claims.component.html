@@ -564,7 +564,7 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th>
+                                                    <th *ngIf="isRoleLead">
                                                         <div class="dFlex">
                                                             Assigned To
                                                             <span class="sorting">
@@ -712,7 +712,8 @@
                                                                 {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}">
                                                                 {{(det.dueDateSort) | date:'MMM dd, YYYY'}}</td>
-                                                            <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                            <td *ngIf="isRoleLead"
+                                                                [ngClass]="{'changeColor' : det.colorChange}">
                                                                 {{det.assignedTo}}
                                                             </td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
