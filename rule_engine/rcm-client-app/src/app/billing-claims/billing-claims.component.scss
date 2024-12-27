@@ -685,3 +685,56 @@ a.Read {
     line-height: normal;
     padding-top: 2px;
 }
+
+.tooltip2 {
+    position: relative;
+    height: auto !important;
+    display: inline-block;
+}
+
+.tooltiptext {
+    visibility: visible;
+    width: 220px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 5px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 9999;
+    bottom: unset;
+    left: 50%;
+    margin-left: -110px;
+}
+
+.tooltip2 .tooltiptext {
+    z-index: 9999 !important;
+}
+
+.tooltip-cross-btn {
+    cursor: pointer;
+    outline: none;
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    z-index: 999;
+    display: block;
+    width: 15px;
+    height: 15px;
+    line-height: 15px;
+    border-radius: 50%;
+    background-color: #fff;
+    color: black;
+    font-size: 17px;
+}
+
+.tooltip-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100vw;
+    height: 100vh;
+    background-color: #000;
+    opacity: 0.75;
+}

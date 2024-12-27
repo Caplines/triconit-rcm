@@ -1681,7 +1681,7 @@
                                         *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
-                                            <div>
+                                            <div class="d-flex align-items-center">
                                                 <a data-toggle="collapse" aria-expanded="false"
                                                     id="SERVICE_LEVEL_INFORMATION">
                                                     Service Level Information
@@ -1695,6 +1695,24 @@
                                                     {{ accessIcon(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'])
                                                     | accessTextTransform }}
                                                 </a>
+                                                <ng-container *ngIf="(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
+                                                    <button style="border-radius: 12px;height: 30px;"
+                                                        class="mx-2 btn btn-sm btn-success"
+                                                        [disabled]="claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length === 1 && claimSectionModal['SERVICE_LEVEL_INFORMATION'].data[0].serviceCode.trim().toLowerCase() === 'undistributed'"
+                                                        (click)="convertToObject()">
+                                                        Paste from Sheet
+                                                    </button>
+                                                    <ng-container *ngIf="showTooltipConfig['pastefromsheet']">
+                                                        <div class="tooltip-backdrop"></div>
+                                                    </ng-container>
+                                                    <div class="mx-0 tooltip2">
+                                                        <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('pastefromsheet')" />
+                                                        <span class="tooltiptext" *ngIf="showTooltipConfig['pastefromsheet']">
+                                                            <span class="tooltip-cross-btn" (click)="showTooltipConfig['pastefromsheet']=false;">×</span>
+                                                            Updates Service Level Information only for records where the Service Code and Tooth number matches.
+                                                        </span>
+                                                    </div>
+                                                </ng-container>
                                             </div>
 
                                             <div class="down-icon" (click)="showHide('SERVICE_LEVEL_INFORMATION')">

@@ -430,6 +430,16 @@ export class BillingClaimsComponent {
   isValidInput: boolean = false;
   validateRecreateClaimErrMsg = '';
   @Output() emitToChild = new EventEmitter();
+  showTooltipConfig: any = {};
+  predefinedHeaders: string[] = [
+    'Service Code',
+    'Tooth#',
+    'Allowed Amount',
+    'Paid Amount',
+    'Credit Adjustment Amount',
+    'Debit Adjustment Amount',
+    'Bill to Patient Amount'
+  ];
 
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -2544,8 +2554,6 @@ export class BillingClaimsComponent {
 
     this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { allowedAmount: any, paidAmount: any, creditAdjustmentAmount: any, debitAdjustmentAmount: any, billToPatientAmount: any, adjustmentReason: string, btpReason: string, action: any, balanceFromEsBeforePosting: any, balanceFromEsAfterPosting: any }, index: number) => {
       let heading = "SERVICE_LEVEL_INFORMATION" + index;
-      console.log('obj.creditAdjustmentAmount');
-      console.log(obj.creditAdjustmentAmount);
 
       if (obj.allowedAmount === null || obj.allowedAmount === "") {
         this.emptyFields[heading]['allowedAmount'] = true;
@@ -4399,6 +4407,69 @@ export class BillingClaimsComponent {
     this.claimSectionModal.PATIENT_PAYMENT['checkNumber'] = null;
     this.claimSectionModal.PATIENT_PAYMENT['cardNumber'] = null;
   }
+
+  fillServiceLevelInfo(rowObject: any, serviceLevelInfo: any) {
+    let matchingIndex = serviceLevelInfo.findIndex((item: any) => {
+      return item.serviceCode.trim().toLowerCase() == rowObject['Service Code'].trim().toLowerCase()
+       && item.tooth.trim().toLowerCase() == rowObject['Tooth#'].trim().toLowerCase();
+    });
+    if (matchingIndex != -1) {
+      let matchingRecord = serviceLevelInfo[matchingIndex];
+      matchingRecord.serviceCode = rowObject['Service Code'];
+      matchingRecord.tooth = rowObject['Tooth#'];
+      matchingRecord.allowedAmount = parseFloat(rowObject['Allowed Amount']);
+      matchingRecord.paidAmount = parseFloat(rowObject['Paid Amount']);
+      matchingRecord.creditAdjustmentAmount = parseFloat(rowObject['Credit Adjustment Amount']);
+      matchingRecord.debitAdjustmentAmount = parseFloat(rowObject['Debit Adjustment Amount']);
+      matchingRecord.billToPatientAmount = parseFloat(rowObject['Bill to Patient Amount']);
+    }
+  }
+
+  async convertToObject() {
+    let serviceLevelInfo = this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;
+    if (serviceLevelInfo.length === 1 && serviceLevelInfo[0].serviceCode.trim().toLowerCase() === 'undistributed') {
+      return;
+    }
+    let excelData = await navigator.clipboard.readText();
+    let cleanedData = excelData.replace(/\r/g, '');
+    let rows = cleanedData.split('\n');
+    let headers = rows[0].split('\t');
+    let headersMatched = this.compareHeaders(headers);
+    if (!headersMatched) {
+      return;
+    }
+    rows.slice(1).forEach(row => {
+      if (row.trim() === "") return;
+      let columns = row.split('\t');
+      let rowObject: { [key: string]: string } = {};
+      headers.forEach((header, index) => {
+        rowObject[header] = columns[index] || '';
+      });
+      this.fillServiceLevelInfo(rowObject, serviceLevelInfo);
+    });
+    this.getTotalServiceLevelInfo(true);
+    this.validate_SERVICE_LEVEL_INFORMATION();
+  }
+
+  compareHeaders(headers: string[]){
+    if (headers.length != this.predefinedHeaders.length) {
+      return false;
+    }
+    return headers.every((header, index) => header.trim() === this.predefinedHeaders[index]);
+  }
+
+  toggleTooltip(tooltip: any) {
+    this.showTooltipConfig[tooltip] = !this.showTooltipConfig[tooltip];
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' || event.keyCode === 27) {
+        this.showTooltipConfig[tooltip] = false;
+      }
+    })
+    if (!this.showTooltipConfig[tooltip]) {
+      document.removeAllListeners('keydown');
+    }
+  }
+
 }
 
 
