@@ -10,6 +10,7 @@ import { ApplicationServiceService } from '../service/application-service.servic
 import { DownLoadService } from '../service/download.service';
 import { OtherTeamsWorkModule } from '../other-teams-work/other-teams-work.module';
 import { MultiSelectDropdownModule } from '../shared/multi-select-dropdown/multi-select-dropdown/multi-select-dropdown.module';
+import { AdminBillingClaimsModule } from '../admin-billing-claims/admin-billing-claims.module';
 @NgModule({
   declarations: [
     ListOfClaimsComponent,
@@ -23,7 +24,8 @@ import { MultiSelectDropdownModule } from '../shared/multi-select-dropdown/multi
     HeaderComponent,
     FormsModule,
     OtherTeamsWorkModule,
-    MultiSelectDropdownModule
+    MultiSelectDropdownModule,
+    AdminBillingClaimsModule
   ],
   exports:[ListOfClaimsComponent]
 })

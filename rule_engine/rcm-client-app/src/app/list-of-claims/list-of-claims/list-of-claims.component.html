@@ -1,4 +1,4 @@
-<ng-container *ngIf="accessToListOfClaims">
+<ng-container *ngIf="accessToListOfClaims && !accessAdminBillingClaims">
 
     <div class="right-container">
         <div class="container-fluid cldet">
@@ -865,7 +865,10 @@
     </div>
 </ng-container>
 
-<ng-container *ngIf="!accessToListOfClaims">
+<ng-container *ngIf="!accessToListOfClaims && !accessAdminBillingClaims">
     <app-other-teams-work></app-other-teams-work>
 </ng-container>
-<!-- </div> -->
+
+<ng-container *ngIf="accessAdminBillingClaims">
+    <app-admin-billing-claims></app-admin-billing-claims>
+</ng-container>

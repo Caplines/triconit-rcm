@@ -663,4 +663,8 @@ export class ApplicationServiceService extends BaseService {
   reAssignClaimFromList(params: any, callback: any) {
     this.postData(params, this.httpUrl['assign_unassign_reassign'], callback);
   }
+
+  fetchAdminBillingClaims(params: any, callback: any) {
+    this.postData(params, this.httpUrl['fetch-admin-billing-claims'], callback);
+  }
 }

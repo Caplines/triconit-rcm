@@ -98,6 +98,12 @@
                         [src]="rla.isActive? '../../assets/img/update-database.png':'../../assets/img/update-gray-database.png'" />Upload
                     Claims</a>
             </li>
+            <li *ngIf="(staticUtil.checkRoleSuperAdmin() && loginUserType== 'Admin') ||(staticUtil.checkAdmin() && loginUserType== 'Admin')">
+                <a href="javascript:void(0);" [routerLink]="['/list-of-claims']" routerLinkActive="active" #rla="routerLinkActive">
+                    <img [src]="rla.isActive? '../../assets/img/list-active.png':'../../assets/img/list.png'" />
+                    Billing Claims
+                </a>
+            </li>
             <li
                 *ngIf="(staticUtil.checkRoleSuperAdminAndOnlyAdmin() && loginUserType== 'Normal' && (currentTeamId == 7 || (currentTeamId == 3 || true ))) || ((staticUtil.isRoleLead() || staticUtil.isRoleAsso()) && (currentTeamId == 7 || currentTeamId == 3 || true))">
                 <a href="javascript:void(0);" [routerLink]="['/claim-assignment']" routerLinkActive="active"

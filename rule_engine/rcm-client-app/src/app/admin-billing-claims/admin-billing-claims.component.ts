@@ -1,20 +1,20 @@
-import { Component, OnInit, LOCALE_ID, Inject, HostListener, ViewChild, ElementRef } from '@angular/core';
-import { ApplicationServiceService } from '../../service/application-service.service';
-import { AppConstants } from '../../constants/app.constants';
-import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
-import { TeamsM, TLUser } from '../../models/claim-rcm-data-model';
-import { ngxCsv } from 'ngx-csv/ngx-csv';
-import Utils from '../../util/utils';
+import { Component, ElementRef, HostListener, Inject, LOCALE_ID, OnInit, ViewChild } from '@angular/core';
+import { ClaimAssociateDetailModel } from '../models/claim-associate-detail-model';
+import { TeamsM, TLUser } from '../models/claim-rcm-data-model';
 import { Title } from '@angular/platform-browser';
+import { AppConstants } from '../constants/app.constants';
+import { ApplicationServiceService } from '../service/application-service.service';
+import { DownLoadService } from '../service/download.service';
+import Utils from '../util/utils';
 import { formatNumber } from '@angular/common';
-import { DownLoadService } from 'src/app/service/download.service';
+import { ngxCsv } from 'ngx-csv';
 
 @Component({
-  selector: 'app-list-of-claims',
-  templateUrl: './list-of-claims.component.html',
-  styleUrls: ['./list-of-claims.component.scss']
+  selector: 'app-admin-billing-claims',
+  templateUrl: './admin-billing-claims.component.html',
+  styleUrls: ['./admin-billing-claims.component.scss']
 })
-export class ListOfClaimsComponent implements OnInit {
+export class AdminBillingClaimsComponent implements OnInit {
 
   selectedBtype: number = 0;
   selectedSubtype: string = "Fresh";
@@ -56,6 +56,13 @@ export class ListOfClaimsComponent implements OnInit {
   listofClaimsForAssignAction: any = [];
   selectedOfficeNames: Array<string> = [];
   accessAdminBillingClaims: boolean = false;
+  companyData: any = [];
+  officeData: any = [];
+  showLoader: boolean = false;
+  selectedCompany: any;
+  alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
+  isAnyTLExist: boolean;
+
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
       setTimeout(() => {
@@ -66,28 +73,89 @@ export class ListOfClaimsComponent implements OnInit {
 
   constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title, private downloadService: DownLoadService) {
     this.selectedBtype = this.appConstants.BILLING_ID;
-    title.setTitle(Utils.defaultTitle + "List Of Claims");
+    title.setTitle(Utils.defaultTitle + "Admin Billing Claims");
   }
 
-
-  ngOnInit(): void {
-    this.isAccessToListOfClaims();
-    this.fetchOtherTeams();
-    this.clientName = localStorage.getItem("selected_clientName");
-    this.currentTeamId = Utils.selectedTeam();
-    this.isRoleAssociate = Utils.isRoleAsso();
-    this.accessAdminBillingClaims = Utils.checkAdminLoginRole();
+  ngOnInit() {
+    // this.fetchOtherTeams();
+    this.getcompanyData();
   }
 
-  isAccessToListOfClaims() {
-    if (Utils.selectedTeam() == 7 || Utils.selectedTeam() == 3) {
-      this.accessToListOfClaims = true;
-      this.fetchClaims(this.selectedSubtype);
-    } else {
-      this.accessToListOfClaims = false;
+  getcompanyData() {
+    this.appService.fetchCompanyNameData((callback: any) => {
+      if (callback.status) {
+        this.companyData = this.appService.sortByAlphabet(callback.data, 'name');
+
+      }
+    })
+  }
+
+  selectCompany(event: any) {
+    // this.selectedCompany = this.companyData.filter((el: any) => el.companyUuid == event.target.value)[0];
+    // this.getOfficesByCompany(this.selectedCompany.companyUuid);
+
+    this.selectedCompany = event.target.value;
+    console.log("this.selectedCompany:", this.selectedCompany);
+
+    let params: any = {
+      "clientId": event.target.value,
     }
+    this.appService.fetchAdminBillingClaims(params, (res: any) => {
+      if (res.status == 200 && res.data) {
+        console.log(res.data);
+      }
+    })
 
   }
+
+  // getOfficesByCompany(companyUuid?: any) {
+  //   this.showLoader = true;
+  //   this.appService.fetchOfficeByCompany(companyUuid, (callback: any) => {
+  //     if (callback.status) {
+  //       this.showLoader = false;
+  //       this.officeData = callback.data.map((e: any) => ({ ...e, 'editable': false }));
+  //       this.checkTLExist();
+  //     }
+  //   })
+  // }
+
+  // checkTLExist() {
+  //   console.log(this.selectedCompany);
+  //   let params: any = {
+  //     "companyUuid": this.selectedCompany.companyUuid,
+  //     "name": ''
+  //   }
+  //   let nonExistingTeam = '';
+  //   this.appService.existingTLInfo(params, (callback: any) => {
+  //     if (callback.status == 200 && callback.data.length > 0) {
+  //       nonExistingTeam = callback.data.join(', ');
+  //       this.alert.showAlertPopup = true;
+  //       this.alert.isError = true;
+  //       this.isAnyTLExist = false;
+  //       this.alert.alertMsg = `For this client: Team Lead of  ${nonExistingTeam}  doesn't exist. Please make Team Lead first for missing team and then add new office.`;
+  //     }
+  //     else if (callback.status == 500) {
+  //       this.alert.showAlertPopup = true;
+  //       this.alert.isError = true;
+  //       this.isAnyTLExist = true;
+  //       this.alert.alertMsg = "Something went wrong.";
+  //     }
+  //     else {
+  //       this.isAnyTLExist = true;
+  //       this.alert.showAlertPopup = false;
+  //     }
+  //   })
+  // }
+
+  // fetchOtherTeams() {
+  //   let ths = this;
+  //   ths.appService.fetchOtherTeams((res: any) => {
+  //     if (res.status === 200) {
+  //       ths.teamsMs = res.data;
+
+  //     }
+  //   })
+  // }
 
   fetchOfficeByUuid() {
     this.appService.fetchOfficeByUuid((res: any) => {
@@ -103,54 +171,54 @@ export class ListOfClaimsComponent implements OnInit {
     })
   }
 
+  // works from dropdown
 
+  // fetchClaims(subType: string) {
+  //   this.loader.listClaimLoader = true;
+  //   let ths = this;
+  //   if (subType == 'sendBack') {
+  //     this.isLastTeam = true;
+  //     this.selectedSubtype = 'sendBack';
+  //   } else {
+  //     this.isLastTeam = false;
+  //     this.selectedSubtype = 'Fresh';
+  //   }
+  //   ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, (res: any) => {
+  //     if (res.status === 200) {
+  //       ths.claimDetail = res.data;
+  //       let data: any = ths.claimDetail.map((e: any) => {
+  //         if (e.claimId.endsWith("_P")) {
+  //           e['EstAmount'] = e.primeSecSubmittedTotal;
+  //         } else {
+  //           e['EstAmount'] = e.secTotal;
+  //         }
+  //         e['dueDateSort'] = e.followUpDate == null ? e.pendingSince : e.followUpDate;
+  //         if (e['nextAction'] == ths.appConstants.NEED_TO_RE_BILL) e['statusType'] = ths.appConstants.RE_BILLING_ID;
+  //         return e;
+  //       })
+  //       ths.claimDetail = data;
+  //       //console.log(ths.claimDetail);
 
-  fetchClaims(subType: string) {
-    this.loader.listClaimLoader = true;
-    let ths = this;
-    if (subType == 'sendBack') {
-      this.isLastTeam = true;
-      this.selectedSubtype = 'sendBack';
-    } else {
-      this.isLastTeam = false;
-      this.selectedSubtype = 'Fresh';
-    }
-    ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, (res: any) => {
-      if (res.status === 200) {
-        ths.claimDetail = res.data;
-        let data: any = ths.claimDetail.map((e: any) => {
-          if (e.claimId.endsWith("_P")) {
-            e['EstAmount'] = e.primeSecSubmittedTotal;
-          } else {
-            e['EstAmount'] = e.secTotal;
-          }
-          e['dueDateSort'] = e.followUpDate == null ? e.pendingSince : e.followUpDate;
-          if (e['nextAction'] == ths.appConstants.NEED_TO_RE_BILL) e['statusType'] = ths.appConstants.RE_BILLING_ID;
-          return e;
-        })
-        ths.claimDetail = data;
-        //console.log(ths.claimDetail);
+  //       ths.loader.listClaimLoader = false;
+  //       this.filterOfficeName();
+  //       this.fetchOfficeByUuid();
+  //       this.filterOptionClaimType(subType);
+  //       this.filterOptionActionRequired(subType);
+  //       this.filterOptionInsuranceName(subType);
+  //       this.filterOptionInsuranceType(subType);
+  //       this.filterOptionLastTeamWorked();
+  //       this.filterOptionAgeBracket(subType);
+  //       this.showAgeBracket_WithColor_AndClaimIdDigits();
+  //     }
+  //     // else {
+  //     //   this.loader.listClaimLoader = false;
+  //     //   if(res.data == "not Autorized")
+  //     //   this.logout();
+  //     //   //ERROR
+  //     // }
 
-        ths.loader.listClaimLoader = false;
-        this.filterOfficeName();
-        this.fetchOfficeByUuid();
-        this.filterOptionClaimType(subType);
-        this.filterOptionActionRequired(subType);
-        this.filterOptionInsuranceName(subType);
-        this.filterOptionInsuranceType(subType);
-        this.filterOptionLastTeamWorked();
-        this.filterOptionAgeBracket(subType);
-        this.showAgeBracket_WithColor_AndClaimIdDigits();
-      }
-      // else {
-      //   this.loader.listClaimLoader = false;
-      //   if(res.data == "not Autorized")
-      //   this.logout();
-      //   //ERROR
-      // }
-
-    });
-  }
+  //   });
+  // }
 
   filterOptionClaimType(subType: string) {
     if (subType == 'Fresh' && this.isFilterValueExist) {
@@ -644,7 +712,6 @@ export class ListOfClaimsComponent implements OnInit {
     this.clearAssigmentArray();
   }
 
-
   exportToCsv() {
     this.loader.exportCSVLoader = true;
     const headerConfigs = {
@@ -920,73 +987,6 @@ export class ListOfClaimsComponent implements OnInit {
     return monthNames[month];
   }
 
-  get isRoleLead() {
-    return Utils.isRoleLead();
-  }
-
-  fetchClaimsLead(subType: string) {
-    this.loader.listClaimLoader = true;
-    let ths = this;
-    if (subType == 'sendBack') {
-      this.isLastTeam = true;
-    } else {
-      this.isLastTeam = false;
-    }
-    ths.appService.fetchLeadClaimDet(ths.selectedBtype, subType, (res: any) => {
-      if (res.status === 200) {
-        ths.claimDetail = this.removePrefix(res.data);
-        // ths.claimDetail =  res.data;
-        ths.loader.listClaimLoader = false;
-        this.filterOfficeName();
-        this.fetchOfficeByUuid();
-        this.filterOptionClaimType(subType);
-        this.filterOptionActionRequired(subType);
-        this.filterOptionInsuranceName(subType);
-        this.filterOptionInsuranceType(subType);
-        this.filterOptionLastTeamWorked();
-        this.filterOptionAgeBracket(subType)
-        this.showAgeBracket_WithColor_AndClaimIdDigits();
-      }
-      // else {
-      //   this.loader.listClaimLoader = false;
-      //   if(res.data == "not Autorized")
-      //   this.logout();
-      //   //ERROR
-      // }
-
-    });
-  }
-  switchTab(tab: any) {
-    if (!this.claimDetail) return;
-    if (tab == 'Fresh') {
-      this.tabValue = 'Fresh';
-      this.tabSwitch.Fresh = true;
-      this.tabSwitch.sendBack = false;
-      this.tabSwitch.MyClaims = false;
-      this.fetchClaims('Fresh');
-    }
-    else if (tab == 'sendBack') {
-      this.tabValue = 'sendBack';
-      this.tabSwitch.Fresh = false;
-      this.tabSwitch.sendBack = true;
-      this.tabSwitch.MyClaims = false;
-      this.fetchClaims('sendBack');
-    }
-    else if (tab == 'MyClaims') {
-      this.tabValue = 'MyClaims';
-      this.tabSwitch.Fresh = false;
-      this.tabSwitch.sendBack = false;
-      this.tabSwitch.MyClaims = true;
-      this.fetchClaimsLead('Fresh');
-    }
-
-    // tab.withDos = !tab.withDos;
-    // tab.withDateOfPending = !tab.withDateOfPending;
-    // this.filteredItems = this.pendencyData;
-    // let event = { target: { checked: true } };  //added so that when tab is swtiched then by default all data should show.
-    // this.selectAll(event, 'officeName');
-  }
-
   downloadPdf() {
     this.loader.exportPDFLoader = true;
     if (this.filteredItems.length != 0) {
@@ -1119,16 +1119,6 @@ export class ListOfClaimsComponent implements OnInit {
     this.modelElement.modal.style.display = "none";
   }
 
-  fetchOtherTeams() {
-    let ths = this;
-    ths.appService.fetchOtherTeams((res: any) => {
-      if (res.status === 200) {
-        ths.teamsMs = res.data;
-
-      }
-    })
-  }
-
   makeAsssignment(type: string) {
     let ths = this;
     if (ths.assignreason.nativeElement.value.trim() === '') return;
@@ -1162,13 +1152,13 @@ export class ListOfClaimsComponent implements OnInit {
         ths.radiox3.nativeElement.parentNode.classList.remove("active");
         ths.clearAssigmentArray();
         ths.loader.assignLoader = false;
-        if (ths.tabSwitch.Fresh) {
-          ths.switchTab("Fresh");
-        } else if (ths.tabSwitch.sendBack) {
-          ths.switchTab("sendBack");
-        } else if (ths.tabSwitch.MyClaims) {
-          ths.switchTab("MyClaims");
-        }
+        // if (ths.tabSwitch.Fresh) {
+        //   ths.switchTab("Fresh");
+        // } else if (ths.tabSwitch.sendBack) {
+        //   ths.switchTab("sendBack");
+        // } else if (ths.tabSwitch.MyClaims) {
+        //   ths.switchTab("MyClaims");
+        // }
 
 
       }
@@ -1207,4 +1197,5 @@ export class ListOfClaimsComponent implements OnInit {
     }
     return false;
   }
+
 }
