@@ -98,7 +98,7 @@ export class AppConstants {
     public static PATIENT_STATEMENT_TEAM = 18;
     public static CREDENTIALING_TEAM = 19;
     public static AGING_TEAM = 20;
-    public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", "/reconciliation"];
+    public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", "/reconciliation", '/tool-update', '/tool-update/issue-claims'];
     // public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
 
 
