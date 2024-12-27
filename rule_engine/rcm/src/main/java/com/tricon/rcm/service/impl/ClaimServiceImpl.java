@@ -6444,7 +6444,7 @@ public class ClaimServiceImpl {
 	public List<FreshClaimDataViewDto> fetchUnBilledClaimByTeamAndClient(AssignUnAssignResAsignClaimsDto dto, PartialHeader partialHeader){
 		List<FreshClaimDataDto> list=null;
 		List<FreshClaimDataViewDto> listView=new ArrayList<>();
-		
+		dto.setTeamId(RcmTeamEnum.BILLING.getId());
 		RcmUser user = userRepo.findByEmail(partialHeader.getJwtUser().getUsername());
 		List<String> companies = rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(user.getUuid());
 		if (!ClaimUtil.checkifCompanyIdMatchesList(dto.getClientId(), companies)) {
@@ -6621,7 +6621,7 @@ public class ClaimServiceImpl {
 		        dto.setTeamId(RcmTeamEnum.BILLING.getId());//Only  for Billing
 	  	        RcmUser user = userRepo.findByEmail(partialHeader.getJwtUser().getUsername());
 				List<RcmClaims> claims= populateClaimListWithUUids(dto.getClaimIds(), dto.getTeamId());
-				RcmTeam newTeam = rcmTeamRepo.findById(dto.getTeamId());
+				//RcmTeam newTeam = rcmTeamRepo.findById(dto.getTeamId());
 				Map<String,RcmOffice> offices= new HashMap<>();
 				Map<String,UserAssignOffice> uaofs= new HashMap<>();
 				String clientUuid= partialHeader.getCompany().getUuid();

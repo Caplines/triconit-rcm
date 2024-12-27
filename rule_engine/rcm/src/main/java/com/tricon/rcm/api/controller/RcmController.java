@@ -197,7 +197,7 @@ public class RcmController extends BaseHeaderController{
 	@ApiOperation(value = "Api For Fetching Unbilled Claims Details (Admin Ubnilled Claims)", response = FreshClaimDataDto.class, responseContainer = "List")
 	@PostMapping("/api/unbilled-claims")
 	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
-	public ResponseEntity<Object> fetchUnBilledClaim(AssignUnAssignResAsignClaimsDto dto,Model model) {
+	public ResponseEntity<Object> fetchUnBilledClaim(@RequestBody AssignUnAssignResAsignClaimsDto dto,Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader==null) {
