@@ -2030,7 +2030,7 @@ public class ClaimServiceImpl {
 			 }
 		} else if (sub.equals(Constants.UNSUBMITTED_CLAIMS)) {
 			//SAME AS FRESH
-			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) { 
 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId())  {
 					list = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamInd(partialHeader.getCompany().getUuid(), teamId,partialHeader.getJwtUser().getUuid());
 				}
@@ -6438,6 +6438,30 @@ public class ClaimServiceImpl {
 		}
 		//response.setOffice(null);
 		return response;
+	}
+	
+
+	public List<FreshClaimDataViewDto> fetchUnBilledClaimByTeamAndClient(AssignUnAssignResAsignClaimsDto dto, PartialHeader partialHeader){
+		List<FreshClaimDataDto> list=null;
+		List<FreshClaimDataViewDto> listView=new ArrayList<>();
+		
+		RcmUser user = userRepo.findByEmail(partialHeader.getJwtUser().getUsername());
+		List<String> companies = rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(user.getUuid());
+		if (!ClaimUtil.checkifCompanyIdMatchesList(dto.getClientId(), companies)) {
+			return null;
+		}
+		list =rcmClaimRepository.fetchUnBilledClaimByTeamAndClient(dto.getClientId(), dto.getTeamId());
+		list.forEach(data->{
+			final FreshClaimDataViewDto	dataView = new FreshClaimDataViewDto();
+			BeanUtils.copyProperties(data, dataView);
+			dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction())!=null?ClaimStatusEnum.getById(data.getNextAction()).getType():"N/A");
+			listView.add(dataView);
+			});
+		// search secondary claims from listView for some extra manipulations
+		  String filterStatus= ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getType();
+		  List<FreshClaimDataViewDto> listOfClaims=filterPrimarySecondaryClaimsWithUsingPrimaryStatus(listView,filterStatus);
+		  return listOfClaims;
+	
 	}
 	
 	@Transactional(rollbackFor = Exception.class)

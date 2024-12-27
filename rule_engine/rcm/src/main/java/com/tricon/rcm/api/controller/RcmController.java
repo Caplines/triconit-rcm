@@ -194,6 +194,21 @@ public class RcmController extends BaseHeaderController{
 				claimServiceImpl.fetchFreshClaimDetails(partialHeader.getTeamId(), type, subType,partialHeader)));
 	}
 	
+	@ApiOperation(value = "Api For Fetching Unbilled Claims Details (Admin Ubnilled Claims)", response = FreshClaimDataDto.class, responseContainer = "List")
+	@PostMapping("/api/unbilled-claims")
+	@PreAuthorize("hasAnyRole('ADMIN')")
+	public ResponseEntity<Object> fetchUnBilledClaim(AssignUnAssignResAsignClaimsDto dto,Model model) {
+		
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		
+		
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				claimServiceImpl.fetchUnBilledClaimByTeamAndClient(dto,partialHeader)));
+	}
+	
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDataDto.class, responseContainer = "List")
 	@GetMapping("/api/fetch-fresh-claims-det-lead/{type}/{subType}")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','ADMIN')")
