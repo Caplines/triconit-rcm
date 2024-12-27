@@ -144,7 +144,8 @@ export class BaseService {
     'update-unopenedclaim-status': "/api/update-unopenedclaim-status",
     'user_by_team': "/api/usersbyTeam",
     'assign_unassign_reassign': "/api/assign_unassign_reassign_claimbytl",
-    "fetch-admin-billing-claims":"/api/unbilled-claims"
+    "fetch-admin-billing-claims":"/api/unbilled-claims",
+    "submit-admin-billing-claims":"/api/assign_unbilled_claim_admin"
   }
 
   constructor(public router: Router, public http: HttpClient, public tokenStorage: TokenStorageService) {

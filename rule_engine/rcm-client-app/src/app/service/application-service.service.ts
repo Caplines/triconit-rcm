@@ -667,4 +667,8 @@ export class ApplicationServiceService extends BaseService {
   fetchAdminBillingClaims(params: any, callback: any) {
     this.postData(params, this.httpUrl['fetch-admin-billing-claims'], callback);
   }
+
+  submitAdminBillingClaims(params: any, callback: any) {
+    this.postData(params, this.httpUrl['submit-admin-billing-claims'], callback);
+  }
 }
