@@ -6614,6 +6614,83 @@ public class ClaimServiceImpl {
 		return message;
 	}
 	
+	@Transactional(rollbackFor = Exception.class)
+	public String assignUnBilledClaimsByAdmin(AssignUnAssignResAsignClaimsDto dto, PartialHeader partialHeader)
+			throws Exception {
+		        String message = "Success";
+		        dto.setTeamId(RcmTeamEnum.BILLING.getId());//Only  for Billing
+	  	        RcmUser user = userRepo.findByEmail(partialHeader.getJwtUser().getUsername());
+				List<RcmClaims> claims= populateClaimListWithUUids(dto.getClaimIds(), dto.getTeamId());
+				RcmTeam newTeam = rcmTeamRepo.findById(dto.getTeamId());
+				Map<String,RcmOffice> offices= new HashMap<>();
+				Map<String,UserAssignOffice> uaofs= new HashMap<>();
+				String clientUuid= partialHeader.getCompany().getUuid();
+				claims.forEach( claim-> {
+					//claim.getOffice().getUuid();
+					if (!claim.isPending()) return ;//onlt for pending/unbilled claims.
+					if (claim.getCurrentTeamId().getId() !=  RcmTeamEnum.BILLING.getId()) return ;//onlt for pending/unbilled claims.
+					RcmOffice office = offices.get(claim.getOffice().getUuid());
+					if (office==null) {
+						office = officeRepo.findByUuid(claim.getOffice().getUuid());
+						offices.put(office.getUuid(),office);
+					}
+					UserAssignOffice uaof= uaofs.get(office.getUuid());
+					if (uaof==null) {
+						uaof = userAssignOfficeRepo.findByOfficeUuidAndTeamId(office.getUuid(),dto.getTeamId());
+						uaofs.put(office.getUuid(),uaof);
+					}
+					if (!clientUuid.equals(office.getCompany().getUuid())){
+						return;
+					}
+					if (claim.getCurrentTeamId().getId()== dto.getTeamId()) {
+						return;
+					}
+					RcmClaimAssignment assignOld= rcmClaimAssignmentRepo.findFirstByClaimsClaimUuidAndActiveIsTrueOrderByIdDesc(claim.getClaimUuid());
+					if (assignOld==null) return ;
+					rcmClaimRepository.updateClaimCurrentTeamWithForceUnassign(dto.getTeamId(), user.getUuid(), claim.getClaimUuid());
+					
+					// update old status
+					ClaimCycle previousCycleData = clamCycleRepo.findFirstByClaimAndCurrentTeamIdOrderByCreatedDateDescIdDesc(claim,
+							claim.getCurrentTeamId());
+					if (previousCycleData!=null) {
+		
+						 previousCycleData.setStatusUpdated(ClaimStatusEnum.Billed.getType());
+				
+						clamCycleRepo.save(previousCycleData);
+					}
+
+					//only billing can submit
+					//ClaimStatusEnum.Billing.getType();//Once claim is submitted and its being reworked upon the maintain the current status.
+					
+					rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,claim.getClaimUuid(),
+							Constants.FROMBILLINGTOPOSTING,"",claim,assignOld,user,office,null,
+							ClaimStatusEnum.Billed.getType(), ClaimStatusEnum.Need_to_Post.getType(),ClaimStatusEnum.Submitted.getType(),
+									rcmTeamRepo.findById(partialHeader.getTeamId()));
+				    rcmClaimAssignmentRepo.save(assignOld);
+					claim.setUpdatedBy(user);
+					claim.setPending(false);
+					claim.setUpdatedDate(new Date());
+					 long millis=System.currentTimeMillis();  
+				     java.sql.Date date=new java.sql.Date(millis);  
+					if (claim.getFirstPostingDate() ==null)claim.setFirstPostingDate(date);
+					rcmClaimRepository.save(claim);
+					//Check if Primary	then Find any Corresponding Secondary Claim and Mark Primar_status =2
+					String[] clT = claim.getClaimId().split("_");
+
+					if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
+						//Primary True
+					RcmClaims secondary= rcmClaimRepository.findByClaimIdAndOffice(clT[0]+ClaimTypeEnum.S.getSuffix(), claim.getOffice());
+					if (secondary!=null) {
+						secondary.setPrimaryStaus(Constants.Primary_Status_Primary_submit);
+						rcmClaimRepository.save(secondary);
+					 }
+					}
+					
+				});
+			
+		return message;
+	}
+	
 	private void unAssignMultipleClaimsWithUUids(int teamId,
 			 String comment,String unAssignedBy,List<String> claimIds) {
 		int ctr = 0;

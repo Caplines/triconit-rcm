@@ -196,7 +196,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Fetching Unbilled Claims Details (Admin Ubnilled Claims)", response = FreshClaimDataDto.class, responseContainer = "List")
 	@PostMapping("/api/unbilled-claims")
-	@PreAuthorize("hasAnyRole('ADMIN')")
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
 	public ResponseEntity<Object> fetchUnBilledClaim(AssignUnAssignResAsignClaimsDto dto,Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -1048,7 +1048,7 @@ public class RcmController extends BaseHeaderController{
 	@ApiOperation(value = "Api For Multiple Claim Assigmentment/UnAssigmentment by TL (Same Team /Other Team/Same team Other member)", response = String.class)
 	@PostMapping("/api/assign_unassign_reassign_claimbytl")
 	@PreAuthorize("hasAnyRole('TL')")
-	public ResponseEntity<Object> assignResAssignClaimByTLLead(
+	public ResponseEntity<Object> assignResAssignClaimByTL(
 			@RequestBody AssignUnAssignResAsignClaimsDto dto, Model model) {
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -1058,6 +1058,25 @@ public class RcmController extends BaseHeaderController{
 		try {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 					claimServiceImpl.assignReAssignClaimByTL(dto,partialHeader)));
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+	}
+	
+	@ApiOperation(value = "Api For Multiple Unbilled Claim Assgingment by ADMIN", response = String.class)
+	@PostMapping("/api/assign_unbilled_claim_admin")
+	@PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+	public ResponseEntity<Object> assignUnBilledClaimsByAdmin(
+			@RequestBody AssignUnAssignResAsignClaimsDto dto, Model model) {
+		
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader==null) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
+		}
+		try {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+					claimServiceImpl.assignUnBilledClaimsByAdmin(dto,partialHeader)));
 		} catch (Exception e) {
 			e.printStackTrace();
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
