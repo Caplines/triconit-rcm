@@ -3,6 +3,7 @@ import { CanActivateFn, CanActivateChildFn, ActivatedRouteSnapshot, RouterStateS
 
 import { AppConstants } from '../constants/app.constants';
 import { TeamModel } from '../models/team.model';
+import Utils from '../util/utils';
 
 export const ClaimAssingnmentActivate: CanActivateFn = (
     route: ActivatedRouteSnapshot,
@@ -12,8 +13,10 @@ export const ClaimAssingnmentActivate: CanActivateFn = (
     const router = inject(Router);
     const appConstants = inject(AppConstants);
 
+    const role = Utils.checkAdminLoginRole();
     let ut: any = localStorage.getItem('selected_teamId');
     let roleAsso: any = localStorage.getItem("selected_roleName");
+    if(role) return true;
     if (!ut) {
         router.navigate(['/']);
         return false;
