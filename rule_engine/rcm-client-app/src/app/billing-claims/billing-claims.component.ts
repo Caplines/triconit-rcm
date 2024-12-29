@@ -600,6 +600,7 @@ export class BillingClaimsComponent {
     if (type === 'Secondary' && !primary) return;////NO Need to reclick
     if (uuid) {
       ths.resetOldApiData();
+      ths.fetchClaimSteps(uuid);
       ths.fetchClaimsByUuid(uuid);
 
     }
