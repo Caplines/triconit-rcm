@@ -71,6 +71,9 @@ public class RcmClaimSubmissionDetails extends BaseAuditEntity implements Serial
 	@Column(name = "provider_ref_no")
     private String providerRefNo;
 	
+	@Column(name = "primary_eob_attached",columnDefinition = "BIT default 0")
+    private boolean primaryEOBAttached;
+	
 	@Column(name = "clean_claim", columnDefinition = "BIT default 1")
     private boolean cleanClaim;	
 }

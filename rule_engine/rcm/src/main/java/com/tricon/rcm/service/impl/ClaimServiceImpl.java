@@ -3859,6 +3859,7 @@ public class ClaimServiceImpl {
 		det.setRefferalLetter(dto.isRefferalLetter());
 		det.setAttachmentSend(dto.isAttachmentSend());
 		det.setCleanClaim(dto.isCleanClaim());
+		det.setPrimaryEOBAttached(dto.isPrimaryEOBAttached());
 		det.setEsTime(dto.getEsTime());
 
 		return rcmClaimSubmissionDetailsRepo.save(det).getId();
@@ -6621,6 +6622,7 @@ public class ClaimServiceImpl {
 		        dto.setTeamId(RcmTeamEnum.BILLING.getId());//Only  for Billing
 	  	        RcmUser user = userRepo.findByEmail(partialHeader.getJwtUser().getUsername());
 				List<RcmClaims> claims= populateClaimListWithUUids(dto.getClaimIds(), dto.getTeamId());
+				List<String> companies= rcmUserCompanyRepo.findAssociatedCompanyIdByUserUuid(user.getUuid());
 				//RcmTeam newTeam = rcmTeamRepo.findById(dto.getTeamId());
 				Map<String,RcmOffice> offices= new HashMap<>();
 				Map<String,UserAssignOffice> uaofs= new HashMap<>();
@@ -6639,10 +6641,10 @@ public class ClaimServiceImpl {
 						uaof = userAssignOfficeRepo.findByOfficeUuidAndTeamId(office.getUuid(),dto.getTeamId());
 						uaofs.put(office.getUuid(),uaof);
 					}
-					if (!clientUuid.equals(office.getCompany().getUuid())){
-						return;
+					if (!ClaimUtil.checkifCompanyIdMatchesList(office.getCompany().getUuid(), companies)) {
+						return ;
 					}
-					if (claim.getCurrentTeamId().getId()== dto.getTeamId()) {
+					if (claim.getCurrentTeamId().getId()!= dto.getTeamId()) {
 						return;
 					}
 					RcmClaimAssignment assignOld= rcmClaimAssignmentRepo.findFirstByClaimsClaimUuidAndActiveIsTrueOrderByIdDesc(claim.getClaimUuid());
@@ -6663,7 +6665,7 @@ public class ClaimServiceImpl {
 					//ClaimStatusEnum.Billing.getType();//Once claim is submitted and its being reworked upon the maintain the current status.
 					
 					rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,claim.getClaimUuid(),
-							Constants.FROMBILLINGTOPOSTING,"",claim,assignOld,user,office,null,
+							Constants.FROMBILLINGTOPOSTING,dto.getComment(),claim,assignOld,user,office,null,
 							ClaimStatusEnum.Billed.getType(), ClaimStatusEnum.Need_to_Post.getType(),ClaimStatusEnum.Submitted.getType(),
 									rcmTeamRepo.findById(partialHeader.getTeamId()));
 				    rcmClaimAssignmentRepo.save(assignOld);

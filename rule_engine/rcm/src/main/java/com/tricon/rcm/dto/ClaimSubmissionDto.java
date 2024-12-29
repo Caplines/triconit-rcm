@@ -18,5 +18,6 @@ public class ClaimSubmissionDto {
 	String providerRefNo;
 	String esTime;
 	boolean cleanClaim;
+	boolean primaryEOBAttached;
 
 }

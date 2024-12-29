@@ -18,5 +18,6 @@ public interface RcmClaimSubmissionDto {
 	String getUuid();
 	String getEsTime();
 	boolean getCleanClaim();
+	boolean getPrimaryEOBAttached();
 
 }
