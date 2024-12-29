@@ -37,8 +37,8 @@
                                         type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()"
                                         style="margin-left: 15px;">
                                         <strong>Send to Aging</strong> </button>
-                                    <div class="update-button" style="float: right;"><a href="javascript:void(0);"
-                                            class="btn btn-success"
+                                    <div *ngIf="isRoleLead" class="update-button" style="float: right;"><a
+                                            href="javascript:void(0);" class="btn btn-success"
                                             [ngClass]="{'disabled':listofClaimsForAssignAction.length==0}"
                                             (click)="openAssigmentPopUp()">
                                             Reassignment Actions</a></div>
@@ -786,7 +786,7 @@
                                                             </div> -->
                                                     </div>
                                                 </th>
-                                                <th>
+                                                <th *ngIf="isRoleLead">
                                                     <div class="dFlex">
                                                         Assigned To
                                                         <span class="sorting">
@@ -975,7 +975,8 @@
                                                                 </ng-template>
                                                             </div>
                                                         </td>
-                                                        <td [ngClass]="{'changeColor' : det.colorChange}">
+                                                        <td *ngIf="isRoleLead"
+                                                            [ngClass]="{'changeColor' : det.colorChange}">
                                                             {{det.assignedTo}}
                                                         </td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"

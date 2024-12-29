@@ -407,7 +407,8 @@
                                                             <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                                 <td>{{idx+1}}</td>
                                                                 <td>{{rem.teamName}}</td>
-                                                                <td>{{rem.cd | date:'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}
+                                                                <td>{{rem.cd | date:'MM/dd/YYYY hh:mm
+                                                                    a':'UTC'+timeZone}}
                                                                 </td>
                                                                 <td>{{rem.comment}}</td>
                                                                 <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}
@@ -1644,6 +1645,32 @@
 
                                                         </td>
                                                     </tr>
+                                                    <tr *ngIf="!claimRcm.primary">
+                                                        <td>7</td>
+                                                        <td>Primary EOB Attached or not</td>
+                                                        <td>
+                                                            <div data-toggle="buttons"
+                                                                class="btn-group btn-group-toggle"
+                                                                id="SUB_PRIMARY_EOB_ATT">
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:submissionDto.primaryEOBAttached}">
+                                                                    <input type="radio" name="primaryEobAtt" value=""
+                                                                        (click)="submissionDto.primaryEOBAttached=true;removeErrorDisplayKeyById('SUB_PRIMARY_EOB_ATT');preAuthEnable(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit');"
+                                                                        [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')">
+                                                                    Yes
+                                                                </label>
+                                                                <label class="btn btn-light"
+                                                                    [ngClass]="{active:submissionDto.primaryEOBAttached==false}">
+                                                                    <input type="radio" name="primaryEobAtt" value=""
+                                                                        (click)="submissionDto.primaryEOBAttached=false;removeErrorDisplayKeyById('SUB_PRIMARY_EOB_ATT');removeErrorDisplayKeyById('CLAIM_SUBMISSION');preAuthEnable(sectionIds['CLAIM_SUBMISSION'],'edit');"
+                                                                        [disabled]="isSectionReadOnly(sectionIds['CLAIM_SUBMISSION']['sectionId'],'edit')">
+                                                                    No
+                                                                </label>
+
+                                                            </div>
+
+                                                        </td>
+                                                    </tr>
                                                     <tr>
                                                         <td></td>
                                                         <td class="remarkAria">
@@ -1695,7 +1722,8 @@
                                                     {{ accessIcon(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'])
                                                     | accessTextTransform }}
                                                 </a>
-                                                <ng-container *ngIf="(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
+                                                <ng-container
+                                                    *ngIf="(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
                                                     <button style="border-radius: 12px;height: 30px;"
                                                         class="mx-2 btn btn-sm btn-success"
                                                         [disabled]="claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length === 1 && claimSectionModal['SERVICE_LEVEL_INFORMATION'].data[0].serviceCode.trim().toLowerCase() === 'undistributed'"
@@ -1706,10 +1734,14 @@
                                                         <div class="tooltip-backdrop"></div>
                                                     </ng-container>
                                                     <div class="mx-0 tooltip2">
-                                                        <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('pastefromsheet')" />
-                                                        <span class="tooltiptext" *ngIf="showTooltipConfig['pastefromsheet']">
-                                                            <span class="tooltip-cross-btn" (click)="showTooltipConfig['pastefromsheet']=false;">×</span>
-                                                            Updates Service Level Information only for records where the Service Code and Tooth number matches.
+                                                        <img src="../../assets/img/question-icon.png"
+                                                            (click)="toggleTooltip('pastefromsheet')" />
+                                                        <span class="tooltiptext"
+                                                            *ngIf="showTooltipConfig['pastefromsheet']">
+                                                            <span class="tooltip-cross-btn"
+                                                                (click)="showTooltipConfig['pastefromsheet']=false;">×</span>
+                                                            Updates Service Level Information only for records where the
+                                                            Service Code and Tooth number matches.
                                                         </span>
                                                     </div>
                                                 </ng-container>
@@ -2709,7 +2741,8 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}</td>
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm
+                                                                a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>
@@ -2786,7 +2819,8 @@
                                                                 <option value="EOB Not Generated">EOB Not Generated
                                                                 </option>
                                                                 <option value="Partial paid">Partial paid</option>
-                                                                <option value="Claim not on file">Claim not on file</option>
+                                                                <option value="Claim not on file">Claim not on file
+                                                                </option>
                                                                 <option value="Reprocessed">Reprocessed</option>
                                                             </select>
                                                         </div>
@@ -2974,8 +3008,7 @@
                                                                         value="Statements Not Required - Patient Passed Away">
                                                                         Statements Not Required - Patient Passed Away
                                                                     </option>
-                                                                    <option
-                                                                        value="Chargeback">
+                                                                    <option value="Chargeback">
                                                                         Chargeback
                                                                     </option>
                                                                 </select>
@@ -3313,19 +3346,28 @@
                                                         </div>
                                                     </div>
 
-                                                    <div *ngIf="claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Check'" class="col-md-4 mb-2">
+                                                    <div *ngIf="claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Check'"
+                                                        class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="checkNumber">Check# &nbsp;<span class="text-danger">*</span></label>
-                                                            <input type="number" id="checkNumber" [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['checkNumber']"
-                                                                class="form-control" placeholder="Enter last 4 digits" maxLength=4
+                                                            <label for="checkNumber">Check# &nbsp;<span
+                                                                    class="text-danger">*</span></label>
+                                                            <input type="number" id="checkNumber"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['checkNumber']"
+                                                                class="form-control" placeholder="Enter last 4 digits"
+                                                                maxLength=4
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['checkNumber']}">
                                                         </div>
                                                     </div>
 
-                                                    <div *ngIf="claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Debit Card' || claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Credit Card'" class="col-md-4 mb-2">
+                                                    <div *ngIf="claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Debit Card' || claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Credit Card'"
+                                                        class="col-md-4 mb-2">
                                                         <div class="custom-row text-number">
-                                                            <label for="cardNumber">Card# &nbsp;<span class="text-danger">*</span></label>
-                                                            <input type="number" id="cardNumber" [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['cardNumber']" class="form-control" placeholder="Enter last 4 digits" maxLength=4
+                                                            <label for="cardNumber">Card# &nbsp;<span
+                                                                    class="text-danger">*</span></label>
+                                                            <input type="number" id="cardNumber"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['cardNumber']"
+                                                                class="form-control" placeholder="Enter last 4 digits"
+                                                                maxLength=4
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['cardNumber']}">
                                                         </div>
                                                     </div>
@@ -3936,7 +3978,8 @@
                                                         <option value="Claim not on file">Claim not on file</option>
                                                         <option value="Need Primary EOB">Need Primary EOB</option>
                                                         <option value="Incorrect Billing">Incorrect Billing</option>
-                                                        <option value="Incorrect patient/Insurance">Incorrect patient/Insurance</option>
+                                                        <option value="Incorrect patient/Insurance">Incorrect
+                                                            patient/Insurance</option>
                                                     </select>
                                                     <!-- <select id="reasonForRebilling" class="form-control"
                                                     *ngIf="claimSectionModal?.REQUEST_REBILLING"
@@ -4831,7 +4874,9 @@
                                                                     </ng-container>
                                                                 </select>
                                                             </div>
-                                                            <div class="text-danger next-action-error" *ngIf="errorMsgForNextAction">{{errorMsgForNextAction}}</div>
+                                                            <div class="text-danger next-action-error"
+                                                                *ngIf="errorMsgForNextAction">{{errorMsgForNextAction}}
+                                                            </div>
                                                         </div>
                                                     </ng-container>
 

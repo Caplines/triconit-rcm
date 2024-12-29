@@ -182,7 +182,8 @@ export interface SubmissionDetailModel {
 	preauthNo?: string;
 	providerRefNo?: string;
 	esTime?: string;
-	cleanClaim?: boolean
+	cleanClaim?: boolean;
+	primaryEOBAttached?: boolean; //for secondary only
 }
 
 export interface ClaimRuleModel {

@@ -875,6 +875,9 @@ export class BillingClaimsComponent {
         ths.addErrorDisplay(document.getElementById("SUB_DET_PRE"));
         ths.addErrorDisplay(document.getElementById("SUB_DET_REF"));
         ths.addErrorDisplay(document.getElementById("SUB_CLEAN_CLA"));
+        if (!ths.claimRcm.primary) {
+          ths.addErrorDisplay(document.getElementById("SUB_PRIMARY_EOB_ATT"));
+        }
         if (!ths.claimNoEnable()) {
 
           ths.addErrorDisplay(document.getElementById("SUB_DET_CLA"));
@@ -905,6 +908,10 @@ export class BillingClaimsComponent {
         }
         if (ths.submissionDto.cleanClaim === undefined || ths.submissionDto.cleanClaim === null) {
           ths.addErrorDisplay(document.getElementById("SUB_CLEAN_CLA"));
+          valid = false;
+        }
+        if (!ths.claimRcm.primary && (ths.submissionDto.primaryEOBAttached === undefined || ths.submissionDto.primaryEOBAttached === null)) {
+          ths.addErrorDisplay(document.getElementById("SUB_PRIMARY_EOB_ATT"));
           valid = false;
         }
         if (!ths.claimNoEnable()) {
@@ -4403,7 +4410,7 @@ export class BillingClaimsComponent {
     }
   }
 
-  clearPaymentFields(){
+  clearPaymentFields() {
     this.claimSectionModal.PATIENT_PAYMENT['checkNumber'] = null;
     this.claimSectionModal.PATIENT_PAYMENT['cardNumber'] = null;
   }
@@ -4411,7 +4418,7 @@ export class BillingClaimsComponent {
   fillServiceLevelInfo(rowObject: any, serviceLevelInfo: any) {
     let matchingIndex = serviceLevelInfo.findIndex((item: any) => {
       return item.serviceCode.trim().toLowerCase() == rowObject['Service Code'].trim().toLowerCase()
-       && item.tooth.trim().toLowerCase() == rowObject['Tooth#'].trim().toLowerCase();
+        && item.tooth.trim().toLowerCase() == rowObject['Tooth#'].trim().toLowerCase();
     });
     if (matchingIndex != -1) {
       let matchingRecord = serviceLevelInfo[matchingIndex];
@@ -4451,7 +4458,7 @@ export class BillingClaimsComponent {
     this.validate_SERVICE_LEVEL_INFORMATION();
   }
 
-  compareHeaders(headers: string[]){
+  compareHeaders(headers: string[]) {
     if (headers.length != this.predefinedHeaders.length) {
       return false;
     }
