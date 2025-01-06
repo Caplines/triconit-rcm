@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Output, Input } from '@angular/core';
 declare var $: any;
 @Component({
   selector: 'app-date-range',
@@ -8,12 +8,15 @@ declare var $: any;
 export class DateRangePickerComponent {
   value: any;
   dateField: any;
+  @Input() isSearchClaimsPage: boolean;
   @Output() emitToParent: any = new EventEmitter();
   constructor() { }
 
   ngOnInit() {
     this.updateRangeConfig();
-    this.emitDefaultDate();
+    if (!this.isSearchClaimsPage) {
+      this.emitDefaultDate();
+    }
   }
 
   ngAfterViewInit() {
@@ -50,8 +53,10 @@ export class DateRangePickerComponent {
       'Last Month': [new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1), new Date(new Date().getFullYear(), new Date().getMonth(), 0)]
     };
 
-    options.startDate = options.ranges['Month to Date'][0];
-    options.endDate = options.ranges['Month to Date'][1];
+    if (!this.isSearchClaimsPage) {
+      options.startDate = options.ranges['Month to Date'][0];
+      options.endDate = options.ranges['Month to Date'][1];
+    }
 
     $('#config-demo').daterangepicker(options, (start: any, end: any, label: any) => {
       //TRICON if condition
