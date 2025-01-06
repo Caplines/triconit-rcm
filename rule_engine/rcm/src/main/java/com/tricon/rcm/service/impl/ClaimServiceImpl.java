@@ -2134,12 +2134,30 @@ public class ClaimServiceImpl {
 		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
 		try {
 			//if (!ct.contains(ClaimStatusEnum.Billing.getId()))ct.add(ClaimStatusEnum.Billing.getId());
-			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
-				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserType(companies, ct, instDB,partialHeader.getTeamId());
-				
-			}else {
-				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamType(companies, ct, instDB,partialHeader.getTeamId());
+			if (dto.getRepeatType() == null) {
+				if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+					ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserType(companies, ct, instDB,partialHeader.getTeamId());
 					
+				}else {
+					ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamType(companies, ct, instDB,partialHeader.getTeamId());
+						
+				}
+			}else if (dto.getRepeatType().intValue() == Constants.PENDENCY_FRESH) {
+				if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+					ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserTypeFresh(companies, ct, instDB,partialHeader.getTeamId());
+					
+				}else {
+					ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamTypeFresh(companies, ct, instDB,partialHeader.getTeamId());
+						
+				}
+			}else if (dto.getRepeatType().intValue() ==  Constants.PENDENCY_REPEAT) {
+				if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
+					ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserTypeRepeat(companies, ct, instDB,partialHeader.getTeamId());
+					
+				}else {
+					ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamTypeRepeat(companies, ct, instDB,partialHeader.getTeamId());
+						
+				}
 			}
 			
 			

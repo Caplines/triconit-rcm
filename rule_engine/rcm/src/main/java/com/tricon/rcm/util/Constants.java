@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
+
 import com.tricon.rcm.enums.RcmTeamEnum;
 
 public class Constants {
@@ -180,6 +182,45 @@ public class Constants {
 	public static final String BUTTON_TYPE_ASSIGN_TO_SAME_TEAM="assignToSameTeam";
     public static final String BUTTON_TYPE_ARCHIVE="archive";
     public static final String BUTTON_TYPE_ASSIGN_TO_TL="assignToTeamLead";
-
     
+    public static final int PENDENCY_REPEAT = 2;
+    public static final int PENDENCY_FRESH = 1;
+    
+    // Pendecny page /Claim Assignment only for PS TEAM 
+    public static final String PENDENCY_REPEAT_FRESH_QUERY_ByTeamAndUserType=""
+    		        + " SELECT  cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"
+    				+ " cl.claim_id as claimId, Case When cl.is_primary Then 1 ELSE 0 End as primaryC,Case When cl.pending Then 1 ELSE 0 End as pending, "
+    				+ " DATEDIFF(NOW(), cl.created_date)  as 'opdt',"
+    				+ " DATEDIFF(NOW(), cl.dos) as 'opdos',0 as remoteLiteRejections, "
+    				+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName,assig.team_id as assignTeamId,Case When cl.rebilled_status Then 1 ELSE 0 End as rebilledStatus "
+    				+ " from  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
+    				+"  and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+"" 
+    			    + " and cl.rcm_insurance_type in :inst   "
+    			    + " and cl.claim_status_type_id in :status and cl.current_team_id=:teamId and " 
+    			    + "  cl.current_status<>"+Constants.CLAIM_CLOSED+" "
+    				+ "  inner join company cmp on cmp.uuid=off.company_id  "
+    				+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
+    				+ "  left join rcm_claim_assignment rca on rca.claim_id=cl.claim_uuid and rca.current_team_id=:teamId "
+    				+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId "
+    				+ "  left join rcm_user us on us.uuid=assig.user_id "
+    				+ "  where off.company_id in (:companyIds) and off.active is true  order by companyName ";
+    public static final String PENDENCY_REPEAT_FRESH_QUERY_ByTeamType =""
+    		        + " SELECT  cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"
+    				+ " cl.claim_id as claimId, Case When cl.is_primary Then 1 ELSE 0 End as primaryC,Case When cl.pending Then 1 ELSE 0 End as pending, "
+    				+ " DATEDIFF(NOW(), cl.created_date)  as 'opdt',"
+    				+ " DATEDIFF(NOW(), cl.dos) as 'opdos',0 as remoteLiteRejections, "
+    				+ " us.uuid as assignedUser,us.first_name as fName,us.last_name  as lName,assig.team_id as assignTeamId,Case When cl.rebilled_status Then 1 ELSE 0 End as rebilledStatus  "
+    				+ " from  office off left join rcm_claims  " + "  cl on off.uuid=cl.office_id "
+    				
+    	            + " and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
+    				+ " and cl.rcm_insurance_type in :inst   "
+    				+ "  and cl.claim_status_type_id in :status and cl.current_team_id=:teamId  and "
+    				+ "  cl.current_status<>"+Constants.CLAIM_CLOSED+" "
+    				+ "  inner join company cmp on cmp.uuid=off.company_id  "
+    				+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
+    				+ "  left join rcm_claim_assignment rca on rca.claim_id=cl.claim_uuid and rca.current_team_id=:teamId "
+    				+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId"
+    				+ "  left join rcm_user us on us.uuid=assig.user_id "
+    				+ "  where off.company_id in (:companyIds) and off.active is true order by companyName ";
+    		
 }

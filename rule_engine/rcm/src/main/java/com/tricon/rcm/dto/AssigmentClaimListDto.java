@@ -9,6 +9,6 @@ public class AssigmentClaimListDto {
 
 	List<Integer> claimType;
 	List<String> insuranceType;
-	
+	Integer repeatType;//1= Fresh 2 = Repeat
 	
 }
