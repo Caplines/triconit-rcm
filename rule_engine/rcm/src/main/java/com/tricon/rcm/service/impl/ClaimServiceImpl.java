@@ -2099,13 +2099,17 @@ public class ClaimServiceImpl {
 
 	public List<AssignFreshClaimLogsImplDto> fetchClaimsForAssignments(AssigmentClaimListDto dto,PartialHeader partialHeader) {
 
-		List<Integer> ct = dto.getClaimType();
+		List<Integer> ct1 = dto.getClaimType();//Always use 1 will fix soon for Rebill case
+		
+		List<Integer> ct = new ArrayList<>();
+		ct.add(ClaimStatusEnum.Billing.getId());
 		List<String> inst = dto.getInsuranceType();
-		if (dto.getClaimType() == null) {
+		/*if (dto.getClaimType() == null) {
 			ct = new ArrayList<>();
 			ct.add(ClaimStatusEnum.Billing.getId());
-			ct.add(ClaimStatusEnum.ReBilling.getId());
-		}
+			///ct.add(ClaimStatusEnum.ReBilling.getId());
+		}*/
+		
 		HashMap<String, RemoteLietStatusCount> remoteLiteMap = ruleEngineService.pullAndSaveRemoteLiteData();
 		
 		List<AssignFreshClaimLogsImplDto> finalList = new ArrayList<>();
@@ -2129,12 +2133,21 @@ public class ClaimServiceImpl {
 		List<AssignFreshClaimLogsDto> ll = null;
 		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
 		try {
+			//if (!ct.contains(ClaimStatusEnum.Billing.getId()))ct.add(ClaimStatusEnum.Billing.getId());
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamAndUserType(companies, ct, instDB,partialHeader.getTeamId());
 				
 			}else {
 				ll = rcmClaimRepository.fetchClaimsForAssignmentsByTeamType(companies, ct, instDB,partialHeader.getTeamId());
 					
+			}
+			
+			
+			if (ll!=null && ct1!=null && ct1.size()==1  && ct1.contains(ClaimStatusEnum.ReBilling.getId())) {
+				ll =ll.stream().filter(d->d.getRebilledStatus()==1).collect(Collectors.toList());
+			}
+			if (ll!=null && ct1!=null && ct1.size()==1  && ct1.contains(ClaimStatusEnum.Billing.getId())) {
+				ll =ll.stream().filter(d->d.getRebilledStatus()==0).collect(Collectors.toList());
 			}
 			List<AssignFreshClaimLogsDto> primaries=new ArrayList<>();
 			List<AssignFreshClaimLogsDto> secondaries=new ArrayList<>();
@@ -2267,8 +2280,7 @@ public class ClaimServiceImpl {
 			}
 			
 			implDto = new FreshClaimDataImplDto();
-
-			//implDto.setSecInsurance("N/A");
+      	//implDto.setSecInsurance("N/A");
 			// RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUuid);
 			// Fetch Data from RCM Tool Checks and Validations Sheets //141479965
 
@@ -4834,8 +4846,9 @@ public class ClaimServiceImpl {
 						InsuranceNameTypeDto insuranceNameTypeDto= ruleEngineService.getInsuranceTypeFromSheetListByNameAndClient(insuranceTypeDto, insName,rcmCompany.getName());
 						insCode =(insuranceNameTypeDto==null)?"": insuranceNameTypeDto.getInsuranceCode();//point 39
 						//TO Do Update the Data in InsuranceNameType
-						claim.setPreferredModeOfSubmission(insuranceNameTypeDto.getPreferredModeOfSubmission());
+						if (insuranceNameTypeDto!=null) {claim.setPreferredModeOfSubmission(insuranceNameTypeDto.getPreferredModeOfSubmission());
 						dto.setPreferredModeOfSubmission(insuranceNameTypeDto.getPreferredModeOfSubmission());
+						}
 					}
 					
 					allLIst.addAll(

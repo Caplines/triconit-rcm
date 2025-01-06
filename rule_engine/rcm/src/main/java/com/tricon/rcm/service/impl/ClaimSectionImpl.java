@@ -1,9 +1,6 @@
 package com.tricon.rcm.service.impl;
 
-import java.io.File;
 
-
-import java.net.URL;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -12,7 +9,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -20,7 +17,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.apache.commons.io.FileUtils;
+
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,7 +69,7 @@ import com.tricon.rcm.dto.CurrentStatusAndNextActionDto;
 import com.tricon.rcm.dto.EOBDto;
 import com.tricon.rcm.dto.EobSectionEditDto;
 import com.tricon.rcm.dto.IssueClaimDto;
-import com.tricon.rcm.dto.NeedToCallInsuranceDto;
+
 import com.tricon.rcm.dto.PartialHeader;
 import com.tricon.rcm.dto.PatientPaymentSectionDto;
 import com.tricon.rcm.dto.PaymentInformationSectionDto;
@@ -84,7 +81,7 @@ import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.RebillingDto;
 import com.tricon.rcm.dto.RebillingResponseDto;
-import com.tricon.rcm.dto.ReconciliationResponseDto;
+
 import com.tricon.rcm.dto.RecreateClaimRequestDto;
 import com.tricon.rcm.dto.RecreateResponseDto;
 import com.tricon.rcm.dto.RequestRebillingDto;
@@ -95,7 +92,7 @@ import com.tricon.rcm.dto.ValidateCreateClaimInformationDto;
 import com.tricon.rcm.dto.ValidateRecreateClaimResponseDto;
 import com.tricon.rcm.dto.ValidationRuleRemarksDto;
 import com.tricon.rcm.dto.customquery.ClientCustomDto;
-import com.tricon.rcm.dto.customquery.RcmClaimDataDto;
+
 import com.tricon.rcm.dto.customquery.RcmServiceNotesDto;
 import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
@@ -704,7 +701,7 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveAppealInformation(AppealInformationDto appealInfoDto,RcmClaims claim,RcmUser createdBy,RcmTeam team,boolean isFinalSubmit)
+	public AppealInformationDto saveAppealInformation(AppealInformationDto appealInfoDto,RcmClaims claim,RcmUser createdBy,RcmTeam team,boolean isFinalSubmit)
 			throws Exception {
 		RcmAppealLevelInformation appealInformation = null;
 		if (claim != null) {
@@ -718,31 +715,38 @@ public class ClaimSectionImpl {
 			appealInformation.setFinalSubmit(isFinalSubmit);
 			appealInformation.setTeamId(team);
 			appealInformation = appealInfoRepo.save(appealInformation);
-			return appealInformation != null ? true : null;
+			appealInfoDto.setId(appealInformation.getId());
+			appealInfoDto.setCreatedDate(appealInformation.getCreatedDate());
+			return appealInformation != null ? appealInfoDto : null;
 		}
-		return false;
+		return null;
 	}
 
-	public AppealInformationDto fetchAppealLevelInfo(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
+	public List<AppealInformationDto> fetchAppealLevelInfo(PartialHeader partialHeader, String claimUuid, boolean showWithTeam)
 			throws Exception {
-		AppealInformationDto responseDto = null;
-		RcmAppealLevelInformation appealLevelInformation = null;
+		List<AppealInformationDto> responseDto = new ArrayList<>();
+		List<RcmAppealLevelInformation> appealLevelInformations = null;
 		if (showWithTeam) {
-			appealLevelInformation = appealInfoRepo.findFirstByClaimClaimUuidAndTeamIdIdOrderByCreatedDateDesc(claimUuid,partialHeader.getTeamId());
+			appealLevelInformations = appealInfoRepo.findByClaimClaimUuidAndTeamIdIdOrderByCreatedDateDesc(claimUuid,partialHeader.getTeamId());
 		} else {
-			appealLevelInformation = appealInfoRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(
+			appealLevelInformations = appealInfoRepo.findByClaimClaimUuidOrderByCreatedDateDesc(
 					claimUuid);
 		}
-		if (appealLevelInformation != null) {
-			responseDto = new AppealInformationDto();
-			BeanUtils.copyProperties(appealLevelInformation, responseDto);
+		if (appealLevelInformations != null) {
+			AppealInformationDto dto=null;
+			for(RcmAppealLevelInformation appealLevelInformation:appealLevelInformations) {
+				dto = new AppealInformationDto();
+			BeanUtils.copyProperties(appealLevelInformation, dto);
+			responseDto.add(dto);
+			
+			}
 			return responseDto;
 		}
 		return null;
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean savePatientPaymentSection(PatientPaymentSectionDto patientPaymentInfoModel,
+	public Object savePatientPaymentSection(PatientPaymentSectionDto patientPaymentInfoModel,
 			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
 		RcmPatientPayment patientPaymentInformation = null;
 		if (claim != null) {
@@ -762,32 +766,39 @@ public class ClaimSectionImpl {
 			patientPaymentInformation.setCheckNumber(patientPaymentInfoModel.getCheckNumber());
 			patientPaymentInformation.setCardNumber(patientPaymentInfoModel.getCardNumber());
 			patientPaymentInformation = patientPaymentRepo.save(patientPaymentInformation);
+			patientPaymentInfoModel.setCreatedDate(patientPaymentInformation.getCreatedDate());
+			patientPaymentInfoModel.setId(patientPaymentInformation.getId());
 			//update AmountCollectedClaims in rcm_claim tables
 			if(finalSubmit) {
 				claim.setAmountCollectedClaims((float)patientPaymentInfoModel.getAmountCollectedClaims());
 				rcmClaimRepository.save(claim);		
 			}
-			return patientPaymentInformation != null ? true : null;
+			return patientPaymentInformation != null ? patientPaymentInfoModel : null;
 		}
 		return null;
 	}
 	
 	
-	public PatientPaymentSectionDto fetchPatientPaymentInformation(PartialHeader partialHeader, String claimUuid,
+	public List<PatientPaymentSectionDto> fetchPatientPaymentInformation(PartialHeader partialHeader, String claimUuid,
 			boolean showWithTeam) throws Exception {
-		PatientPaymentSectionDto responseDto = null;
-		RcmPatientPayment patientPaymentlSections = null;
+		List<PatientPaymentSectionDto> responseDto = new ArrayList<>();
+		List<RcmPatientPayment> patientPaymentlSections = null;
 		if (showWithTeam) {
 			patientPaymentlSections = patientPaymentRepo
-					.findFirstByClaimClaimUuidAndTeamIdIdOrderByCreatedDateDesc(claimUuid,partialHeader.getTeamId());
+					.findByClaimClaimUuidAndTeamIdIdOrderByCreatedDateDesc(claimUuid,partialHeader.getTeamId());
 		} else {
 			patientPaymentlSections = patientPaymentRepo
-					.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+					.findByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
 		}
 		if (patientPaymentlSections != null) {
-			responseDto = new PatientPaymentSectionDto();
-			responseDto.setDateOfPayment(patientPaymentlSections.getDateOfPayment()==null?"":Constants.SDF_MYSL_DATE.format((patientPaymentlSections.getDateOfPayment())));
-			BeanUtils.copyProperties(patientPaymentlSections, responseDto);
+			PatientPaymentSectionDto patientPaymentSectionDto = null;
+			for(RcmPatientPayment patientPaymentlSection:patientPaymentlSections) {
+				patientPaymentSectionDto = new PatientPaymentSectionDto();
+				patientPaymentSectionDto.setDateOfPayment(patientPaymentlSection.getDateOfPayment()==null?"":Constants.SDF_MYSL_DATE.format((patientPaymentlSection.getDateOfPayment())));
+			   BeanUtils.copyProperties(patientPaymentlSection, patientPaymentSectionDto);
+			   //patientPaymentSectionDto.setCreatedDate(patientPaymentlSection.getCreatedDate());
+			   responseDto.add(patientPaymentSectionDto);
+			}
 			return responseDto;
 		}
 		return null;
@@ -896,13 +907,13 @@ public class ClaimSectionImpl {
 	}
 
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveInsurancePaymentInformationSection(PaymentInformationSectionDto paymentInformationInfoModel,
+	public PaymentInformationSectionDto saveInsurancePaymentInformationSection(PaymentInformationSectionDto paymentInformationInfoModel,
 			RcmClaims claim, RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
 
 		// if paid amount is 0 then no need to save data in db
 		if (paymentInformationInfoModel.getPaidAmount() == 0.0) {
 			logger.error("paid amount is 0.so data will not save");
-			return false;
+			return null;
 		} else {
 			PaymentInformationSection paymentInsuranceInformation = null;
 			if (claim != null) {
@@ -928,36 +939,44 @@ public class ClaimSectionImpl {
 				paymentInsuranceInformation.setFinalSubmit(finalSubmit);
 				paymentInsuranceInformation.setTeam(team);
 				paymentInsuranceInformation = paymentSectionRepo.save(paymentInsuranceInformation);
+				paymentInformationInfoModel.setId(paymentInsuranceInformation.getId());
+				paymentInformationInfoModel.setCreatedDate(paymentInsuranceInformation.getCreatedDate());
 				if(finalSubmit) {
 					claim.setAmountReceivedInBank((float)paymentInformationInfoModel.getAmountReceivedInBank());
 					rcmClaimRepository.save(claim);		
 				}
-				return paymentInsuranceInformation != null ? true : null;
+				
+				return paymentInsuranceInformation != null ? paymentInformationInfoModel : null;
 			}
 		}
 		return null;
 	}
 
-	public PaymentInformationSectionDto fetchInsurancePaymentInformation(PartialHeader partialHeader, String claimUuid,
+	public List<PaymentInformationSectionDto> fetchInsurancePaymentInformation(PartialHeader partialHeader, String claimUuid,
 			boolean showWithTeam) throws Exception {
-		PaymentInformationSectionDto responseDto = null;
-		PaymentInformationSection paymentInsuranceInformation = null;
+		List<PaymentInformationSectionDto> responseDto = new ArrayList<>();
+		List<PaymentInformationSection> paymentInsuranceInformations = null;
 		if (showWithTeam) {
-			paymentInsuranceInformation = paymentSectionRepo
-					.findFirstByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(claimUuid, partialHeader.getTeamId());
+			paymentInsuranceInformations = paymentSectionRepo
+					.findByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(claimUuid, partialHeader.getTeamId());
 		} else {
-			paymentInsuranceInformation = paymentSectionRepo
-					.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+			paymentInsuranceInformations = paymentSectionRepo
+					.findByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
 		}
-		if (paymentInsuranceInformation != null) {
-			responseDto = new PaymentInformationSectionDto();
-			responseDto
+		if (paymentInsuranceInformations != null) {
+			PaymentInformationSectionDto dto =null;
+			for(PaymentInformationSection paymentInsuranceInformation:paymentInsuranceInformations ) {
+				dto = new PaymentInformationSectionDto();
+				dto
 					.setCheckCashDate(paymentInsuranceInformation.getCheckCashDate()==null?"":Constants.SDF_MYSL_DATE.format((paymentInsuranceInformation.getCheckCashDate())));
-			responseDto.setAmountDateReceivedInBank(
+				dto.setAmountDateReceivedInBank(
 					paymentInsuranceInformation.getAmountDateReceivedInBank()==null?"":
 					Constants.SDF_MYSL_DATE.format((paymentInsuranceInformation.getAmountDateReceivedInBank())));
-			BeanUtils.copyProperties(paymentInsuranceInformation, responseDto);
+			BeanUtils.copyProperties(paymentInsuranceInformation, dto);
+			responseDto.add(dto);
+			}
 			return responseDto;
+			
 		}
 		return null;
 	}
@@ -1233,8 +1252,8 @@ public class ClaimSectionImpl {
 		return responseData;
 	}
 	
-	@Transactional(rollbackOn = Exception.class)
-	public Boolean savePatientStatementSection(RcmPatientStatementDto rcmPatientStatementInfoModel, RcmClaims claim,
+	@Transactional(rollbackOn = Exception.class) 
+	public Object savePatientStatementSection(RcmPatientStatementDto rcmPatientStatementInfoModel, RcmClaims claim,
 			RcmUser createdBy, RcmTeam team, boolean finalSubmit, String clientName) throws Exception {
 		RcmPatientStatementSection patientStatement = null;
 		if (!(rcmPatientStatementInfoModel
@@ -1252,6 +1271,7 @@ public class ClaimSectionImpl {
 			patientStatement.setFinalSubmit(finalSubmit);
 			patientStatement.setTeam(team);
 			patientStatement.setStatus(rcmPatientStatementInfoModel.getStatus());
+			patientStatement.setAttachStatement(rcmPatientStatementInfoModel.getAttachStatement());
 			if (rcmPatientStatementInfoModel
 					.getButtonType() == Constants.NEED_TO_HOLD_BUTTON_TYPE_FOR_PATIENT_STATEMENT_SECTION) {
 				patientStatement.setBalanceSheetLink(rcmPatientStatementInfoModel.getBalanceSheetLink());
@@ -1276,47 +1296,39 @@ public class ClaimSectionImpl {
 										.parse(rcmPatientStatementInfoModel.getStatementSendingDate()));
 			}
 			patientStatement = patientStatementRepo.save(patientStatement);
-			return patientStatement != null ? true : null;
+			rcmPatientStatementInfoModel.setId(patientStatement.getId());
+			rcmPatientStatementInfoModel.setDt(patientStatement.getCreatedDate());
+			return patientStatement != null ? rcmPatientStatementInfoModel: null;
 		}
 		return null;
 
 	}
 
-	public RcmPatientStatementDto fetchPatientStatementInformation(PartialHeader partialHeader, String claimUuid,
+	public List<RcmPatientStatementDto> fetchPatientStatementInformation(PartialHeader partialHeader, String claimUuid,
 			boolean showWithTeam) throws Exception {
-		RcmPatientStatementSection patientStatement = null;
-		RcmPatientStatementDto responseDto = null;
+		List<RcmPatientStatementSection> patientStatements = null;
+		List<RcmPatientStatementDto> responseDto = new ArrayList<>();
 		if (showWithTeam) {
-			patientStatement = patientStatementRepo.findFirstByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(claimUuid,
+			patientStatements = patientStatementRepo.findByClaimClaimUuidAndTeamIdAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid,
 					partialHeader.getTeamId());
-		} else {
-			patientStatement = patientStatementRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+		} else { 
+			patientStatements = patientStatementRepo.findByClaimClaimUuidAndMarkAsDeletedFalseOrderByCreatedDateDesc(claimUuid);
 		}
         //next review date and next statement date is a automated fields early but now, not required for this
 		RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 		boolean sectionAccess = rcmCommonServiceImpl.validateUserSectionAccess(partialHeader,
 				15,createdBy);
 		if (sectionAccess) {
-			if (patientStatement == null) {
-				responseDto = new RcmPatientStatementDto();
-				// set automated fields value StatementType default
-				// 1,NextReviewDate,NextStatementDate
-				responseDto.setStatementType(String.valueOf(1));
-				responseDto.setButtonType(1);
-//				Calendar calendarForNextReviewDate = Calendar.getInstance();
-//				calendarForNextReviewDate.setTime(new Date());
-//				calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, 7);
-//				responseDto.setNextReviewDate(Constants.SDF_MYSL_DATE.format(calendarForNextReviewDate.getTime()));
-//				Calendar calendarForNextStatementDate = Calendar.getInstance();
-//				calendarForNextStatementDate.setTime(new Date());
-//				calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, 7);
-//				responseDto
-//						.setNextStatementDate(Constants.SDF_MYSL_DATE.format(calendarForNextStatementDate.getTime()));
-			} else  {
-				if (patientStatement != null && patientStatement.isFinalSubmit()) {
-					responseDto = new RcmPatientStatementDto();
+			RcmPatientStatementDto psDto = new RcmPatientStatementDto();
+			// set automated fields value StatementType default
+			// 1,NextReviewDate,NextStatementDate
+			psDto.setStatementType(String.valueOf(1));
+			psDto.setButtonType(1);
+			responseDto.add(psDto);
+			for (RcmPatientStatementSection patientStatement : patientStatements) {
+				
+				 RcmPatientStatementDto psDto1 = new RcmPatientStatementDto();
 					// set automated fields value StatementType,NextReviewDate,NextStatementDate
-					
 					if (StringUtils.isNoneBlank(patientStatement.getStatementType())) {
 						if (patientStatement.getStatementType()
 								.equals("" + PatientStatementTypeEnum.STATEMENT_1.getType())) {
@@ -1327,56 +1339,25 @@ public class ClaimSectionImpl {
 							int type = Integer.valueOf(patientStatement.getStatementType());
 							patientStatement.setStatementType(String.valueOf(type + 1));
 						}
-						//Calendar calendarForNextReviewDate = Calendar.getInstance();
-//						Calendar calendarForNextStatementDate = Calendar.getInstance();
-//						Date dateForNextReview = patientStatement.getNextReviewDate() != null
-//								? patientStatement.getNextReviewDate()
-//								: new Date();
-//						Date dateForNextStatement = patientStatement.getNextStatementDate() != null
-//								? patientStatement.getNextStatementDate()
-//								: new Date();
 
-//						PatientStatementTypeEnum type = PatientStatementTypeEnum
-//								.getPatientStatementTypeByType(Integer.parseInt(patientStatement.getStatementType()));
-//						calendarForNextReviewDate.setTime(dateForNextReview);
-//						calendarForNextReviewDate.add(Calendar.DAY_OF_YEAR, type.getDays());
-//						patientStatement.setNextReviewDate(calendarForNextReviewDate.getTime());
-//						calendarForNextStatementDate.setTime(dateForNextStatement);
-//						calendarForNextStatementDate.add(Calendar.DAY_OF_YEAR, type.getDays());
-//						patientStatement.setNextStatementDate(calendarForNextStatementDate.getTime());
 					} else {
 						logger.error("Statement Type is missing,so automation failed");
 					}
+					psDto1.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
+							: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
+					BeanUtils.copyProperties(patientStatement, psDto1);
+					psDto1.setDt(patientStatement.getCreatedDate());
 					
-//					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
-//							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
-//					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
-//							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
-					responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
-							: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
-					BeanUtils.copyProperties(patientStatement, responseDto);
-				}else {
-					responseDto = new RcmPatientStatementDto();
-//					responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
-//							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
-//					responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
-//							: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
-					responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
-							: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
-					BeanUtils.copyProperties(patientStatement, responseDto);
-				}
+				
+				responseDto.add(psDto1);
 			}
 		} else {
-			if (patientStatement != null) {
+			/*if (patientStatement != null) {
 				responseDto = new RcmPatientStatementDto();
-//				responseDto.setNextReviewDate(patientStatement.getNextReviewDate() == null ? ""
-//						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextReviewDate()));
-//				responseDto.setNextStatementDate(patientStatement.getNextStatementDate() == null ? ""
-//						: Constants.SDF_MYSL_DATE.format(patientStatement.getNextStatementDate()));
 				responseDto.setStatementSendingDate(patientStatement.getStatementSendingDate() == null ? ""
 						: Constants.SDF_MYSL_DATE.format(patientStatement.getStatementSendingDate()));
 				BeanUtils.copyProperties(patientStatement, responseDto);
-			}
+			}*/
 		}
 		return responseDto;
 	}
@@ -1507,7 +1488,7 @@ public class ClaimSectionImpl {
 	}
 	
 	@Transactional(rollbackOn = Exception.class)
-	public Boolean saveCollectionAgencySection(CollectionAgencyDto collectionAgencyInfoModel, RcmClaims claim,
+	public Object saveCollectionAgencySection(CollectionAgencyDto collectionAgencyInfoModel, RcmClaims claim,
 			RcmUser createdBy, RcmTeam team, boolean finalSubmit) throws Exception {
 		RcmCollectionAgency collectionAgency = null;
 		if (!(collectionAgencyInfoModel.getButtonType() == Constants.BUTTON_TYPE_ONE_FOR_COLLECTION_SECTION
@@ -1536,24 +1517,31 @@ public class ClaimSectionImpl {
 				collectionAgency.setRemarks(collectionAgencyInfoModel.getRemarks());
 			}
 			collectionAgency = collectionAgencyRepo.save(collectionAgency);
-			return collectionAgency != null ? true : null;
+			collectionAgencyInfoModel.setId(collectionAgency.getId());
+			collectionAgencyInfoModel.setCreatedDate(collectionAgency.getCreatedDate());
+			
+			return collectionAgency != null ? collectionAgencyInfoModel : null;
 		}
 		return null;
 	}
 	
-	public CollectionAgencyDto fetchCollectionAgencyInformation(PartialHeader partialHeader, String claimUuid,
+	public List<CollectionAgencyDto> fetchCollectionAgencyInformation(PartialHeader partialHeader, String claimUuid,
 			boolean showWithTeam) throws Exception {
-		CollectionAgencyDto responseDto = null;
-		RcmCollectionAgency collectionAgency = null;
+		List<CollectionAgencyDto> responseDto = new ArrayList<>();
+		List<RcmCollectionAgency> collectionAgencies = null;
+		CollectionAgencyDto collectionAgencyDto=null;
 		if (showWithTeam) {
-			collectionAgency = collectionAgencyRepo
-					.findFirstByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(claimUuid, partialHeader.getTeamId());
+			collectionAgencies = collectionAgencyRepo
+					.findByClaimClaimUuidAndTeamIdOrderByCreatedDateDesc(claimUuid, partialHeader.getTeamId());
 		} else {
-			collectionAgency = collectionAgencyRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+			collectionAgencies = collectionAgencyRepo.findByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
 		}
-		if (collectionAgency != null) {
-			responseDto = new CollectionAgencyDto();
-			BeanUtils.copyProperties(collectionAgency, responseDto);
+		if (collectionAgencies != null) {
+			for(RcmCollectionAgency collectionAgency:collectionAgencies) {
+				collectionAgencyDto = new CollectionAgencyDto();
+				BeanUtils.copyProperties(collectionAgency, collectionAgencyDto);
+				responseDto.add(collectionAgencyDto);
+			}
 			return responseDto;
 		}
 		return null;
@@ -1586,7 +1574,7 @@ public class ClaimSectionImpl {
 			requestRebillingSection.setCreatedBy(createdBy);
 			requestRebillingSection.setFinalSubmit(finalSubmit);
 			requestRebillingSection.setTeam(team);
-			requestRebillingSection.setRebillingServiceCodes(selectedCodes);
+			requestRebillingSection.setRebillingServiceCodes(selectedCodes);//not we have both Code + Tooth
 			requestRebillingSection.setReasonForRebilling(requestRebillingInfoModel.getReasonForRebilling());
 			requestRebillingSection.setRebillingRequirements(requestRebillingInfoModel.getRebillingRequirements());
 			requestRebillingSection.setRebillingType(requestRebillingInfoModel.getRebillingType());	
@@ -1598,16 +1586,20 @@ public class ClaimSectionImpl {
 			claim.setRebilledStatus(true);
 			rcmClaimRepository.save(claim);
 
-			String newCycleStatus = requestRebillingInfoModel.getCurrentAction();
+			//String newCycleStatus = requestRebillingInfoModel.getCurrentAction();
 			int nextTeam = requestRebillingInfoModel.getTeamId();
 			ClaimStatusEnum nextAction = ClaimStatusEnum.getByType(requestRebillingInfoModel.getNextAction());
 
 			if (nextAction != null) {
 				RcmOffice office = officeRepo.findByUuid(claim.getOffice().getUuid());
+				String attach=null;
+				if (requestRebillingInfoModel.getRebillingRequirements()!=null && requestRebillingInfoModel.getRebillingRequirements().trim().length()>0) {
+					attach = Constants.ATTACH_WITH_REMARKS_REBILL;
+				}
 				String assignActionName = "Assign To Team";
 				String claimTransfer = rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,
 						claim.getClaimUuid(), nextTeam, requestRebillingInfoModel.getRemarks(), claim, assign,
-						createdBy, office, null, ClaimStatusEnum.NEED_TO_REBILL.getType(),ClaimStatusEnum.NEED_TO_REBILL.getType(), assignActionName,
+						createdBy, office,attach, ClaimStatusEnum.NEED_TO_REBILL.getType(),ClaimStatusEnum.NEED_TO_REBILL.getType(), assignActionName,
 						rcmTeamRepo.findById(partialHeader.getTeamId()));
 				
 				rcmClaimAssignmentRepo.save(assign);
@@ -1646,7 +1638,7 @@ public class ClaimSectionImpl {
 
 		} else if (claim != null && !rebillingInfoModel.isReCeationOptionChoosen()) {
 			RcmUser requestedBy = userRepo.findByUuid(rebillingInfoModel.getRequestedByUuid());
-			List<String> serviceCodesForStatusTrue = null;
+			
 			String selectedServiceCodes = null;
 			String selectedRequirements = null;
 			if (!rebillingInfoModel.getSelectedRebillingServiceCodes().isEmpty()) {
@@ -1701,24 +1693,45 @@ public class ClaimSectionImpl {
 					logger.info(
 							"After removing duplicate codes from originalServiceCodes:" + serviceCodesForStatusFalse);
 					// remove duplicate codes and undistributed code if present
+					//  now tooths are also present in The originalServiceCodes we will extract Code from this now
+					//EG D1022-2,D1034-A earlier we had D1022,D1034 only
 					if (serviceCodesForStatusFalse.size() > 0) {
+						List<String> serviceCodesForStatusFalseOnlyCode= new ArrayList<>();
+						serviceCodesForStatusFalse.stream().map(x->x.split("-")[0]).forEach(serviceCodesForStatusFalseOnlyCode::add);
+						boolean isToothPresent = serviceCodesForStatusFalse.get(0).contains("-");
 						List<RcmServiceLevelInformation> serviceCodesDataForServiceLevel = serviceLevelRepo
-								.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusFalse);
+								.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusFalseOnlyCode);
 						if (!serviceCodesDataForServiceLevel.isEmpty()) {
 							serviceCodesDataForServiceLevel.forEach(data -> {
+							if(isToothPresent) {
+								if (serviceCodesForStatusFalse.contains(data.getServiceCode()+"-"+data.getTooth())) {
 								data.setRebilledStatus(false);
 								serviceLevelRepo.save(data);
+								}
+							}else {
+								//For old Cases when no tooth was there.
+								data.setRebilledStatus(false);
+								serviceLevelRepo.save(data);
+								}
 							});
 						}
 
 						List<RcmClaimDetail> serviceCodesDataForClaimDetail = claimDetailRepo
-								.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusFalse);
+								.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusFalseOnlyCode);
 						if (!serviceCodesDataForClaimDetail.isEmpty()) {
 							serviceCodesDataForClaimDetail.forEach(data -> {
-								data.setRebilledStatus(false);
-								claimDetailRepo.save(data);
-							});
-						}
+								if(isToothPresent ) {
+								  if (serviceCodesForStatusFalse.contains(data.getServiceCode()+"-"+data.getTooth())) {
+									  data.setRebilledStatus(false);
+									  claimDetailRepo.save(data);
+									}
+								}else {
+									//For old Cases when no tooth was there.
+									data.setRebilledStatus(false);
+									claimDetailRepo.save(data);
+									}
+							  });
+						 }
 					}
 				}
 
@@ -1726,18 +1739,30 @@ public class ClaimSectionImpl {
 				// claim_detail tables
 
 				// remove duplicate codes and undistributed code if present
-
-				serviceCodesForStatusTrue = rebillingInfoModel.getSelectedRebillingServiceCodes().stream().distinct()
+				List<String> serviceCodesForStatusTrue = rebillingInfoModel.getSelectedRebillingServiceCodes().stream().distinct()
 						.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
 				logger.info("After removing duplicate codes from SelectedRebillingServiceCodes:"
 						+ serviceCodesForStatusTrue);
 				if (serviceCodesForStatusTrue.size() > 0) {
+					List<String> serviceCodesForStatusTrueOnlyCode= new ArrayList<>();
+					serviceCodesForStatusTrue.stream().map(x->x.split("-")[0]).forEach(serviceCodesForStatusTrueOnlyCode::add);
+					boolean isToothPresent = serviceCodesForStatusTrue.get(0).contains("-");
+				
 					List<RcmServiceLevelInformation> serviceCodesData = serviceLevelRepo
-							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusTrue);
+							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusTrueOnlyCode);
 					if (!serviceCodesData.isEmpty()) {
 						serviceCodesData.forEach(data -> {
+						
+						if(isToothPresent) {
+							if (serviceCodesForStatusTrue.contains(data.getServiceCode()+"-"+data.getTooth())) {
+								data.setRebilledStatus(true);
+								serviceLevelRepo.save(data);
+							}
+						}else {
+							//For old Cases when no tooth was there.
 							data.setRebilledStatus(true);
 							serviceLevelRepo.save(data);
+							}
 						});
 					}
 
@@ -1745,9 +1770,19 @@ public class ClaimSectionImpl {
 							.findServiceCodesByClaimUuidAndCodes(claim.getClaimUuid(), serviceCodesForStatusTrue);
 					if (!serviceCodesForClaimDetail.isEmpty()) {
 						serviceCodesForClaimDetail.forEach(data -> {
-							data.setRebilledStatus(true);
-							claimDetailRepo.save(data);
+							
+							if(isToothPresent) {
+								  if (serviceCodesForStatusTrue.contains(data.getServiceCode()+"-"+data.getTooth())) {
+									  data.setRebilledStatus(true);
+									  claimDetailRepo.save(data);
+									}
+							}else {
+									//For old Cases when no tooth was there.
+									data.setRebilledStatus(true);
+									claimDetailRepo.save(data);
+						 }
 						});
+						
 					}
 				}
 
@@ -1911,18 +1946,18 @@ public class ClaimSectionImpl {
 	        	if(secondaryClaim==null) {
 	        		checkClaim = newPrimaryClaim;
 		        	serviceCodesDataForNewClaim = claimDetailRepo
-							.findServiceCodesByClaimUuid(newPrimaryClaim!=null?newPrimaryClaim.getClaimUuid():"");
+							.findServiceCodesWithToothByClaimUuid(newPrimaryClaim!=null?newPrimaryClaim.getClaimUuid():"");
 	        	}else {
 	        		checkClaim = secondaryClaim;
 		        	serviceCodesDataForNewClaim = claimDetailRepo
-							.findServiceCodesByClaimUuid(secondaryClaim!=null?secondaryClaim.getClaimUuid():"");
+							.findServiceCodesWithToothByClaimUuid(secondaryClaim!=null?secondaryClaim.getClaimUuid():"");
 	        		
 	        	}
 	        }
 	        else {
 	        	checkClaim= newPrimaryClaim;
 	        	serviceCodesDataForNewClaim = claimDetailRepo
-						.findServiceCodesByClaimUuid(newPrimaryClaim!=null?newPrimaryClaim.getClaimUuid():"");
+						.findServiceCodesWithToothByClaimUuid(newPrimaryClaim!=null?newPrimaryClaim.getClaimUuid():"");
 	        }
 	        
 	        //Primary for new Claim present or not
@@ -2064,10 +2099,10 @@ public class ClaimSectionImpl {
 				
 				List<String> existingServiceCodesForNewClaim = recreateClaimRequestInfoModel
 						.getExistingNewClaimServiceCodes().stream().distinct()
-						.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
+						.filter(str ->str!=null && !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
 				List<String> selectedServiceCodesForExistingClaim = recreateClaimRequestInfoModel
 						.getSelectedServiceCodes().stream().distinct()
-						.filter(str -> !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
+						.filter(str -> str!=null && !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
 
 				if (existingServiceCodesForNewClaim.isEmpty() || selectedServiceCodesForExistingClaim.isEmpty()) {
 					logger.error("service codes are empty");
@@ -2079,16 +2114,34 @@ public class ClaimSectionImpl {
 
 					if (isPrimary) {
 						logger.info("Inside current claim primary->>>>>>>>>>>>>>>");
-
+                        //REDO
 						// active false for service level table for selected service codes for current
 						// claim
+					    //  now tooths are also present in The originalServiceCodes we will extract Code from this now
+						//EG D1022-2,D1034-A earlier we had D1022,D1034 only
+						List<String> serviceCodesOnlyCode= new ArrayList<>();
+						selectedServiceCodesForExistingClaim.stream().map(x->x.split("-")[0]).forEach(serviceCodesOnlyCode::add);
+						boolean isToothPresent = selectedServiceCodesForExistingClaim.get(0).contains("-");
+						
 						List<RcmServiceLevelInformation> serviceCodesData = serviceLevelRepo
 								.findServiceCodesByClaimUuidAndCodes(primaryClaim.getClaimUuid(),
-										selectedServiceCodesForExistingClaim);
+										serviceCodesOnlyCode);
 						if (!serviceCodesData.isEmpty()) {
 							serviceCodesData.forEach(data -> {
-								data.setActive(false);
-								serviceLevelRepo.save(data);
+								//data.setActive(false);
+								//serviceLevelRepo.save(data);
+								if(isToothPresent) {
+									if (selectedServiceCodesForExistingClaim.contains(data.getServiceCode()+"-"+data.getTooth())) {
+										data.setActive(false);
+										serviceLevelRepo.save(data);
+									}
+								}else {
+									//For old Cases when no tooth was there.
+									data.setActive(false);
+									serviceLevelRepo.save(data);
+								}
+								
+								
 							});
 						}
 
@@ -2096,11 +2149,21 @@ public class ClaimSectionImpl {
 						// claim
 						List<RcmClaimDetail> serviceCodesForClaimDetail = claimDetailRepo
 								.findServiceCodesByClaimUuidAndCodes(primaryClaim.getClaimUuid(),
-										selectedServiceCodesForExistingClaim);
+										serviceCodesOnlyCode);
 						if (!serviceCodesForClaimDetail.isEmpty()) {
 							serviceCodesForClaimDetail.forEach(data -> {
-								data.setActive(false);
-								claimDetailRepo.save(data);
+								//data.setActive(false);
+								//claimDetailRepo.save(data);
+								if(isToothPresent) {
+									if (selectedServiceCodesForExistingClaim.contains(data.getServiceCode()+"-"+data.getTooth())) {
+										data.setActive(false);
+										claimDetailRepo.save(data);
+									}
+								}else {
+									//For old Cases when no tooth was there.
+									data.setActive(false);
+									claimDetailRepo.save(data);
+								}
 							});
 						}
 
@@ -2109,13 +2172,23 @@ public class ClaimSectionImpl {
 						// DO SAME FOR OTHER SECONDARY
 						if (secondaryClaim != null) {
 							logger.info("Inside current claim primary if secondary exist->>>>>>>>>>>>>>>");
+							
 							List<RcmServiceLevelInformation> serviceCodesData1 = serviceLevelRepo
 									.findServiceCodesByClaimUuidAndCodes(secondaryClaim.getClaimUuid(),
-											selectedServiceCodesForExistingClaim);
+											serviceCodesOnlyCode);
 							if (!serviceCodesData1.isEmpty()) {
 								serviceCodesData1.forEach(data -> {
-									data.setActive(false);
-									serviceLevelRepo.save(data);
+									
+									if(isToothPresent) {
+										if (selectedServiceCodesForExistingClaim.contains(data.getServiceCode()+"-"+data.getTooth())) {
+											data.setActive(false);
+											serviceLevelRepo.save(data);
+										}
+									}else {
+										//For old Cases when no tooth was there.
+										data.setActive(false);
+										serviceLevelRepo.save(data);
+									}
 								});
 							}
 
@@ -2123,11 +2196,20 @@ public class ClaimSectionImpl {
 							// claim
 							List<RcmClaimDetail> serviceCodesForClaimDetail1 = claimDetailRepo
 									.findServiceCodesByClaimUuidAndCodes(secondaryClaim.getClaimUuid(),
-											selectedServiceCodesForExistingClaim);
+											serviceCodesOnlyCode);
 							if (!serviceCodesForClaimDetail1.isEmpty()) {
 								serviceCodesForClaimDetail1.forEach(data -> {
-									data.setActive(false);
-									claimDetailRepo.save(data);
+									
+									if(isToothPresent) {
+										if (selectedServiceCodesForExistingClaim.contains(data.getServiceCode()+"-"+data.getTooth())) {
+											data.setActive(false);
+											claimDetailRepo.save(data);
+										}
+									}else {
+										//For old Cases when no tooth was there.
+										data.setActive(false);
+										claimDetailRepo.save(data);
+									}
 								});
 							}
 							logger.info(
@@ -2136,15 +2218,30 @@ public class ClaimSectionImpl {
 					} else {
 						logger.info("If current claim is secondary->>>>>>>>>>>>>");
 						// DO SAME FOR OTHER SECONDARY
+						List<String> serviceCodesOnlyCode= new ArrayList<>();
+						selectedServiceCodesForExistingClaim.stream().map(x->x.split("-")[0]).forEach(serviceCodesOnlyCode::add);
+						boolean isToothPresent = selectedServiceCodesForExistingClaim.get(0).contains("-");
+						
 						if (secondaryClaim != null) {
 							logger.info("Inside current claim secondary->>>>>>>>>>>>>>>");
+							
 							List<RcmServiceLevelInformation> serviceCodesData1 = serviceLevelRepo
 									.findServiceCodesByClaimUuidAndCodes(secondaryClaim.getClaimUuid(),
-											selectedServiceCodesForExistingClaim);
+											serviceCodesOnlyCode);
 							if (!serviceCodesData1.isEmpty()) {
 								serviceCodesData1.forEach(data -> {
-									data.setActive(false);
-									serviceLevelRepo.save(data);
+									//data.setActive(false);
+									//serviceLevelRepo.save(data);
+									if(isToothPresent) {
+										if (selectedServiceCodesForExistingClaim.contains(data.getServiceCode()+"-"+data.getTooth())) {
+											data.setActive(false);
+											serviceLevelRepo.save(data);
+										}
+									}else {
+										//For old Cases when no tooth was there.
+										data.setActive(false);
+										serviceLevelRepo.save(data);
+									}
 								});
 							}
 
@@ -2152,11 +2249,21 @@ public class ClaimSectionImpl {
 							// claim
 							List<RcmClaimDetail> serviceCodesForClaimDetail1 = claimDetailRepo
 									.findServiceCodesByClaimUuidAndCodes(secondaryClaim.getClaimUuid(),
-											selectedServiceCodesForExistingClaim);
+											serviceCodesOnlyCode);
 							if (!serviceCodesForClaimDetail1.isEmpty()) {
 								serviceCodesForClaimDetail1.forEach(data -> {
-									data.setActive(false);
-									claimDetailRepo.save(data);
+									//data.setActive(false);
+									//claimDetailRepo.save(data);
+									if(isToothPresent) {
+										if (selectedServiceCodesForExistingClaim.contains(data.getServiceCode()+"-"+data.getTooth())) {
+											data.setActive(false);
+											claimDetailRepo.save(data);
+										}
+									}else {
+										//For old Cases when no tooth was there.
+										data.setActive(false);
+										claimDetailRepo.save(data);
+									}
 								});
 							}
 							logger.info("service code status change 1 to 0 success for current claim secondary->>true");
@@ -2166,11 +2273,21 @@ public class ClaimSectionImpl {
 							logger.info("Inside current claim secondary if primary exist->>>>>>>>>>>>>>>");
 							List<RcmServiceLevelInformation> serviceCodesData1 = serviceLevelRepo
 									.findServiceCodesByClaimUuidAndCodes(primaryClaim.getClaimUuid(),
-											selectedServiceCodesForExistingClaim);
+											serviceCodesOnlyCode);
 							if (!serviceCodesData1.isEmpty()) {
 								serviceCodesData1.forEach(data -> {
-									data.setActive(false);
-									serviceLevelRepo.save(data);
+									//data.setActive(false);
+									//serviceLevelRepo.save(data);
+									if(isToothPresent) {
+										if (selectedServiceCodesForExistingClaim.contains(data.getServiceCode()+"-"+data.getTooth())) {
+											data.setActive(false);
+											serviceLevelRepo.save(data);
+										}
+									}else {
+										//For old Cases when no tooth was there.
+										data.setActive(false);
+										serviceLevelRepo.save(data);
+									}
 								});
 							}
 
@@ -2178,11 +2295,21 @@ public class ClaimSectionImpl {
 							// claim
 							List<RcmClaimDetail> serviceCodesForClaimDetail1 = claimDetailRepo
 									.findServiceCodesByClaimUuidAndCodes(primaryClaim.getClaimUuid(),
-											selectedServiceCodesForExistingClaim);
+											serviceCodesOnlyCode);
 							if (!serviceCodesForClaimDetail1.isEmpty()) {
 								serviceCodesForClaimDetail1.forEach(data -> {
-									data.setActive(false);
-									claimDetailRepo.save(data);
+									//data.setActive(false);
+									//claimDetailRepo.save(data);
+									if(isToothPresent) {
+										if (selectedServiceCodesForExistingClaim.contains(data.getServiceCode()+"-"+data.getTooth())) {
+											data.setActive(false);
+											claimDetailRepo.save(data);
+										}
+									}else {
+										//For old Cases when no tooth was there.
+										data.setActive(false);
+										claimDetailRepo.save(data);
+									}
 								});
 							}
 

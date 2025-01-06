@@ -1,5 +1,7 @@
 package com.tricon.rcm.dto;
 
+import java.util.Date;
+
 import lombok.Data;
 
 @Data
@@ -15,5 +17,6 @@ public class PaymentInformationSectionDto {
 	private String checkCashDate;
 	private int sectionId;
 	private double paidAmount;
-	
+	private int id;
+	private Date createdDate;
 }

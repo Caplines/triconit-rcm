@@ -27,7 +27,7 @@ export class OfficeAssignmentComponent implements OnInit {
 
   bType: string = "-1";
   insType: string = "All";
-
+  isUserWisePendency = false;
   isSorted: any = {};
   teamId: any;
   userByTeam: any = [];
@@ -39,27 +39,34 @@ export class OfficeAssignmentComponent implements OnInit {
   clientName: string = '';
   date: any;
 
-  showFilteredDropdown: any = { 'officeName': false,'companyName':false };
-  isFilterAllSelected: any = { 'officeName': false,'companyName':false };
-  filteredCompanyName:any=[];
+  showFilteredDropdown: any = { 'officeName': false, 'companyName': false };
+  isFilterAllSelected: any = { 'officeName': false, 'companyName': false };
+  filteredCompanyName: any = [];
+  companies: any = [];
   filteredItems: any = [];
-  filterName:any;
-  isRoleAssociate:boolean;
-  currentTeamId:number = Utils.selectedTeam();
-  showTooltipConfig:any={tooltipOne:false,tooltipTwo:false};
-  noOfClaimsBilledTeamName:string;
+  filterName: any;
+  isRoleAssociate: boolean;
+  currentTeamId: number = Utils.selectedTeam();
+  showTooltipConfig: any = { tooltipOne: false, tooltipTwo: false };
+  noOfClaimsBilledTeamName: string;
 
-  constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService,public constants:AppConstants,) {
+  constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService, public constants: AppConstants,) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
     this.claimData = [];//{} as FreshClaimPLogs;
-    console.log(this.router.url)
+    console.log(this.router.url);
+    this.appService.subscribeOnValueChange('FromMultiSelect', (event: any) => {
+      console.log(event);
+      if (event['action'] == 'getSelectedClient') {
+        this.filterCompanyNamePendency(event.value);
+      }
+    })
   }
 
   ngOnInit(): void {
     this.fetchClaimAssignments();
     this.teamId = localStorage.getItem("selected_teamId");
     this.clientName = localStorage.getItem("selected_clientName");
-    this.isRoleAssociate=Utils.isRoleAsso();
+    this.isRoleAssociate = Utils.isRoleAsso();
     this.getUserByTeamId();
     this.assignOfficeDetails.teamId = this.teamId;
     this.setTopOnTotalRow();
@@ -171,27 +178,27 @@ export class OfficeAssignmentComponent implements OnInit {
 
 
   calcCount(data: any) {
-    this.totalClaimData.totalCount= 0;
+    this.totalClaimData.totalCount = 0;
     data.forEach((e: any) => {
       this.totalClaimData.totalCount = this.totalClaimData.totalCount + e.count;
     });
   }
 
   calcRemLiteReject(data: any) {
-    this.totalClaimData.totalRemLiteReject=0;
+    this.totalClaimData.totalRemLiteReject = 0;
     data.forEach((e: any) => {
       this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalRemLiteReject + e.remoteLiteRejections;
     });
   }
 
   calcCountAndRemLiteReject(data: any) {
-    this.totalClaimData.totalcountAndRemLiteReject=0;
+    this.totalClaimData.totalcountAndRemLiteReject = 0;
     data.forEach((e: any) => {
-      if(this.teamId == 7){
+      if (this.teamId == 7) {
         this.totalClaimData.totalcountAndRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject + e.count + e.remoteLiteRejections;
-        
-      } else{
-        this.totalClaimData.totalcountAndRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject + e.count ;
+
+      } else {
+        this.totalClaimData.totalcountAndRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject + e.count;
       }
     });
   }
@@ -200,7 +207,7 @@ export class OfficeAssignmentComponent implements OnInit {
     this.loader.exportCSVLoader = true;
     let options: any = {
       showLabels: true,
-      headers: ["Client","Office", "User Assignment", "Days Since Oldest Pending Claim (Upload Date)", " Days Since Oldest Pending Claim (DOS)", "# of Claims to be "+this.noOfClaimsBilledTeamName+"", this.teamId==7? "# of RemoteLite Rejections" : '', this.teamId==7?"Total Pendency":''],
+      headers: ["Client", "Office", "User Assignment", "Days Since Oldest Pending Claim (Upload Date)", " Days Since Oldest Pending Claim (DOS)", "# of Claims to be " + this.noOfClaimsBilledTeamName + "", this.teamId == 7 ? "# of RemoteLite Rejections" : '', this.teamId == 7 ? "Total Pendency" : ''],
     }
     let excelData: any = JSON.parse(JSON.stringify(this.filteredItems));
     excelData = excelData.map((e: any) => {
@@ -227,14 +234,14 @@ export class OfficeAssignmentComponent implements OnInit {
 
     excelData = excelData.map((e: any) => {
       return {
-        "Client":e.companyName,
+        "Client": e.companyName,
         "Office": e.officeName,
         "User Assignment": e.officeAssignedTo,
         "Days Since Oldest Pending Claim (Upload Date)": e.opdtd,
         "Days Since Oldest Pending Claim (DOS)": e.opdosd,
         "# of Claims to be Billed": e.count,
-        "# of RemoteLite Rejections": this.teamId ==7 ? e.remoteLiteRejections : '',
-        "Total Pendency":  this.teamId==7? e.count + e.remoteLiteRejections  : ''
+        "# of RemoteLite Rejections": this.teamId == 7 ? e.remoteLiteRejections : '',
+        "Total Pendency": this.teamId == 7 ? e.count + e.remoteLiteRejections : ''
       }
     })
 
@@ -246,8 +253,8 @@ export class OfficeAssignmentComponent implements OnInit {
         "Days Since Oldest Pending Claim (Upload Date)": '-',
         "Days Since Oldest Pending Claim (DOS)": '-',
         "# of Claims to be Billed": this.totalClaimData.totalCount,
-        "# of RemoteLite Rejections": this.teamId==7? this.totalClaimData.totalRemLiteReject:'',
-        "Total Pendency": this.teamId==7?this.totalClaimData.totalcountAndRemLiteReject:''
+        "# of RemoteLite Rejections": this.teamId == 7 ? this.totalClaimData.totalRemLiteReject : '',
+        "Total Pendency": this.teamId == 7 ? this.totalClaimData.totalcountAndRemLiteReject : ''
       }
     )
 
@@ -281,11 +288,11 @@ export class OfficeAssignmentComponent implements OnInit {
   }
   downloadPdf() {
     this.loader.exportPDFLoader = true;
-    let data = { "fileName": "Pendancy", "data": this.filteredItems, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName ,"currentTeamId":this.teamId,"currentTeamName":this.noOfClaimsBilledTeamName};
+    let data = { "fileName": "Pendancy", "data": this.filteredItems, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName, "currentTeamId": this.teamId, "currentTeamName": this.noOfClaimsBilledTeamName };
     this.appService.pendancyPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
         this.date = new Date();
-       this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`
+        this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`
         this.downloadService.saveBolbData(res.body, `${this.clientName}_Pendancy_${this.date}.pdf`);
         this.loader.exportPDFLoader = false;
       } else {
@@ -299,7 +306,7 @@ export class OfficeAssignmentComponent implements OnInit {
     return Utils.isRoleAsso();
   }
 
-  filterCompanyName(e?: any, filterProperty?: any){
+  filterCompanyName(e?: any, filterProperty?: any) {
     if (!this.claimData) return;
     if (!e) {
       this.filteredItems = JSON.parse(JSON.stringify(this.claimData));
@@ -319,88 +326,137 @@ export class OfficeAssignmentComponent implements OnInit {
         })
       })
     }
-      this.calcCount(this.filteredItems);
-      this.calcRemLiteReject(this.filteredItems);
-      this.calcCountAndRemLiteReject(this.filteredItems);
-      this.addTotalCountAndRemLiterejectField(this.filteredItems);
-      //this.sortDosDesc();
+    this.calcCount(this.filteredItems);
+    this.calcRemLiteReject(this.filteredItems);
+    this.calcCountAndRemLiteReject(this.filteredItems);
+    this.addTotalCountAndRemLiterejectField(this.filteredItems);
+    //this.sortDosDesc();
 
   }
-  
+
+  filterCompanyNamePendency(clients: any[]) {
+    debugger;
+    if (!this.claimData) return;
+    clients = clients.map(a => a.name);
+    let claimData = this.claimData.map(object => ({ ...object }))
+    this.filteredItems = [];
+    const uniqueUsers = [...new Set(claimData.map(item => item.fname + ' ' + item.lname))];
+    let myMap = new Map<string, ClaimAssignmentDataModel>();
+    let fd: ClaimAssignmentDataModel[] = claimData.filter((x: ClaimAssignmentDataModel) => {
+      return clients.indexOf(x.companyName) != -1
+    });
+
+    uniqueUsers.forEach((us: any) => {
+      let fd1: ClaimAssignmentDataModel[] = fd.filter((item: ClaimAssignmentDataModel) => {
+        return item.fname + ' ' + item.lname === us
+      });
+      fd1.forEach((item: ClaimAssignmentDataModel) => {
+        if (myMap.has(us)) {
+          let tmp: ClaimAssignmentDataModel = myMap.get(us);
+          tmp.count = tmp.count + item.count;
+          tmp.remoteLiteRejections = tmp.remoteLiteRejections + item.remoteLiteRejections;
+          if (Number(tmp.opdtd) < Number(item.opdtd)) tmp.opdtd = item.opdtd;
+          if (Number(tmp.opdosd) < Number(item.opdosd)) tmp.opdtd = item.opdosd;
+          myMap.set(us, tmp);
+        } else {
+          myMap.set(us, item);
+        }
+      });
+    });
+
+
+    for (let value of myMap.values()) {
+      console.log(value);
+      this.filteredItems.push(value);
+    }
+
+    this.calcCount(this.filteredItems);
+    this.calcRemLiteReject(this.filteredItems);
+    this.calcCountAndRemLiteReject(this.filteredItems);
+    this.addTotalCountAndRemLiterejectField(this.filteredItems);
+    //this.sortDosDesc();
+
+  }
+
+
   showFilterOptioncompanyName(data: any) {
-    
+    this.companies = [];
     if (!this.claimData) return;
     this.filteredCompanyName = JSON.parse(JSON.stringify(data));
-    const newArray:any = [];
-    const seencompanyNames :any= {};
-    this.filteredCompanyName.forEach((item:any) => {
+    const newArray: any = [];
+    const seencompanyNames: any = {};
+    this.filteredCompanyName.forEach((item: any) => {
+      let x = this.companies.find((x: any) => { return x.name === item.companyName });
+      if (!x) this.companies.push({ 'name': item.companyName, 'checked': true });
       if (!seencompanyNames.hasOwnProperty(item.companyName)) {
         seencompanyNames[item.companyName] = true;
-        newArray.push({'checked':true,'companyName':item.companyName});
+        newArray.push({ 'checked': true, 'companyName': item.companyName });
+
       }
     });
     this.filteredCompanyName = newArray;
     console.log(newArray);
-    
-    this.sortFilteredData(this.filteredCompanyName,'companyName');
+
+    this.sortFilteredData(this.filteredCompanyName, 'companyName');
   }
 
-  sortFilteredData(filterValue: any,sortBy:any) {
-    filterValue.sort((a:any,b:any)=>{
-       return a[sortBy].localeCompare(b[sortBy]);
-});
-}
-
-addTotalCountAndRemLiterejectField(data:any){
-  data.forEach((e:any)=>{
-    if(this.teamId == 7){
-      e['totalBillingRejection'] = e.remoteLiteRejections+e.count;
-    } else{
-      e['totalBillingRejection'] = e.count;
-    }
-  })
-
-}
-
-
-showHideFilteredDropdown(filterName:any){
-  filterName == 'companyName' ? this.showFilteredDropdown.companyName = true  : this.showFilteredDropdown.companyName = false;
-  this.filterName = filterName;
-}
-
-@HostListener('mouseleave') onMouseLeave(event: Event){
-  if(event?.target) {
-    setTimeout(() => {
-     this.showFilteredDropdown[this.filterName] = false;
-    }, 500);
-  }
-} 
-
-selectAll(event: any, filterProperty: any) {
-
-  if (filterProperty == "companyName") {
-    this.filteredCompanyName.forEach((e: any) => {
-      if (event.target.checked) {
-        e.checked = true;
-      } else {
-        e['checked'] = false;
-      }
+  sortFilteredData(filterValue: any, sortBy: any) {
+    filterValue.sort((a: any, b: any) => {
+      return a[sortBy].localeCompare(b[sortBy]);
     });
-    this.filterCompanyName("selectAll");
   }
-}
 
-openSpecificPendencyData(user:any,colName:any){
-   
+  addTotalCountAndRemLiterejectField(data: any) {
+
+    data.forEach((e: any) => {
+      if (this.teamId == 7) {
+        e['totalBillingRejection'] = e.remoteLiteRejections + e.count;
+      } else {
+        e['totalBillingRejection'] = e.count;
+      }
+    })
+
+  }
+
+
+  showHideFilteredDropdown(filterName: any) {
+    filterName == 'companyName' ? this.showFilteredDropdown.companyName = true : this.showFilteredDropdown.companyName = false;
+    this.filterName = filterName;
+  }
+
+  @HostListener('mouseleave') onMouseLeave(event: Event) {
+    if (event?.target) {
+      setTimeout(() => {
+        this.showFilteredDropdown[this.filterName] = false;
+      }, 500);
+    }
+  }
+
+  selectAll(event: any, filterProperty: any) {
+
+    if (filterProperty == "companyName") {
+      this.filteredCompanyName.forEach((e: any) => {
+        if (event.target.checked) {
+          e.checked = true;
+        } else {
+          e['checked'] = false;
+        }
+      });
+      this.filterCompanyName("selectAll");
+    }
+  }
+
+  openSpecificPendencyData(user: any, colName: any) {
+
     const queryParams = { pageName: 'Other' };
     const url = this.router.createUrlTree([`/pendency/${user.officeUuid}/${user.clientUuid}/${user[colName]}`], { queryParams }).toString();
     window.open(url, '_blank');
-}
+  }
 
-get staticUtil():any {
+  get staticUtil(): any {
 
-  return Utils;
-}
+    return Utils;
+  }
 
   toggleTooltip(tooltip: any) {
     this.showTooltipConfig[tooltip] = !this.showTooltipConfig[tooltip];
@@ -414,13 +470,29 @@ get staticUtil():any {
     }
   }
 
-// sortDosDesc(){
-//   this.isSorted['opdosd'] = true;
-//   this.sortData(this.filteredItems,'opdosd','desc','number');
-// }
+  // sortDosDesc(){
+  //   this.isSorted['opdosd'] = true;
+  //   this.sortData(this.filteredItems,'opdosd','desc','number');
+  // }
 
   changeLabelByTeamName() {
     const matchedTeam = this.constants.teamData.find((item: any) => item.teamId == this.currentTeamId);
-    this.noOfClaimsBilledTeamName=matchedTeam.teamName;
+    this.noOfClaimsBilledTeamName = matchedTeam.teamName;
+  }
+
+  userwisePendency(event: any) {
+    console.log(event.target.checked);
+    this.totalClaimData.totalCount = this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject = 0;
+    if (event.target.checked) {
+      this.isUserWisePendency = true;
+      this.filterCompanyNamePendency(this.companies);
+    } else {
+      this.isUserWisePendency = false;
+      // this.showFilterOptioncompanyName(this.claimData);
+      this.filterCompanyName();
+
+    }
+
+
   }
 }

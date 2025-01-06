@@ -1,7 +1,5 @@
 package com.tricon.rcm.dto.customquery;
 
-import java.util.Date;
-
 import lombok.Data;
 
 @Data
@@ -45,6 +43,6 @@ public class AssignFreshClaimLogsImplDto implements AssignFreshClaimLogsDto{
 
 	int primaryC;
 
-
-
+	int rebilledStatus;
+	
 }

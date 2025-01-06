@@ -78,10 +78,14 @@ public class RcmPatientStatementSection  extends BaseAuditEntity implements java
 	@Column(name = "button_type")
 	private int buttonType;
 	
+	@Column(name = "attach_statement",columnDefinition = "text")
+	private String attachStatement;
+	
 	@Column(name = "final_submit")
 	private boolean finalSubmit;
 	
-	
+	@Column(name = "mark_as_deleted",columnDefinition = "BIT default 0")
+	private boolean markAsDeleted;
 	
 	
 	

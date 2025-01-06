@@ -20,7 +20,7 @@ public interface ClaimCycleRepo extends JpaRepository<ClaimCycle, Integer> {
 			+ " select tm.name name,rc.created_date dt,rc.status status,COALESCE(rc.status_updated, rc.status) as statusUpdated,"
 			+ " rc.next_action as nextAction"
 			+ " from rcm_claim_cycle rc left join rcm_team tm on tm.id=rc.current_team_id "
-			+ " where  rc.claim_id=:claimUUid order by rc.created_date asc")
+			+ " where  rc.claim_id=:claimUUid order by rc.id,rc.created_date asc")
 	List<ClaimSteps> getClaimCycle(@Param("claimUUid") String claimUUid);
 	
 	public ClaimCycle findFirstByClaimAndCurrentTeamIdOrderByCreatedDateDescIdDesc(RcmClaims claim,RcmTeam team);

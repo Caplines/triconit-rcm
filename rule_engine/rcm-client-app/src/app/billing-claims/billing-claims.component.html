@@ -2594,7 +2594,8 @@
                                                     <input type="text" id="checkNumber"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkNumber']"
-                                                        class="form-control"
+                                                        class="form-control" placeholder="Enter last 4 digits"
+                                                        maxLength=4
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkNumber']}">
                                                 </div>
                                             </div>
@@ -2674,9 +2675,48 @@
                                             <div class="col-md-4 mb-2">
 
                                             </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>S.No.</th>
+                                                            <th>Date & Time</th>
+                                                            <th>Payment Issued To</th>
+                                                            <th>Mode of Payment</th>
+                                                            <th>Amt Received in Bank</th>
+                                                            <th>Amt Posted in PMS</th>
+                                                            <th>Check Delivered To</th>
+                                                            <th>Payment No</th>
+                                                            <th>Payment Date</th>
+                                                            <th>Date when Amount Received in Bank</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr
+                                                            *ngFor="let data of claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data ;let idx=index;">
+                                                            <td>{{idx+1}}</td>
+                                                            <td>{{data.createdDate|date :'MM/dd/YYYY hh:mm
+                                                                a':'UTC'+timeZone}}
+                                                            </td>
+                                                            <td>{{data.paymentIssueTo}}</td>
+                                                            <td>{{data.paymentMode}}</td>
+                                                            <td>{{data.amountReceivedInBank}}</td>
+                                                            <td>{{data.amountPostedInEs}}</td>
+                                                            <td>{{data.checkDeliverTo}}</td>
+                                                            <td>{{data.checkNumber}}</td>
+                                                            <td>{{data.checkCashDate|date :'MM/dd/YYYY'}}</td>
+
+                                                            <td>{{data.amountDateReceivedInBank|date :'MM/dd/YYYY'}}
+                                                            </td>
+
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </ng-container>
-                                    <!-- Payment Posting END-->
+                                    <!-- Payment Posting -INSURANCE_PAYMENT_INFORMATION END -->
 
                                     <!--AGING Insurance Follow-Up Details START-->
                                     <ng-container
@@ -3109,16 +3149,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
-                                                        <!-- <div class="col-md-4 mb-2">
-                                                        <div class="custom-row text-number">
-                                                            <label for="status">Status</label>
-                                                            <input type="text" id="status"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['status']"
-                                                                class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
-                                                        </div>
-                                                    </div> -->
+
                                                         <!-- <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="nextStatementDate">Next Statement
@@ -3180,10 +3211,18 @@
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
                                                         </div>
                                                     </div>
-                                                    <!-- <div class="col-md-4 mb-2"
-                                                        *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 1">
+                                                    <div class="col-md-4 mb-2"
+                                                        *ngIf="claimSectionModal.PATIENT_STATEMENT['buttonType'] == 2">
+                                                        <div class="custom-row text-number">
+                                                            <label for="status">Attach Statement&nbsp;<span
+                                                                    class="text-danger"></span></label>
+                                                            <input type="text" id="attachStatementPS"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['attachStatement']"
+                                                                class="form-control"
+                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['status']}">
+                                                        </div>
                                                     </div>
-                                                     -->
                                                     <div class="col-md-12 mb-2">
 
                                                         <div class="btn-align-right">
@@ -3206,7 +3245,53 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>S.No.</th>
+                                                            <th>Type</th>
+                                                            <th>Date & Time</th>
+                                                            <th>Link to Balance Detail Sheet</th>
+                                                            <th>Reason</th>
+                                                            <th>Remarks</th>
+                                                            <th>Mode of statement</th>
+                                                            <th>Amount of statement</th>
+                                                            <th>Statement type</th>
+                                                            <th>Statement notes</th>
+                                                            <th>Date of sending statement</th>
+                                                            <th>Attached statement</th>
+                                                            <th>Status</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr
+                                                            *ngFor="let data of claimSectionModal['PATIENT_STATEMENT'].data ;let idx=index;">
+                                                            <td>{{idx+1}}</td>
+                                                            <td>{{data.buttonType == 1 ?"Need to Hold":"Statement"}}
+                                                            </td>
+                                                            <td>{{data.dt|date :'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}
+                                                            </td>
+                                                            <td><a href="javascript:void(0);"
+                                                                    (click)="viewLink(data.balanceSheetLink)">View
+                                                                    Link</a></td>
+                                                            <td>{{data.reason}}</td>
+                                                            <td>{{data.remarks}}</td>
+                                                            <td>{{data.modeOfStatement}}</td>
+                                                            <td>{{data.amountStatement}}</td>
+                                                            <td>{{data.statementType}}</td>
+                                                            <td>{{data.statementNotes}}</td>
+                                                            <td>{{data.statementSendingDate}}</td>
+                                                            <td><a href="javascript:void(0);"
+                                                                    (click)="viewLink(data.attachStatement)">View
+                                                                    Link</a></td>
+                                                            <td>{{data.status}}</td>
 
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </ng-container>
                                     <!-- Patient Statement END-->
@@ -3254,7 +3339,8 @@
                                             <div class="">
                                                 <div class="row">
 
-                                                    <div class="col-md-4 mb-2">
+                                                    <div class="col-md-4 mb-2"
+                                                        *ngIf="claimSectionModal.PATIENT_PAYMENT['buttonType'] == 1">
                                                         <div class="custom-row text-number">
                                                             <label for="dateOfPayment">Date of Payment &nbsp;<span
                                                                     class="text-danger">*</span></label>
@@ -3266,7 +3352,7 @@
                                                             <app-date-picker id="dateOfPayment" class="claimDatepicker"
                                                                 [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit)"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['dateOfPayment'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
-                                                                [inputDate]="this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment']"
+                                                                [inputDate]="claimSectionModal.PATIENT_PAYMENT['dateOfPayment']"
                                                                 (emitToParent)="receiveChildEventdate($event)"
                                                                 (ngModelChange)="onSelectDate($event)">
                                                             </app-date-picker>
@@ -3394,7 +3480,41 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>S.No.</th>
+                                                            <th>Date of payment</th>
+                                                            <th>Date & Time</th>
+                                                            <th>Amount collected against claims</th>
+                                                            <th>Posted in PMS?</th>
+                                                            <th>Due balance after payment posted in PMS</th>
+                                                            <th>Mode of payment</th>
+                                                            <th>Check No/ Card No</th>
 
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr
+                                                            *ngFor="let data of claimSectionModal['PATIENT_PAYMENT'].data ;let idx=index;">
+                                                            <td>{{idx+1}}</td>
+                                                            <td>{{data.dateOfPayment|date :'MM/dd/YYYY'}}</td>
+                                                            <td>{{data.createdDate|date :'MM/dd/YYYY hh:mm
+                                                                a':'UTC'+timeZone}}
+                                                            </td>
+                                                            <td>{{data.amountCollectedClaims}}</td>
+                                                            <td>{{data.postedInPMS}}</td>
+                                                            <td>{{data.dueBalanceInPMS}}</td>
+                                                            <td>{{data.modeOfPayment}}</td>
+                                                            <td>{{data.checkNumber!=
+                                                                null?data.checkNumber:(data.cardNumber!=
+                                                                null?data.cardNumber:"")}}</td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </ng-container>
 
@@ -3785,6 +3905,47 @@
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>S.No.</th>
+                                                                <th>Type</th>
+                                                                <th>Date & Time</th>
+                                                                <th>Debt#</th>
+                                                                <th>Collection Type</th>
+                                                                <th>Amount Received</th>
+                                                                <th>Mode of Payment</th>
+                                                                <th>Commision Charged</th>
+                                                                <th>Net Amount Received</th>
+                                                                <th>Reason</th>
+                                                                <th>Remarks</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr
+                                                                *ngFor="let data of claimSectionModal['COLLECTION_AGENCY'].data ;let idx=index;">
+                                                                <td>{{idx+1}}</td>
+                                                                <td>{{data.buttonType == 1 ?"Send to
+                                                                    collection":(data.buttonType == 2?"Post
+                                                                    Amount":"Withdraw from collection")}}
+                                                                </td>
+                                                                <td>{{data.createdDate|date :'MM/dd/YYYY hh:mm
+                                                                    a':'UTC'+timeZone}}
+                                                                </td>
+                                                                <td>{{data.debtNumber}}</td>
+                                                                <td>{{data.collectionType}}</td>
+                                                                <td>{{data.amountReceived}}</td>
+                                                                <td>{{data.modeOfPayment}}</td>
+                                                                <td>{{data.commisionCharged}}</td>
+                                                                <td>{{data.netAmountReceived}}</td>
+                                                                <td>{{data.reason}}</td>
+                                                                <td>{{data.remarks}}</td>
+                                                            </tr>
+
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
 
@@ -3910,6 +4071,36 @@
                                             </div>
                                             <div class="col-md-4 mb-2">
 
+                                            </div>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>S.No.</th>
+
+                                                            <th>Date & Time</th>
+                                                            <th>Mode of Appeal</th>
+                                                            <th>AI Tool Used?</th>
+                                                            <th>Appeal Document Link</th>
+                                                            <th>Remarks</th>
+
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr
+                                                            *ngFor="let data of claimSectionModal['APPEAL'].data ;let idx=index;">
+                                                            <td>{{idx+1}}</td>
+                                                            <td>{{data.createdDate|date :'MM/dd/YYYY hh:mm
+                                                                a':'UTC'+timeZone}}
+                                                            </td>
+                                                            <td>{{data.modeOfAppeal}}</td>
+                                                            <td>{{data.aiToolUsed}}</td>
+                                                            <td>{{data.appealDocument}}</td>
+                                                            <td>{{data.remarks}}</td>
+                                                        </tr>
+
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </ng-container>
@@ -4060,7 +4251,7 @@
                                                                 *ngIf="serviceLevelSectionMultiSelectConfig.serviceCodesList.length>0">
                                                                 <multi-select-dropdown class="multiselect"
                                                                     [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['REQUEST_REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
-                                                                    [inputConfig]="{'serviceCodes':serviceLevelSectionMultiSelectConfig.serviceCodesList,'isDetailPage':true}"
+                                                                    [inputConfig]="{'serviceCodesWithTooth':serviceLevelSectionMultiSelectConfig.serviceCodesList,'isDetailPage':true}"
                                                                     (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
                                                             </ng-container>
                                                         </span>
@@ -4257,7 +4448,7 @@
                                                                             [ngClass]="{'is-invalid':emptyFields['REBILLING'] && emptyFields['REBILLING']['selectedRebillingServiceCodes']}">
                                                                             <multi-select-dropdown class="multiselect"
                                                                                 [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['REBILLING']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
-                                                                                [inputConfig]="{'reBillingServiceCodes':claimSectionModal.REBILLING['modal']?.serviceCodesForMultiSelect,'isDetailPage':true}"
+                                                                                [inputConfig]="{'reBillingServiceCodesWithTooth':claimSectionModal.REBILLING['modal']?.serviceCodesForMultiSelect,'isDetailPage':true}"
                                                                                 (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
                                                                         </span>
                                                                     </ng-container>
@@ -4481,7 +4672,7 @@
                                                                 [ngClass]="{'is-invalid':emptyFields['RECREATE_CLAIM'] && emptyFields['RECREATE_CLAIM']['serviceCodesServiceLevel']}">
                                                                 <multi-select-dropdown class="multiselect"
                                                                     [ngClass]="{'dp-disable':!(checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'edit') && this.claimRcm.allowEdit)}"
-                                                                    [inputConfig]="{'recreateServiceCodes':claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'],'isDetailPage':true}"
+                                                                    [inputConfig]="{'recreateServiceCodesWithTooth':claimSectionModal.RECREATE_CLAIM['modal']['serviceCodesServiceLevel'],'isDetailPage':true}"
                                                                     (emitToParent)="receiveChildrenEvent($event)"></multi-select-dropdown>
                                                             </span>
                                                         </ng-container>
@@ -5238,7 +5429,14 @@
                                             Assign to Other Team
                                         </button>
                                     </span>
-
+                                    <!-- FOR REBLLING CASE  ASSIGN  TO TL-->
+                                    <span
+                                        *ngIf="claimRcm.allowEdit && claimRcm.rebilledStatus && !claimRcm.pending  && selectedTeam== claimRcm.currentTeamId">
+                                        <button type="button" class="btn btn-success" [disabled]="inSave"
+                                            (click)="saveClaim('assigntl',false)">
+                                            Assign to Team Lead
+                                        </button>
+                                    </span>
                                     <span
                                         *ngIf="!claimRcm.pending  && actionButtons  && selectedTeam== claimRcm.currentTeamId">
                                         <button *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp"

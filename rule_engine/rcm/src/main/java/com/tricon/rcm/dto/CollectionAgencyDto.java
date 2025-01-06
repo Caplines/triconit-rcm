@@ -1,5 +1,7 @@
 package com.tricon.rcm.dto;
 
+import java.util.Date;
+
 import lombok.Data;
 
 @Data
@@ -15,4 +17,6 @@ public class CollectionAgencyDto {
 	private double netAmountReceived;
 	private int buttonType;
 	private int sectionId;
+	private int id;
+	private Date createdDate;
 }

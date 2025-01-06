@@ -16,18 +16,37 @@
                 <div class="main-container">
                     <div class="row">
                         <div class="col-md-12 mb-1 listClaimBox">
-                            <div class="billingDropdown labelText">
+                            <div class="colAction labelText" *ngIf="isUserWisePendency && !loader.showLoader"
+                                style="display: flex;">
+                                Select Client
+                                <multi-select-dropdown
+                                    [inputConfig]="{'pendencyClients':companies,'isPendencyTeam':true,'subType':'pendencyClients'}"></multi-select-dropdown>
+                            </div>
+                            <div class="colAction labelText" *ngIf="isUserWisePendency && !loader.showLoader">
+
+
+                            </div>
+
+                            <div class="billingDropdown labelText" *ngIf="!isUserWisePendency">
                                 <ng-container *ngIf="staticUtil.isBilling()">
-                                Billing Type&nbsp;&nbsp;<select class="form-control" id="" name="bType" [(ngModel)]="bType"
-                                    (change)="fetchClaimAssignments()">
-                                    <option *ngFor="let sta of bl.bills" [value]="sta.key">{{sta.value}}</option>
-                                </select>
-                            </ng-container>
-                                Insurance Type&nbsp;&nbsp;<select (change)="fetchClaimAssignments()" class="form-control" id="" name="insType"
-                                    [(ngModel)]="insType">
+                                    Billing Type&nbsp;&nbsp;<select class="form-control" id="" name="bType"
+                                        [(ngModel)]="bType" (change)="fetchClaimAssignments()">
+                                        <option *ngFor="let sta of bl.bills" [value]="sta.key">{{sta.value}}</option>
+                                    </select>
+                                </ng-container>
+                                Insurance Type&nbsp;&nbsp;<select (change)="fetchClaimAssignments()"
+                                    class="form-control" id="" name="insType" [(ngModel)]="insType">
                                     <option *ngFor="let sta of bl.insTypes" [value]="sta.key">{{sta.value}}</option>
                                 </select>
                             </div>
+
+                            <div class="colAction labelText" *ngIf="!loader.showLoader">
+                                <label for="userwisepend" class="userwisependcl" (change)="userwisePendency($event)">
+                                    <input type="checkbox" id="userwisepend" #userwisependBox>
+                                    Userwise Pendency
+                                </label>
+                            </div>
+
                             <div>
                                 <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="claimData.length==0  || loader.exportPDFLoader">
@@ -49,10 +68,11 @@
                                         id="table">
                                         <thead>
                                             <tr>
-                                                <th class="width-200 min-max-180" style="z-index: 9;">
+                                                <th *ngIf="!isUserWisePendency" class="width-200 min-max-180"
+                                                    style="z-index: 9;">
                                                     <div class="dFlex">
                                                         Clients
-                                                         <span class="sorting">
+                                                        <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['companyName']}"
                                                                 (click)="sortData(filteredItems,'companyName','asc','string'); isSorted['companyName'] = false"></a>
@@ -61,8 +81,11 @@
                                                                 (click)="sortData(filteredItems,'companyName','desc','string');isSorted['companyName'] = true"></a>
                                                         </span>
                                                         <div class="dropdown">
-                                                            <img  (click)="showHideFilteredDropdown('companyName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                            <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                            <img (click)="showHideFilteredDropdown('companyName')"
+                                                                src="../../assets/img/filterIcon.png"
+                                                                style="cursor: pointer; margin-left: 6px;" />
+                                                            <div class="dropdown-menu filter-dropdown-menu"
+                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.companyName">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -70,15 +93,14 @@
                                                                             [checked]="isFilterAllSelected.companyName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'companyName')">
-                                                                        {{isFilterAllSelected.companyName ? 'Clear All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.companyName ? 'Clear
+                                                                        All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.companyName=false;"
-                                                                        type="button" class="close"
-                                                                        data-dismiss="modal"
+                                                                        type="button" class="close" data-dismiss="modal"
                                                                         aria-label="Close"><span>&times;</span></button>
-                                                            </div>
-                                                                <ng-container
-                                                                    *ngFor="let data of filteredCompanyName">
+                                                                </div>
+                                                                <ng-container *ngFor="let data of filteredCompanyName">
                                                                     <label class="mx-1">
                                                                         <input type="checkbox" checked="true"
                                                                             [(ngModel)]="data.checked"
@@ -92,7 +114,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th class="width-200 min-max-180">
+                                                <th class="width-200 min-max-180" *ngIf="!isUserWisePendency">
                                                     <div class="dFlex">
                                                         Office
                                                         <span class="sorting">
@@ -118,41 +140,53 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th class="width-200" [ngStyle]="{'z-index':showTooltipConfig.tooltipOne ? 99 : 9}">
+                                                <th class="width-200"
+                                                    [ngStyle]="{'z-index':showTooltipConfig.tooltipOne ? 99 : 9}">
                                                     <div class="dFlex">
                                                         Days Since Oldest Pending Claim (Upload Date)
                                                         <ng-container *ngIf="showTooltipConfig.tooltipOne">
-                                                            <div class="tooltip-backdrop" ></div>
+                                                            <div class="tooltip-backdrop"></div>
                                                         </ng-container>
-                                                            <div class="tooltip2" >
-                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('tooltipOne');" />
-                                                                <span class="tooltiptext" *ngIf="showTooltipConfig.tooltipOne">
-                                                                    <span (click)="showTooltipConfig.tooltipOne=false;" class="tooltip-cross-btn">×</span>
-                                                                    It shows the number of days the claim is pending to be billed since the claim was
-                                                                    uploaded to the RCM tool</span>
-                                                                </div>
-                                                
+                                                        <div class="tooltip2">
+                                                            <img src="../../assets/img/question-icon.png"
+                                                                (click)="toggleTooltip('tooltipOne');" />
+                                                            <span class="tooltiptext"
+                                                                *ngIf="showTooltipConfig.tooltipOne">
+                                                                <span (click)="showTooltipConfig.tooltipOne=false;"
+                                                                    class="tooltip-cross-btn">×</span>
+                                                                It shows the number of days the claim is pending to be
+                                                                billed since the claim was
+                                                                uploaded to the RCM tool</span>
+                                                        </div>
+
                                                         <span class="sorting">
-                                                            <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['opdtd']}"
+                                                            <a href="javascript:void(0);" class="arrow-up"
+                                                                [ngClass]="{'selected': !isSorted['opdtd']}"
                                                                 (click)="sortData(filteredItems,'opdtd','asc','number'); isSorted['opdtd'] = false"></a>
-                                                            <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['opdtd']}"
+                                                            <a href="javascript:void(0);" class="arrow-down"
+                                                                [ngClass]="{'selected': isSorted['opdtd']}"
                                                                 (click)="sortData(filteredItems,'opdtd','desc','number');isSorted['opdtd'] = true"></a>
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th class="width-200" [ngStyle]="{'z-index':showTooltipConfig.tooltipTwo ? 99: 9}">
+                                                <th class="width-200"
+                                                    [ngStyle]="{'z-index':showTooltipConfig.tooltipTwo ? 99: 9}">
                                                     <div class="dFlex">
                                                         Days Since Oldest Pending Claim (DOS)
                                                         <ng-container *ngIf="showTooltipConfig.tooltipTwo">
-                                                            <div class="tooltip-backdrop" ></div>
+                                                            <div class="tooltip-backdrop"></div>
                                                         </ng-container>
-                                                            <div class="tooltip2" >
-                                                                <img src="../../assets/img/question-icon.png" (click)="toggleTooltip('tooltipTwo');" />
-                                                                <span class="tooltiptext"  *ngIf="showTooltipConfig.tooltipTwo">
-                                                                       <span class="tooltip-cross-btn" (click)="showTooltipConfig.tooltipTwo=false;">×</span>
-                                                                           It shows the number of days the claim is pending to be billed since the date of service
-                                                                </span>
-                                                            </div>
+                                                        <div class="tooltip2">
+                                                            <img src="../../assets/img/question-icon.png"
+                                                                (click)="toggleTooltip('tooltipTwo');" />
+                                                            <span class="tooltiptext"
+                                                                *ngIf="showTooltipConfig.tooltipTwo">
+                                                                <span class="tooltip-cross-btn"
+                                                                    (click)="showTooltipConfig.tooltipTwo=false;">×</span>
+                                                                It shows the number of days the claim is pending to be
+                                                                billed since the date of service
+                                                            </span>
+                                                        </div>
                                                         <span class="sorting">
                                                             <a href="javascript:void(0);" class="arrow-up"
                                                                 [ngClass]="{'selected': !isSorted['opdosd']}"
@@ -208,15 +242,15 @@
 
                                             <tr class="totalRow">
                                                 <td>Total</td>
-                                                <td></td>
-                                                <!-- <td>10/30/2022</td>
-                                                <td>10/30/2022</td> -->
-                                                <td></td>
+                                                <td *ngIf="!isUserWisePendency"></td>
+                                                <td *ngIf="!isUserWisePendency"></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td class="text-center">{{totalClaimData.totalCount}}</td>
-                                                <td *ngIf="teamId == 7" class="text-center">{{totalClaimData.totalRemLiteReject}}</td>
-                                                <td  *ngIf="teamId == 7" class="text-center">{{totalClaimData.totalcountAndRemLiteReject}}
+                                                <td *ngIf="teamId == 7" class="text-center">
+                                                    {{totalClaimData.totalRemLiteReject}}</td>
+                                                <td *ngIf="teamId == 7" class="text-center">
+                                                    {{totalClaimData.totalcountAndRemLiteReject}}
                                                 </td>
                                             </tr>
                                             <tr *ngIf="loader.showLoader">
@@ -226,33 +260,47 @@
                                             <ng-container *ngIf="!loader.showLoader">
 
                                                 <tr *ngFor="let lg of filteredItems">
-                                                    <td>{{lg.companyName}}</td>
-                                                    <td>{{lg.officeName}}</td>
-                                                    <td>
-                                                        <select class="form-control select-editable" name="" id="" [ngClass]="{'border-red':!lg.assignedUser}"
-                                                            (change)="selectNewAssignedUser($event,lg.officeUuid);" [disabled]="isRoleAssociate">
+                                                    <td *ngIf="!isUserWisePendency">{{lg.companyName}}</td>
+                                                    <td *ngIf="!isUserWisePendency">{{lg.officeName}}</td>
+                                                    <td *ngIf="!isUserWisePendency">
+                                                        <select class="form-control select-editable" name="" id=""
+                                                            [ngClass]="{'border-red':!lg.assignedUser}"
+                                                            (change)="selectNewAssignedUser($event,lg.officeUuid);"
+                                                            [disabled]="isRoleAssociate">
                                                             <option value="{{lg.assignedUser}}">{{lg.fname}}
                                                                 {{lg.lname}}</option>
 
                                                             <ng-container *ngFor="let user of userByTeam">
-                                                                <ng-container *ngIf="user.clientName === lg.companyName">
+                                                                <ng-container
+                                                                    *ngIf="user.clientName === lg.companyName">
                                                                     <ng-container *ngFor="let users of user.users">
                                                                         <option *ngIf="users.uuid != lg.assignedUser"
-                                                                        value="{{users.uuid}}">{{users.fullName}}</option>
+                                                                            value="{{users.uuid}}">{{users.fullName}}
+                                                                        </option>
                                                                     </ng-container>
                                                                 </ng-container>
-                                                                <!-- <option *ngIf="lg.assignedUser !== user.uuid" value="{{user.fullName}},{{user.uuid}},{{lg.officeUuid}}">{{user.fullName}}</option> -->
-                                                             
+
+
                                                             </ng-container>
                                                         </select>
 
                                                     </td>
-                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.opdtd == 0 }">{{lg.opdtd}}</td>
-                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.opdosd == 0 }">{{lg.opdosd}}</td>
-                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.count == 0 }">  {{lg.count}}</td>
-                                                    <td *ngIf="teamId == 7" class="text-center" [ngClass]="{'opac-zero':lg.remoteLiteRejections == 0 }">{{lg.remoteLiteRejections}}</td>
-                                                    <td *ngIf="teamId == 7" class="text-center" [ngClass]="{'opac-zero':lg.totalBillingRejection == 0 }">{{lg.totalBillingRejection}}</td>
-                                                     <!-- <td class="text-center" [ngClass]="{'opac-zero':lg.opdtd == 0 }"> <a href="javascript:void(0);"  (click)="openSpecificPendencyData(lg,'opdtd')" >{{lg.opdtd}}</a></td>
+                                                    <td *ngIf="isUserWisePendency">
+                                                        {{lg.fname}} {{lg.lname}}
+                                                    </td>
+                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.opdtd == 0 }">
+                                                        {{lg.opdtd}}</td>
+                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.opdosd == 0 }">
+                                                        {{lg.opdosd}}</td>
+                                                    <td class="text-center" [ngClass]="{'opac-zero':lg.count == 0 }">
+                                                        {{lg.count}}</td>
+                                                    <td *ngIf="teamId == 7" class="text-center"
+                                                        [ngClass]="{'opac-zero':lg.remoteLiteRejections == 0 }">
+                                                        {{lg.remoteLiteRejections}}</td>
+                                                    <td *ngIf="teamId == 7" class="text-center"
+                                                        [ngClass]="{'opac-zero':lg.totalBillingRejection == 0 }">
+                                                        {{lg.totalBillingRejection}}</td>
+                                                    <!-- <td class="text-center" [ngClass]="{'opac-zero':lg.opdtd == 0 }"> <a href="javascript:void(0);"  (click)="openSpecificPendencyData(lg,'opdtd')" >{{lg.opdtd}}</a></td>
                                                     <td class="text-center" [ngClass]="{'opac-zero':lg.opdosd == 0 }"> <a href="javascript:void(0);" (click)="openSpecificPendencyData(lg,'opdosd')" >{{lg.opdosd}}</a></td>
                                                     <td class="text-count" [ngClass]="{'opac-zero':lg.count == 0 }">   <a href="javascript:void(0);" (click)="openSpecificPendencyData(lg,'count')" >{{lg.count}}</a></td>
                                                     <td *ngIf="teamId == 7" class="text-count" [ngClass]="{'opac-zero':lg.remoteLiteRejections == 0 }"> <a href="javascript:void(0);" (click)="openSpecificPendencyData(lg,'remoteLiteRejections')" >{{lg.remoteLiteRejections}}</a></td>
@@ -271,7 +319,7 @@
 
                         </div>
 
-                        <div class="action-buttons" *ngIf="!loader.showLoader && !isRoleAsso">
+                        <div class="action-buttons" *ngIf="!isUserWisePendency && !loader.showLoader && !isRoleAsso">
                             <button type="button" class="btn btn-success"
                                 [ngClass]="{'disabled':assignOfficeDetails.assignOfficeDetails.length==0 || loader.assignLoader}"
                                 (click)="saveAssignments()">

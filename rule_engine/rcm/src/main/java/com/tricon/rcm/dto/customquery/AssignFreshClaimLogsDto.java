@@ -1,6 +1,6 @@
 package com.tricon.rcm.dto.customquery;
 
-import java.util.Date;
+
 
 public interface AssignFreshClaimLogsDto {
 
@@ -39,5 +39,7 @@ public interface AssignFreshClaimLogsDto {
 	String getCompanyName();
 	
 	int getPending();
+	
+	int getRebilledStatus();
 	
 }

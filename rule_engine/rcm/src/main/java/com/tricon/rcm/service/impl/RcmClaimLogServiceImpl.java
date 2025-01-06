@@ -132,6 +132,8 @@ public class RcmClaimLogServiceImpl {
 					int existingAttachmentCounts=attachmentRepo.attachmentCountOfUserUuid(claimUuid, user.getUuid());
 					if(existingAttachmentCounts>0) {
 					rcmAssigment.setAttachmentWithRemarks(Constants.ATTACHMENT_WITH_REMARKS);}
+				}else if (attachmentsWithRemarks!=null && attachmentsWithRemarks.equals(Constants.ATTACH_WITH_REMARKS_REBILL)){
+					rcmAssigment.setAttachmentWithRemarks(Constants.ATTACHMENT_WITH_REMARKS);
 				}
 				
 				rcmClaimAssignmentRepo.save(rcmAssigment);

@@ -205,7 +205,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		AppealInformationDto response = null;
+		List<AppealInformationDto> response = null;
 		try {
 			response = claimSection.fetchAppealLevelInfo(partialHeader,claimUuid,withTeam);
 		} catch (Exception e) {
@@ -224,7 +224,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		PatientPaymentSectionDto response = null;
+		List<PatientPaymentSectionDto> response = null;
 		try {
 			response = claimSection.fetchPatientPaymentInformation(partialHeader, claimUuid, withTeam);
 		} catch (Exception e) {
@@ -285,7 +285,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		PaymentInformationSectionDto response = null;
+		List<PaymentInformationSectionDto> response = null;
 		try {
 			response = claimSection.fetchInsurancePaymentInformation(partialHeader, claimUuid, withTeam);
 		} catch (Exception e) {
@@ -338,7 +338,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		RcmPatientStatementDto response = null;
+		List<RcmPatientStatementDto> response = null;
 		try {
 			response = claimSection.fetchPatientStatementInformation(partialHeader, claimUuid, withTeam);
 		} catch (Exception e) {
@@ -413,7 +413,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		if (partialHeader == null)
 			return ResponseEntity.badRequest()
 					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		CollectionAgencyDto response = null;
+		List<CollectionAgencyDto> response = null;
 		try {
 			response = claimSection.fetchCollectionAgencyInformation(partialHeader, claimUuid, withTeam);
 		} catch (Exception e) {

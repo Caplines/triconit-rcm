@@ -36,5 +36,10 @@ public interface RcmClaimDetailRepo extends JpaRepository<RcmClaimDetail, Intege
 			+ "where s.claim_id=:claimUuid "
 			+ "and s.active is true", nativeQuery = true)
 	List<String> findServiceCodesByClaimUuid(@Param("claimUuid") String claimUuid);
+	
+	@Query(value = "select concat(s.service_code,'-',s.tooth) from rcm_claim_detail s "
+			+ "where s.claim_id=:claimUuid "
+			+ "and s.active is true", nativeQuery = true)
+	List<String> findServiceCodesWithToothByClaimUuid(@Param("claimUuid") String claimUuid);
 
 }

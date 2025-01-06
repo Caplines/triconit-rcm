@@ -9,7 +9,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.tricon.rcm.dto.RcmClaimMainRootDto;
 import com.tricon.rcm.dto.RcmClaimReconcillationMainRootDto;
-import com.tricon.rcm.dto.RcmClaimReconcillationRootDto;
+
 import com.tricon.rcm.dto.RcmInsuranceDatas;
 import com.tricon.rcm.dto.RcmInsuranceMainRootDto;
 import com.tricon.rcm.dto.RcmIvFMainRootDto;
@@ -245,9 +245,9 @@ public class RuleEngineService {
 							for (ClaimsFromRuleEngine re : datas.getData()) {
 								try {
 									System.out.println(re.getClaimId() + "--<ID");
-									if (re.getClaimId().equals("5010_P") || re.getClaimId().equals("5010")) {
+									/*if (re.getClaimId().equals("5010_P") || re.getClaimId().equals("5010")) {
 										System.out.println("dd");
-									}
+									}*/
 									InsuranceNameTypeDto insuranceNameTypeDto=null;
 									//if (re.getClaimId().equals("5622") || re.getClaimId().equals("3018") || re.getClaimId().equals("32950")) {
 									//	System.out.println("k");
@@ -357,7 +357,7 @@ public class RuleEngineService {
 											newClaimPCt++;
 										if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary))
 											newClaimSCt++;
-										System.out.println("ins : -->"+ins.getInsuranceType());
+										//System.out.println("ins : -->"+ins.getInsuranceType());
 										rcmInsuranceType = rcmInsuranceTypeRepo
 												.findById(ins.getInsuranceType().getId());
 										

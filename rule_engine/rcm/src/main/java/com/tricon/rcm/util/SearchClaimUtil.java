@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tricon.rcm.enums.AgeBracketEnum;
+import com.tricon.rcm.enums.ClaimStatusEnum;
 import com.tricon.rcm.enums.ClaimStatusSearchEnum;
 
 public class SearchClaimUtil {
@@ -317,5 +318,7 @@ public class SearchClaimUtil {
 		}
 	}
 	
-
+	
+	
+	
 }
