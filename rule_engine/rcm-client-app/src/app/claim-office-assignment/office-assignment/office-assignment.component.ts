@@ -335,7 +335,6 @@ export class OfficeAssignmentComponent implements OnInit {
   }
 
   filterCompanyNamePendency(clients: any[]) {
-    debugger;
     if (!this.claimData) return;
     clients = clients.map(a => a.name);
     let claimData = this.claimData.map(object => ({ ...object }))
