@@ -309,12 +309,13 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
 			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance ,claims.is_primary as claimTypeStatus,"
-			
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname "
 			+ " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status"
 			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
@@ -432,6 +433,14 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  where off.company_id in (:companyIds) and off.active is true  order by companyName ")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUserType(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
+	
+	@Query(nativeQuery = true, value = Constants.PENDENCY_REPEAT_FRESH_QUERY_ByTeamAndUserType +"  group by rca.claim_id having count(rca.claim_id) = 1 ")
+	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUserTypeFresh(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
+			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
+	
+	@Query(nativeQuery = true, value = Constants.PENDENCY_REPEAT_FRESH_QUERY_ByTeamAndUserType +"  group by rca.claim_id having count(rca.claim_id) > 1 ")
+	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUserTypeRepeat(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
+			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 
 	
 	@Query(nativeQuery = true, value = " SELECT  cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"
@@ -452,6 +461,16 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  where off.company_id in (:companyIds) and off.active is true order by companyName")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamType(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
+	
+	@Query(nativeQuery = true, value = Constants.PENDENCY_REPEAT_FRESH_QUERY_ByTeamType +"  group by rca.claim_id having count(rca.claim_id) = 1 ")
+	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamTypeFresh(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
+			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
+	
+	@Query(nativeQuery = true, value = Constants.PENDENCY_REPEAT_FRESH_QUERY_ByTeamType +"  group by rca.claim_id having count(rca.claim_id) > 1 ")
+	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamTypeRepeat(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
+			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
+	
+	
 	
 	@Query(nativeQuery = true, value = " SELECT off.name as officeName,off.uuid as  officeUuid,"
 			+ " count(Case When claim_status_type_id in :status and pending is true and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.rcm_insurance_type in :inst Then 'bill' End) as 'count', "
