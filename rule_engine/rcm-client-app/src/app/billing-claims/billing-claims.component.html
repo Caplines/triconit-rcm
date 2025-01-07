@@ -7,11 +7,13 @@
     <div class="container-fluid cldet" [ngClass]="{'for-hide-btn':claimRcm.assoicatedClaimUuid == null}">
         <div class="row">
             <div class="col-lg-12 pt-5">
-                <div class="page-heading claim-detail-fixed d-flex align-items-center">Claim Detail Page {{invalidClaim}}
+                <div class="page-heading claim-detail-fixed d-flex align-items-center">Claim Detail Page
+                    {{invalidClaim}}
                     <button id="copyButton" class="btn btn-sm mx-2 btn-info" (click)="copyUrl()"> Copy URL</button>
                     <small id="tooltip" class="ms-2" style="visibility:hidden;font-size: 12px !important;">URL
                         copied!</small>
-                    <div *ngIf="!invalidClaim && showClaimDetailTable && checkForSectionAccess(sectionIds['SECTION_CLAIM_DETAIL']['sectionId'],'view')" class="table-responsive mx-3 ClaimDetailTable">
+                    <div *ngIf="!invalidClaim && showClaimDetailTable && checkForSectionAccess(sectionIds['SECTION_CLAIM_DETAIL']['sectionId'],'view')"
+                        class="table-responsive mx-3 ClaimDetailTable">
                         <table class="table table-sm mb-1" style="table-layout: fixed;">
                             <thead>
                                 <tr>
@@ -47,8 +49,10 @@
                                     <td [title]="claimRcm.primInsurance" class="hideInfo">
                                         <div class="NA">{{claimRcm.primInsurance}}</div>
                                     </td>
-                                    <td *ngIf="claimRcm.primary">{{claimRcm.primeSecSubmittedTotal | currency:'USD':true}}</td>
-                                    <td *ngIf="!claimRcm.primary">{{claimRcm.secSubmittedTotal | currency:'USD':true}}</td>
+                                    <td *ngIf="claimRcm.primary">{{claimRcm.primeSecSubmittedTotal |
+                                        currency:'USD':true}}</td>
+                                    <td *ngIf="!claimRcm.primary">{{claimRcm.secSubmittedTotal | currency:'USD':true}}
+                                    </td>
                                 </tr>
                             </tbody>
                         </table>
@@ -2232,6 +2236,7 @@
                                                         <tr>
                                                             <th>Date</th>
                                                             <th>EOB Link</th>
+                                                            <th>Document Type</th>
                                                             <th>Attached By Team</th>
                                                             <th>Attached By User</th>
                                                             <th
@@ -2247,6 +2252,7 @@
                                                             <td>{{data.date|date:' MM/dd/YYYY'}}</td>
                                                             <td> <a href="javascript:void(0);"
                                                                     (click)="viewLink(data.eobLink)">View Link</a></td>
+                                                            <td>{{data.documentType}}</td>
                                                             <td>{{data.attachByTeam}}</td>
                                                             <td>{{data.attachBy}}</td>
                                                             <td
@@ -2279,10 +2285,26 @@
                                                             style="width: 300px;" *ngIf="claimSectionModal['EOB']"
                                                             [disabled]="!(checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                             [(ngModel)]="claimSectionModal['EOB']['pdfLink']"></span>
+                                                    <span class="d-flex"
+                                                        style="white-space: nowrap;align-items: center;">
+                                                        <label for="currentClaimStatus"
+                                                            style="padding-top: 5px;padding-right: 8px;">Document
+                                                            Type<span class="text-danger">*</span></label>
+                                                        <select id="eobDocType" class="form-control"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                            [(ngModel)]="claimSectionModal['EOB']['documentType']"
+                                                            [ngClass]="{'is-invalid':emptyFields['EOB'] && emptyFields['EOB']['documentType']}">
+                                                            <option value="">Select</option>
+                                                            <option [value]="op.dType"
+                                                                *ngFor="let op of appConstants.eOBInsuranceLetter">
+                                                                {{op.dType}}</option>
+                                                        </select>
+                                                    </span>
                                                     <span>
+
                                                         <button class="btn btn-success btn-md"
                                                             *ngIf="claimRcm.currentState==0 && isPrimaryClaimClosed()"
-                                                            [disabled]="!claimSectionModal['EOB']['pdfLink']"
+                                                            [disabled]="!claimSectionModal['EOB']['pdfLink'] || claimSectionModal['EOB']['documentType']==''"
                                                             (click)="getPdfUrlAndSaveEOB(false)">Save</button>
                                                     </span>
                                                     <div *ngIf="claimSectionModal['EOB']['errorMessage']"
@@ -2850,7 +2872,7 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr
-                                                            *ngFor="let data of claimSectionModal['INSURANCE_FOLLOW_UP'].data;let idx=index;">
+                                                            *ngFor="let data of findClaimDataInsuraceFollowUp(claimSectionModal['INSURANCE_FOLLOW_UP'].data);let idx=index;">
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
@@ -2978,6 +3000,29 @@
                                                                 class="form-control"
                                                                 [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['followUpRemarks']}">
                                                                                     </textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 mb-2">
+                                                        <div class="form-check-inline">
+                                                            <input type="radio" class="form-check-input"
+                                                                [checked]="claimSectionModal.INSURANCE_FOLLOW_UP['modal']['typeOfFollowUp'] !=null && claimSectionModal.INSURANCE_FOLLOW_UP['modal']['typeOfFollowUp']=== 'Appeal'"
+                                                                [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['typeOfFollowUp']}"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                                id="appealinsfu" name="typeOfFollowUp" value="Appeal"
+                                                                [(ngModel)]="claimSectionModal.INSURANCE_FOLLOW_UP['modal']['typeOfFollowUp']">
+                                                            <label class="form-check-label" for="appealinsfu">Appeal
+                                                            </label>
+                                                        </div>
+                                                        <div class="form-check-inline">
+                                                            <input type="radio"
+                                                                [checked]="claimSectionModal.INSURANCE_FOLLOW_UP['modal']['typeOfFollowUp']!=null && claimSectionModal.INSURANCE_FOLLOW_UP['modal']['typeOfFollowUp']=== 'Claim'"
+                                                                [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['typeOfFollowUp']}"
+                                                                [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_FOLLOW_UP']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                                id="claiminsfu" class="form-check-input"
+                                                                name="typeOfFollowUp" value="Claim"
+                                                                [(ngModel)]="claimSectionModal.INSURANCE_FOLLOW_UP['modal']['typeOfFollowUp']">
+                                                            <label class="form-check-label wdthlbl"
+                                                                for="claiminsfu">Claim</label>
                                                         </div>
                                                     </div>
                                                     <!-- <div class="col-md-4 mb-2"></div>
@@ -4148,6 +4193,9 @@
 
                                             </div>
                                             <div class="table-responsive">
+                                                <strong>Appeal Sending History</strong>
+                                            </div>
+                                            <div class="table-responsive">
                                                 <table class="table table-striped">
                                                     <thead>
                                                         <tr>
@@ -4174,6 +4222,41 @@
                                                             <td>{{data.remarks}}</td>
                                                         </tr>
 
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="table-responsive">
+                                                <strong>Appeal Follow up History</strong>
+                                            </div>
+                                            <div class="table-responsive" style="max-height: 508px;">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>S.No.</th>
+                                                            <th>Follow Up Team</th>
+                                                            <th>Associate Name</th>
+                                                            <th>Date & Time</th>
+                                                            <th>Mode</th>
+                                                            <th>Call Reference #</th>
+                                                            <th>Rep. Name</th>
+                                                            <th>Claim Status</th>
+                                                            <th>Remarks</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        < <tr
+                                                            *ngFor="let data of findAppealDataInsuraceFollowUp(claimSectionModal['INSURANCE_FOLLOW_UP'].data);let idx=index;">
+                                                            <td>{{idx+1}}</td>
+                                                            <td>{{data.followByTeam}}</td>
+                                                            <td>{{data.followByUser}}</td>
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm
+                                                                a':'UTC'+timeZone}}</td>
+                                                            <td>{{data.modeOfFollowUp}}</td>
+                                                            <td>{{data.refNumber}}</td>
+                                                            <td>{{data.insuranceRepName}}</td>
+                                                            <td>{{data.currentClaimStatus}}</td>
+                                                            <td>{{data.followUpRemarks}}</td>
+                                                            </tr>
                                                     </tbody>
                                                 </table>
                                             </div>

@@ -527,4 +527,12 @@ export class AppConstants {
         { addtional: "Sedation Record" },
         { addtional: "Other" }
     ];
+
+    public eOBInsuranceLetter: any = [
+        { dType: "EOB" },
+        { dType: "Void Letter" },
+        { dType: "Appeal Determination Letter" },
+        { dType: "Recoupment Letter" },
+        { dType: "Other" }
+    ];
 }

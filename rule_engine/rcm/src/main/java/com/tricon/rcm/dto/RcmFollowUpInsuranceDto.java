@@ -16,4 +16,5 @@ public class RcmFollowUpInsuranceDto {
 	private String followByUser;
 	private String followByUserLastName;
 	private int sectionId;
+	private String typeOfFollowUp;//Appeal or Claim
 }

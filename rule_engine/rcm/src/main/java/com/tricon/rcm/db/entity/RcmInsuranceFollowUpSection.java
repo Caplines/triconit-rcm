@@ -53,6 +53,9 @@ public class RcmInsuranceFollowUpSection extends BaseAuditEntity implements java
 	@Column(name = "follow_up_remarks",columnDefinition ="TEXT")
 	private String followUpRemarks;
 	
+	@Column(name = "type_of_follow_up")
+	private String typeOfFollowUp;
+	
 	@Column(name = "next_follow_up_required",length = 5)
 	private String nextFollowUpRequired;
 	

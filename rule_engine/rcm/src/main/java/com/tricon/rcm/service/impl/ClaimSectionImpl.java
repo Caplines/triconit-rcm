@@ -814,6 +814,7 @@ public class ClaimSectionImpl {
 			eobInformation = new EOBSectionInformation();
 			eobInformation.setAttachByTeam(team);
 			eobInformation.setEobLink(eobInfoModel.getEobLink());
+			eobInformation.setDocumentType(eobInfoModel.getDocumentType());
 			eobInformation.setClaim(claim);
 			eobInformation.setCreatedBy(createdBy);
 			eobInformation.setFinalSubmit(finalSubmit);
@@ -1210,6 +1211,7 @@ public class ClaimSectionImpl {
 		if (claim != null) {
 			followUpInformation = new RcmInsuranceFollowUpSection();
 			followUpInformation.setCurrentClaimStatus(rcmFollowUpInsuranceInfoModel.getCurrentClaimStatus());
+			followUpInformation.setTypeOfFollowUp(rcmFollowUpInsuranceInfoModel.getTypeOfFollowUp());
 			followUpInformation.setFollowUpRemarks(rcmFollowUpInsuranceInfoModel.getFollowUpRemarks());
 			followUpInformation.setClaim(claim);
 			followUpInformation.setInsuranceRepName(rcmFollowUpInsuranceInfoModel.getInsuranceRepName());

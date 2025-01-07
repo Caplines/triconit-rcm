@@ -483,7 +483,7 @@ export class BillingClaimsComponent {
   }
 
   @HostListener('window:scroll')
-  onScroll(){
+  onScroll() {
     let scrollPosition = window.scrollY;
     let windowHeight = window.innerHeight;
     let documentHeight = document.documentElement.scrollHeight;
@@ -2777,6 +2777,10 @@ export class BillingClaimsComponent {
         this.emptyFields['INSURANCE_FOLLOW_UP'].insuranceRepName = true;
         isSectionValidated = false;
       }
+      if (!this.claimSectionModal['INSURANCE_FOLLOW_UP']['modal'].typeOfFollowUp) {
+        this.emptyFields['INSURANCE_FOLLOW_UP'].typeOfFollowUp = true;
+        isSectionValidated = false;
+      }
     }
     return isSectionValidated;
   }
@@ -3124,6 +3128,7 @@ export class BillingClaimsComponent {
         eobInfoModel: {
           'eobLink': this.claimSectionModal['EOB']['pdfLink'],
           'sectionId': this.claimSectionModal['EOB']['sectionId'],
+          'documentType': this.claimSectionModal['EOB']['documentType'],
           'extension': 'pdf'
         }
       };
@@ -4320,6 +4325,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['modeOfFollowUp'] = "";
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['refNumber'] = "";
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['insuranceRepName'] = "";
+    this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['typeOfFollowUp'] = "";
     //this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['nextFollowUpDate'] = "";
     this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['followUpRemarks'] = "";
   }
@@ -4386,6 +4392,7 @@ export class BillingClaimsComponent {
       if (responseType === "2") {
         if (sectionName === 'EOB') {
           this.claimSectionModal['EOB']['pdfLink'] = '';
+          this.claimSectionModal['EOB']['documentType'] = '';
           this.claimSectionModal['EOB'].data.push(response.data);
           this.pdfUrlSrc = response.data.eobLink;
         }
@@ -4634,6 +4641,14 @@ export class BillingClaimsComponent {
     if (!this.showTooltipConfig[tooltip]) {
       document.removeAllListeners('keydown');
     }
+  }
+
+  findAppealDataInsuraceFollowUp(d: any[]): any[] {
+    return d.filter(p => p.typeOfFollowUp != null && p.typeOfFollowUp === 'Appeal');
+  }
+
+  findClaimDataInsuraceFollowUp(d: any[]): any[] {
+    return d.filter(p => p.typeOfFollowUp != null && p.typeOfFollowUp === 'Claim');
   }
 
 }

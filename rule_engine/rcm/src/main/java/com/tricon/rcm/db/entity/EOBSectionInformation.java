@@ -45,6 +45,8 @@ public class EOBSectionInformation extends BaseAuditEntity implements java.io.Se
 	@Column(name = "mark_as_deleted")
 	private boolean markAsDeleted;
 	
+	@Column(name = "document_type")
+	private String documentType;
 	
 	@Column(name = "final_submit")
 	private boolean finalSubmit;

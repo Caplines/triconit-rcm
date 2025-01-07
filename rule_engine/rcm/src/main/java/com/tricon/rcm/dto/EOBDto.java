@@ -13,5 +13,6 @@ public class EOBDto {
 	private String attachBy;
 	private String attachByLastName;
 	private String eobPathLink;
+	private String documentType;
 	private int id;
 }
