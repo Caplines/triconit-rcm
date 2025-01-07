@@ -2197,39 +2197,47 @@
                                     </ng-container>
 
                                     <ng-container
-                                        *ngIf="!sectionIds['EOB']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
-                                        <div class="bold-b-text collapsed" [ngClass]="{'collapsed':toggleTab['EOB']}">
-                                            <a data-toggle="collapse" aria-expanded="false" id="EOB"
+                                        *ngIf="!sectionIds['EOB_INSURANCE_LETTER']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['EOB_INSURANCE_LETTER']['sectionId'],'view')">
+                                        <div class="bold-b-text collapsed"
+                                            [ngClass]="{'collapsed':toggleTab['EOB_INSURANCE_LETTER']}">
+                                            <a data-toggle="collapse" aria-expanded="false" id="EOB_INSURANCE_LETTER"
                                                 class="text-danger">
-                                                EOBs (Access to this section of the RCM Tool is restricted for you)
+                                                EOB/Insurance Letter (Access to this section of the RCM Tool is
+                                                restricted for you)
                                             </a>
-                                            <div class="down-icon" (click)="showHide('EOB')">
-                                                <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['EOB']}"></a>
+                                            <div class="down-icon" (click)="showHide('EOB_INSURANCE_LETTER')">
+                                                <a href="javascript:void(0)"
+                                                    [ngClass]="{'close':toggleTab['EOB_INSURANCE_LETTER']}"></a>
                                             </div>
                                         </div>
                                     </ng-container>
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB']['sectionId'],'view')">
-                                        <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['EOB']}">
+                                        *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB_INSURANCE_LETTER']['sectionId'],'view')">
+                                        <div class="bold-b-text"
+                                            [ngClass]="{'collapsed':toggleTab['EOB_INSURANCE_LETTER']}">
                                             <div>
-                                                <a data-toggle="collapse" aria-expanded="false" id="EOB">
-                                                    EOBs
+                                                <a data-toggle="collapse" aria-expanded="false"
+                                                    id="EOB_INSURANCE_LETTER">
+                                                    EOB/Insurance Letter
                                                 </a>
-                                                <a [ngClass]="accessIcon(sectionIds['EOB']['sectionId'])">
-                                                    {{ accessIcon(sectionIds['EOB']['sectionId']) | accessTextTransform
+                                                <a
+                                                    [ngClass]="accessIcon(sectionIds['EOB_INSURANCE_LETTER']['sectionId'])">
+                                                    {{ accessIcon(sectionIds['EOB_INSURANCE_LETTER']['sectionId']) |
+                                                    accessTextTransform
                                                     }}
                                                 </a>
                                             </div>
 
-                                            <div class="down-icon" (click)="showHide('EOB')">
-                                                <a href="javascript:void(0)" [ngClass]="{'close':toggleTab['EOB']}"></a>
+                                            <div class="down-icon" (click)="showHide('EOB_INSURANCE_LETTER')">
+                                                <a href="javascript:void(0)"
+                                                    [ngClass]="{'close':toggleTab['EOB_INSURANCE_LETTER']}"></a>
                                             </div>
                                         </div>
 
                                         <div *ngIf="loader.serviceCode" class="loader-data"></div>
                                         <div *ngIf="!loader.serviceCode" class="form-row  collapse"
-                                            [ngClass]="{'show':!toggleTab['EOB']}">
+                                            [ngClass]="{'show':!toggleTab['EOB_INSURANCE_LETTER']}">
                                             <div class="table-responsive">
                                                 <table class="table table-striped">
                                                     <thead>
@@ -2240,7 +2248,7 @@
                                                             <th>Attached By Team</th>
                                                             <th>Attached By User</th>
                                                             <th
-                                                                *ngIf="checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit')">
+                                                                *ngIf="checkForSectionAccess(sectionIds['EOB_INSURANCE_LETTER']['sectionId'],'edit')">
                                                                 Remove EOB
                                                                 <!-- <button class="btn btn-sm btn-danger" (click)="deleteAllEobLink()">Delete All Claims</button> -->
                                                             </th>
@@ -2248,7 +2256,7 @@
                                                     </thead>
                                                     <tbody>
                                                         <tr
-                                                            *ngFor="let data of claimSectionModal['EOB'].data;let idx=index;">
+                                                            *ngFor="let data of claimSectionModal['EOB_INSURANCE_LETTER'].data;let idx=index;">
                                                             <td>{{data.date|date:' MM/dd/YYYY'}}</td>
                                                             <td> <a href="javascript:void(0);"
                                                                     (click)="viewLink(data.eobLink)">View Link</a></td>
@@ -2256,13 +2264,13 @@
                                                             <td>{{data.attachByTeam}}</td>
                                                             <td>{{data.attachBy}}</td>
                                                             <td
-                                                                *ngIf="checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit')">
+                                                                *ngIf="checkForSectionAccess(sectionIds['EOB_INSURANCE_LETTER']['sectionId'],'edit')">
                                                                 <img src="../../assets/img/cross_incorrec.png"
                                                                     style="cursor:pointer;"
                                                                     (click)="removeEobById(data.id,idx)">
                                                             </td>
                                                         </tr>
-                                                        <tr *ngIf="loader.EOB">
+                                                        <tr *ngIf="loader.EOB_INSURANCE_LETTER">
                                                             <td colspan="5" class="text-center">
                                                                 <span class="loader-data"></span>
                                                             </td>
@@ -2274,7 +2282,7 @@
                                                                             </div> -->
                                             </div>
                                             <div class="container-fluid pdf-viewer-container mb-3">
-                                                <div *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') "
+                                                <div *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['EOB_INSURANCE_LETTER']['sectionId'],'edit') "
                                                     class="row align-items-center "
                                                     style="justify-content: space-between;padding-right:5px;">
                                                     <span class="d-flex"
@@ -2282,19 +2290,20 @@
                                                         the box if you would like to attach another EOB
                                                         and
                                                         press Save Button <input type="text" class="form-control mx-2"
-                                                            style="width: 300px;" *ngIf="claimSectionModal['EOB']"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
-                                                            [(ngModel)]="claimSectionModal['EOB']['pdfLink']"></span>
+                                                            style="width: 300px;"
+                                                            *ngIf="claimSectionModal['EOB_INSURANCE_LETTER']"
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['EOB_INSURANCE_LETTER']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                            [(ngModel)]="claimSectionModal['EOB_INSURANCE_LETTER']['pdfLink']"></span>
                                                     <span class="d-flex"
                                                         style="white-space: nowrap;align-items: center;">
                                                         <label for="currentClaimStatus"
                                                             style="padding-top: 5px;padding-right: 8px;">Document
                                                             Type<span class="text-danger">*</span></label>
                                                         <select id="eobDocType" class="form-control"
-                                                            [disabled]="!(checkForSectionAccess(sectionIds['EOB']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
-                                                            [(ngModel)]="claimSectionModal['EOB']['documentType']"
-                                                            [ngClass]="{'is-invalid':emptyFields['EOB'] && emptyFields['EOB']['documentType']}">
-                                                            <option value="">Select</option>
+                                                            [disabled]="!(checkForSectionAccess(sectionIds['EOB_INSURANCE_LETTER']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                            [(ngModel)]="claimSectionModal['EOB_INSURANCE_LETTER']['documentType']"
+                                                            [ngClass]="{'is-invalid':emptyFields['EOB_INSURANCE_LETTER'] && emptyFields['EOB_INSURANCE_LETTER']['documentType']}">
+                                                            <option value="Select">Select</option>
                                                             <option [value]="op.dType"
                                                                 *ngFor="let op of appConstants.eOBInsuranceLetter">
                                                                 {{op.dType}}</option>
@@ -2304,12 +2313,12 @@
 
                                                         <button class="btn btn-success btn-md"
                                                             *ngIf="claimRcm.currentState==0 && isPrimaryClaimClosed()"
-                                                            [disabled]="!claimSectionModal['EOB']['pdfLink'] || claimSectionModal['EOB']['documentType']==''"
+                                                            [disabled]="!claimSectionModal['EOB_INSURANCE_LETTER']['pdfLink'] || claimSectionModal['EOB_INSURANCE_LETTER']['documentType']=='Select'"
                                                             (click)="getPdfUrlAndSaveEOB(false)">Save</button>
                                                     </span>
-                                                    <div *ngIf="claimSectionModal['EOB']['errorMessage']"
-                                                        [ngClass]="'rsType-' + claimSectionModal['EOB']['rsType']">
-                                                        {{claimSectionModal['EOB']['errorMessage']}}
+                                                    <div *ngIf="claimSectionModal['EOB_INSURANCE_LETTER']['errorMessage']"
+                                                        [ngClass]="'rsType-' + claimSectionModal['EOB_INSURANCE_LETTER']['rsType']">
+                                                        {{claimSectionModal['EOB_INSURANCE_LETTER']['errorMessage']}}
                                                     </div>
                                                 </div>
 

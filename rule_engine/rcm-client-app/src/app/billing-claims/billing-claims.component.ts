@@ -69,7 +69,7 @@ export class BillingClaimsComponent {
   mtype: string = '1';//Fail By Default.
   tlErrormsg = "";
   otherErrormsg = "";
-  loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false, EOB: false, claimLevelInfo: false, insuranceFollowUpInfo: false, patientCommunicationSection: false, patientStaementInfo: false, patientPaymentInfo: false, collectionAgencyInfo: false, appealLevelinfo: false, serviceLevelInfo: false, insurancePaymentInfo: false }
+  loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false, EOB_INSURANCE_LETTER: false, claimLevelInfo: false, insuranceFollowUpInfo: false, patientCommunicationSection: false, patientStaementInfo: false, patientPaymentInfo: false, collectionAgencyInfo: false, appealLevelinfo: false, serviceLevelInfo: false, insurancePaymentInfo: false }
   //ivfData:any=[];
   updatedIvfId: any;
   updatedTpId: any;
@@ -180,7 +180,7 @@ export class BillingClaimsComponent {
       isWorkDone: true,
       hideOnNoAccess: true
     },
-    'EOB': {
+    'EOB_INSURANCE_LETTER': {
       sectionId: 12,
       isNewSection: true,
       isWorkDone: true,
@@ -311,8 +311,9 @@ export class BillingClaimsComponent {
       "paidAmount": "",
       "paymentMode": "",
     },
-    EOB: {
-      data: []
+    EOB_INSURANCE_LETTER: {
+      data: [],
+      "documentType": "Select"
     },
     SERVICE_LEVEL_INFORMATION: {
       data: [],
@@ -2217,10 +2218,10 @@ export class BillingClaimsComponent {
   }
 
   fetchEobSection() {
-    if (this.checkForSectionAccess(this.sectionIds['EOB']['sectionId'], 'view')) {
+    if (this.checkForSectionAccess(this.sectionIds['EOB_INSURANCE_LETTER']['sectionId'], 'view')) {
       this.appService.fetchEobSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
-          this.claimSectionModal['EOB'].data = res.data;
+          this.claimSectionModal['EOB_INSURANCE_LETTER'].data = res.data;
         }
       })
     }
@@ -2453,8 +2454,8 @@ export class BillingClaimsComponent {
       }
 
     }
-    else if (sectionName === 'EOB') {
-      this.claimSectionModal['EOB']['sectionId'] = this.sectionIds['EOB']['sectionId'];
+    else if (sectionName === 'EOB_INSURANCE_LETTER') {
+      this.claimSectionModal['EOB_INSURANCE_LETTER']['sectionId'] = this.sectionIds['EOB_INSURANCE_LETTER']['sectionId'];
       this.finalSaveClaimDataModel.eobInfoModel = this.getPdfUrlAndSaveEOB(true);
     }
     else if (sectionName === 'SERVICE_LEVEL_INFORMATION') {
@@ -3116,24 +3117,24 @@ export class BillingClaimsComponent {
   }
 
   getPdfUrlAndSaveEOB(isFinal: boolean) {
-    this.claimSectionModal['EOB']['errorMessage'] = '';
-    this.claimSectionModal['EOB']['sectionId'] = this.sectionIds['EOB']['sectionId'];
-    this.claimSectionModal['EOB']['extension'] = "pdf";
+    this.claimSectionModal['EOB_INSURANCE_LETTER']['errorMessage'] = '';
+    this.claimSectionModal['EOB_INSURANCE_LETTER']['sectionId'] = this.sectionIds['EOB_INSURANCE_LETTER']['sectionId'];
+    this.claimSectionModal['EOB_INSURANCE_LETTER']['extension'] = "pdf";
     if (!isFinal) {
 
-      this.loader.EOB = true;
+      this.loader.EOB_INSURANCE_LETTER = true;
       let params: any = {
         claimUuid: this.claimUUid,
         finalSubmit: isFinal,
         eobInfoModel: {
-          'eobLink': this.claimSectionModal['EOB']['pdfLink'],
-          'sectionId': this.claimSectionModal['EOB']['sectionId'],
-          'documentType': this.claimSectionModal['EOB']['documentType'],
+          'eobLink': this.claimSectionModal['EOB_INSURANCE_LETTER']['pdfLink'],
+          'sectionId': this.claimSectionModal['EOB_INSURANCE_LETTER']['sectionId'],
+          'documentType': this.claimSectionModal['EOB_INSURANCE_LETTER']['documentType'],
           'extension': 'pdf'
         }
       };
       let matchFound = false;
-      for (const e of this.claimSectionModal['EOB'].data) {
+      for (const e of this.claimSectionModal['EOB_INSURANCE_LETTER'].data) {
         if (e.eobLink == params.eobInfoModel.eobLink) {
           matchFound = true;
         }
@@ -3141,17 +3142,17 @@ export class BillingClaimsComponent {
 
       if (!matchFound) {
         this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-          this.showAlert(res, 'EOB', '2');
-          this.loader.EOB = false;
+          this.showAlert(res, 'EOB_INSURANCE_LETTER', '2');
+          this.loader.EOB_INSURANCE_LETTER = false;
         })
       } else {
-        this.claimSectionModal['EOB']['errorMessage'] = 'Duplicate Link.';
-        this.claimSectionModal['EOB']['rsType'] = '2';
+        this.claimSectionModal['EOB_INSURANCE_LETTER']['errorMessage'] = 'Duplicate Link.';
+        this.claimSectionModal['EOB_INSURANCE_LETTER']['rsType'] = '2';
         setTimeout(() => {
-          this.claimSectionModal['EOB']['errorMessage'] = '';
+          this.claimSectionModal['EOB_INSURANCE_LETTER']['errorMessage'] = '';
         }, 2000);
 
-        this.loader.EOB = false;
+        this.loader.EOB_INSURANCE_LETTER = false;
       }
     }
     //return this.claimSectionModal['EOB']['pdfLink'] || null;
@@ -3328,7 +3329,7 @@ export class BillingClaimsComponent {
     };
     this.appService.removeEobData(params, (res: any) => {
       if (res) {
-        this.claimSectionModal['EOB'].data.splice(indx, 1);
+        this.claimSectionModal['EOB_INSURANCE_LETTER'].data.splice(indx, 1);
       }
     }
     )
@@ -4390,10 +4391,10 @@ export class BillingClaimsComponent {
     this.claimSectionModal[sectionName]['errorMessage'] = '';
     if (response.status === 200) {
       if (responseType === "2") {
-        if (sectionName === 'EOB') {
-          this.claimSectionModal['EOB']['pdfLink'] = '';
-          this.claimSectionModal['EOB']['documentType'] = '';
-          this.claimSectionModal['EOB'].data.push(response.data);
+        if (sectionName === 'EOB_INSURANCE_LETTER') {
+          this.claimSectionModal['EOB_INSURANCE_LETTER']['pdfLink'] = '';
+          this.claimSectionModal['EOB_INSURANCE_LETTER']['documentType'] = 'Select';
+          this.claimSectionModal['EOB_INSURANCE_LETTER'].data.push(response.data);
           this.pdfUrlSrc = response.data.eobLink;
         }
         if (sectionName === 'INSURANCE_FOLLOW_UP') {
