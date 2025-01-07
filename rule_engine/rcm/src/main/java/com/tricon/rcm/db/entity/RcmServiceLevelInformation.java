@@ -139,4 +139,10 @@ public class RcmServiceLevelInformation extends BaseAuditEntity implements java.
 
 	@Column(name = "debit_adjustment_amount")
 	private double debitAdjustmentAmount;
+	
+	@Column(name = "action_taken")
+	private String actionTaken;
+	
+	@Column(name = "additional_info_provided")
+	private String additionalInfoProvided;
 }

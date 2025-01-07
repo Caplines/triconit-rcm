@@ -1781,8 +1781,10 @@
                                                             <th>BTP Reason</th>
                                                             <th>Action (Radio Button)&nbsp;<span
                                                                     class="text-danger">*</span></th>
-                                                            <th>Notes</th>
-                                                            <th>View Notes</th>
+                                                            <th>Action Taken</th>
+                                                            <th>Additional Info Provided</th>
+                                                            <!--<th>Notes</th>
+                                                            <th>View Notes</th>-->
                                                             <!--<th>Reconciliation</th>-->
                                                             <!-- <th>BTP Flag</th> -->
                                                             <ng-container *ngIf="!smilePoint">
@@ -1918,7 +1920,8 @@
                                                                             [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                             id="post" name="action{{idx}}" value="Post"
                                                                             [(ngModel)]="data.action">
-                                                                        <label class="form-check-label" for="post">Post
+                                                                        <label class="form-check-label" for="post">First
+                                                                            Pass
                                                                         </label>
                                                                     </div>
                                                                     <div class="form-check-inline">
@@ -1928,10 +1931,37 @@
                                                                             id="assign" class="form-check-input"
                                                                             name="action{{idx}}" value="Assign"
                                                                             [(ngModel)]="data.action">
-                                                                        <label class="form-check-label"
-                                                                            for="assign">Assign</label>
+                                                                        <label class="form-check-label wdthlbl"
+                                                                            for="assign">Val. Add</label>
                                                                     </div>
                                                                 </td>
+                                                                <td>
+                                                                    <select class="attach-secondary-width form-control"
+                                                                        *ngIf="data.action=='Assign'"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['actionTaken']}"
+                                                                        [(ngModel)]="data.actionTaken">
+                                                                        <option value="">Select
+                                                                        </option>
+                                                                        <option [value]="op.action"
+                                                                            *ngFor="let op of appConstants.serviceCodeActionTaken">
+                                                                            {{op.action}}</option>
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <select class="attach-secondary-width form-control"
+                                                                        *ngIf="data.action=='Assign'"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['additionalInfoProvided']}"
+                                                                        [(ngModel)]="data.additionalInfoProvided">
+                                                                        <option value="">Select
+                                                                        </option>
+                                                                        <option [value]="op.addtional"
+                                                                            *ngFor="let op of appConstants.serviceCodeAdditionalInfoProvided">
+                                                                            {{op.addtional}}</option>
+                                                                    </select>
+                                                                </td>
+                                                                <!--
                                                                 <td>
                                                                     <textarea style="overflow:hidden;width:200px;"
                                                                         rows="4" cols="40" rows="4" cols="40"
@@ -1941,6 +1971,7 @@
                                                                 <td> <a href="javascript:void(0)"
                                                                         (click)="viewFullNotes(data.serviceCodeNotes)">View
                                                                         More</a> </td>
+                                                                -->
                                                                 <!--<td>
                                                                 <img src="../../assets/img/correct_mark.png"
                                                                     *ngIf="data.reconciliation">
@@ -3252,7 +3283,7 @@
                                                             <th>S.No.</th>
                                                             <th>Type</th>
                                                             <th>Date & Time</th>
-                                                            <th>Link to Balance Detail Sheet</th>
+                                                            <th>Link to balance detail sheet</th>
                                                             <th>Reason</th>
                                                             <th>Remarks</th>
                                                             <th>Mode of statement</th>
@@ -3273,6 +3304,7 @@
                                                             <td>{{data.dt|date :'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}
                                                             </td>
                                                             <td><a href="javascript:void(0);"
+                                                                    *ngIf="data.balanceSheetLink!=null"
                                                                     (click)="viewLink(data.balanceSheetLink)">View
                                                                     Link</a></td>
                                                             <td>{{data.reason}}</td>
@@ -3283,6 +3315,7 @@
                                                             <td>{{data.statementNotes}}</td>
                                                             <td>{{data.statementSendingDate}}</td>
                                                             <td><a href="javascript:void(0);"
+                                                                    *ngIf="data.attachStatement!=null"
                                                                     (click)="viewLink(data.attachStatement)">View
                                                                     Link</a></td>
                                                             <td>{{data.status}}</td>

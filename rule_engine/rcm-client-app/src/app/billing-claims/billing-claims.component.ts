@@ -650,7 +650,7 @@ export class BillingClaimsComponent {
     //Only for Pending claims
     let ths = this;
     ths.assignType = type;
-    debugger;
+    //debugger;
     console.log("TYPE", type);
     ths.claimEditModel = {};
     ths.claimEditModel.claimUuid = ths.claimRcm.uuid;
@@ -2241,6 +2241,12 @@ export class BillingClaimsComponent {
             if (e.estPrimary == null || e.estPrimary == '' || e.estPrimary == '-1') {
               e.estPrimary = '0';
             }
+            if (e.actionTaken == null) {
+              e.actionTaken = '';
+            }
+            if (e.additionalInfoProvided == null) {
+              e.additionalInfoProvided = '';
+            }
             if (e.serviceCode != 'Undistributed') {
               this.activeServiceCodeCount++;
               if (e.rebilledCodeStatus) {
@@ -2585,9 +2591,17 @@ export class BillingClaimsComponent {
       this.emptyFields["SERVICE_LEVEL_INFORMATION" + i] = {};
       this.emptyFields["SERVICE_LEVEL_INFORMATION" + i]['btpReason'] = false;
       this.emptyFields["SERVICE_LEVEL_INFORMATION" + i]['adjustmentReason'] = false;
+
+
     }
 
-    this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { allowedAmount: any, paidAmount: any, creditAdjustmentAmount: any, debitAdjustmentAmount: any, billToPatientAmount: any, adjustmentReason: string, btpReason: string, action: any, balanceFromEsBeforePosting: any, balanceFromEsAfterPosting: any }, index: number) => {
+    this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { allowedAmount: any, paidAmount: any, creditAdjustmentAmount: any, debitAdjustmentAmount: any, billToPatientAmount: any, adjustmentReason: string, btpReason: string, action: any, balanceFromEsBeforePosting: any, balanceFromEsAfterPosting: any, actionTaken: any, additionalInfoProvided: any }, index: number) => {
+      let heading = "SERVICE_LEVEL_INFORMATION" + index;
+      this.emptyFields[heading]['action'] = false;
+      this.emptyFields[heading]['additionalInfoProvided'] = false;
+      this.emptyFields[heading]['additionalTaken'] = false;
+    });
+    this.claimSectionModal["SERVICE_LEVEL_INFORMATION"].data.forEach((obj: { allowedAmount: any, paidAmount: any, creditAdjustmentAmount: any, debitAdjustmentAmount: any, billToPatientAmount: any, adjustmentReason: string, btpReason: string, action: any, balanceFromEsBeforePosting: any, balanceFromEsAfterPosting: any, actionTaken: any, additionalInfoProvided: any }, index: number) => {
       let heading = "SERVICE_LEVEL_INFORMATION" + index;
 
       if (obj.allowedAmount === null || obj.allowedAmount === "") {
@@ -2637,6 +2651,18 @@ export class BillingClaimsComponent {
       if (obj.action === null || obj.action === "") {
         this.emptyFields[heading]['action'] = true;
         isSectionValidated = false;
+      }
+
+      if (obj.action != null && obj.action === "Assign" && obj.additionalInfoProvided === '') {
+        this.emptyFields[heading]['additionalInfoProvided'] = true;
+        isSectionValidated = false;
+      }
+      if (obj.action != null && obj.action === "Assign" && obj.actionTaken === '') {
+        this.emptyFields[heading]['actionTaken'] = true;
+        isSectionValidated = false;
+      }
+      if (obj.action != null && obj.action != "Assign") {
+        obj.actionTaken = obj.additionalInfoProvided = "";
       }
     });
 
@@ -3363,6 +3389,8 @@ export class BillingClaimsComponent {
       "surface": "",
       "estPrimary": "0",
       "fee": "0",
+      "actionTaken": "",
+      "additionalInfoProvided": "",
       "snum": this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.length
     };
 
@@ -3614,7 +3642,7 @@ export class BillingClaimsComponent {
       //console.log(params);
 
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
-        this.showAlert(res, 'PATIENT_STATEMENT', '1');
+        this.showAlert(res, 'PATIENT_STATEMENT', '3');
         this.loader.patientStaementInfo = false;
         this.claimSectionModal['PATIENT_STATEMENT'].data.unshift(res.data);
         const dp = [...this.claimSectionModal['PATIENT_STATEMENT'].data];
@@ -3800,7 +3828,7 @@ export class BillingClaimsComponent {
   }
 
   concatenateRebillingServiceCode() {
-    debugger;
+    //debugger;
     let concatServiceCode: any = this.claimSectionModal['REQUEST_REBILLING']['rebillingServiceCodes'].reduce((accumulator: any, currentValue: any) => {
       return accumulator + "," + currentValue.name + "-" + currentValue.tooth;
     }, '');
@@ -3809,7 +3837,7 @@ export class BillingClaimsComponent {
   }
 
   concatenateAllRebillingServiceCode() {
-    debugger;
+    //debugger;
     let concatServiceCode: any = this.serviceLevelSectionMultiSelectConfig.serviceCodesList.reduce((accumulator: any, currentValue: any) => {
       return accumulator + "," + currentValue.name + "-" + currentValue.tooth;
     }, '');
@@ -3833,7 +3861,7 @@ export class BillingClaimsComponent {
   }
 
   receiveChildrenEvent(event: any) {
-    debugger;
+    //debugger;
     if (event['action'] === 'updateServiceCodeWithTooth') {
       this.claimSectionModal.REQUEST_REBILLING['rebillingServiceCodes'] = event.value;
       if (event.value.length == this.serviceLevelSectionMultiSelectConfig.serviceCodesList.length) {
@@ -4082,7 +4110,7 @@ export class BillingClaimsComponent {
     this.otherErrormsg = "";
     this.createModalForRecreateFullAndPartialClaim();
 
-    debugger;
+    // debugger;
     if (!isFinal) {
       if (this.checkValidationForRecreate()) {
         let params: any = {

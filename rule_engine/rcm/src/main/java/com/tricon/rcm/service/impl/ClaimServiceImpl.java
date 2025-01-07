@@ -3103,11 +3103,11 @@ public class ClaimServiceImpl {
 					for (Map.Entry<String, List<ClaimServiceValidationGSheetData>> entry : sheetServiceData.entrySet()) {
 						
 						logger.info("Key = " + entry.getKey() + ", Value = " + entry.getValue());
-						if (entry.getKey().equals("D0431")) {
+						/*if (entry.getKey().equals("D0431")) {
 							
 							System.out.println("D0431");
 							
-						}
+						}*/
 						//for (ClaimServiceValidationGSheet d : entry.getValue()) {
 							for (ClaimServiceValidationGSheetData qq : entry.getValue()) {
 								String codeFromES = "";

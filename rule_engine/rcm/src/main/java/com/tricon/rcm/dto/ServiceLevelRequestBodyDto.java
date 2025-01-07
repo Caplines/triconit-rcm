@@ -30,4 +30,6 @@ public class ServiceLevelRequestBodyDto {
 	private double debitAdjustmentAmount;
 	private Set<ServiceLevelNotes>serviceCodeNotes;
 	private boolean rebilledCodeStatus;
+	private String actionTaken;
+	private String additionalInfoProvided;
 }

@@ -492,4 +492,39 @@ export class AppConstants {
         { frequency: "Half - Yearly" },
         { frequency: "Yearly" },
     ];
+
+    public serviceCodeActionTaken: any = [
+        { action: "Payment issued to patient (Case Closed)" },
+        { action: "Reviewed" },
+        { action: "Requested Walkout Fix" },
+        { action: "Fixed the Walkout" },
+        { action: "Requested Rebilling" },
+        { action: "Insurance Followup Requested" },
+        { action: "Requested Review" },
+        { action: "Requested secondary Billing" },
+        { action: "Requested billing" },
+        { action: "Requested Patient information" },
+        { action: "Requested Reprocessing" },
+        { action: "Reprocessed" },
+        { action: "Rebilled" },
+        { action: "Billed" },
+        { action: "Posted" }
+    ];
+
+    public serviceCodeAdditionalInfoProvided: any = [
+        { addtional: "Perio Chart" },
+        { addtional: "Bitewings" },
+        { addtional: "PAs" },
+        { addtional: "FMX" },
+        { addtional: "PANO" },
+        { addtional: "Pre-Op X-ray" },
+        { addtional: "Post-Op X-ray" },
+        { addtional: "Intra Oral Photos" },
+        { addtional: "Cephlo" },
+        { addtional: "CRA Code" },
+        { addtional: "CRA Form" },
+        { addtional: "Lab Slip" },
+        { addtional: "Sedation Record" },
+        { addtional: "Other" }
+    ];
 }

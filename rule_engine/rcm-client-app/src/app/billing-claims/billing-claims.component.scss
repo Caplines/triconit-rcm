@@ -153,13 +153,13 @@
 
 
     .addSteps-col-1 {
-            width: 100%;
-            margin-right: 5px;
-    
-            &.width-reduce {
-                width: calc(100% - 286px);
-            }
+        width: 100%;
+        margin-right: 5px;
+
+        &.width-reduce {
+            width: calc(100% - 286px);
         }
+    }
 
 }
 
@@ -209,7 +209,8 @@
 .steps-taken.vertical ul {
     flex-flow: column;
 }
-.steps-taken.vertical ul li{
+
+.steps-taken.vertical ul li {
     padding-left: 20px;
     border-left: 4px solid #567189;
     line-height: normal;
@@ -227,6 +228,7 @@
         border: 4px solid #fff;
         border-radius: 50%;
     }
+
     &:last-child:after {
         background: #2c4e6c;
         position: absolute;
@@ -243,7 +245,8 @@
     margin-bottom: 20px;
     color: #fff;
 }
-.steps-taken.vertical ul li a{
+
+.steps-taken.vertical ul li a {
     background: #567189;
     font-size: 14px;
     color: #f7f7f7;
@@ -261,25 +264,29 @@
     padding: 0 10px;
 }
 
-.steps-taken.vertical li.done{
+.steps-taken.vertical li.done {
     border-left: 4px solid #5abe37;
 }
-.steps-taken.vertical li.done a{
+
+.steps-taken.vertical li.done a {
     background: #5abe37;
     color: #ffffff;
 }
 
-.steps-taken.vertical li.undone{
+.steps-taken.vertical li.undone {
     border-left: 4px solid #5abe37;
 }
-.steps-taken.vertical li.undone a{
+
+.steps-taken.vertical li.undone a {
     background: #696969;
     color: #ffffff;
 }
-.steps-taken.vertical li.mk_archive{
+
+.steps-taken.vertical li.mk_archive {
     border-left: 4px solid #5abe37;
 }
-.steps-taken.vertical li.mk_archive a{
+
+.steps-taken.vertical li.mk_archive a {
     background: #ff0000;
     color: #ffffff;
 }
@@ -363,17 +370,17 @@
     opacity: 1;
 }
 
-.for-hide-btn{
+.for-hide-btn {
 
-    .page-heading{
+    .page-heading {
         margin-top: 20px;
     }
 
-    .steps-taken{
+    .steps-taken {
         margin-top: 0px;
     }
 
-    .claim-steps-btn{
+    .claim-steps-btn {
         top: 70px !important;
     }
 
@@ -403,24 +410,27 @@
     }
 }
 
-.row-grey{
+.row-grey {
     background-color: lightgray !important;
 }
-.notes-modal{
-    .modal-dialog{
+
+.notes-modal {
+    .modal-dialog {
         max-width: 850px;
         margin: 1.75rem auto;
     }
-   
+
     display: block !important;
-    .modal-content{
+
+    .modal-content {
         padding: 0px;
         width: 100%;
-        .close{
+
+        .close {
             font-size: 25px;
         }
     }
-    
+
 }
 
 .pdf-viewer {
@@ -460,7 +470,8 @@
     border-radius: 0.25rem;
 }
 
-.current-billing-heading,.validation-recreate-heading {
+.current-billing-heading,
+.validation-recreate-heading {
     font-size: 16px;
     font-weight: 600;
     margin-bottom: 10px;
@@ -468,26 +479,29 @@
     background: lightgray;
     padding: 5px 10px;
 }
+
 .validation-recreate-heading {
 
     margin-top: 5px;
 
 }
-.validate-btn{
+
+.validate-btn {
     min-width: 130px;
     height: 38px;
     margin-left: 5px;
 }
-.multi-action span{
-    display:inline-block;
+
+.multi-action span {
+    display: inline-block;
     margin-right: 3px;
 }
 
-.multi-action span:last-child{
-    display:none;
+.multi-action span:last-child {
+    display: none;
 }
 
-.attach-secondary-width{
+.attach-secondary-width {
     min-width: 148px;
 }
 
@@ -515,7 +529,7 @@
     animation: shadowRolling 2s linear infinite;
 }
 
-.claim-detail-fixed{
+.claim-detail-fixed {
     position: sticky;
     top: 50px;
     background: #f8f8f9;
@@ -527,40 +541,44 @@
     padding-bottom: 20px;
 }
 
-.attach-secondary{
+.attach-secondary {
     display: inline-flex;
     align-items: center;
     margin-right: 50px;
     font-weight: 700 !important;
     color: #212529 !important;
     white-space: nowrap;
+
     input {
         margin-right: 7px;
-    width: 15px;
-    height: 15px;
+        width: 15px;
+        height: 15px;
     }
-  }
+}
 
 
-  .is-invalid {
-      .pml_dp {
-          border-color: #dc3545 !important;
-      }
-  }
+.is-invalid {
+    .pml_dp {
+        border-color: #dc3545 !important;
+    }
+}
 
-  .claimDatepicker {
+.claimDatepicker {
     width: 100%;
+
     .datepicker-container {
         width: 100%;
+
         &:after {
             content: "";
             position: absolute;
             background: url('../../assets/img/calendar-icon.png') no-repeat 1px 6px;
-            top:5px;
+            top: 5px;
             right: 6px;
             width: 22px;
             height: 22px;
         }
+
         input {
             font-size: 14px;
             height: 38px;
@@ -568,35 +586,39 @@
             font-weight: 400;
             line-height: 1.5;
             color: #495057;
-            background-color: #fff!important;
+            background-color: #fff !important;
             background-clip: padding-box;
             border: 1px solid #ced4da;
             border-radius: .25rem;
             width: 100%;
- 
+
         }
+
         .calendar-container {
-            top: 40px!important;
-            width: 250px!important;
+            top: 40px !important;
+            width: 250px !important;
         }
     }
+
     &.dp-disable {
         pointer-events: none;
+
         .pml_dp {
-        background-color: #E9ECEf!important;
+            background-color: #E9ECEf !important;
+        }
     }
-  }
 }
 
 .multiselect {
-.detail-page-service-codes .drop-toggle,
+
+    .detail-page-service-codes .drop-toggle,
     .detail-page-required-rebilling .drop-toggle {
         background-color: #E9ECEf !important;
     }
 }
 
 .dpWidth {
-    .pml_dp{
+    .pml_dp {
         min-width: 150px;
     }
 }
@@ -604,8 +626,8 @@
 .dp-disable {
     pointer-events: none;
 }
- 
-.currentAction{
+
+.currentAction {
     padding-bottom: 10px;
     padding-left: 8px;
     font-size: 16px;
@@ -647,12 +669,13 @@ a.Read {
     background-position: 7px;
     margin-left: 3px;
 }
+
 .alert-message {
     display: flex;
     align-items: center;
 }
 
-.btn-align-right{
+.btn-align-right {
     display: flex;
     justify-content: flex-end;
     width: 100%;
@@ -679,7 +702,7 @@ a.Read {
     }
 }
 
-.next-action-error{
+.next-action-error {
     margin-right: 10px;
     float: right;
     line-height: normal;
@@ -737,4 +760,8 @@ a.Read {
     height: 100vh;
     background-color: #000;
     opacity: 0.75;
+}
+
+.wdthlbl {
+    width: 65px;
 }

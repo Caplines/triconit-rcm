@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BaseService } from './base-service.service';
 import { HttpClient } from '@angular/common/http';
-import { FreshClaimPullModel } from '../models/fresh.claim.pull.model';
+//import { FreshClaimPullModel } from '../models/fresh.claim.pull.model';
 import { ClaimRcmDataModel, ClaimEditModel } from '../models/claim-rcm-data-model';
 import { ClaimRulesPullDataModel } from '../models/claim-rules-pull-data-model';
 import { ClaimAssignToTeamModel } from '../models/claim_assign_to_team';

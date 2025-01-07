@@ -200,7 +200,7 @@ public class Constants {
     			    + "  cl.current_status<>"+Constants.CLAIM_CLOSED+" "
     				+ "  inner join company cmp on cmp.uuid=off.company_id  "
     				+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
-    				+ "  left join rcm_claim_assignment rca on rca.claim_id=cl.claim_uuid and rca.current_team_id=:teamId "
+    				+ "  left join rcm_patient_statement_section rca on rca.claim_uuid=cl.claim_uuid  and rca.team_id=:teamId and rca.mark_as_deleted=0  and rca.button_type=2 "
     				+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId "
     				+ "  left join rcm_user us on us.uuid=assig.user_id "
     				+ "  where off.company_id in (:companyIds) and off.active is true  order by companyName ";
@@ -218,7 +218,7 @@ public class Constants {
     				+ "  cl.current_status<>"+Constants.CLAIM_CLOSED+" "
     				+ "  inner join company cmp on cmp.uuid=off.company_id  "
     				+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
-    				+ "  left join rcm_claim_assignment rca on rca.claim_id=cl.claim_uuid and rca.current_team_id=:teamId "
+    				+ "  left join rcm_patient_statement_section rca on rca.claim_uuid=cl.claim_uuid  and rca.team_id=:teamId and rca.mark_as_deleted=0  and rca.button_type=2 "
     				+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId"
     				+ "  left join rcm_user us on us.uuid=assig.user_id "
     				+ "  where off.company_id in (:companyIds) and off.active is true order by companyName ";
