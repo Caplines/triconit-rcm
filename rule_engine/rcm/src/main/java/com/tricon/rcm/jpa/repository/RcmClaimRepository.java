@@ -434,11 +434,11 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUserType(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 	
-	@Query(nativeQuery = true, value = Constants.PENDENCY_REPEAT_FRESH_QUERY_ByTeamAndUserType +"   group by rca.claim_uuid having count(rca.claim_uuid) = 1 ")
+	@Query(nativeQuery = true, value = Constants.PENDENCY_REPEAT_FRESH_QUERY_ByTeamAndUserType +"  group by rca.claim_uuid, cmp.name, off.name, off.uuid, cl.claim_uuid having count(rca.claim_uuid) = 1 ")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUserTypeFresh(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 	
-	@Query(nativeQuery = true, value = Constants.PENDENCY_REPEAT_FRESH_QUERY_ByTeamAndUserType +"   group by rca.claim_uuid having count(rca.claim_uuid) > 1 ")
+	@Query(nativeQuery = true, value = Constants.PENDENCY_REPEAT_FRESH_QUERY_ByTeamAndUserType +"  group by rca.claim_uuid, cmp.name, off.name, off.uuid, cl.claim_uuid having count(rca.claim_uuid) > 1 ")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamAndUserTypeRepeat(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 
