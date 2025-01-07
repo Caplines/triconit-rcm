@@ -765,3 +765,30 @@ a.Read {
 .wdthlbl {
     width: 65px;
 }
+
+.ClaimDetailTable {
+    max-width: fit-content;
+    font-size: 14px;
+    text-align: center;
+    font-weight: 500;
+    position: absolute;
+    left: 350px;
+    right: 165px;
+    bottom: 1px;
+}
+
+.hideInfo {
+    white-space: nowrap;
+}
+
+.hideInfo div {
+    display: block;
+    width: -webkit-fill-available;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.NA {
+    color: #d88627 !important;
+    font-weight: 600;
+}

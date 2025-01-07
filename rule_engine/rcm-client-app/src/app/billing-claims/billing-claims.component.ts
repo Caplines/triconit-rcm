@@ -1,4 +1,4 @@
-import { Component, ViewChild, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
+import { Component, ViewChild, ViewEncapsulation, Output, EventEmitter, HostListener } from '@angular/core';
 import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
@@ -454,6 +454,8 @@ export class BillingClaimsComponent {
     'Debit Adjustment Amount',
     'Bill to Patient Amount'
   ];
+  showClaimDetailTable: boolean = false;
+  scrollThreshold: number = 10;
 
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -478,6 +480,19 @@ export class BillingClaimsComponent {
     this.hideSideBarDom = true;
     this.toggleSideBar = true;
 
+  }
+
+  @HostListener('window:scroll')
+  onScroll(){
+    let scrollPosition = window.scrollY;
+    let windowHeight = window.innerHeight;
+    let documentHeight = document.documentElement.scrollHeight;
+    let scrollPercentage = (scrollPosition / (documentHeight - windowHeight)) * 100;
+    if (scrollPercentage >= this.scrollThreshold) {
+      this.showClaimDetailTable = true;
+    } else {
+      this.showClaimDetailTable = false;
+    }
   }
 
   fetchClaimRights(uuid: string) {
