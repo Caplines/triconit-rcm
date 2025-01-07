@@ -69,7 +69,11 @@ export class BillingClaimsComponent {
   mtype: string = '1';//Fail By Default.
   tlErrormsg = "";
   otherErrormsg = "";
-  loader: any = { claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false, EOB_INSURANCE_LETTER: false, claimLevelInfo: false, insuranceFollowUpInfo: false, patientCommunicationSection: false, patientStaementInfo: false, patientPaymentInfo: false, collectionAgencyInfo: false, appealLevelinfo: false, serviceLevelInfo: false, insurancePaymentInfo: false }
+  loader: any = {
+    claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false,
+    EOB_INSURANCE_LETTER: false, claimLevelInfo: false, insuranceFollowUpInfo: false, patientCommunicationSection: false, patientStaementInfo: false, patientPaymentInfo: false, collectionAgencyInfo: false, appealLevelinfo: false,
+    serviceLevelInfo: false, insurancePaymentInfo: false, duebal: false
+  }
   //ivfData:any=[];
   updatedIvfId: any;
   updatedTpId: any;
@@ -1522,6 +1526,18 @@ export class BillingClaimsComponent {
       if (res.status === 200) {
         ths.loader.remarksByOther = false;
         ths.otherTeamRemarks = res.data;
+      }
+    })
+
+  }
+
+  fetchDueBalance() {
+    let ths = this;
+    ths.loader.duebal = true;
+    ths.claimService.getDueBalResParty(ths.claimRcm.uuid, (res: any) => {
+      if (res.status === 200) {
+        ths.loader.duebal = false;
+        ths.claimRcm.dueBalanceResponsibleParty = res.data;
       }
     })
 

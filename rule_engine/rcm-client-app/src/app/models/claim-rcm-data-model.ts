@@ -112,7 +112,7 @@ export interface ClaimRcmDataModel {
 	nextFollowUpDate?: String;
 	lastTeamWorkId?: number;
 	officeActive?: boolean;
-
+	dueBalanceResponsibleParty?: string;
 }
 
 

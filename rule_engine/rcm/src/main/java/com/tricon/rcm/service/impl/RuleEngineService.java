@@ -867,6 +867,40 @@ public class RuleEngineService {
 		return dto;
 	}
 	
+	public String pullDueBalResParty(String claimId, String companyId, String officeId) {
+
+		logger.info(" In pull Due Balance From RE");
+		String val = null;
+		try {
+			HttpEntity<String> entity = new HttpEntity<String>(headers);
+			String param = "?cmpId=" + companyId;
+			param = param + "&office=" + officeId;
+			param = param + "&claimId=" + claimId;
+			// Call Rule Engine API..
+			ResponseEntity<RcmClaimAppointmentMainRootDto> result = restTemplate.exchange(
+					ev.getProperty("rcm.dueBalquery") + param, HttpMethod.GET, entity,
+					RcmClaimAppointmentMainRootDto.class);
+
+			RcmClaimAppointmentMainRootDto rootDto = result.getBody();
+
+			for (RcmClaimAppointmentDatas datas : rootDto.getData().getDatas()) {
+				try {
+					for (ClaimAppointmentDto re : datas.getData()) {
+						val = re.getStartDate();
+					}
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
+
+		} catch (Exception n) {
+			logger.error("Error in " + claimId);
+			logger.error(n.getMessage());
+		}
+
+		return val;
+	}
+	
 	public List<ClaimDetailDto> pullTPDetailFromFromRE(String tpId, String companyId, String officeId) {
 
 		logger.info(" In pull TPDetail From RE");

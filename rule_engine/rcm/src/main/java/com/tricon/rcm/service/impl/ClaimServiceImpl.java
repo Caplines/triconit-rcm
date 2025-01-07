@@ -59,6 +59,7 @@ import com.tricon.rcm.db.entity.RcmClaimSubmissionDetails;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmClaimsServiceRuleValidation;
 import com.tricon.rcm.db.entity.RcmCompany;
+import com.tricon.rcm.db.entity.RcmDueBalanceResParty;
 import com.tricon.rcm.db.entity.RcmInsurance;
 import com.tricon.rcm.db.entity.RcmInsuranceType;
 import com.tricon.rcm.db.entity.RcmInsuranceTypeDateMapping;
@@ -205,6 +206,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimSubmissionDetailsRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimsServiceRuleValidationRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmCurrentClaimStatusRepo;
+import com.tricon.rcm.jpa.repository.RcmDueBalanceResPartyRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceTypeDateMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
@@ -350,7 +352,6 @@ public class ClaimServiceImpl {
 	@Autowired
 	RcmUserCompanyRepo userCompanyRepo;
 	
-	
 	@Autowired
 	RcmCompanyRepo companyRepo;
 	
@@ -379,6 +380,8 @@ public class ClaimServiceImpl {
 	@Autowired
 	ClaimCycleRepo clamCycleRepo;
 	
+	@Autowired
+	RcmDueBalanceResPartyRepo rcmDueBalanceResPartyRepo;
 
 	private final Logger logger = LoggerFactory.getLogger(ClaimServiceImpl.class);
 
@@ -6722,6 +6725,37 @@ public class ClaimServiceImpl {
 				});
 			
 		return message;
+	}
+	
+	@Transactional(rollbackFor = Exception.class)
+	public String fetchDueBalanceRespart(String claimUuid,PartialHeader partialHeader) {
+
+		//Rule Engine up and running is needed
+        boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
+		String dueBal=null;
+		if (!validateClaimRight) {
+			return null;
+		}
+		RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUuid);
+		if (validateClaimRight) {
+			RcmOffice off = claim.getOffice();
+			String[] clT = claim.getClaimId().split("_");
+			 dueBal =ruleEngineService.pullDueBalResParty(clT[0], off.getCompany().getUuid(),
+					off.getUuid());
+			 if(dueBal != null) {
+				 RcmTeam currentTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
+			     rcmClaimRepository.updateDueBalResParty(dueBal, claimUuid);
+				 RcmDueBalanceResParty party=new RcmDueBalanceResParty();
+				 party.setClaim(claim);
+				 party.setDueBalanceResponsibleParty(dueBal);
+				 party.setPulledByTeam(currentTeam);
+				 rcmDueBalanceResPartyRepo.save(party);
+			}
+		} else {
+			logger.error("Wrong Client");
+		}
+		
+		return dueBal;
 	}
 	
 	private void unAssignMultipleClaimsWithUUids(int teamId,

@@ -16,7 +16,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -332,4 +332,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "unassigned_by",referencedColumnName="uuid")
 	private RcmUser unAssignedBy;
+	
+	@Column(name = "due_balance_res_party")
+	private String dueBalanceResponsibleParty;
 }

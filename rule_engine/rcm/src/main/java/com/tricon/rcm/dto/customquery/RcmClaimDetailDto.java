@@ -113,4 +113,6 @@ public interface RcmClaimDetailDto {
 	int getLastTeamWorkId();
 	
 	boolean getOfficeActive();
+	
+	String getDueBalanceResponsibleParty();
 }

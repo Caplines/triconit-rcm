@@ -169,5 +169,7 @@ public class FreshClaimDataImplDto {
     int lastTeamWorkId;
     
     boolean officeActive;
+    
+    String dueBalanceResponsibleParty;
 }
 

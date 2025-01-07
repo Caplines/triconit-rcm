@@ -1101,4 +1101,19 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
 		}
 	}
+	
+	@ApiOperation(value = "Api For Fetching DueBalanceResponsibleParty ", response = String.class)
+	@GetMapping("/api/fetchdueBalresponpar/{uuid}")
+	public ResponseEntity<Object> fetchDueBalance(@PathVariable("uuid") String claimUuid,Model model) {
+        //Rule Engine up and running is needed
+    	//Only for Smile point
+    	PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if (partialHeader ==null) return null;
+		Object object= claimServiceImpl.fetchDueBalanceRespart(claimUuid, partialHeader);
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+				object));
+	}
+	
+	
+	
 }

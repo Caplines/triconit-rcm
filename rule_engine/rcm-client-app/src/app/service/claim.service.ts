@@ -88,4 +88,8 @@ export class ClaimService extends BaseService {
   fetchClaimSteps(clamiduuid: string, callback: any) {
     this.getData({}, this.httpUrl['fetch-claim-steps'] + "/" + clamiduuid, callback, false);
   }
+
+  getDueBalResParty(clamiduuid: string, callback: any) {
+    this.getData({}, this.httpUrl['fetchdueBalresponpa'] + "/" + clamiduuid, callback, false);
+  }
 }
