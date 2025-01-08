@@ -494,21 +494,10 @@ export class AppConstants {
     ];
 
     public serviceCodeActionTaken: any = [
-        { action: "Payment issued to patient (Case Closed)" },
-        { action: "Reviewed" },
-        { action: "Requested Walkout Fix" },
-        { action: "Fixed the Walkout" },
-        { action: "Requested Rebilling" },
-        { action: "Insurance Followup Requested" },
-        { action: "Requested Review" },
-        { action: "Requested secondary Billing" },
-        { action: "Requested billing" },
-        { action: "Requested Patient information" },
-        { action: "Requested Reprocessing" },
-        { action: "Reprocessed" },
         { action: "Rebilled" },
-        { action: "Billed" },
-        { action: "Posted" }
+        { action: "Appealed" },
+        { action: "Reprocessed After Denial" },
+        { action: "Processed - EOB Not Received" }
     ];
 
     public serviceCodeAdditionalInfoProvided: any = [
