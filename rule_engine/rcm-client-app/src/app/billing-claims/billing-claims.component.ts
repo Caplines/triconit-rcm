@@ -2716,7 +2716,7 @@ export class BillingClaimsComponent {
     return isSectionValidated;
 
   }
-  validate_EOB() { return true; }
+  validate_EOB_INSURANCE_LETTER() { return true; }
   validate_INSURANCE_PAYMENT_INFORMATION() {
     return true;
   }
