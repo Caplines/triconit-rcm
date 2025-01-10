@@ -16,35 +16,45 @@
                 <div class="main-container">
                     <div class="row">
                         <div class="col-md-12 mb-1 listClaimBox">
-                            <div class="colAction labelText" *ngIf="isUserWisePendency && !loader.showLoader"
+                            <div class="colAction labelText" *ngIf="tabSwitch.userwisePendency && !loader.showLoader"
                                 style="display: flex;">
                                 Select Client
                                 <multi-select-dropdown
                                     [inputConfig]="{'pendencyClients':companies,'isPendencyTeam':true,'subType':'pendencyClients'}"></multi-select-dropdown>
                             </div>
-                            <div class="colAction labelText" *ngIf="isUserWisePendency && !loader.showLoader">
+                            <div class="colAction labelText" *ngIf="tabSwitch.userwisePendency && !loader.showLoader">
 
 
                             </div>
 
-                            <div class="billingDropdown labelText" *ngIf="!isUserWisePendency">
+                            <div class="billingDropdown labelText" *ngIf="!tabSwitch.userwisePendency">
                                 <ng-container *ngIf="staticUtil.isBilling()">
                                     Billing Type&nbsp;&nbsp;<select class="form-control" id="" name="bType"
-                                        [(ngModel)]="bType" (change)="fetchClaimAssignments()">
+                                        [(ngModel)]="bType" (change)="fetchClaimAssignments(null, 'typeChange')">
                                         <option *ngFor="let sta of bl.bills" [value]="sta.key">{{sta.value}}</option>
                                     </select>
                                 </ng-container>
-                                Insurance Type&nbsp;&nbsp;<select (change)="fetchClaimAssignments()"
+                                Insurance Type&nbsp;&nbsp;<select (change)="fetchClaimAssignments(null, 'typeChange')"
                                     class="form-control" id="" name="insType" [(ngModel)]="insType">
                                     <option *ngFor="let sta of bl.insTypes" [value]="sta.key">{{sta.value}}</option>
                                 </select>
                             </div>
 
-                            <div class="colAction labelText" *ngIf="!loader.showLoader">
-                                <label for="userwisepend" class="userwisependcl" (change)="userwisePendency($event)">
-                                    <input type="checkbox" id="userwisepend" #userwisependBox>
-                                    Userwise Pendency
+                            <div class="billingDropdown btn-group-toggle" data-toggle="buttons" *ngIf="!loader.showLoader">
+                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.userwisePendency}">
+                                    <input class="form-check-input" type="radio" name="options" id="option1"
+                                        (click)="switchTab('userwisePendency')">Userwise Pendency
                                 </label>
+                                <ng-container *ngIf="!staticUtil.isNotTeamPatientStatement()">
+                                    <label class="btn btn-light" [ngClass]="{'active':tabSwitch.freshpend}">
+                                        <input class="form-check-input" type="radio" name="options" id="option2"
+                                            (change)="switchTab('freshpend')">Fresh
+                                    </label>
+                                    <label class="btn btn-light" [ngClass]="{'active':tabSwitch.repeatpend}">
+                                        <input class="form-check-input" type="radio" name="options" id="option3"
+                                            (change)="switchTab('repeatpend')">Repeat
+                                    </label>
+                                </ng-container>
                             </div>
 
                             <div>
@@ -68,7 +78,7 @@
                                         id="table">
                                         <thead>
                                             <tr>
-                                                <th *ngIf="!isUserWisePendency" class="width-200 min-max-180"
+                                                <th *ngIf="!tabSwitch.userwisePendency" class="width-200 min-max-180"
                                                     style="z-index: 9;">
                                                     <div class="dFlex">
                                                         Clients
@@ -93,8 +103,7 @@
                                                                             [checked]="isFilterAllSelected.companyName"
                                                                             value="selectAll"
                                                                             (change)="selectAll($event,'companyName')">
-                                                                        {{isFilterAllSelected.companyName ? 'Clear
-                                                                        All':'Select All'}}</label>
+                                                                        {{isFilterAllSelected.companyName ? 'Clear All':'Select All'}}</label>
                                                                     <button
                                                                         (click)="showFilteredDropdown.companyName=false;"
                                                                         type="button" class="close" data-dismiss="modal"
@@ -114,7 +123,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th class="width-200 min-max-180" *ngIf="!isUserWisePendency">
+                                                <th class="width-200 min-max-180" *ngIf="!tabSwitch.userwisePendency">
                                                     <div class="dFlex">
                                                         Office
                                                         <span class="sorting">
@@ -242,8 +251,8 @@
 
                                             <tr class="totalRow">
                                                 <td>Total</td>
-                                                <td *ngIf="!isUserWisePendency"></td>
-                                                <td *ngIf="!isUserWisePendency"></td>
+                                                <td *ngIf="!tabSwitch.userwisePendency"></td>
+                                                <td *ngIf="!tabSwitch.userwisePendency"></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td class="text-center">{{totalClaimData.totalCount}}</td>
@@ -260,9 +269,9 @@
                                             <ng-container *ngIf="!loader.showLoader">
 
                                                 <tr *ngFor="let lg of filteredItems">
-                                                    <td *ngIf="!isUserWisePendency">{{lg.companyName}}</td>
-                                                    <td *ngIf="!isUserWisePendency">{{lg.officeName}}</td>
-                                                    <td *ngIf="!isUserWisePendency">
+                                                    <td *ngIf="!tabSwitch.userwisePendency">{{lg.companyName}}</td>
+                                                    <td *ngIf="!tabSwitch.userwisePendency">{{lg.officeName}}</td>
+                                                    <td *ngIf="!tabSwitch.userwisePendency">
                                                         <select class="form-control select-editable" name="" id=""
                                                             [ngClass]="{'border-red':!lg.assignedUser}"
                                                             (change)="selectNewAssignedUser($event,lg.officeUuid);"
@@ -285,7 +294,7 @@
                                                         </select>
 
                                                     </td>
-                                                    <td *ngIf="isUserWisePendency">
+                                                    <td *ngIf="tabSwitch.userwisePendency">
                                                         {{lg.fname}} {{lg.lname}}
                                                     </td>
                                                     <td class="text-center" [ngClass]="{'opac-zero':lg.opdtd == 0 }">
@@ -319,7 +328,7 @@
 
                         </div>
 
-                        <div class="action-buttons" *ngIf="!isUserWisePendency && !loader.showLoader && !isRoleAsso">
+                        <div class="action-buttons" *ngIf="!tabSwitch.userwisePendency && !loader.showLoader && !isRoleAsso">
                             <button type="button" class="btn btn-success"
                                 [ngClass]="{'disabled':assignOfficeDetails.assignOfficeDetails.length==0 || loader.assignLoader}"
                                 (click)="saveAssignments()">
