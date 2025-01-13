@@ -2002,17 +2002,18 @@ public class ClaimSectionImpl {
 			RcmOffice  office=officeRepo.findById(currentClaim.getOffice().getUuid()).get();
 			
 	        String currentClaimId[] = currentClaim.getClaimId().split("_");
-	        
+	        String associatedClaimId= recreateClaimRequestInfoModel.getNewClaimId();	
 			boolean isPrimary =true;
 	        if (("_" + currentClaimId[1]).equals(ClaimTypeEnum.S.getSuffix())) {
 	        	isPrimary =false;
 	        	primaryClaim = rcmClaimRepository.findByClaimIdAndOffice(currentClaimId[0]+ClaimTypeEnum.P.getSuffix(),office);
 		        secondaryClaim = currentClaim;
+		        associatedClaimId = recreateClaimRequestInfoModel.getNewClaimId()+ClaimTypeEnum.S.getSuffix();
 	        }else {
 	        	primaryClaim = currentClaim;
 		        secondaryClaim = rcmClaimRepository.findByClaimIdAndOffice(currentClaimId[0]+ClaimTypeEnum.S.getSuffix(),office);
+		        associatedClaimId = recreateClaimRequestInfoModel.getNewClaimId()+ClaimTypeEnum.P.getSuffix();
 	        }
-	        
 	        
 	        //check for secondary
 
@@ -2320,6 +2321,8 @@ public class ClaimSectionImpl {
 						}
 
 					}
+					//
+					
 				} else {
 					logger.error("service code not match with cureent claim service codes");
 					return null;
@@ -2331,7 +2334,31 @@ public class ClaimSectionImpl {
 					this.saveRecreateClaimData(recreateClaimRequestInfoModel, secondaryClaim, createdBy, team,
 							finalSubmit);
 				}
-
+				
+				//Move New Claim to New team
+				RcmClaims associatedClaim =rcmClaimRepository.findByClaimIdAndOffice(associatedClaimId,office);
+				RcmTeam newTeam = rcmTeamRepo.findById(recreateClaimRequestInfoModel.getRecreateTeam());
+				RcmTeam oldTeam = rcmTeamRepo.findById(associatedClaim.getCurrentTeamId().getId());
+				RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByCurrentTeamIdIdAndClaimsClaimUuidAndActive(
+						associatedClaim.getCurrentTeamId().getId(),associatedClaim.getClaimUuid(), true);
+				associatedClaim.setCurrentTeamId(newTeam);
+				if (newTeam.getId() != oldTeam.getId() && assign!=null) {
+					
+				ClaimStatusEnum nextAction =ClaimStatusEnum.getByType("Need to Review");
+				associatedClaim.setCurrentStatus(nextAction.getId());
+				associatedClaim.setRecreatedSection(Constants.RecreatedSection_ONE);
+				
+				String newCycleStatus="Unbilled";
+				//What about pending
+				  String assignActionName="Assign To Team";////Same we have in ui if change needed update that also (billing-claims.component.ts)
+				  PartialHeader newPH=new PartialHeader();
+				  newPH.setTeamId(recreateClaimRequestInfoModel.getRecreateTeam());
+				  //partialHeader.setTeamId(recreateClaimRequestInfoModel.getRecreateTeam());
+				   String claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, associatedClaim.getClaimUuid(),
+						   newTeam.getId(), recreateClaimRequestInfoModel.getRecreationRemarks(), associatedClaim, assign, createdBy, office, null,newCycleStatus,nextAction.getType(),assignActionName,
+						   newTeam);
+				   rcmClaimAssignmentRepo.save(assign);
+				}
 				logger.info("saveRecreateClaimData" + response);
 				return response != null ? true : null;
 

@@ -171,5 +171,7 @@ public class FreshClaimDataImplDto {
     boolean officeActive;
     
     String dueBalanceResponsibleParty;
+    
+    int recreatedSection;
 }
 

@@ -185,7 +185,8 @@ public class Constants {
     
     public static final int PENDENCY_REPEAT = 2;
     public static final int PENDENCY_FRESH = 1;
-    
+    public static final int RecreatedSection_ONE = 1;//First time recreated and assigned 
+    public static final int RecreatedSection_REST = 2;//After submit from pending after After recreation
     // Pendecny page /Claim Assignment only for PS TEAM 
     public static final String PENDENCY_REPEAT_FRESH_QUERY_ByTeamAndUserType=""
     		        + " SELECT  cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"

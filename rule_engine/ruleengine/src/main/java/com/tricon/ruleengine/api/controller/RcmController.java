@@ -84,6 +84,7 @@ public class RcmController {
 	RcmEnv rcmReconCillationSecondaryUnsubmitted = null;
 	RcmEnv rcmReconCillationPrimaryClose = null;
 	RcmEnv rcmReconCillationSecondaryClose = null;
+	RcmEnv rcmDueBalQuery = null;
 	
 	@Autowired
 	ScrappingFullDataService fullService;
@@ -144,6 +145,11 @@ public class RcmController {
 		rcmReconCillationSecondaryClose = new RcmEnv(env.getProperty("secondary.close.query"),
 				env.getProperty("secondary.close.count"), env.getProperty("secondary.close.selectcolumns"),
 				env.getProperty("rmc.auth.token"));
+		
+		rcmDueBalQuery = new RcmEnv(env.getProperty("claim.duebal.query"),
+				env.getProperty("claim.duebal.query.count"), env.getProperty("claim.duebal.query.selectcolumns"),
+				env.getProperty("rmc.auth.token"));
+		
 	
 	}
 
@@ -636,6 +642,51 @@ public class RcmController {
 
 		}
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "TP IDs DATA Fetched Successfully", data));
+	}
+	
+	@RequestMapping(value = "/duebal-query", method = RequestMethod.GET)
+	public ResponseEntity<?> fetchDeuBalance(@RequestHeader("x-api-key") String apiKey,
+			@RequestParam(value = "office", required = true) String officeUuid,
+			@RequestParam(value = "password", required = true) String password,
+			@RequestParam(value = "claimId", required = true) String claimId)
+			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+
+		String ids = null;
+		// Office office = null;
+		RuleEngineLogger.generateLogs(clazz, "ENTER Due Balance Query From  Rule Engine" + new Date(), " INFO", null);
+
+		if (!checkForKey(apiKey)) {
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Balance Query Not Created Successfully", "Key Error"));
+		}
+		RcmClaimDataDto dd = null;
+		RcmClaimRootDto rootDto = new RcmClaimRootDto();
+		ArrayList<RcmClaimDataDto> datas = new ArrayList<>();
+
+		rootDto.setDatas(datas);
+		rootDto.setMessage("Due Balance Query  Successfully");
+		if (officeUuid != null) {
+			Company cmp = companyservice.getCompanyByName(Constants.COMPANY_NAME);
+			Optional<List<OfficeDto>> offices = userService.getAllOffices(cmp.getUuid());
+			String officeName = "";
+			if (offices.isPresent() && offices.get() != null) {
+				officeName = offices.get().stream().filter(n -> n.getUuid().equals(officeUuid)).findFirst().get()
+						.getName();
+
+			}
+			String queryReplace = rcmDueBalQuery.getQuery();
+			queryReplace=queryReplace.replaceAll("claimId", claimId);
+			GenericResponse data = (GenericResponse) googleReportsController
+					.fethESGoogleresponse(rcmDueBalQuery.getQuerySelectcolumns(), queryReplace, ids,
+							Integer.parseInt(rcmDueBalQuery.getQueryCount()), password, officeName, null, null)
+					.getBody();
+			dd = new RcmClaimDataDto();
+			dd.setOfficeName(officeUuid);
+			dd.setData(data.getData());
+			datas.add(dd);
+		} else {
+			
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Due Balance Query Fetched Successfully", rootDto));
 	}
 	
 	private boolean checkForKey(String apiKey) {

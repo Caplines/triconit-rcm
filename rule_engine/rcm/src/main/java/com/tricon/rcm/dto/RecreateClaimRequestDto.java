@@ -18,4 +18,5 @@ public class RecreateClaimRequestDto {
 	private RebillingResponseDto  rebillingResponseDto;
 	private List<ClaimFromSheet> claimFromSheet;
 	private boolean reCeationOptionChoosen;
+	private int recreateTeam;
 }

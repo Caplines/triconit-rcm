@@ -115,4 +115,6 @@ public interface RcmClaimDetailDto {
 	boolean getOfficeActive();
 	
 	String getDueBalanceResponsibleParty();
+	
+	int getRecreatedSection();
 }

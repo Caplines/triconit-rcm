@@ -134,6 +134,9 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	@Column(name = "review",columnDefinition = "BIT default 0")
 	private boolean review;//
 	
+	@Column(name = "recreated_section",columnDefinition = "integer default 0")
+	private int recreatedSection;//
+	
 	@Column(name = "auto_rule_run",columnDefinition = "BIT default 0")
 	private boolean autoRuleRun;//
 	

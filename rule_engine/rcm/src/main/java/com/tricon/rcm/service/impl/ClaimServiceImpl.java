@@ -1536,7 +1536,7 @@ public class ClaimServiceImpl {
 		 List<InsuranceNameTypeDto> insuranceTypeDto =null;
 		// ruleEngineService.pullInsuranceMappingFromSheet(company);
 		// int logId=-1;
-		RcmMappingTable table = rcmMappingTableRepo.findByNameAndCompany(Constants.RCM_MAPPING_RCM_DATABASE, company);
+		//RcmMappingTable table = rcmMappingTableRepo.findByNameAndCompany(Constants.RCM_MAPPING_RCM_DATABASE, company);
 		HashMap<String, RcmCompany> companies = new HashMap<>();
 		HashMap<String, RcmInsuranceType> rcmInsuranceTypes = new HashMap<>();
 		RcmInsuranceType rcmInsuranceType = null;
@@ -4291,7 +4291,7 @@ public class ClaimServiceImpl {
 				//a) Rules Engine Validations  b) Enter Claim Submission Details:	
 				
 				if ((claim.getFirstWorkedTeamId().getId()==RcmTeamEnum.INTERNAL_AUDIT.getId()) && 
-					partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId() ) {
+					partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId()  ) {
 					if (dto.getRuleRemarkDto() != null) {
 						//Filter List with section name =="RuleEngine" //This is set from UI 
 					    List<RuleRemarkDto> fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals(Constants.UI_RULEENIGNE_SECTION))
@@ -4333,7 +4333,8 @@ public class ClaimServiceImpl {
 				}
 				
 				
-				else if (partialHeader.getTeamId()==RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+				else if (partialHeader.getTeamId()==RcmTeamEnum.INTERNAL_AUDIT.getId()
+						|| claim.getRecreatedSection() == Constants.RecreatedSection_ONE) {
 				    //TO DO
 					if(dto.getClaimManualRuleValidationList() != null)	saveClaimManualRules(dto.getClaimManualRuleValidationList(), user, claim, partialHeader);
 					
@@ -4358,8 +4359,8 @@ public class ClaimServiceImpl {
 						saveClaimRemark(dto.getClaimRemark(), claim, user, partialHeader);
 					}
 					
-//					if (dto.getSubmissionDto() != null)
-//						saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
+					if (dto.getSubmissionDto() != null && claim.getRecreatedSection() == Constants.RecreatedSection_ONE)
+						saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
 				}
 				
 				
@@ -4368,8 +4369,13 @@ public class ClaimServiceImpl {
 			}
 			claim.setLastWorkTeamId(rcmTeamRepo.findById(partialHeader.getTeamId()));
 			claim.setRuleEngineRunRemark(dto.getRuleEngineRunRemark());
-			//only billing can submit.
-			if (originalClaimPendingStatus &&  dto.isSubmission() && partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId()) {
+			
+			if ( claim.getRecreatedSection() == Constants.RecreatedSection_ONE) {
+				 claim.setRecreatedSection( Constants.RecreatedSection_REST);
+			}
+			//only billing can submit. in Previous Requirments
+			//Now any one can submit.. so Condition -==>partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId() was removed
+			if (originalClaimPendingStatus &&  dto.isSubmission() ) {
 
 				// update old status
 				ClaimCycle previousCycleData = clamCycleRepo.findFirstByClaimAndCurrentTeamIdOrderByCreatedDateDescIdDesc(claim,
@@ -4382,9 +4388,10 @@ public class ClaimServiceImpl {
 				}
 
 				//only billing can submit
+				int newTeamId= Constants.FROMBILLINGTOPOSTING;
 				//ClaimStatusEnum.Billing.getType();//Once claim is submitted and its being reworked upon the maintain the current status.
 				message= rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader,dto.getClaimUuid(),
-						Constants.FROMBILLINGTOPOSTING,"",claim,assign,user,office,null,
+						newTeamId,"",claim,assign,user,office,null,
 						originalClaimPendingStatus? ClaimStatusEnum.Billed.getType() : null,originalClaimPendingStatus? ClaimStatusEnum.Need_to_Post.getType() : null,dto.getActionName(),
 								rcmTeamRepo.findById(partialHeader.getTeamId()));
 			    
