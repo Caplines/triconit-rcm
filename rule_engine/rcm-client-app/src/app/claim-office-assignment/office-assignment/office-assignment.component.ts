@@ -27,7 +27,6 @@ export class OfficeAssignmentComponent implements OnInit {
 
   bType: string = "-1";
   insType: string = "All";
-  isUserWisePendency = false;
   isSorted: any = {};
   teamId: any;
   userByTeam: any = [];
@@ -49,6 +48,11 @@ export class OfficeAssignmentComponent implements OnInit {
   currentTeamId: number = Utils.selectedTeam();
   showTooltipConfig: any = { tooltipOne: false, tooltipTwo: false };
   noOfClaimsBilledTeamName: string;
+  tabSwitch: any = { 'userwisePendency': false, 'freshpend': false, 'repeatpend': false };
+  tabValue: any;
+  originalClaimData: any[] = [];
+  selectedHeaders: string[];
+  private resizeObserver: ResizeObserver;
 
   constructor(private appService: ApplicationServiceService, private title: Title, private router: Router, private downloadService: DownLoadService, public constants: AppConstants,) {
     title.setTitle(Utils.defaultTitle + "Claim Office Assignment");
@@ -74,11 +78,25 @@ export class OfficeAssignmentComponent implements OnInit {
     window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
   }
 
-  fetchClaimAssignments() {
+  ngAfterViewInit(){ // Adjusts total row when thead height changes dynamically
+    let thead = document.querySelector('thead tr');
+    this.resizeObserver = new ResizeObserver(() => {
+      this.setTopOnTotalRow();
+    });
+    this.resizeObserver.observe(thead);
+  }
+
+  fetchClaimAssignments(repeatType?: number, typeChange?: string) {
     let ths = this;
     ths.loader.showLoader = true;
     ths.claimAssigmentPullModel.claimType = [];
     ths.claimAssigmentPullModel.insuranceType = [];
+    if (typeChange) {
+      this.originalClaimData = [];
+      this.tabSwitch.userwisePendency = false;
+      this.tabSwitch.freshpend = false;
+      this.tabSwitch.repeatpend = false;
+    }
     ths.totalClaimData.totalCount = ths.totalClaimData.totalRemLiteReject = ths.totalClaimData.totalcountAndRemLiteReject = 0;
     if (ths.bType == '-1') {
       ths.bl.bills.forEach(e => {
@@ -99,10 +117,22 @@ export class OfficeAssignmentComponent implements OnInit {
       ths.claimAssigmentPullModel.insuranceType.push(ths.insType);
     }
 
+    ths.claimAssigmentPullModel.repeatType = repeatType || null;
+
     ths.appService.fetchClaimAssignments(ths.claimAssigmentPullModel, (res: any) => {
 
       if (res.status === 200) {
         ths.claimData = res.data;
+        if (this.originalClaimData.length == 0) {
+          this.originalClaimData = [...res.data];
+        }
+        if (this.tabValue == 'freshpend' || this.tabValue == 'repeatpend'){
+          this.filteredItems = this.claimData.filter(claimData => {
+            this.originalClaimData.some(orgClaimData => {
+              orgClaimData.officeUuid == claimData.officeUuid;
+            })
+          })
+        } 
         this.showFilterOptioncompanyName(ths.claimData);
         this.filterCompanyName();
         this.setTopOnTotalRow();
@@ -205,9 +235,36 @@ export class OfficeAssignmentComponent implements OnInit {
 
   exportToCsv() {
     this.loader.exportCSVLoader = true;
+    const headerConfigs = {
+      Default: [
+        "Client",
+        "Office",
+        "User Assignment",
+        "Days Since Oldest Pending Claim (Upload Date)",
+        " Days Since Oldest Pending Claim (DOS)",
+        "# of Claims to be " + this.noOfClaimsBilledTeamName + "",
+        this.teamId == 7 ? "# of RemoteLite Rejections" : '',
+        this.teamId == 7 ? "Total Pendency" : ''
+      ],
+      userwisePendency: [
+        "User Assignment",
+        "Days Since Oldest Pending Claim (Upload Date)",
+        " Days Since Oldest Pending Claim (DOS)",
+        "# of Claims to be " + this.noOfClaimsBilledTeamName + "",
+        this.teamId == 7 ? "# of RemoteLite Rejections" : '',
+        this.teamId == 7 ? "Total Pendency" : ''
+      ]
+    }
+
+    if (this.tabSwitch.userwisePendency) {
+      this.selectedHeaders = headerConfigs.userwisePendency;
+    } else {
+      this.selectedHeaders = headerConfigs.Default;
+    }
+
     let options: any = {
       showLabels: true,
-      headers: ["Client", "Office", "User Assignment", "Days Since Oldest Pending Claim (Upload Date)", " Days Since Oldest Pending Claim (DOS)", "# of Claims to be " + this.noOfClaimsBilledTeamName + "", this.teamId == 7 ? "# of RemoteLite Rejections" : '', this.teamId == 7 ? "Total Pendency" : ''],
+      headers: this.selectedHeaders
     }
     let excelData: any = JSON.parse(JSON.stringify(this.filteredItems));
     excelData = excelData.map((e: any) => {
@@ -232,31 +289,53 @@ export class OfficeAssignmentComponent implements OnInit {
     excelData = excelData.map(
       ({ officeUuid, assignedUser, ...newClaimData }: any) => newClaimData);
 
-    excelData = excelData.map((e: any) => {
-      return {
-        "Client": e.companyName,
-        "Office": e.officeName,
-        "User Assignment": e.officeAssignedTo,
-        "Days Since Oldest Pending Claim (Upload Date)": e.opdtd,
-        "Days Since Oldest Pending Claim (DOS)": e.opdosd,
-        "# of Claims to be Billed": e.count,
-        "# of RemoteLite Rejections": this.teamId == 7 ? e.remoteLiteRejections : '',
-        "Total Pendency": this.teamId == 7 ? e.count + e.remoteLiteRejections : ''
-      }
-    })
-
-    excelData.unshift(                                        //method is used to show Total Row in CSV.
-      {
-        "Office": 'Total',
-        "Client": '-',
-        "User Assignment": '-',
-        "Days Since Oldest Pending Claim (Upload Date)": '-',
-        "Days Since Oldest Pending Claim (DOS)": '-',
-        "# of Claims to be Billed": this.totalClaimData.totalCount,
-        "# of RemoteLite Rejections": this.teamId == 7 ? this.totalClaimData.totalRemLiteReject : '',
-        "Total Pendency": this.teamId == 7 ? this.totalClaimData.totalcountAndRemLiteReject : ''
-      }
-    )
+    if (this.tabSwitch.userwisePendency){
+      excelData = excelData.map((e: any) => {
+        return {
+          "User Assignment": e.officeAssignedTo,
+          "Days Since Oldest Pending Claim (Upload Date)": e.opdtd || "",
+          "Days Since Oldest Pending Claim (DOS)": e.opdosd || "",
+          "# of Claims to be Billed": e.count,
+          "# of RemoteLite Rejections": this.teamId == 7 ? e.remoteLiteRejections : '',
+          "Total Pendency": this.teamId == 7 ? e.count + e.remoteLiteRejections : ''
+        }
+      })
+      excelData.unshift(                                        //method is used to show Total Row in CSV.
+        {
+          "User Assignment": '-',
+          "Days Since Oldest Pending Claim (Upload Date)": '-',
+          "Days Since Oldest Pending Claim (DOS)": '-',
+          "# of Claims to be Billed": this.totalClaimData.totalCount,
+          "# of RemoteLite Rejections": this.teamId == 7 ? this.totalClaimData.totalRemLiteReject : '',
+          "Total Pendency": this.teamId == 7 ? this.totalClaimData.totalcountAndRemLiteReject : ''
+        }
+      )
+    } else {
+      excelData = excelData.map((e: any) => {
+        return {
+          "Client": e.companyName,
+          "Office": e.officeName,
+          "User Assignment": e.officeAssignedTo,
+          "Days Since Oldest Pending Claim (Upload Date)": e.opdtd || "",
+          "Days Since Oldest Pending Claim (DOS)": e.opdosd || "",
+          "# of Claims to be Billed": e.count,
+          "# of RemoteLite Rejections": this.teamId == 7 ? e.remoteLiteRejections : '',
+          "Total Pendency": this.teamId == 7 ? e.count + e.remoteLiteRejections : ''
+        }
+      })
+      excelData.unshift(                                        //method is used to show Total Row in CSV.
+        {
+          "Office": 'Total',
+          "Client": '-',
+          "User Assignment": '-',
+          "Days Since Oldest Pending Claim (Upload Date)": '-',
+          "Days Since Oldest Pending Claim (DOS)": '-',
+          "# of Claims to be Billed": this.totalClaimData.totalCount,
+          "# of RemoteLite Rejections": this.teamId == 7 ? this.totalClaimData.totalRemLiteReject : '',
+          "Total Pendency": this.teamId == 7 ? this.totalClaimData.totalcountAndRemLiteReject : ''
+        }
+      )
+    }
 
     this.date = new Date();
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`
@@ -288,7 +367,7 @@ export class OfficeAssignmentComponent implements OnInit {
   }
   downloadPdf() {
     this.loader.exportPDFLoader = true;
-    let data = { "fileName": "Pendancy", "data": this.filteredItems, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName, "currentTeamId": this.teamId, "currentTeamName": this.noOfClaimsBilledTeamName };
+    let data = { "fileName": "Pendancy", "data": this.filteredItems, "totalCount": this.totalClaimData.totalCount, "totalRemLiteReject": this.totalClaimData.totalRemLiteReject, "totalcountAndRemLiteReject": this.totalClaimData.totalcountAndRemLiteReject, "clientName": this.clientName, "currentTeamId": this.teamId, "currentTeamName": this.noOfClaimsBilledTeamName, "tabSwitch": this.tabValue };
     this.appService.pendancyPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
         this.date = new Date();
@@ -479,19 +558,39 @@ export class OfficeAssignmentComponent implements OnInit {
     this.noOfClaimsBilledTeamName = matchedTeam.teamName;
   }
 
-  userwisePendency(event: any) {
-    console.log(event.target.checked);
-    this.totalClaimData.totalCount = this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject = 0;
-    if (event.target.checked) {
-      this.isUserWisePendency = true;
-      this.filterCompanyNamePendency(this.companies);
-    } else {
-      this.isUserWisePendency = false;
-      // this.showFilterOptioncompanyName(this.claimData);
-      this.filterCompanyName();
-
+  switchTab(tab: any) {
+    if (tab == 'userwisePendency') {
+      this.totalClaimData.totalCount = this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject = 0;
+      if (this.tabSwitch.userwisePendency){
+        this.tabValue = '';
+        this.tabSwitch.userwisePendency = false;
+        this.filterCompanyName();
+      } else {
+        this.tabValue = 'userwisePendency';
+        this.tabSwitch.userwisePendency = true;
+        this.tabSwitch.freshpend = false;
+        this.tabSwitch.repeatpend = false;
+        this.claimData = [...this.originalClaimData];
+        this.showFilterOptioncompanyName(this.claimData);
+        this.filterCompanyName();
+        this.filterCompanyNamePendency(this.companies);
+      }
     }
-
-
+    else if (tab == 'freshpend') {
+      this.tabValue = 'freshpend';
+      this.tabSwitch.userwisePendency = false;
+      this.tabSwitch.freshpend = true;
+      this.tabSwitch.repeatpend = false;
+      this.fetchClaimAssignments(1);
+      this.filterCompanyName();
+    }
+    else if (tab == 'repeatpend') {
+      this.tabValue = 'repeatpend';
+      this.tabSwitch.userwisePendency = false;
+      this.tabSwitch.freshpend = false;
+      this.tabSwitch.repeatpend = true;
+      this.fetchClaimAssignments(2);
+      this.filterCompanyName();
+    }
   }
 }
