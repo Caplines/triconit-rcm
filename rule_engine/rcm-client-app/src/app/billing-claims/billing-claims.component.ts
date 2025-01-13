@@ -37,6 +37,7 @@ import { PmlDatePicker } from '../shared/date-picker/datepicker-options';
 export class BillingClaimsComponent {
 
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
+  alertRecreate: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertAssign: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertArch: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertPreferrsub: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
@@ -392,7 +393,8 @@ export class BillingClaimsComponent {
         selectedServiceCodes: [],
         serviceCodesServiceLevel: [],
         secondaryValid: false,
-        reasonRecreation: null
+        reasonRecreation: null,
+        recreateTeam: ""
       },
       dataModal: {},
       claimFromSheet: {
@@ -410,8 +412,9 @@ export class BillingClaimsComponent {
         secondaryInsuranceAddress: '',
         secondaryGroupNumber: '',
         secondaryPolicyHolder: '',
-        secondaryPolicyHolderDob: ''//,
+        secondaryPolicyHolderDob: ''
         //claimId: '',
+        //recreateTeam: ""
       },
       emptyClaimFromSheet: {}
     },
@@ -830,14 +833,15 @@ export class BillingClaimsComponent {
       let validSec = true;
       if (valid && validSec) {
 
-        let prefer = this.checkForValidPreferredSbmisssion();
-
+        /*let prefer = this.checkForValidPreferredSbmisssion();
+        /NOT NEEDED NOW AFTER PENDING
         if (!prefer && !this.overidePreferredSubmission) {
           ths.openPrefferedModal();
           return;
-        }
+        }*/
         ths.claimEditModel.submission = true;
         ths.claimService.saveClaimData(ths.claimEditModel, (callback: any) => {
+
           ths.finalSaveSection(true, true);
         });
       } else {
@@ -1408,13 +1412,14 @@ export class BillingClaimsComponent {
   }
 
   isSectionReadOnly(sectionId: number, accessType: string): boolean {
-    //debugger;
+
     var right = this.checkForSectionAccess(sectionId, accessType);
     if (!right) return true;
     if (this.claimRcm == undefined) return true;
     if (!this.claimRcm.allowEdit) return true;
     if (this.claimRcm.currentState == 1) return true;
     //if (!this.claimRcm.pending) return true;
+    debugger;
     if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isBilling
     ) {
       return false;
@@ -2100,6 +2105,26 @@ export class BillingClaimsComponent {
     let params: any = {
       "claimUuid": this.claimUUid,
       "assignToTeamId": +this.claimEditModel.assignToTeam
+    };
+    this.appService.isOtherTeamTLExist(params, (res: any) => {
+      if (res.data.responseStatus) {
+        callback(res.data.responseStatus);
+      }
+      else {
+        ref.showAlertPopup = true;
+        ref.alertMsg = res.data.message;
+        ref.isError = true;
+        setTimeout(() => {
+          ref = {};
+        }, 6000);
+      }
+    })
+  }
+
+  isOtherTLExistWithParam(claimUUid: string, teamId: string, ref: any, callback: any) {
+    let params: any = {
+      "claimUuid": claimUUid,
+      "assignToTeamId": +teamId
     };
     this.appService.isOtherTeamTLExist(params, (res: any) => {
       if (res.data.responseStatus) {
@@ -3568,7 +3593,7 @@ export class BillingClaimsComponent {
     ths.claimService.fetchClaimSteps(uuid,
       (res: any) => {
         if (res.status === 200) {
-          console.log(res.data);
+
           ths.claimSteps = this.filterConsecutiveDuplicates(res.data);
           if (ths.claimSteps != undefined && ths.claimSteps.length > 0) {
             // ths.claimSteps[ths.claimSteps.length - 1]['done'] = 'undone';
@@ -3591,13 +3616,13 @@ export class BillingClaimsComponent {
 
     let pointer: any = [];
     for (let i = 1; i < data.length; i++) {
-      let prev = filteredData[filteredData.length - 1];
+      //let prev = filteredData[filteredData.length - 1];
       let current = data[i];
       //we are using this else  block and when -
       //1- claim is Archive then we need to replace cureent next action to previous status
       //2  when claim is Unarchive then we need to find previous next action before last claim was archive
-      if (current['statusUpdated'] === 'Claim UnArchived') {
-        current['statusUpdated'] = current['nextAction'];
+      if (current['status'] === 'Claim UnArchived') {
+        //current['statusUpdated'] = current['nextAction'];
       }
       if (current['statusUpdated'] === 'Claim Archived') {
         pointer.push({ "i": i, "b": current['nextAction'] });
@@ -3637,7 +3662,26 @@ export class BillingClaimsComponent {
 
       }
     }
-    return filteredData;
+
+    //if Claim Archived and unArchived in consecutive order other than and First Last then Hide/Delete only  Claim Archived.
+    //Length less than 2 because atleast 3 Records need to in there claim upload/Claim Archived/Claim UnArchived
+    if (filteredData.length > 2) {
+      for (let i = 1; i < filteredData.length - 1; i++) {
+        let next = filteredData[i + 1];
+        let current = filteredData[i];
+        if (current != null && next != null && (current.status == 'Claim Archived' && next.status === 'Claim UnArchived')) {
+          //filteredData[i + 1] = null;
+          filteredData[i] = null;
+        }
+      }
+    } else {
+
+    }
+    data = [];
+    for (let i = 0; i < filteredData.length; i++) {
+      if (filteredData[i] != null) data.push(filteredData[i]);
+    }
+    return data;
   }
 
   saveInsuranceFollowUpInfo(isFinal: boolean) {
@@ -3975,6 +4019,7 @@ export class BillingClaimsComponent {
     reBillingModal['dataModal']['originalRequirements'] = reBillingModal['modal']['originalRequirements'];
     reBillingModal['dataModal']['claimTransferNextTeamId'] = reBillingModal['modal']['claimTransferNextTeamId'];
     reBillingModal['dataModal']['reCeationOptionChoosen'] = reBillingModal['modal']['reCeationOptionChoosen'];
+    reBillingModal['dataModal']['recreateTeam'] = reBillingModal['modal']['recreateTeam'];
     reBillingModal['dataModal']['usedAI'] = reBillingModal['modal']['usedAI'];
 
 
@@ -4147,7 +4192,7 @@ export class BillingClaimsComponent {
     this.otherErrormsg = "";
     this.createModalForRecreateFullAndPartialClaim();
 
-    // debugger;
+    debugger;
     if (!isFinal) {
       if (this.checkValidationForRecreate()) {
         let params: any = {
@@ -4155,7 +4200,7 @@ export class BillingClaimsComponent {
           recreateClaimRequestInfoModel: this.claimSectionModal['RECREATE_CLAIM']['dataModal']
         };
         console.log(params);
-        //debugger;
+        debugger;
         let recreateModal: any = this.claimSectionModal.RECREATE_CLAIM;
         this.loader['attachSecondaryCreationValidationData'] = true;
         this.claimSectionModal.RECREATE_CLAIM.attachSecondaryCreationValidationData = [];
@@ -4167,6 +4212,7 @@ export class BillingClaimsComponent {
               if (res.data.length > 0) {
                 this.claimSectionModal.RECREATE_CLAIM.attachSecondaryCreationValidationData = res.data;
               } else {
+
                 this.appService.saveClaimLevelInfoSection(params, (res1: any) => {
                   if (res1.status) {
                     location.reload();
@@ -4201,6 +4247,7 @@ export class BillingClaimsComponent {
 
   checkValidationForRecreate() {
     let isSectionValidated = true;
+    debugger;
     this.emptyFields["RECREATE_CLAIM"] = {};
     if (!this.claimSectionModal.RECREATE_CLAIM['dataModal']['newClaimId'] && this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != 'attachSecondary') {
       this.emptyFields.RECREATE_CLAIM['newClaimId'] = true;
@@ -4218,6 +4265,10 @@ export class BillingClaimsComponent {
       this.emptyFields.RECREATE_CLAIM['selectedServiceCodes'] = true;
       isSectionValidated = false;
     }
+    if (this.claimSectionModal.RECREATE_CLAIM['dataModal']['recreateTeam'] == '') {
+      this.emptyFields.RECREATE_CLAIM['recreateTeam'] = true;
+      isSectionValidated = false;
+    }
     if (this.claimSectionModal.RECREATE_CLAIM.validationData.length > 0) {
       this.claimSectionModal.RECREATE_CLAIM.validationData.forEach((e: any) => {
         if (e.resultType == 'FAIL' && !e.remarks) {
@@ -4230,7 +4281,7 @@ export class BillingClaimsComponent {
     }
     if (this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 3) {
       this.selectedServiceCodesExist = this.claimSectionModal.RECREATE_CLAIM['modal']['selectedServiceCodes'].some((serviceCodes: any) => this.claimSectionModal.RECREATE_CLAIM['newServiceCodes'].includes(serviceCodes));
-      isSectionValidated = this.selectedServiceCodesExist;
+      if (!this.selectedServiceCodesExist) isSectionValidated = this.selectedServiceCodesExist;
     }
     if (this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] == 'attachSecondary' && this.claimSectionModal.RECREATE_CLAIM['modal']['secondaryValid']) {
       this.isSecondaryFieldsNotEmpty((secondaryFieldsValid: any) => {
@@ -4248,10 +4299,13 @@ export class BillingClaimsComponent {
     recreateModal['dataModal']['existingNewClaimServiceCodes'] = recreateModal['newServiceCodes'];
     recreateModal['dataModal']['newClaimId'] = recreateModal['modal']['newClaimId'];
     recreateModal['dataModal']['reasonRecreation'] = recreateModal['modal']['reasonRecreation'];
+    recreateModal['dataModal']['recreateTeam'] = recreateModal['modal']['recreateTeam'];
     recreateModal['dataModal']['recreationRemarks'] = recreateModal['modal']['recreationRemarks'];
     recreateModal['dataModal']['selectedServiceCodes'] = recreateModal['modal']['selectedServiceCodes'];
     this.getValdationFailRemark((failRemarks: any) => recreateModal['dataModal']['validationRuleRemarks'] = failRemarks);
     recreateModal['dataModal']['reCeationOptionChoosen'] = this.claimSectionModal['REBILLING']['modal']['reCeationOptionChoosen'];
+
+
     recreateModal['dataModal']['rebillingResponseDto'] = {
       "rebillingRemarks": this.claimSectionModal['REBILLING']['modal']['rebillingRemarks'],
       "reasonForRebilling": this.claimSectionModal['REBILLING']['modal']['reasonForRebilling'],

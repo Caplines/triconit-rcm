@@ -100,7 +100,8 @@ export class AppConstants {
     public static AGING_TEAM = 20;
     public static commonPath: any = ["/claim-assignment", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", "/reconciliation", '/tool-update', '/tool-update/issue-claims'];
     // public static commonPath: any = ["/claim-assignment", "/tool-update", "/list-of-claims", "/fetch-claims", "/production", "/all-pendency", "/update-pass", "/search-claims", '/tool-update/issue-claims'];
-
+    public RecreatedSection_ONE = 1;
+    public RecreatedSection_REST = 2;
 
     public TEAMS_ID_CONFIG = new Map<number, string>([
         [2, "ADMIN"],

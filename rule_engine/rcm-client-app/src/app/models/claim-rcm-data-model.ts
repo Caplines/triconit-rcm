@@ -113,6 +113,7 @@ export interface ClaimRcmDataModel {
 	lastTeamWorkId?: number;
 	officeActive?: boolean;
 	dueBalanceResponsibleParty?: string;
+	recreatedSection?: number;
 }
 
 
