@@ -492,14 +492,18 @@ export class BillingClaimsComponent {
 
   @HostListener('window:scroll')
   onScroll() {
-    let scrollPosition = window.scrollY;
-    let windowHeight = window.innerHeight;
-    let documentHeight = document.documentElement.scrollHeight;
-    let scrollPercentage = (scrollPosition / (documentHeight - windowHeight)) * 100;
-    if (scrollPercentage >= this.scrollThreshold) {
-      this.showClaimDetailTable = true;
-    } else {
-      this.showClaimDetailTable = false;
+    if (this.invalidClaim == ""){
+      let scrollPosition = window.scrollY;
+      let windowHeight = window.innerHeight;
+      let documentHeight = document.documentElement.scrollHeight;
+      let scrollPercentage = (scrollPosition / (documentHeight - windowHeight)) * 100;
+      if (scrollPercentage >= this.scrollThreshold) {
+        this.showClaimDetailTable = true;
+        document.getElementById('claim-page-heading').style.display = "none";
+      } else {
+        this.showClaimDetailTable = false;
+        document.getElementById('claim-page-heading').style.display = "";
+      }
     }
   }
 
@@ -1419,7 +1423,6 @@ export class BillingClaimsComponent {
     if (!this.claimRcm.allowEdit) return true;
     if (this.claimRcm.currentState == 1) return true;
     //if (!this.claimRcm.pending) return true;
-    debugger;
     if (this.claimRcm.firstTeamId == AppConstants.INTERNAL_AUDIT_TEAM && this.isBilling
     ) {
       return false;
@@ -4192,7 +4195,6 @@ export class BillingClaimsComponent {
     this.otherErrormsg = "";
     this.createModalForRecreateFullAndPartialClaim();
 
-    debugger;
     if (!isFinal) {
       if (this.checkValidationForRecreate()) {
         let params: any = {
@@ -4200,7 +4202,6 @@ export class BillingClaimsComponent {
           recreateClaimRequestInfoModel: this.claimSectionModal['RECREATE_CLAIM']['dataModal']
         };
         console.log(params);
-        debugger;
         let recreateModal: any = this.claimSectionModal.RECREATE_CLAIM;
         this.loader['attachSecondaryCreationValidationData'] = true;
         this.claimSectionModal.RECREATE_CLAIM.attachSecondaryCreationValidationData = [];
@@ -4247,7 +4248,6 @@ export class BillingClaimsComponent {
 
   checkValidationForRecreate() {
     let isSectionValidated = true;
-    debugger;
     this.emptyFields["RECREATE_CLAIM"] = {};
     if (!this.claimSectionModal.RECREATE_CLAIM['dataModal']['newClaimId'] && this.claimSectionModal.RECREATE_CLAIM['modal']['buttonType'] != 'attachSecondary') {
       this.emptyFields.RECREATE_CLAIM['newClaimId'] = true;

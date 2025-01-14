@@ -536,9 +536,8 @@
     z-index: 9999;
     margin-left: -20px;
     padding-left: 35px;
-    padding-top: 15px;
     margin-top: -10px;
-    padding-bottom: 20px;
+    height: 68px;
 }
 
 .attach-secondary {
@@ -766,29 +765,65 @@ a.Read {
     width: 65px;
 }
 
-.ClaimDetailTable {
-    max-width: fit-content;
-    font-size: 14px;
-    text-align: center;
-    font-weight: 500;
-    position: absolute;
-    left: 350px;
-    right: 165px;
-    bottom: 1px;
-}
-
-.hideInfo {
-    white-space: nowrap;
-}
-
-.hideInfo div {
-    display: block;
-    width: -webkit-fill-available;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
 .NA {
     color: #d88627 !important;
     font-weight: 600;
+}
+
+.duebal-loader {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    display: block;
+    margin: 7px 30px;
+    position: relative;
+    color: #FFF;
+    left: -100px;
+    box-sizing: border-box;
+    animation: shadowRolling 2s linear infinite;
+}
+
+.custom-row img {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+
+.claim-detail {
+    font-size: 15px;
+}
+
+.claim-item {
+    margin-right: 12px;
+    max-width: 185px;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+}
+
+.claim-item strong {
+    font-weight: bold;
+}
+
+.cp-url-btn {
+    position: fixed;
+    right: 155px;
+    top: 75px;
+    width: 106px;
+    z-index: 9999;
+    display: inline-block;
+}
+
+.cp-url-txt {
+    visibility: hidden;
+    font-size: 12px !important;
+    position: fixed;
+    right: 136px;
+    top: 54px;
+    width: 106px;
+    z-index: 9999;
+    display: inline-block;
 }
