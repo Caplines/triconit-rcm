@@ -314,6 +314,15 @@
                                                 </div>
 
 
+                                                <!-- <div *ngIf="!staticUtil.isNotTeamPatientStatement()" class="custom-row">
+                                                    <label for="" class="">Due Balance
+                                                        <img src="../../../assets/img/refresh.png" (click)="fetchDueBalance()" />
+                                                    </label>
+                                                    <div>
+                                                        <div *ngIf="loader.duebal" class="duebal-loader"></div>
+                                                        <div *ngIf="!loader.duebal">{{ claimRcm.dueBalanceResponsibleParty || "N/A" }}</div>
+                                                    </div>
+                                                </div> -->
                                             </div>
                                             <div class="col-md-3 mb-2" *ngIf="isORMNotesNeeded()">
                                                 <div class="custom-row">
