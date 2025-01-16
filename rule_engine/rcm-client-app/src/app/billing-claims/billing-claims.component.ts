@@ -2359,6 +2359,9 @@ export class BillingClaimsComponent {
       }
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.loader.appealLevelinfo = false;
+        if (!this.claimSectionModal['APPEAL'].data){
+          this.claimSectionModal['APPEAL'].data = [];
+        }
         this.claimSectionModal['APPEAL'].data.unshift(res.data);
         const dp = [...this.claimSectionModal['APPEAL'].data];
         this.claimSectionModal['APPEAL'].data = dp;
@@ -2382,8 +2385,21 @@ export class BillingClaimsComponent {
       if (ths.sectionIds[section.sectionName]?.isWorkDone && ths.sectionIds[section.sectionName]?.isNewSection && section.sectionId == ths.sectionIds[section.sectionName]?.['sectionId']) {          //replace section.isNewSection with ===> ths.sectionIds[section.sectionName]?.isNewSection
         const methodName: any = `validate_${section.sectionName}`
         let isSectionVal: boolean = ths[methodName]();   //validation method will be called here
+        let isSectionValOriginal: boolean = isSectionVal;
         //method names are creates using convention  validate_{sectioname}
         console.log(!isSectionVal);
+        //Clearing default model values for final save to exclude them from history table.
+        if (!isSectionVal){
+          if (methodName == 'validate_PATIENT_STATEMENT'){
+            this.finalSaveClaimDataModel.rcmPatientStatementInfoModel = null;
+            this.finalSaveClaimDataModel.paymentInformationInfoModel = null;
+            this.finalSaveClaimDataModel.rcmPatientStatementInfoModel = null;
+            this.finalSaveClaimDataModel.patientPaymentInfoModel = null;
+            this.finalSaveClaimDataModel.patientCommunicationInfoModel = null;
+            this.finalSaveClaimDataModel.collectionAgencyInfoModel = null;
+            this.finalSaveClaimDataModel.appealInfoModel = null;
+          }
+        }
         if (methodName == 'validate_APPEAL' || methodName == 'validate_SERVICE_LEVEL_INFORMATION' || methodName == 'validate_CLAIM_LEVEL_INFORMATION'
           || methodName == 'validate_INSURANCE_PAYMENT_INFORMATION' ||
           methodName == 'validate_INSURANCE_FOLLOW_UP' || methodName == 'validate_PATIENT_STATEMENT'
@@ -2396,7 +2412,7 @@ export class BillingClaimsComponent {
         if (!isSectionVal) {
           ths.isSectionValidated = false;
         } else {
-          ths.createSectionModal(section.sectionName);
+          if (isSectionValOriginal) ths.createSectionModal(section.sectionName);
         }
       }
     }
@@ -2747,7 +2763,27 @@ export class BillingClaimsComponent {
   }
   validate_EOB_INSURANCE_LETTER() { return true; }
   validate_INSURANCE_PAYMENT_INFORMATION() {
-    return true;
+    this.emptyFields["INSURANCE_PAYMENT_INFORMATION"] = {};
+    let isSectionValidated = true;
+    if (!this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentIssueTo']){
+      this.emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentIssueTo'] = true;
+      isSectionValidated = false;
+    }
+    if (!this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode']) {
+      this.emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentMode'] = true;
+      isSectionValidated = false;
+    }
+    if (this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == "Check"){
+      if (!this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo']) {
+        this.emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkDeliverTo'] = true;
+        isSectionValidated = false;
+      }
+    }
+    if (!this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkNumber']) {
+      this.emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkNumber'] = true;
+      isSectionValidated = false;
+    }
+    return isSectionValidated;
   }
 
   validate_PATIENT_STATEMENT() {
@@ -2859,8 +2895,7 @@ export class BillingClaimsComponent {
     }
 
     if (this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] == 'Check') {
-      let checkNumber = this.claimSectionModal['PATIENT_PAYMENT']['checkNumber'];
-      if (!checkNumber || checkNumber.toString().length != 4 || isNaN(checkNumber)) {
+      if (!this.claimSectionModal['PATIENT_PAYMENT']['checkNumber']) {
         this.emptyFields["PATIENT_PAYMENT"]['checkNumber'] = true;
         isSectionValidated = false;
       }
@@ -3117,7 +3152,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'];  //converting into Number type using bitwise operator
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'];  //converting into Number type using bitwise operator
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'];  //converting into Number type using bitwise operator
-    if (!isFinalSubmit) {
+    if (!isFinalSubmit && this.validate_INSURANCE_PAYMENT_INFORMATION()) {
       this.loader.insurancePaymentInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,
@@ -3132,6 +3167,9 @@ export class BillingClaimsComponent {
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.showAlert(res, 'INSURANCE_PAYMENT_INFORMATION', '3');
         this.loader.insurancePaymentInfo = false;
+        if (!this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data) {
+          this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data = [];
+        }
         this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data.unshift(res.data);
         const dp = [...this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data];
         this.clearAllPaymentInformation();
@@ -3729,6 +3767,9 @@ export class BillingClaimsComponent {
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.showAlert(res, 'PATIENT_STATEMENT', '3');
         this.loader.patientStaementInfo = false;
+        if (!this.claimSectionModal['PATIENT_STATEMENT'].data) {
+          this.claimSectionModal['PATIENT_STATEMENT'].data = [];
+        }
         this.claimSectionModal['PATIENT_STATEMENT'].data.unshift(res.data);
         const dp = [...this.claimSectionModal['PATIENT_STATEMENT'].data];
         this.clearExisitingPatientStatmentValues(1);
@@ -3757,7 +3798,9 @@ export class BillingClaimsComponent {
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.showAlert(res, 'PATIENT_PAYMENT', '3');
         this.loader.patientPaymentInfo = false;
-
+        if (!this.claimSectionModal['PATIENT_PAYMENT'].data) {
+          this.claimSectionModal['PATIENT_PAYMENT'].data = [];
+        }
         this.claimSectionModal['PATIENT_PAYMENT'].data.unshift(res.data);
         const dp = [...this.claimSectionModal['PATIENT_PAYMENT'].data];
         this.claimSectionModal['PATIENT_PAYMENT'].data = dp;
@@ -3800,6 +3843,13 @@ export class BillingClaimsComponent {
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.showAlert(res, 'PATIENT_COMMUNICATION', '2');
         this.loader.patientCommunicationSection = false;
+        if (!this.claimSectionModal['PATIENT_COMMUNICATION'].data) {
+          this.claimSectionModal['PATIENT_COMMUNICATION'].data = [];
+        }
+        this.claimSectionModal['PATIENT_COMMUNICATION'].data.unshift(res.data);
+        const dp = [...this.claimSectionModal['PATIENT_COMMUNICATION'].data];
+        this.claimSectionModal['PATIENT_COMMUNICATION'].data = dp;
+        this.clearPatientCommunicationFields();
       })
     }
     return this.claimSectionModal['PATIENT_COMMUNICATION']['modal'];
@@ -3829,14 +3879,20 @@ export class BillingClaimsComponent {
 
   clearCheckDeliverOtherThanModeCheck() {
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Check' ? this.checkDeliveredTo = true : this.checkDeliveredTo = false;
-    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' ? this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = '' : '';
+    if (this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check'){
+      this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = "";
+      this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkNumber'] = null;
+      this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'] = null;
+      this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'] = null;
+    }
   }
   clearAllPaymentInformation() {
-    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentIssueTo'] = null;
-    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] = null;
+    this.checkDeliveredTo = false;
+    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentIssueTo'] = "";
+    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] = "";
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountReceivedInBank'] = null;
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountPostedInEs'] = null;
-    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = null;
+    this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = "";
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkNumber'] = null;
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'] = null;
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'] = null;
@@ -4379,6 +4435,9 @@ export class BillingClaimsComponent {
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.showAlert(res, 'COLLECTION_AGENCY', '3');
         this.loader.collectionAgencyInfo = false;
+        if (!this.claimSectionModal['COLLECTION_AGENCY'].data) {
+          this.claimSectionModal['COLLECTION_AGENCY'].data = [];
+        }
         this.claimSectionModal['COLLECTION_AGENCY'].data.unshift(res.data);
         const dp = [...this.claimSectionModal['COLLECTION_AGENCY'].data];
         this.clearcollectionAgency();
@@ -4625,16 +4684,16 @@ export class BillingClaimsComponent {
   clearPatientPaymentFields() {
     this.claimSectionModal.PATIENT_PAYMENT['dateOfPayment'] = null;
     this.claimSectionModal.PATIENT_PAYMENT['amountCollectedClaims'] = null;
-    this.claimSectionModal.PATIENT_PAYMENT['postedInPMS'] = null;
+    this.claimSectionModal.PATIENT_PAYMENT['postedInPMS'] = "";
     this.claimSectionModal.PATIENT_PAYMENT['dueBalanceInPMS'] = null;
-    this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] = null;
+    this.claimSectionModal.PATIENT_PAYMENT['modeOfPayment'] = "";
     this.claimSectionModal.PATIENT_PAYMENT['checkNumber'] = null;
     this.claimSectionModal.PATIENT_PAYMENT['cardNumber'] = null;
 
   }
   clearAppealFields() {
-    this.claimSectionModal.APPEAL['modeOfAppeal'] = null;
-    this.claimSectionModal.APPEAL['aiToolUsed'] = null;
+    this.claimSectionModal.APPEAL['modeOfAppeal'] = "";
+    this.claimSectionModal.APPEAL['aiToolUsed'] = "";
     this.claimSectionModal.APPEAL['appealDocument'] = null;
     this.claimSectionModal.APPEAL['remarks'] = null;
   }
@@ -4642,16 +4701,22 @@ export class BillingClaimsComponent {
   clearcollectionAgency() {
 
     this.claimSectionModal.COLLECTION_AGENCY['debtNumber'] = null;
-    this.claimSectionModal.COLLECTION_AGENCY['collectionType'] = null;
+    this.claimSectionModal.COLLECTION_AGENCY['collectionType'] = "";
     this.claimSectionModal.COLLECTION_AGENCY['amountReceived'] = null;
-    this.claimSectionModal.COLLECTION_AGENCY['modeOfPayment'] = null;
+    this.claimSectionModal.COLLECTION_AGENCY['modeOfPayment'] = "";
     this.claimSectionModal.COLLECTION_AGENCY['commisionCharged'] = null;
     this.claimSectionModal.COLLECTION_AGENCY['netAmountReceived'] = null;
-    this.claimSectionModal.COLLECTION_AGENCY['reason'] = null;
+    this.claimSectionModal.COLLECTION_AGENCY['reason'] = "";
     this.claimSectionModal.COLLECTION_AGENCY['remarks'] = null;
     this.claimSectionModal.COLLECTION_AGENCY['buttonType'] = null;
   }
 
+  clearPatientCommunicationFields(){
+    this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].modeOfFollowUp = "";
+    this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].contact = null;
+    this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].desposition = "";
+    this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].remarks = null;
+  }
 
   fillServiceLevelInfo(rowObject: any, serviceLevelInfo: any) {
     let matchingIndex = serviceLevelInfo.findIndex((item: any) => {

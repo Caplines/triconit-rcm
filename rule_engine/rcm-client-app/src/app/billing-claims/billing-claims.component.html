@@ -460,8 +460,7 @@
                                                             <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                                 <td>{{idx+1}}</td>
                                                                 <td>{{rem.teamName}}</td>
-                                                                <td>{{rem.cd | date:'MM/dd/yyyy hh:mm
-                                                                    a':'UTC'+timeZone}}
+                                                                <td>{{rem.cd | date:'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
                                                                 </td>
                                                                 <td>{{rem.comment}}</td>
                                                                 <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}
@@ -2602,7 +2601,7 @@
                                             id="INSURANCE_PAYMENT_INFORMATION">
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
-                                                    <label for="paymentIssueTo">Payment Issued To</label>
+                                                    <label for="paymentIssueTo">Payment Issued To &nbsp;<span class="text-danger">*</span></label>
                                                     <select id="paymentIssueTo" class="form-control"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentIssueTo']"
@@ -2615,7 +2614,7 @@
                                             </div>
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
-                                                    <label for="paymentMode">Mode of Payment</label>
+                                                    <label for="paymentMode">Mode of Payment &nbsp;<span class="text-danger">*</span></label>
                                                     <select id="paymentMode" class="form-control"
                                                         (change)="clearCheckDeliverOtherThanModeCheck()"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
@@ -2653,7 +2652,7 @@
 
                                             <div class="col-md-4 mb-2" *ngIf="checkDeliveredTo">
                                                 <div class="custom-row text-number">
-                                                    <label for="checkDeliverTo">Check Delivered To</label>
+                                                    <label for="checkDeliverTo">Check Delivered To &nbsp;<span class="text-danger">*</span></label>
                                                     <select class="form-control"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0) || this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' "
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo']"
@@ -2670,24 +2669,24 @@
                                                 <div class="custom-row text-number">
                                                     <label for="checkNumber"
                                                         *ngIf="!this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode']">Check
-                                                        #</label>
+                                                        # &nbsp;<span class="text-danger">*</span></label>
                                                     <label for="checkNumber"
                                                         *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Check'">Check
-                                                        #</label>
+                                                        # &nbsp;<span class="text-danger">*</span></label>
                                                     <label for="checkNumber"
                                                         *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'EFT'">EFT
-                                                        #</label>
+                                                        # &nbsp;<span class="text-danger">*</span></label>
                                                     <label for="checkNumber"
                                                         *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'VCC'">Transaction
-                                                        #</label>
+                                                        # &nbsp;<span class="text-danger">*</span></label>
                                                     <label for="checkNumber"
                                                         *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Recoupment'">Recoupment
-                                                        #</label>
-                                                    <input type="text" id="checkNumber"
+                                                        # &nbsp;<span class="text-danger">*</span></label>
+                                                    <input type="number" id="checkNumber"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkNumber']"
-                                                        class="form-control" placeholder="Enter last 4 digits"
-                                                        maxLength=4
+                                                        class="form-control"
+                                                        [placeholder]="'Enter ' + (claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] === '' ? 'Check' : claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode']) + ' number'"
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkNumber']}">
                                                 </div>
                                             </div>
@@ -2787,8 +2786,7 @@
                                                         <tr
                                                             *ngFor="let data of claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data ;let idx=index;">
                                                             <td>{{idx+1}}</td>
-                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
-                                                                a':'UTC'+timeZone}}
+                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.paymentIssueTo}}</td>
                                                             <td>{{data.paymentMode}}</td>
@@ -2873,8 +2871,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm
-                                                                a':'UTC'+timeZone}}</td>
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>
@@ -3556,8 +3553,7 @@
                                                                     class="text-danger">*</span></label>
                                                             <input type="number" id="checkNumber"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['checkNumber']"
-                                                                class="form-control" placeholder="Enter last 4 digits"
-                                                                maxLength=4
+                                                                class="form-control" placeholder="Enter Check Number"
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['checkNumber']}">
                                                         </div>
                                                     </div>
@@ -3567,10 +3563,10 @@
                                                         <div class="custom-row text-number">
                                                             <label for="cardNumber">Card# &nbsp;<span
                                                                     class="text-danger">*</span></label>
-                                                            <input type="number" id="cardNumber"
+                                                            <input pattern="\d*" id="cardNumber"
                                                                 [(ngModel)]="this.claimSectionModal.PATIENT_PAYMENT['cardNumber']"
                                                                 class="form-control" placeholder="Enter last 4 digits"
-                                                                maxLength=4
+                                                                maxlength=4
                                                                 [ngClass]="{'is-invalid':emptyFields['PATIENT_PAYMENT'] && emptyFields['PATIENT_PAYMENT']['cardNumber']}">
                                                         </div>
                                                     </div>
@@ -3617,8 +3613,7 @@
                                                             *ngFor="let data of claimSectionModal['PATIENT_PAYMENT'].data ;let idx=index;">
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.dateOfPayment|date :'MM/dd/yyyy'}}</td>
-                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
-                                                                a':'UTC'+timeZone}}
+                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.amountCollectedClaims}}</td>
                                                             <td>{{data.postedInPMS}}</td>
@@ -4043,12 +4038,9 @@
                                                             <tr
                                                                 *ngFor="let data of claimSectionModal['COLLECTION_AGENCY'].data ;let idx=index;">
                                                                 <td>{{idx+1}}</td>
-                                                                <td>{{data.buttonType == 1 ?"Send to
-                                                                    collection":(data.buttonType == 2?"Post
-                                                                    Amount":"Withdraw from collection")}}
+                                                                <td>{{data.buttonType == 1 ?"Send to collection":(data.buttonType == 2?"Post Amount":"Withdraw from collection")}}
                                                                 </td>
-                                                                <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
-                                                                    a':'UTC'+timeZone}}
+                                                                <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
                                                                 </td>
                                                                 <td>{{data.debtNumber}}</td>
                                                                 <td>{{data.collectionType}}</td>
@@ -4210,8 +4202,7 @@
                                                         <tr
                                                             *ngFor="let data of claimSectionModal['APPEAL'].data ;let idx=index;">
                                                             <td>{{idx+1}}</td>
-                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
-                                                                a':'UTC'+timeZone}}
+                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.modeOfAppeal}}</td>
                                                             <td>{{data.aiToolUsed}}</td>
@@ -4241,13 +4232,12 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                        < <tr
+                                                          <tr
                                                             *ngFor="let data of findAppealDataInsuraceFollowUp(claimSectionModal['INSURANCE_FOLLOW_UP'].data);let idx=index;">
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm
-                                                                a':'UTC'+timeZone}}</td>
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>
