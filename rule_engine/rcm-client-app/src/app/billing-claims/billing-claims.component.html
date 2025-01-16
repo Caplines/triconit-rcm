@@ -43,14 +43,17 @@
                         </span> |
                         <span class="claim-item">
                             <strong>Status:</strong>
-                            <span [title]="claimRcm.currentStatus != 0 ? claimRcm.currentStatusName : claimRcm.pending ? 'Pending' : 'Submitted'">
-                                {{claimRcm.currentStatus != 0 ? claimRcm.currentStatusName : claimRcm.pending ? 'Pending' : 'Submitted'}}
+                            <span
+                                [title]="claimRcm.currentStatus != 0 ? claimRcm.currentStatusName : claimRcm.pending ? 'Pending' : 'Submitted'">
+                                {{claimRcm.currentStatus != 0 ? claimRcm.currentStatusName : claimRcm.pending ?
+                                'Pending' : 'Submitted'}}
                             </span>
                         </span>
                     </div>
                 </div>
                 <small id="tooltip" class="ms-2 cp-url-txt">URL copied!</small>
-                <button type="button" id="copyButton" (click)="copyUrl()" class="btn btn-primary claim-steps-btn cp-url-btn">
+                <button type="button" id="copyButton" (click)="copyUrl()"
+                    class="btn btn-primary claim-steps-btn cp-url-btn">
                     Copy URL
                 </button>
                 <button *ngIf="claimSteps.length>0" type="button" (click)="hideSideBar()"
@@ -135,7 +138,7 @@
                                                 </div>
                                                 <div class="custom-row">
                                                     <label for="" class="">DOS </label>
-                                                    <div>{{claimRcm.dos | date: 'MM/dd/YYYY'}}</div>
+                                                    <div>{{claimRcm.dos | date: 'MM/dd/yyyy'}}</div>
                                                 </div>
                                                 <div class="custom-row">
                                                     <label for="" class="">Billed Amount </label>
@@ -184,7 +187,7 @@
                                                 </div>
                                                 <div class="custom-row">
                                                     <label for="" class="">Patient DOB </label>
-                                                    <div>{{claimRcm.patientDob | date: 'MM/dd/YYYY'}}</div>
+                                                    <div>{{claimRcm.patientDob | date: 'MM/dd/yyyy'}}</div>
                                                 </div>
                                                 <div class="custom-row">
                                                     <label for="" class="">Subscriber Name </label>
@@ -196,13 +199,13 @@
                                                     <div *ngIf="claimRcm.primary">
                                                         {{
                                                         claimRcm.primePolicyHolderDob | date:
-                                                        'MM/dd/YYYY'
+                                                        'MM/dd/yyyy'
                                                         }}
                                                     </div>
                                                     <div *ngIf="!claimRcm.primary">
                                                         {{
                                                         claimRcm.secPolicyHolderDob | date:
-                                                        'MM/dd/YYYY'
+                                                        'MM/dd/yyyy'
                                                         }}
                                                     </div>
                                                 </div>
@@ -392,7 +395,7 @@
                                                     <div *ngIf="claimRcm.ivDos!=null && claimRcm.ivDos!=''">
                                                         {{
                                                         claimRcm.ivDos |
-                                                        date: 'MM/dd/YYYY'
+                                                        date: 'MM/dd/yyyy'
                                                         }}
                                                     </div>
                                                     <div *ngIf="!(claimRcm.ivDos!=null && claimRcm.ivDos!='')">
@@ -405,7 +408,7 @@
                                                     <div *ngIf="claimRcm.tpDos!=null && claimRcm.tpDos!=''">
                                                         {{
                                                         claimRcm.tpDos |
-                                                        date: 'MM/dd/YYYY'
+                                                        date: 'MM/dd/yyyy'
                                                         }}
                                                     </div>
                                                     <div *ngIf="!(claimRcm.tpDos!=null && claimRcm.tpDos!='')">
@@ -457,7 +460,7 @@
                                                             <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                                 <td>{{idx+1}}</td>
                                                                 <td>{{rem.teamName}}</td>
-                                                                <td>{{rem.cd | date:'MM/dd/YYYY hh:mm
+                                                                <td>{{rem.cd | date:'MM/dd/yyyy hh:mm
                                                                     a':'UTC'+timeZone}}
                                                                 </td>
                                                                 <td>{{rem.comment}}</td>
@@ -2242,7 +2245,7 @@
                                                     <tbody>
                                                         <tr
                                                             *ngFor="let data of claimSectionModal['EOB_INSURANCE_LETTER'].data;let idx=index;">
-                                                            <td>{{data.date|date:' MM/dd/YYYY'}}</td>
+                                                            <td>{{data.date|date:' MM/dd/yyyy'}}</td>
                                                             <td> <a href="javascript:void(0);"
                                                                     (click)="viewLink(data.eobLink)">View Link</a></td>
                                                             <td>{{data.documentType}}</td>
@@ -2784,7 +2787,7 @@
                                                         <tr
                                                             *ngFor="let data of claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data ;let idx=index;">
                                                             <td>{{idx+1}}</td>
-                                                            <td>{{data.createdDate|date :'MM/dd/YYYY hh:mm
+                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
                                                                 a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.paymentIssueTo}}</td>
@@ -2793,9 +2796,9 @@
                                                             <td>{{data.amountPostedInEs}}</td>
                                                             <td>{{data.checkDeliverTo}}</td>
                                                             <td>{{data.checkNumber}}</td>
-                                                            <td>{{data.checkCashDate|date :'MM/dd/YYYY'}}</td>
+                                                            <td>{{data.checkCashDate|date :'MM/dd/yyyy'}}</td>
 
-                                                            <td>{{data.amountDateReceivedInBank|date :'MM/dd/YYYY'}}
+                                                            <td>{{data.amountDateReceivedInBank|date :'MM/dd/yyyy'}}
                                                             </td>
 
                                                         </tr>
@@ -2870,7 +2873,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm
                                                                 a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
@@ -3382,7 +3385,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.buttonType == 1 ?"Need to Hold":"Statement"}}
                                                             </td>
-                                                            <td>{{data.dt|date :'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}
+                                                            <td>{{data.dt|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
                                                             </td>
                                                             <td><a href="javascript:void(0);"
                                                                     *ngIf="data.balanceSheetLink!=null"
@@ -3613,8 +3616,8 @@
                                                         <tr
                                                             *ngFor="let data of claimSectionModal['PATIENT_PAYMENT'].data ;let idx=index;">
                                                             <td>{{idx+1}}</td>
-                                                            <td>{{data.dateOfPayment|date :'MM/dd/YYYY'}}</td>
-                                                            <td>{{data.createdDate|date :'MM/dd/YYYY hh:mm
+                                                            <td>{{data.dateOfPayment|date :'MM/dd/yyyy'}}</td>
+                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
                                                                 a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.amountCollectedClaims}}</td>
@@ -3697,7 +3700,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.createdBy}}</td>
                                                             <td>{{data.createdTeam}}</td>
-                                                            <td>{{data.date|date :'MM/dd/YYYY hh:mm a':'UTC'+timeZone}}
+                                                            <td>{{data.date|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.contact}}</td>
@@ -4044,7 +4047,7 @@
                                                                     collection":(data.buttonType == 2?"Post
                                                                     Amount":"Withdraw from collection")}}
                                                                 </td>
-                                                                <td>{{data.createdDate|date :'MM/dd/YYYY hh:mm
+                                                                <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
                                                                     a':'UTC'+timeZone}}
                                                                 </td>
                                                                 <td>{{data.debtNumber}}</td>
@@ -4207,7 +4210,7 @@
                                                         <tr
                                                             *ngFor="let data of claimSectionModal['APPEAL'].data ;let idx=index;">
                                                             <td>{{idx+1}}</td>
-                                                            <td>{{data.createdDate|date :'MM/dd/YYYY hh:mm
+                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
                                                                 a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.modeOfAppeal}}</td>
@@ -4243,7 +4246,7 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/YYYY hh:mm
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm
                                                                 a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
@@ -4483,7 +4486,7 @@
                                                                 <td>{{idx+1}}</td>
                                                                 <td>{{data.requestedBy}}</td>
                                                                 <td>{{data.requestedRemarks}}</td>
-                                                                <td>{{data.dateOfRebiiling|date :'MM/dd/YYYY'}}</td>
+                                                                <td>{{data.dateOfRebiiling|date :'MM/dd/yyyy'}}</td>
                                                                 <td>{{data.rebillingServiceCodes}}</td>
                                                                 <td>{{data?.rebillingRequirements}}</td>
                                                                 <td>{{data.usedAI}}</td>
@@ -5678,7 +5681,7 @@
                                             <span class="teamname" *ngIf="steps.name==null">System</span>
                                             <span class="teamname" [ngClass]="{'last-child ':false}"
                                                 *ngIf="steps.name!=null">{{steps.name}}</span>
-                                            <span class="claimDate">({{steps.dt | date: 'MM/dd/YYYY'}})</span>
+                                            <span class="claimDate">({{steps.dt | date: 'MM/dd/yyyy'}})</span>
                                         </strong>
                                         <a href="javascript:void(0)">{{steps.statusUpdated}}</a>
 
@@ -5886,7 +5889,7 @@
                                                 {{note.createdBy}}
                                             </td>
                                             <td>
-                                                {{note.createdDate |date :'MM/dd/YYYY'}}
+                                                {{note.createdDate |date :'MM/dd/yyyy'}}
                                             </td>
                                             <td style="word-break: break-all;">
                                                 {{note.notes}}
