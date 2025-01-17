@@ -4788,6 +4788,14 @@ export class BillingClaimsComponent {
     return d.filter(p => p.typeOfFollowUp != null && p.typeOfFollowUp === 'Claim');
   }
 
+  nextActionSecondaryCheck(){
+    this.errorMsgForNextAction = "";
+    if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.nextAction === this.appConstants.Need_to_bill_Secondary_Insurance
+      && !this.claimRcm.assoicatedClaimStatus) {
+      this.errorMsgForNextAction = "Secondary claim not on file";
+    }
+  }
+
 }
 
 

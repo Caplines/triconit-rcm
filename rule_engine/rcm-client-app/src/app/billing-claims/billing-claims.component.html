@@ -5209,7 +5209,7 @@
                                                                 <label for="nextAction">Next Action Required<span
                                                                         class="text-danger">*</span></label>
                                                                 <select id="nextAction" class="form-control"
-                                                                    (change)="nextActionRequire($event)"
+                                                                    (change)="nextActionSecondaryCheck()"
                                                                     [disabled]="!(checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'edit') && this.claimRcm.allowEdit && claimRcm.currentState==0)"
                                                                     [(ngModel)]="claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION['nextAction']"
                                                                     [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['nextAction']}">
