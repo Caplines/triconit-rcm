@@ -5,5 +5,6 @@ public interface RcmClaimNoteDto {
 	
 	String getNote();
 	int getNoteId();
+	String getServiceCode();
 
 }

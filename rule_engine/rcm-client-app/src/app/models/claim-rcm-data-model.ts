@@ -51,6 +51,8 @@ export interface ClaimRcmDataModel {
 	assoicatedClaimCurrentStatus?: number;
 	primary?: boolean;
 	claimNotes?: Array<ClaimNotesModel>;
+	claimNotesServiceLevel?: Array<ClaimNotesModel>;
+	claimNotesServiceLevelPresent?: boolean;
 	claimRemarks?: string;
 	allowEdit?: boolean;
 	assignedToName?: string;
@@ -122,6 +124,7 @@ export interface ClaimNotesModel {
 	key?: string;
 	value?: string;
 	id?: number;
+	serviceCode?: string;
 }
 
 
@@ -129,6 +132,7 @@ export interface ClaimEditModel {
 
 	claimUuid?: string;
 	claimNoteDtoList?: Array<ClaimNotesModel>;
+	claimNoteServiceLevelDtoList?: Array<ClaimNotesModel>;
 	claimRemark?: string;
 	ruleEngineRunRemark?: string
 	serCVDto?: Array<ServiceLevelCodeDataModel>;

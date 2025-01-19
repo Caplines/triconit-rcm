@@ -343,8 +343,7 @@
                                                 <a data-toggle="collapse" aria-expanded="false">
                                                     Links to Related Documents
                                                     <ng-container
-                                                        *ngIf="(isBilling || isInternalAudit ) &&
-                                                            checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'],'edit')">
+                                                        *ngIf="checkForSectionAccess(sectionIds['LINKS_RELATED_DOCUMENTS']['sectionId'],'edit')">
                                                         <span class="passedNum"
                                                             *ngIf="claimRcm.allowEdit && claimRcm.pending && actionButtons"
                                                             style="cursor: pointer;"
@@ -460,7 +459,8 @@
                                                             <tr *ngFor="let rem of otherTeamRemarks ;let idx=index">
                                                                 <td>{{idx+1}}</td>
                                                                 <td>{{rem.teamName}}</td>
-                                                                <td>{{rem.cd | date:'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
+                                                                <td>{{rem.cd | date:'MM/dd/yyyy hh:mm
+                                                                    a':'UTC'+timeZone}}
                                                                 </td>
                                                                 <td>{{rem.comment}}</td>
                                                                 <td>{{rem.attchmentsWithRemarks === 0 ? "No" : "Yes"}}
@@ -1190,14 +1190,14 @@
                                                         <ng-container *ngIf="claimServiceLevelModel?.claimFound">
 
                                                             <tr
-                                                                *ngFor="let d of claimServiceLevelModel.dto | generalFilter : 'manualAuto':'Manual';let i=index">
+                                                                *ngFor="let d of claimServiceLevelModel.dto | generalFilter : 'manualAuto':'Manual':'':'':'name':'Provider Notes';let i=index">
+
                                                                 <td>{{i+1}}</td>
                                                                 <td>{{d.name}}</td>
                                                                 <td>{{d.serviceCode}}</td>
                                                                 <td>{{d.tooth}}</td>
                                                                 <td>{{d.surface}}</td>
                                                                 <!-- <td>{{d.description}}</td> -->
-
 
                                                                 <td>
                                                                     <div data-toggle="buttons"
@@ -1214,22 +1214,7 @@
                                                                                 [disabled]="makeReadOnly()"> Not
                                                                             Available
                                                                         </label>
-                                                                        <!-- <label class="btn btn-light"
-                                                            [ngClass]="{active:d.answer=='Complete'}">
-                                                            <input type="radio" name="mt{{i}}" value="Complete"
-                                                                (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
-                                                                removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
-                                                                [(ngModel)]='d.answer'
-                                                                [disabled]="makeReadOnly()"> Attached
-                                                        </label> -->
-                                                                        <!-- <label class="btn btn-light"
-                                                            [ngClass]="{active:d.answer=='Incorrect'}">
-                                                            <input type="radio" name="mt{{i}}" value="Incorrect"
-                                                                (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
-                                                                removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
-                                                                [(ngModel)]='d.answer'
-                                                                [disabled]="makeReadOnly()">Others
-                                                        </label> -->
+
                                                                     </div>
                                                                 </td>
                                                                 <td>
@@ -1241,7 +1226,8 @@
                                                                                 (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                                                                             removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                                 [(ngModel)]='d.answer'
-                                                                                [disabled]="makeReadOnly()"> Attached
+                                                                                [disabled]="makeReadOnly()">
+                                                                            Attached
                                                                         </label>
                                                                     </div>
                                                                 </td>
@@ -1266,7 +1252,94 @@
                                                                         (click)="removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);"
                                                                         [disabled]="makeReadOnly()"></textarea>
                                                                 </td>
+
                                                             </tr>
+                                                            <ng-container
+                                                                *ngFor="let d of claimServiceLevelModel.dto | generalFilter : 'manualAuto':'Manual':'name':'Provider Notes';let i=index">
+                                                                <tr>
+                                                                    <td>{{i+nonotesManualCount+1}}
+                                                                    </td>
+                                                                    <td>{{d.name}}</td>
+                                                                    <td>{{d.serviceCode}}</td>
+                                                                    <td>{{d.tooth}}</td>
+                                                                    <td>{{d.surface}}</td>
+                                                                    <!-- <td>{{d.description}}</td> -->
+
+                                                                    <td>
+                                                                        <div data-toggle="buttons"
+                                                                            id="serviceCodeValidationsM{{d.remarkUuid}}"
+                                                                            class="btn-group btn-group-toggle"
+                                                                            style="display: flex;width: 100%">
+                                                                            <label class="btn btn-light"
+                                                                                [ngClass]="{active:d.answer=='Not Available'}">
+                                                                                <input type="radio" name="mt{{i}}"
+                                                                                    value="Not Available"
+                                                                                    (click)="d.answer='Not Available';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);enableDisable300ManualSub(false,d);"
+                                                                                    [(ngModel)]='d.answer'
+                                                                                    [disabled]="makeReadOnly()"> Not
+                                                                                Available
+                                                                            </label>
+
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="btn-group btn-group-toggle">
+                                                                            <label class="btn btn-light"
+                                                                                [ngClass]="{active:d.answer=='Complete'}">
+                                                                                <input type="radio" name="mt{{i}}"
+                                                                                    value="Complete"
+                                                                                    (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);;enableDisable300ManualSub(true,d);"
+                                                                                    [(ngModel)]='d.answer'
+                                                                                    [disabled]="makeReadOnly()">
+                                                                                Attached
+                                                                            </label>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="btn-group btn-group-toggle">
+                                                                            <label class="btn btn-light"
+                                                                                [ngClass]="{active:d.answer=='Incorrect'}">
+                                                                                <input type="radio" name="mt{{i}}"
+                                                                                    value="Incorrect"
+                                                                                    (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);;enableDisable300ManualSub(true,d);"
+                                                                                    [(ngModel)]='d.answer'
+                                                                                    [disabled]="makeReadOnly()">Other
+                                                                            </label>
+                                                                        </div>
+                                                                    </td>
+
+                                                                    <td>
+                                                                        <textarea class="form-control" id="" rows="1"
+                                                                            [(ngModel)]='d.remark'
+                                                                            id="SERV_C_V_M{{d.remarkUuid}}"
+                                                                            (click)="removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);"
+                                                                            [disabled]="makeReadOnly()"></textarea>
+                                                                    </td>
+
+                                                                </tr>
+                                                                <!-- NEED TO FOR SERVICE_LEVEL_VALIDATION_MANUAL Provider notes only -->
+                                                                <ng-container
+                                                                    *ngFor="let dp of claimRcm.claimNotesServiceLevel;let i=index">
+                                                                    <tr class="relatedTo_300_manual{{d.remarkUuid}}"
+                                                                        *ngIf="dp.serviceCode==d.serviceCode">
+                                                                        <td></td>
+                                                                        <td></td>
+                                                                        <td>
+                                                                            {{dp.key}}
+                                                                        </td>
+
+                                                                        <td colspan="4">
+                                                                            <textarea class="form-control"
+                                                                                id="CL_N_M_{{dp.id}}" rows="1"
+                                                                                [(ngModel)]='dp.value'
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"></textarea>
+                                                                        </td>
+                                                                    </tr>
+                                                                </ng-container>
+
+                                                            </ng-container>
+
+
                                                         </ng-container>
                                                     </tbody>
                                                 </table>
@@ -1372,7 +1445,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-container
-                                        *ngIf="smilePoint && !isInternalAudit && checkForSectionAccess(sectionIds['RULE_ENGINE_VALIDATION']['sectionId'],'view')">
+                                        *ngIf="smilePoint  && checkForSectionAccess(sectionIds['RULE_ENGINE_VALIDATION']['sectionId'],'view')">
                                         <div class="bold-b-text" [ngClass]="{'collapsed':toggleTab['ruleEngineValid']}">
                                             <div>
                                                 <a data-toggle="collapse" aria-expanded="false">Rule Engine
@@ -2601,7 +2674,8 @@
                                             id="INSURANCE_PAYMENT_INFORMATION">
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
-                                                    <label for="paymentIssueTo">Payment Issued To &nbsp;<span class="text-danger">*</span></label>
+                                                    <label for="paymentIssueTo">Payment Issued To &nbsp;<span
+                                                            class="text-danger">*</span></label>
                                                     <select id="paymentIssueTo" class="form-control"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentIssueTo']"
@@ -2614,7 +2688,8 @@
                                             </div>
                                             <div class="col-md-4 mb-2">
                                                 <div class="custom-row text-number">
-                                                    <label for="paymentMode">Mode of Payment &nbsp;<span class="text-danger">*</span></label>
+                                                    <label for="paymentMode">Mode of Payment &nbsp;<span
+                                                            class="text-danger">*</span></label>
                                                     <select id="paymentMode" class="form-control"
                                                         (change)="clearCheckDeliverOtherThanModeCheck()"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
@@ -2652,7 +2727,8 @@
 
                                             <div class="col-md-4 mb-2" *ngIf="checkDeliveredTo">
                                                 <div class="custom-row text-number">
-                                                    <label for="checkDeliverTo">Check Delivered To &nbsp;<span class="text-danger">*</span></label>
+                                                    <label for="checkDeliverTo">Check Delivered To &nbsp;<span
+                                                            class="text-danger">*</span></label>
                                                     <select class="form-control"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0) || this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check' "
                                                         [(ngModel)]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo']"
@@ -2786,7 +2862,8 @@
                                                         <tr
                                                             *ngFor="let data of claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data ;let idx=index;">
                                                             <td>{{idx+1}}</td>
-                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
+                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
+                                                                a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.paymentIssueTo}}</td>
                                                             <td>{{data.paymentMode}}</td>
@@ -2871,7 +2948,8 @@
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}</td>
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm
+                                                                a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>
@@ -3613,7 +3691,8 @@
                                                             *ngFor="let data of claimSectionModal['PATIENT_PAYMENT'].data ;let idx=index;">
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.dateOfPayment|date :'MM/dd/yyyy'}}</td>
-                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
+                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
+                                                                a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.amountCollectedClaims}}</td>
                                                             <td>{{data.postedInPMS}}</td>
@@ -4038,9 +4117,12 @@
                                                             <tr
                                                                 *ngFor="let data of claimSectionModal['COLLECTION_AGENCY'].data ;let idx=index;">
                                                                 <td>{{idx+1}}</td>
-                                                                <td>{{data.buttonType == 1 ?"Send to collection":(data.buttonType == 2?"Post Amount":"Withdraw from collection")}}
+                                                                <td>{{data.buttonType == 1 ?"Send to
+                                                                    collection":(data.buttonType == 2?"Post
+                                                                    Amount":"Withdraw from collection")}}
                                                                 </td>
-                                                                <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
+                                                                <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
+                                                                    a':'UTC'+timeZone}}
                                                                 </td>
                                                                 <td>{{data.debtNumber}}</td>
                                                                 <td>{{data.collectionType}}</td>
@@ -4202,7 +4284,8 @@
                                                         <tr
                                                             *ngFor="let data of claimSectionModal['APPEAL'].data ;let idx=index;">
                                                             <td>{{idx+1}}</td>
-                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}
+                                                            <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
+                                                                a':'UTC'+timeZone}}
                                                             </td>
                                                             <td>{{data.modeOfAppeal}}</td>
                                                             <td>{{data.aiToolUsed}}</td>
@@ -4232,18 +4315,19 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody>
-                                                          <tr
+                                                        <tr
                                                             *ngFor="let data of findAppealDataInsuraceFollowUp(claimSectionModal['INSURANCE_FOLLOW_UP'].data);let idx=index;">
                                                             <td>{{idx+1}}</td>
                                                             <td>{{data.followByTeam}}</td>
                                                             <td>{{data.followByUser}}</td>
-                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm a':'UTC'+timeZone}}</td>
+                                                            <td>{{data.nextFollowUpDate|date :'MM/dd/yyyy hh:mm
+                                                                a':'UTC'+timeZone}}</td>
                                                             <td>{{data.modeOfFollowUp}}</td>
                                                             <td>{{data.refNumber}}</td>
                                                             <td>{{data.insuranceRepName}}</td>
                                                             <td>{{data.currentClaimStatus}}</td>
                                                             <td>{{data.followUpRemarks}}</td>
-                                                            </tr>
+                                                        </tr>
                                                     </tbody>
                                                 </table>
                                             </div>

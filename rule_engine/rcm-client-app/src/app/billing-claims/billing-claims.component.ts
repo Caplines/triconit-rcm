@@ -6,7 +6,7 @@ import {
   ClaimRcmDataModel, ClaimEditModel, ServiceLevelCodeModel, SubmissionDetailModel,
   ClaimRuleModel, ClaimRuleRemarkModel, RuleEngineValModel, ServiceLevelCodeDataModel,
   ClaimRuleRemarkModelS, TLUser, TeamsM, OtherTeamRem, ClaimDetailModel, ClaimSettingDataModel, ClaimStep,
-  SectonRightDataModel
+  SectonRightDataModel, ClaimNotesModel
 } from '../models/claim-rcm-data-model';
 
 import { Title } from '@angular/platform-browser';
@@ -43,6 +43,7 @@ export class BillingClaimsComponent {
   alertPreferrsub: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   finalerror: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   claimRcm: ClaimRcmDataModel;
+  claimNotesModel: ClaimNotesModel;
   claimStatus: ClaimUpdateStatusModel;
   claimARulesPullDataModel: ClaimRulesPullDataModel = {};
   claimEditModel: ClaimEditModel;
@@ -81,6 +82,7 @@ export class BillingClaimsComponent {
   reason: string = "";
   countM300: number = 1;
   relatedTo_300 = true;
+  relatedTo_300_MANUAL = true;
   actionButtons = false;
   clientName: string = '';
   assignType: string = '';
@@ -108,6 +110,8 @@ export class BillingClaimsComponent {
   showAToPNextActionRequired: boolean = true;
   showSubmitPopup: boolean = false;
   errorMsgForNextAction: any = "";
+  notesManualCount = 0;
+  nonotesManualCount = 0;//for other than notes
   /*readonly noProviderNoteCodes: Array<string> = ["D0120", "D0145", "D0150", "D0140", "D0160", "D0170", "D0220", "D0230",
     "D0272", "D0274", "D0210", "D0350", "D1110", "D1120", "D1206", "D1208",
     "D0330", "D0601", "D0602", "D0603", "D1330", "D1351", "D1352", "D2330",
@@ -492,7 +496,7 @@ export class BillingClaimsComponent {
 
   @HostListener('window:scroll')
   onScroll() {
-    if (this.invalidClaim == ""){
+    if (this.invalidClaim == "") {
       let scrollPosition = window.scrollY;
       let windowHeight = window.innerHeight;
       let documentHeight = document.documentElement.scrollHeight;
@@ -630,8 +634,9 @@ export class BillingClaimsComponent {
     this.claimService.fetchClaimNotes(this.claimRcm.uuid, (res: any) => {
       if (res.status === 200) {
         // ths.claimRcm= res.data;
-        this.claimRcm.claimNotes = res.data;
-
+        console.log(res.data['NOTES_RELATED_VALIDATION']);
+        this.claimRcm.claimNotes = res.data['NOTES_RELATED_VALIDATION'];
+        this.claimRcm.claimNotesServiceLevel = res.data['SERVICE_LEVEL_VALIDATION_MANUAL'];
       }
     })
 
@@ -685,6 +690,7 @@ export class BillingClaimsComponent {
     ths.claimEditModel.actionName = "";
     ths.claimEditModel.ruleEngineRunRemark = ths.claimRcm.ruleEngineRunRemark;
     ths.claimEditModel.claimNoteDtoList = ths.claimRcm.claimNotes;
+    ths.claimEditModel.claimNoteServiceLevelDtoList = ths.claimRcm.claimNotesServiceLevel;
     ths.claimEditModel.claimRemark = ths.claimRcm.claimRemarks;
     ths.claimEditModel.serCVDto = ths.claimServiceLevelModel?.dto;
     ths.claimEditModel.submissionDto = ths.submissionDto;
@@ -1155,6 +1161,7 @@ export class BillingClaimsComponent {
         this.loader.serviceCode = false;
         ths.claimServiceLevelModel = res.data;
         ths.ignoreSomeRules();
+        ths.claimRcm.claimNotesServiceLevelPresent = ths.checkForProviderNotesonServiceCodeLevelValidationsManual();
         if (ths.claimServiceLevelModel.esDate != null) {
           if (ths.claimServiceLevelModel.esDate != "") {
             //ths.claimRcm.dateLastUpdatedES = ths.claimServiceLevelModel.esDate;
@@ -1249,6 +1256,9 @@ export class BillingClaimsComponent {
         ths.claimRules.forEach((e: any) => {
           if (e.ruleId == 300 && (e.messageType != null && e.messageType == 3)) {
             ths.relatedTo_300 = false;
+          }
+          if (e.name == 'Provider Notes' && (e.messageType != null && e.messageType == 3)) {
+            ths.relatedTo_300_MANUAL = false;
           }
           if (e.messageType == 1 && e.manualAuto === "AUTO" && (e.ruleType === 'C' || e.ruleType === 'R,C')) {
             this.countA.fail = this.countA.fail + 1;
@@ -1814,9 +1824,32 @@ export class BillingClaimsComponent {
       }
     }
   }
+  enableDisable300ManualSub(cond: boolean, data: any) {
+    let subsection: any = document.querySelectorAll(".relatedTo_300_manual" + data.remarkUuid);
+    if (subsection.length > 0) {
+      if (!cond) {
+        //this.relatedTo_300_MANUAL = false;
+        for (let el of subsection) el.style.display = 'none';
+      } else {
+        for (let el of subsection) el.style.display = '';
+        //this.relatedTo_300_MANUAL = true;
+      }
+    } else {
+      //we need to create the Object
+      let newNote = {
+        ...this.claimNotesModel,
+      };
+      newNote.serviceCode = data.serviceCode;
+      newNote.id = 1;//only Soltion for now from DB  table:rcm_claim_note_type
+      newNote.key = "Copy and Paste Provider Notes";
+      this.claimRcm.claimNotesServiceLevel.push(newNote);
+
+
+    }
+  }
   downloadPdf() {
     this.loader.exportPDFLoader = true;
-    let data = { "fileName": "Claim_Details", "data": [this.claimRcm], "teamId": this.selectedTeam, "clientName": this.clientName, "otherTeamsRemark": this.otherTeamRemarks, "claimRules": this.claimRules, "serviceLevelCodeManual": this.claimServiceLevelModel, "ruleEngineReport": this.ruleEngineReport, "claimSubmissionDto": this.submissionDto, "relatedTo_300": this.relatedTo_300, "countA": this.countA, "countAS": this.countAS, "count": this.count };
+    let data = { "fileName": "Claim_Details", "data": [this.claimRcm], "teamId": this.selectedTeam, "clientName": this.clientName, "otherTeamsRemark": this.otherTeamRemarks, "claimRules": this.claimRules, "serviceLevelCodeManual": this.claimServiceLevelModel, "ruleEngineReport": this.ruleEngineReport, "claimSubmissionDto": this.submissionDto, "relatedTo_300": this.relatedTo_300, "relatedTo_300_MANUAL": this.relatedTo_300_MANUAL, "countA": this.countA, "countAS": this.countAS, "count": this.count };
     this.appService.claimDetailsPdfDownload(data, "pdf", (res: any) => {
       if (res.status === 200) {
         console.log(res.body);
@@ -2178,6 +2211,27 @@ export class BillingClaimsComponent {
     }
   }
 
+  checkForProviderNotesonServiceCodeLevelValidationsManual(): boolean {
+    let found = false;
+    let ths = this;
+    ths.notesManualCount = 0;
+    ths.nonotesManualCount = 0;
+    if (ths.smilePoint && ths.claimServiceLevelModel.dto != undefined) {
+      //614c4beb-7df2-11e8-8432-8c16451459cd
+      let tmp: Array<ServiceLevelCodeDataModel> = ths.claimServiceLevelModel.dto;
+      tmp.forEach((x, i) => {
+        if (x.manualAuto == 'Manual' && x.name == 'Provider Notes') {
+          found = true;
+          ths.notesManualCount++;
+        } else {
+          ths.nonotesManualCount++;
+        }
+
+      });
+    }
+    return found;
+
+  }
 
 
   fetchClaimLevelInfoSection() {
@@ -2359,7 +2413,7 @@ export class BillingClaimsComponent {
       }
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.loader.appealLevelinfo = false;
-        if (!this.claimSectionModal['APPEAL'].data){
+        if (!this.claimSectionModal['APPEAL'].data) {
           this.claimSectionModal['APPEAL'].data = [];
         }
         this.claimSectionModal['APPEAL'].data.unshift(res.data);
@@ -2389,8 +2443,8 @@ export class BillingClaimsComponent {
         //method names are creates using convention  validate_{sectioname}
         console.log(!isSectionVal);
         //Clearing default model values for final save to exclude them from history table.
-        if (!isSectionVal){
-          if (methodName == 'validate_PATIENT_STATEMENT'){
+        if (!isSectionVal) {
+          if (methodName == 'validate_PATIENT_STATEMENT') {
             this.finalSaveClaimDataModel.rcmPatientStatementInfoModel = null;
             this.finalSaveClaimDataModel.paymentInformationInfoModel = null;
             this.finalSaveClaimDataModel.rcmPatientStatementInfoModel = null;
@@ -2765,7 +2819,7 @@ export class BillingClaimsComponent {
   validate_INSURANCE_PAYMENT_INFORMATION() {
     this.emptyFields["INSURANCE_PAYMENT_INFORMATION"] = {};
     let isSectionValidated = true;
-    if (!this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentIssueTo']){
+    if (!this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentIssueTo']) {
       this.emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentIssueTo'] = true;
       isSectionValidated = false;
     }
@@ -2773,7 +2827,7 @@ export class BillingClaimsComponent {
       this.emptyFields['INSURANCE_PAYMENT_INFORMATION']['paymentMode'] = true;
       isSectionValidated = false;
     }
-    if (this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == "Check"){
+    if (this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == "Check") {
       if (!this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo']) {
         this.emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkDeliverTo'] = true;
         isSectionValidated = false;
@@ -3879,7 +3933,7 @@ export class BillingClaimsComponent {
 
   clearCheckDeliverOtherThanModeCheck() {
     this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Check' ? this.checkDeliveredTo = true : this.checkDeliveredTo = false;
-    if (this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check'){
+    if (this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check') {
       this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = "";
       this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkNumber'] = null;
       this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'] = null;
@@ -4711,7 +4765,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal.COLLECTION_AGENCY['buttonType'] = null;
   }
 
-  clearPatientCommunicationFields(){
+  clearPatientCommunicationFields() {
     this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].modeOfFollowUp = "";
     this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].contact = null;
     this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].desposition = "";
@@ -4788,7 +4842,7 @@ export class BillingClaimsComponent {
     return d.filter(p => p.typeOfFollowUp != null && p.typeOfFollowUp === 'Claim');
   }
 
-  nextActionSecondaryCheck(){
+  nextActionSecondaryCheck() {
     this.errorMsgForNextAction = "";
     if (this.claimSectionModal.CURRENT_STATUS_AND_NEXT_ACTION.nextAction === this.appConstants.Need_to_bill_Secondary_Insurance
       && !this.claimRcm.assoicatedClaimStatus) {

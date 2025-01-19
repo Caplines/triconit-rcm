@@ -10,6 +10,7 @@ public class ClaimEditDto {
 	String claimUuid;
 	List<ClaimRuleValidationDto> claimManualRuleValidationList;
 	List<ClaimNoteDto> claimNoteDtoList;
+	List<ClaimNoteDto> claimNoteServiceLevelDtoList;
 	List<RuleRemarkDto> ruleRemarkDto;
 	ClaimSubmissionDto submissionDto;
 	List<ClaimServiceDto> serCVDto;

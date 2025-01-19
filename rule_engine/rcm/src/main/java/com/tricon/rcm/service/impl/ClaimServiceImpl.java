@@ -52,6 +52,7 @@ import com.tricon.rcm.db.entity.RcmClaimDetail;
 import com.tricon.rcm.db.entity.RcmClaimLog;
 import com.tricon.rcm.db.entity.RcmClaimNoteType;
 import com.tricon.rcm.db.entity.RcmClaimNotes;
+import com.tricon.rcm.db.entity.RcmClaimNotesServiceLevel;
 import com.tricon.rcm.db.entity.RcmClaimRuleRemark;
 import com.tricon.rcm.db.entity.RcmClaimRuleValidation;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
@@ -198,6 +199,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimCommentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimDetailRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimLogRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimNotesRepo;
+import com.tricon.rcm.jpa.repository.RcmClaimNotesServiceLevelRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimRuleRemarkRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRuleValidationRepo;
@@ -312,6 +314,9 @@ public class ClaimServiceImpl {
 
 	@Autowired
 	RcmClaimNotesRepo rcmClaimNotesRepo;
+	
+	@Autowired
+	RcmClaimNotesServiceLevelRepo rcmClaimNotesServiceLevelRepo;
 
 	@Autowired
 	RcmClaimNoteTypeRepo rcmClaimNoteTypeRepo;
@@ -3898,8 +3903,9 @@ public class ClaimServiceImpl {
 		return rcmClaimSubmissionDetailsRepo.save(det).getId();
 	}
 
-	public List<KeyValueDto> fetchClaimNotes(PartialHeader partialHeader, String claimuuid) {
+	public HashMap<String,List<KeyValueDto>> fetchClaimNotes(PartialHeader partialHeader, String claimuuid) {
 
+		 HashMap<String, List<KeyValueDto>> notes = new HashMap<>();
 		List<KeyValueDto> list = new ArrayList<>();
 		List<RcmClaimNoteDto> d = rcmClaimNotesRepo.fetchClaimNotes(claimuuid, RcmTeamEnum.BILLING.getId());
 
@@ -3918,8 +3924,38 @@ public class ClaimServiceImpl {
 			}
 
 			list.add(dto);
+			
 		});
-		return list;
+		notes.put("NOTES_RELATED_VALIDATION",list);
+		
+		//SERVICE_LEVEL_VALIDATION_MANUAL
+		List<KeyValueDto> listNt = new ArrayList<>();
+		List<RcmClaimNoteDto> nt = rcmClaimNotesServiceLevelRepo.fetchClaimNotes(claimuuid);
+
+		all.forEach(s -> {
+			
+			
+			// s.getNoteId()
+			List<RcmClaimNoteDto> fil = nt.stream().filter(c -> c.getNoteId() == s.getNoteId() )
+					.collect(Collectors.toList());
+			if (fil != null && fil.size() > 0) {
+				fil.forEach(f -> {
+					KeyValueDto dto = new KeyValueDto();
+					dto.setId(f.getNoteId());
+					dto.setKey(s.getNote());
+					dto.setValue(f.getNote());
+					dto.setServiceCode(f.getServiceCode());
+					listNt.add(dto);
+				});
+				
+			}
+
+			
+			
+		});
+		notes.put("SERVICE_LEVEL_VALIDATION_MANUAL",listNt);
+		
+		return notes;
 	}
 	
 	@Transactional
@@ -4120,7 +4156,7 @@ public class ClaimServiceImpl {
 		//data.forEach(s -> {
 			RcmClaimNoteType noteType = rcmClaimNoteTypeRepo.findById(s.getId()).get();
 			RcmClaimNotes notes = rcmClaimNotesRepo.findByClaimAndNoteType(claim, noteType);
-			if (s.getValue() != null && s.getValue().trim().equals("")) {
+			if (s.getValue() != null && !s.getValue().trim().equals("")) {
 				if (notes != null) {
 					notes.setNotesBy(user);
 					notes.setUpdatedBy(user);
@@ -4136,6 +4172,45 @@ public class ClaimServiceImpl {
 				notes.setTeamId(rcmTeamRepo.findById(RcmTeamEnum.BILLING.getId()));
 
 				rcmClaimNotesRepo.save(notes);
+				
+			}else {
+				saveAll=false;
+			}
+		}
+       return saveAll;
+	}
+	
+	private boolean saveClaimNotesServiceLevel(List<ClaimNoteDto> data, RcmUser user, RcmClaims claim, PartialHeader partialHeader) {
+        boolean saveAll=true;
+        if (data==null) return false;
+        if (data.size()==0) return false;
+        RcmTeam team =rcmTeamRepo.findById(partialHeader.getTeamId());
+        for(ClaimNoteDto s:data){
+		//data.forEach(s -> {
+			RcmClaimNoteType noteType = rcmClaimNoteTypeRepo.findById(s.getId()).get();
+			List<RcmClaimNotesServiceLevel> notess = rcmClaimNotesServiceLevelRepo.findByClaimAndNoteType(claim, noteType);
+			Optional<RcmClaimNotesServiceLevel> notesopt = notess.stream().filter(c -> c.getServiceCode().equals(s.getServiceCode()))
+					.findFirst();
+			if (s.getValue() != null && !s.getValue().trim().equals("") && s.getServiceCode()!=null) {
+				RcmClaimNotesServiceLevel notes=null;
+				if (notesopt.isPresent()) {
+					notes =notesopt.get();
+					notes.setNotesBy(user);
+					notes.setUpdatedBy(user);
+					notes.setUpdatedDate(new Date());
+				} else {
+					notes = new RcmClaimNotesServiceLevel();
+					notes.setNotesBy(user);
+					notes.setNoteType(noteType);
+					
+					notes.setCreatedBy(user);
+				}
+				notes.setClaim(claim);
+				notes.setServiceCode(s.getServiceCode());
+				notes.setNote(s.getValue());
+				notes.setTeamId(team);
+
+				rcmClaimNotesServiceLevelRepo.save(notes);
 				
 			}else {
 				saveAll=false;
@@ -4313,6 +4388,7 @@ public class ClaimServiceImpl {
 						partialHeader.getTeamId()==RcmTeamEnum.BILLING.getId()) {
 					if(dto.getClaimManualRuleValidationList() != null)	saveClaimManualRules(dto.getClaimManualRuleValidationList(), user, claim, partialHeader);
 					if (dto.getClaimNoteDtoList() != null)	notesSaved = saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, partialHeader);
+					if (dto.getClaimNoteServiceLevelDtoList() != null)	notesSaved = saveClaimNotesServiceLevel(dto.getClaimNoteServiceLevelDtoList(), user, claim, partialHeader);
 					if (dto.getRuleRemarkDto() != null) {
 						
 							saveClaimRuleRemark(dto.getRuleRemarkDto(), user, claim, partialHeader);
@@ -4339,6 +4415,7 @@ public class ClaimServiceImpl {
 					if(dto.getClaimManualRuleValidationList() != null)	saveClaimManualRules(dto.getClaimManualRuleValidationList(), user, claim, partialHeader);
 					
 					if (dto.getClaimNoteDtoList() != null)	notesSaved = saveClaimNotes(dto.getClaimNoteDtoList(), user, claim, partialHeader);
+					if (dto.getClaimNoteServiceLevelDtoList() != null)	notesSaved = saveClaimNotesServiceLevel(dto.getClaimNoteServiceLevelDtoList(), user, claim, partialHeader);
 					
 					if (dto.getRuleRemarkDto() != null) {
 						List<RuleRemarkDto> fList= dto.getRuleRemarkDto().stream().filter(re -> re.getSectionName().equals(Constants.UI_RULEENIGNE_SECTION))
@@ -4430,13 +4507,13 @@ public class ClaimServiceImpl {
 					if (previousCycleData != null) {
 						String status = null;
 						if (claim.getCurrentTeamId().getId() == RcmTeamEnum.BILLING.getId()) {
-							status = ClaimStatusEnum.Billed.getType();
+							//status = ClaimStatusEnum.Billed.getType();
 						} else if (claim.getCurrentTeamId().getId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
-							status = ClaimStatusEnum.Reviewed.getType();
+							//status = ClaimStatusEnum.Reviewed.getType();
 						}
-						previousCycleData.setStatusUpdated(status);
+						//previousCycleData.setStatusUpdated(status);
 
-						clamCycleRepo.save(previousCycleData);
+						//clamCycleRepo.save(previousCycleData);
 					}
 					
 					 if (dto.getAssignToTeam()==RcmTeamEnum.BILLING.getId()) {
@@ -4449,6 +4526,7 @@ public class ClaimServiceImpl {
 						 nextAction= ClaimStatusEnum.Need_to_Audit.getType(); 
 					 }
 					 else {
+						 //What to do here 
 						 createStatus = ClaimStatusEnum.Need_Additional_Information_For_Claim.getType(); 
 						 nextAction= ClaimStatusEnum.Need_Additional_Information_For_Claim.getType(); 
 					 }

@@ -184,7 +184,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid   and pending=true"
+			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid  "
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
 			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc ")

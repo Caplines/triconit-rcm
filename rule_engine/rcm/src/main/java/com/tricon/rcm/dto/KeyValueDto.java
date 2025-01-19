@@ -10,4 +10,5 @@ public class KeyValueDto {
 	String key; 
 	String value;
 	int id;
+	String serviceCode;
 }
