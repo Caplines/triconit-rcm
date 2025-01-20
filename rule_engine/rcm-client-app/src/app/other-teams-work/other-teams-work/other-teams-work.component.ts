@@ -1710,9 +1710,8 @@ export class OtherTeamsWorkComponent implements OnInit {
 
       if (e.updatedDate && this.currentTeamName.unFormatedName == 'PAYMENT_POSTING') {
 
-        //let updateDate: any = new Date(e.updatedDate);
-        let updateDate1: any = new Date(e.dos);
-        var diffDays: any = Math.floor((currentDate - updateDate1) / (1000 * 60 * 60 * 24));
+        let updateDate: any = new Date(e.pendingSince);
+        var diffDays: any = Math.floor((currentDate - updateDate) / (1000 * 60 * 60 * 24));
 
         if (diffDays > 15) {
           e.diffForPaymentPosting = true;
