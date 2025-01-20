@@ -4,13 +4,18 @@ import { Pipe, PipeTransform } from '@angular/core';
     name: 'generalFilter'
 })
 export class GeneralDataFilter implements PipeTransform {
-    transform(items: any[], property: string, check: string, property2?: string, check2?: string): any {
+    transform(items: any[], property: string, check: string, property2?: string, check2?: string,
+        property3?: string, noTCheck3?: string
+    ): any {
         if (!items) {
             return items;
         }
         // filter items array, items which match and return true will be
         // kept, false will be filtered out
-        if (property2 == undefined) {
+        //property3 for special for Service Code Level Validations (Manual) -claim Detial Page
+        if (property3 != undefined) {
+            return items.filter(item => item[property] === check && item[property3] != noTCheck3);
+        } else if (property2 == undefined) {
             return items.filter(item => item[property] === check);
         } else {
             return items.filter(item => item[property] === check && item[property2] === check2);
