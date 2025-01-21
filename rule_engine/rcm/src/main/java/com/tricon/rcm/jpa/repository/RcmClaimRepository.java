@@ -155,7 +155,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=true  "
 			+ " left join rcm_user rcau on rcau.uuid=assign.assigned_to "
-			+ " where claims.first_worked_team_id<>:teamid and off.active is true and claims.last_work_team_id!=:teamid and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
+			+ " where claims.first_worked_team_id<>:teamid and  claims.first_worked_team_id=:teamid  and off.active is true and claims.last_work_team_id!=:teamid and claims.current_team_id=:teamid  and off.company_id=:companyId " + " and pending=true"
 			+ " and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and (primary_status = "+Constants.Primary_Status_Primary+" or primary_status = "+Constants.Primary_Status_Primary_submit+" ))a order by ust-claimAge,primeSecSubmittedTotal asc  "
@@ -183,8 +183,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
-			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid  "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "//and (claims.last_work_team_id is null or claims.last_work_team_id =:teamid )
+			+ "  where claims.current_team_id=:teamid and  claims.first_worked_team_id=:teamid  and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid  "
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
 			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc ")

@@ -592,7 +592,8 @@ export class BillingClaimsComponent {
 
           this.updatedIvfId = ths.claimRcm.ivfId;
           this.updatedTpId = ths.claimRcm.tpId;
-          ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? "Primary Claim is Open" : "";
+          this.updatedTpId = ths.claimRcm.tpId;
+          ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? (ths.claimRcm.assoicatedClaimStatus != null && ths.claimRcm.assoicatedClaimStatusValue == "30" ? "Primary Claim is Closed" : "Primary Claim is Open") : "";
           ths.fetchOtherTeamRemarks();
           ths.fetchClaimNotes();
           ths.getServiceLevelCodes();

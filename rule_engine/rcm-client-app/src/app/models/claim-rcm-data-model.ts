@@ -116,6 +116,7 @@ export interface ClaimRcmDataModel {
 	officeActive?: boolean;
 	dueBalanceResponsibleParty?: string;
 	recreatedSection?: number;
+	assoicatedClaimStatusValue?: string;
 }
 
 

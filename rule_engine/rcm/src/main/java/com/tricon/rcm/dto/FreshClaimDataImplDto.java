@@ -173,5 +173,7 @@ public class FreshClaimDataImplDto {
     String dueBalanceResponsibleParty;
     
     int recreatedSection;
+    
+    String assoicatedClaimStatusValue;
 }
 

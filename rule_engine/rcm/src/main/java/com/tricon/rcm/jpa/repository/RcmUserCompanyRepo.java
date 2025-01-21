@@ -19,6 +19,9 @@ public interface RcmUserCompanyRepo extends JpaRepository<RcmUserCompany, Intege
 	
 	@Query(value = "select company_id from rcm_user_company where rcm_user_id =:userUuid", nativeQuery = true)
 	List<String> findAssociatedCompanyIdByUserUuid(@Param("userUuid") String userUuid);
+	
+	@Query(value = "select c.name from rcm_user_company rc inner join company c on c.uuid=rc.company_id where rcm_user_id =:userUuid", nativeQuery = true)
+	List<String> findAssociatedCompanyNameUserUuid(@Param("userUuid") String userUuid);
 
 	@Query(value = "select company_id uuid,cmp.name name from rcm_user_company us "
 			+ " inner join company cmp on cmp.uuid=us.company_id where rcm_user_id =:userUuid order by cmp.name", nativeQuery = true)

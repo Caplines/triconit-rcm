@@ -2139,7 +2139,18 @@ public class ClaimServiceImpl {
 
 		}
 		List<AssignFreshClaimLogsDto> ll = null;
-		List<String> companies = findAssociatedCompanyIdByUserUuid(partialHeader);
+		List<String> companies = new ArrayList<>();
+//		List<String> dd = new ArrayList<>();
+//		dd.add("UDG");
+//		dd.add("Smilepoint");
+//		dto.setClients(dd);
+		List<CompanyIdAndNameDto> companyDtos= findAssociatedCompanyWithNameByUserUuid(partialHeader);
+		if (dto.getClients()== null || dto.getClients().size()==0) companyDtos.stream().map(CompanyIdAndNameDto::getUuid).forEach(companies::add);
+		else {
+			   List<String> companyNames = companyDtos.stream().map(CompanyIdAndNameDto::getName).collect(Collectors.toList());
+			   List<String> companyNamesFilter = companyNames.stream().filter(x->dto.getClients().contains(x)).collect(Collectors.toList());
+			   companies = companyDtos.stream().filter(x->companyNamesFilter.contains(x.getName())).map(CompanyIdAndNameDto::getUuid).collect(Collectors.toList());
+		}
 		try {
 			//if (!ct.contains(ClaimStatusEnum.Billing.getId()))ct.add(ClaimStatusEnum.Billing.getId());
 			if (dto.getRepeatType() == null) {
@@ -2633,10 +2644,12 @@ public class ClaimServiceImpl {
 						For, Internal Audit team, they should be able to work on secondary even if primary is open"
 					 */
 					implDto.setAssoicatedClaimStatus(ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getId()!=(int) s[1]);
+					implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					implDto.setPrimInsurance(s[2]==null?"":s[2].toString());
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
 					if (implDto.getCurrentTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 						implDto.setAssoicatedClaimStatus(false);
+						implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					}
 				}
 
@@ -2648,10 +2661,12 @@ public class ClaimServiceImpl {
 					Object s[] = (Object[]) sec;
 					implDto.setAssoicatedClaimUuid(s[0].toString());
 					implDto.setAssoicatedClaimStatus(ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getId()!=(int) s[1]);
+					implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					implDto.setSecInsurance(s[2].toString());//For Primary see if we have Primary
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
 					if (implDto.getCurrentTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 						implDto.setAssoicatedClaimStatus(false);
+						implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					}
 				}else {
 					implDto.setSecInsurance("N/A");
