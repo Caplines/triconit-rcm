@@ -37,7 +37,7 @@ export class OfficeAssignmentComponent implements OnInit {
   totalClaimData: any = { 'oldestOpdt': '', 'oldestOpdos': '', 'totalCount': 0, 'totalRemLiteReject': 0, 'totalcountAndRemLiteReject': 0 }
   clientName: string = '';
   date: any;
-
+  uncheckedData: any = { companyName: [] };// For filter options
   showFilteredDropdown: any = { 'officeName': false, 'companyName': false };
   isFilterAllSelected: any = { 'officeName': false, 'companyName': false };
   filteredCompanyName: any = [];
@@ -134,8 +134,9 @@ export class OfficeAssignmentComponent implements OnInit {
             })
           })
         } 
-        this.showFilterOptioncompanyName(ths.claimData);
         this.filterCompanyName();
+        this.filterOnDropdownType();
+        this.showFilterOptioncompanyName(ths.claimData);
         this.setTopOnTotalRow();
         ths.loader.showLoader = false;
       } else {
@@ -400,11 +401,18 @@ export class OfficeAssignmentComponent implements OnInit {
         }
       }
       this.isFilterAllSelected.companyName = isAllSelected;
+      this.uncheckedData.companyName = [];
+      let seencompanyNames: any = {};
       this.filteredItems = this.claimData.filter((item: any) => {
-        return this.filteredCompanyName.some((checkbox: any) => {
+        let isChecked = this.filteredCompanyName.some((checkbox: any) => {
           return checkbox.checked && item.companyName == checkbox.companyName;
-        })
-      })
+        });
+        if (!seencompanyNames.hasOwnProperty(item.companyName)) {
+          seencompanyNames[item.companyName] = true;
+          this.uncheckedData.companyName.push({ 'checked': !isChecked ? false : true, 'companyName': item.companyName });
+        }
+        return isChecked;
+      });
     }
     this.calcCount(this.filteredItems);
     this.calcRemLiteReject(this.filteredItems);
@@ -412,6 +420,18 @@ export class OfficeAssignmentComponent implements OnInit {
     this.addTotalCountAndRemLiterejectField(this.filteredItems);
     //this.sortDosDesc();
 
+  }
+
+  filterOnDropdownType() {
+    if (!this.claimData) return;
+    if (this.uncheckedData.companyName.length > 0) {
+      this.filteredItems = this.claimData.filter((item: any) => {
+        let isUnchecked = this.uncheckedData.companyName.some((uncheckedItem: any) =>
+          uncheckedItem.companyName === item.companyName && !uncheckedItem.checked
+        );
+        return !isUnchecked;
+      });
+    }
   }
 
   filterCompanyNamePendency(clients: any[]) {
@@ -423,6 +443,13 @@ export class OfficeAssignmentComponent implements OnInit {
     let myMap = new Map<string, ClaimAssignmentDataModel>();
     let fd: ClaimAssignmentDataModel[] = claimData.filter((x: ClaimAssignmentDataModel) => {
       return clients.indexOf(x.companyName) != -1
+    });
+
+    fd = fd.filter((item: ClaimAssignmentDataModel) => {
+      let isCompanyNameUnchecked = this.uncheckedData.companyName.some((uncheckedItem: any) => {
+        return uncheckedItem.companyName === item.companyName && !uncheckedItem.checked;
+      });
+      return !isCompanyNameUnchecked;
     });
 
     uniqueUsers.forEach((us: any) => {
@@ -465,12 +492,14 @@ export class OfficeAssignmentComponent implements OnInit {
     const newArray: any = [];
     const seencompanyNames: any = {};
     this.filteredCompanyName.forEach((item: any) => {
+      let isCompanyNameUnchecked = this.uncheckedData.companyName.some((uncheckedItem: any) => {
+        return uncheckedItem.companyName == item.companyName && !uncheckedItem.checked;
+      })
       let x = this.companies.find((x: any) => { return x.name === item.companyName });
-      if (!x) this.companies.push({ 'name': item.companyName, 'checked': true });
+      if (!x) this.companies.push({ 'name': item.companyName, 'checked': isCompanyNameUnchecked ? false : true });
       if (!seencompanyNames.hasOwnProperty(item.companyName)) {
         seencompanyNames[item.companyName] = true;
-        newArray.push({ 'checked': true, 'companyName': item.companyName });
-
+        newArray.push({ 'checked': isCompanyNameUnchecked ? false : true, 'companyName': item.companyName });
       }
     });
     this.filteredCompanyName = newArray;
@@ -567,8 +596,9 @@ export class OfficeAssignmentComponent implements OnInit {
       this.tabSwitch.freshpend = false;
       this.tabSwitch.repeatpend = false;
       this.claimData = [...this.originalClaimData];
+      this.filterCompanyName('e');
+      this.filterOnDropdownType();
       this.showFilterOptioncompanyName(this.claimData);
-      this.filterCompanyName();
     }
     else if (tab == 'userPendency') {
       this.totalClaimData.totalCount = this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject = 0;
@@ -578,8 +608,8 @@ export class OfficeAssignmentComponent implements OnInit {
       this.tabSwitch.freshpend = false;
       this.tabSwitch.repeatpend = false;
       this.claimData = [...this.originalClaimData];
+      this.filterCompanyName('e');
       this.showFilterOptioncompanyName(this.claimData);
-      this.filterCompanyName();
       this.filterCompanyNamePendency(this.companies);
     }
     else if (tab == 'freshpend') {
@@ -589,7 +619,7 @@ export class OfficeAssignmentComponent implements OnInit {
       this.tabSwitch.freshpend = true;
       this.tabSwitch.repeatpend = false;
       this.fetchClaimAssignments(1);
-      this.filterCompanyName();
+      this.filterCompanyName('e');
     }
     else if (tab == 'repeatpend') {
       this.tabValue = 'repeatpend';
@@ -598,7 +628,7 @@ export class OfficeAssignmentComponent implements OnInit {
       this.tabSwitch.freshpend = false;
       this.tabSwitch.repeatpend = true;
       this.fetchClaimAssignments(2);
-      this.filterCompanyName();
+      this.filterCompanyName('e');
     }
   }
 }
