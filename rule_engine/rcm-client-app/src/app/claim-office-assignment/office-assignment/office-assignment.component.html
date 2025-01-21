@@ -16,18 +16,18 @@
                 <div class="main-container">
                     <div class="row">
                         <div class="col-md-12 mb-1 listClaimBox">
-                            <div class="colAction labelText" *ngIf="tabSwitch.userwisePendency && !loader.showLoader"
+                            <div class="colAction labelText" *ngIf="tabSwitch.userPendency && !loader.showLoader"
                                 style="display: flex;">
                                 Select Client
                                 <multi-select-dropdown
                                     [inputConfig]="{'pendencyClients':companies,'isPendencyTeam':true,'subType':'pendencyClients'}"></multi-select-dropdown>
                             </div>
-                            <div class="colAction labelText" *ngIf="tabSwitch.userwisePendency && !loader.showLoader">
+                            <div class="colAction labelText" *ngIf="tabSwitch.userPendency && !loader.showLoader">
 
 
                             </div>
 
-                            <div class="billingDropdown labelText" *ngIf="!tabSwitch.userwisePendency">
+                            <div class="billingDropdown labelText" *ngIf="!tabSwitch.userPendency">
                                 <ng-container *ngIf="staticUtil.isBilling()">
                                     Billing Type&nbsp;&nbsp;<select class="form-control" id="" name="bType"
                                         [(ngModel)]="bType" (change)="fetchClaimAssignments(null, 'typeChange')">
@@ -41,17 +41,21 @@
                             </div>
 
                             <div class="billingDropdown btn-group-toggle" data-toggle="buttons" *ngIf="!loader.showLoader">
-                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.userwisePendency}">
+                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.teamPendency}">
                                     <input class="form-check-input" type="radio" name="options" id="option1"
-                                        (click)="switchTab('userwisePendency')">Userwise Pendency
+                                        (click)="switchTab('teamPendency')">Team Pendency
+                                </label>
+                                <label class="btn btn-light" [ngClass]="{'active':tabSwitch.userPendency}">
+                                    <input class="form-check-input" type="radio" name="options" id="option2"
+                                        (click)="switchTab('userPendency')">User Pendency
                                 </label>
                                 <ng-container *ngIf="!staticUtil.isNotTeamPatientStatement()">
                                     <label class="btn btn-light" [ngClass]="{'active':tabSwitch.freshpend}">
-                                        <input class="form-check-input" type="radio" name="options" id="option2"
+                                        <input class="form-check-input" type="radio" name="options" id="option3"
                                             (change)="switchTab('freshpend')">Fresh
                                     </label>
                                     <label class="btn btn-light" [ngClass]="{'active':tabSwitch.repeatpend}">
-                                        <input class="form-check-input" type="radio" name="options" id="option3"
+                                        <input class="form-check-input" type="radio" name="options" id="option4"
                                             (change)="switchTab('repeatpend')">Repeat
                                     </label>
                                 </ng-container>
@@ -78,7 +82,7 @@
                                         id="table">
                                         <thead>
                                             <tr>
-                                                <th *ngIf="!tabSwitch.userwisePendency" class="width-200 min-max-180"
+                                                <th *ngIf="!tabSwitch.userPendency" class="width-200 min-max-180"
                                                     style="z-index: 9;">
                                                     <div class="dFlex">
                                                         Clients
@@ -123,7 +127,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th class="width-200 min-max-180" *ngIf="!tabSwitch.userwisePendency">
+                                                <th class="width-200 min-max-180" *ngIf="!tabSwitch.userPendency">
                                                     <div class="dFlex">
                                                         Office
                                                         <span class="sorting">
@@ -251,8 +255,8 @@
 
                                             <tr class="totalRow">
                                                 <td>Total</td>
-                                                <td *ngIf="!tabSwitch.userwisePendency"></td>
-                                                <td *ngIf="!tabSwitch.userwisePendency"></td>
+                                                <td *ngIf="!tabSwitch.userPendency"></td>
+                                                <td *ngIf="!tabSwitch.userPendency"></td>
                                                 <td></td>
                                                 <td></td>
                                                 <td class="text-center">{{totalClaimData.totalCount}}</td>
@@ -269,9 +273,9 @@
                                             <ng-container *ngIf="!loader.showLoader">
 
                                                 <tr *ngFor="let lg of filteredItems">
-                                                    <td *ngIf="!tabSwitch.userwisePendency">{{lg.companyName}}</td>
-                                                    <td *ngIf="!tabSwitch.userwisePendency">{{lg.officeName}}</td>
-                                                    <td *ngIf="!tabSwitch.userwisePendency">
+                                                    <td *ngIf="!tabSwitch.userPendency">{{lg.companyName}}</td>
+                                                    <td *ngIf="!tabSwitch.userPendency">{{lg.officeName}}</td>
+                                                    <td *ngIf="!tabSwitch.userPendency">
                                                         <select class="form-control select-editable" name="" id=""
                                                             [ngClass]="{'border-red':!lg.assignedUser}"
                                                             (change)="selectNewAssignedUser($event,lg.officeUuid);"
@@ -294,7 +298,7 @@
                                                         </select>
 
                                                     </td>
-                                                    <td *ngIf="tabSwitch.userwisePendency">
+                                                    <td *ngIf="tabSwitch.userPendency">
                                                         {{lg.fname}} {{lg.lname}}
                                                     </td>
                                                     <td class="text-center" [ngClass]="{'opac-zero':lg.opdtd == 0 }">
@@ -328,7 +332,7 @@
 
                         </div>
 
-                        <div class="action-buttons" *ngIf="!tabSwitch.userwisePendency && !loader.showLoader && !isRoleAsso">
+                        <div class="action-buttons" *ngIf="!tabSwitch.userPendency && !loader.showLoader && !isRoleAsso">
                             <button type="button" class="btn btn-success"
                                 [ngClass]="{'disabled':assignOfficeDetails.assignOfficeDetails.length==0 || loader.assignLoader}"
                                 (click)="saveAssignments()">

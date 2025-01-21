@@ -48,7 +48,7 @@ export class OfficeAssignmentComponent implements OnInit {
   currentTeamId: number = Utils.selectedTeam();
   showTooltipConfig: any = { tooltipOne: false, tooltipTwo: false };
   noOfClaimsBilledTeamName: string;
-  tabSwitch: any = { 'userwisePendency': false, 'freshpend': false, 'repeatpend': false };
+  tabSwitch: any = { 'teamPendency': true, 'userPendency': false, 'freshpend': false, 'repeatpend': false };
   tabValue: any;
   originalClaimData: any[] = [];
   selectedHeaders: string[];
@@ -93,7 +93,8 @@ export class OfficeAssignmentComponent implements OnInit {
     ths.claimAssigmentPullModel.insuranceType = [];
     if (typeChange) {
       this.originalClaimData = [];
-      this.tabSwitch.userwisePendency = false;
+      this.tabSwitch.teamPendency = true;
+      this.tabSwitch.userPendency = false;
       this.tabSwitch.freshpend = false;
       this.tabSwitch.repeatpend = false;
     }
@@ -246,7 +247,7 @@ export class OfficeAssignmentComponent implements OnInit {
         this.teamId == 7 ? "# of RemoteLite Rejections" : '',
         this.teamId == 7 ? "Total Pendency" : ''
       ],
-      userwisePendency: [
+      userPendency: [
         "User Assignment",
         "Days Since Oldest Pending Claim (Upload Date)",
         " Days Since Oldest Pending Claim (DOS)",
@@ -256,8 +257,8 @@ export class OfficeAssignmentComponent implements OnInit {
       ]
     }
 
-    if (this.tabSwitch.userwisePendency) {
-      this.selectedHeaders = headerConfigs.userwisePendency;
+    if (this.tabSwitch.userPendency) {
+      this.selectedHeaders = headerConfigs.userPendency;
     } else {
       this.selectedHeaders = headerConfigs.Default;
     }
@@ -289,7 +290,7 @@ export class OfficeAssignmentComponent implements OnInit {
     excelData = excelData.map(
       ({ officeUuid, assignedUser, ...newClaimData }: any) => newClaimData);
 
-    if (this.tabSwitch.userwisePendency){
+    if (this.tabSwitch.userPendency){
       excelData = excelData.map((e: any) => {
         return {
           "User Assignment": e.officeAssignedTo,
@@ -559,26 +560,32 @@ export class OfficeAssignmentComponent implements OnInit {
   }
 
   switchTab(tab: any) {
-    if (tab == 'userwisePendency') {
+    if(tab == 'teamPendency'){
+      this.tabValue = 'teamPendency';
+      this.tabSwitch.teamPendency = true;
+      this.tabSwitch.userPendency = false;
+      this.tabSwitch.freshpend = false;
+      this.tabSwitch.repeatpend = false;
+      this.claimData = [...this.originalClaimData];
+      this.showFilterOptioncompanyName(this.claimData);
+      this.filterCompanyName();
+    }
+    else if (tab == 'userPendency') {
       this.totalClaimData.totalCount = this.totalClaimData.totalRemLiteReject = this.totalClaimData.totalcountAndRemLiteReject = 0;
-      if (this.tabSwitch.userwisePendency){
-        this.tabValue = '';
-        this.tabSwitch.userwisePendency = false;
-        this.filterCompanyName();
-      } else {
-        this.tabValue = 'userwisePendency';
-        this.tabSwitch.userwisePendency = true;
-        this.tabSwitch.freshpend = false;
-        this.tabSwitch.repeatpend = false;
-        this.claimData = [...this.originalClaimData];
-        this.showFilterOptioncompanyName(this.claimData);
-        this.filterCompanyName();
-        this.filterCompanyNamePendency(this.companies);
-      }
+      this.tabValue = 'userPendency';
+      this.tabSwitch.teamPendency = false;
+      this.tabSwitch.userPendency = true;
+      this.tabSwitch.freshpend = false;
+      this.tabSwitch.repeatpend = false;
+      this.claimData = [...this.originalClaimData];
+      this.showFilterOptioncompanyName(this.claimData);
+      this.filterCompanyName();
+      this.filterCompanyNamePendency(this.companies);
     }
     else if (tab == 'freshpend') {
       this.tabValue = 'freshpend';
-      this.tabSwitch.userwisePendency = false;
+      this.tabSwitch.teamPendency = false;
+      this.tabSwitch.userPendency = false;
       this.tabSwitch.freshpend = true;
       this.tabSwitch.repeatpend = false;
       this.fetchClaimAssignments(1);
@@ -586,7 +593,8 @@ export class OfficeAssignmentComponent implements OnInit {
     }
     else if (tab == 'repeatpend') {
       this.tabValue = 'repeatpend';
-      this.tabSwitch.userwisePendency = false;
+      this.tabSwitch.teamPendency = false;
+      this.tabSwitch.userPendency = false;
       this.tabSwitch.freshpend = false;
       this.tabSwitch.repeatpend = true;
       this.fetchClaimAssignments(2);
