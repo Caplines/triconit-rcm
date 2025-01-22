@@ -640,14 +640,13 @@
                                                                     [routerLink]="['/billing-claims/', det.uuid]"
                                                                     target="_blank">{{det.patientName}}</a></td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                                class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
+                                                                class="noWrape">{{det.dos | date: 'MMM dd, yyyy'}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}">
                                                                 {{det.claimAge}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}">
                                                                 {{det.timelyFilingLimitData}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                                class="noWrape">{{det.pendingSince | date: 'MMM dd,
-                                                                YYYY'}}</td>
+                                                                class="noWrape">{{det.pendingSince | date: 'MMM dd, yyyy'}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
                                                                 class="noWrape">{{det.ageBracket}}</td>
                                                             <!-- Claim Type START-->
@@ -711,7 +710,7 @@
                                                                 *ngIf="isLastTeam" class="NA">
                                                                 {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}">
-                                                                {{(det.dueDateSort) | date:'MMM dd, YYYY'}}</td>
+                                                                {{(det.dueDateSort) | date:'MMM dd, yyyy'}}</td>
                                                             <td *ngIf="isRoleLead"
                                                                 [ngClass]="{'changeColor' : det.colorChange}">
                                                                 {{det.assignedTo}}

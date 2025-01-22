@@ -857,7 +857,7 @@
                                                                 [routerLink]="['/billing-claims/', det.uuid]"
                                                                 target="_blank">{{det.patientName}}</a></td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                            class="noWrape">{{det.dos | date: 'MMM dd, YYYY'}}</td>
+                                                            class="noWrape">{{det.dos | date: 'MMM dd, yyyy'}}</td>
                                                         <td *ngIf="staticUtil.isNotTeamOffice()"
                                                             [ngClass]="{'changeColor' : det.colorChange}">
                                                             {{det.claimAge}}</td>
@@ -897,7 +897,7 @@
                                                             [ngClass]="{'changeColor' : det.colorChange}" class="">
                                                             {{det.lastTeamRemark}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                            class="noWrape">{{det.pendingSince | date: 'MMM dd, YYYY'}}
+                                                            class="noWrape">{{det.pendingSince | date: 'MMM dd, yyyy'}}
                                                         </td>
                                                         <!-- <td *ngIf="staticUtil.isNotTeamOffice()" [ngClass]="{'changeColor' : det.colorChange}"
                                                             class="">{{currentTeamName?.teamName}}</td> -->
@@ -915,7 +915,7 @@
                                                         </td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"
                                                             *ngIf="showColumns.dueDateSort">{{(det.dueDateSort) |
-                                                            date:'MMM dd, YYYY'}}</td>
+                                                            date:'MMM dd, yyyy'}}</td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"
                                                             *ngIf="showColumns.providerSpeciality">
                                                             {{det.providerSpeciality==null ||
