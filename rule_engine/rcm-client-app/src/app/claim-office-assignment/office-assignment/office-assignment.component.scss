@@ -187,7 +187,7 @@ tbody tr.totalRow {
 
 .labelText {
     font-weight: bold;
-    padding-left: 15px;
+    padding-left: 7px;
 }
 
 @media screen and (max-width: 1400px) {
@@ -356,4 +356,16 @@ a.arrow-down.selected {
 
 .search-claims-age {
     margin: -5px 0 0 14px
+}
+
+.drop-toggle {
+    background-color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    cursor: hand;
+    border: 1px solid #ccc !important;
+    width: 200px !important;
+    text-align: left;
 }

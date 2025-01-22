@@ -38,6 +38,7 @@ export class OfficeAssignmentComponent implements OnInit {
   clientName: string = '';
   date: any;
   uncheckedData: any = { companyName: [] };// For filter options
+  checkedCompanyNames: any = [];
   showFilteredDropdown: any = { 'officeName': false, 'companyName': false };
   isFilterAllSelected: any = { 'officeName': false, 'companyName': false };
   filteredCompanyName: any = [];
@@ -91,12 +92,15 @@ export class OfficeAssignmentComponent implements OnInit {
     ths.loader.showLoader = true;
     ths.claimAssigmentPullModel.claimType = [];
     ths.claimAssigmentPullModel.insuranceType = [];
+    ths.claimAssigmentPullModel.clients = null;
     if (typeChange) {
       this.originalClaimData = [];
-      this.tabSwitch.teamPendency = true;
-      this.tabSwitch.userPendency = false;
-      this.tabSwitch.freshpend = false;
-      this.tabSwitch.repeatpend = false;
+      if (!this.tabSwitch.userPendency) {// change tabs only if userPendency is not selected
+        this.tabSwitch.teamPendency = true;
+        this.tabSwitch.userPendency = false;
+        this.tabSwitch.freshpend = false;
+        this.tabSwitch.repeatpend = false;
+      }
     }
     ths.totalClaimData.totalCount = ths.totalClaimData.totalRemLiteReject = ths.totalClaimData.totalcountAndRemLiteReject = 0;
     if (ths.bType == '-1') {
@@ -120,6 +124,12 @@ export class OfficeAssignmentComponent implements OnInit {
 
     ths.claimAssigmentPullModel.repeatType = repeatType || null;
 
+    if (this.tabSwitch.userPendency){
+      if (this.checkedCompanyNames.length > 0){
+        ths.claimAssigmentPullModel.clients = this.checkedCompanyNames;
+      }
+    } 
+
     ths.appService.fetchClaimAssignments(ths.claimAssigmentPullModel, (res: any) => {
 
       if (res.status === 200) {
@@ -134,9 +144,13 @@ export class OfficeAssignmentComponent implements OnInit {
             })
           })
         } 
-        this.filterCompanyName();
-        this.filterOnDropdownType();
-        this.showFilterOptioncompanyName(ths.claimData);
+        if(this.tabSwitch.userPendency) {
+          this.switchTab("userPendency");
+        } else {
+          this.filterCompanyName();
+          this.filterOnDropdownType();
+          this.showFilterOptioncompanyName(ths.claimData);
+        }
         this.setTopOnTotalRow();
         ths.loader.showLoader = false;
       } else {
@@ -402,6 +416,7 @@ export class OfficeAssignmentComponent implements OnInit {
       }
       this.isFilterAllSelected.companyName = isAllSelected;
       this.uncheckedData.companyName = [];
+      this.checkedCompanyNames = [];
       let seencompanyNames: any = {};
       this.filteredItems = this.claimData.filter((item: any) => {
         let isChecked = this.filteredCompanyName.some((checkbox: any) => {
@@ -410,6 +425,9 @@ export class OfficeAssignmentComponent implements OnInit {
         if (!seencompanyNames.hasOwnProperty(item.companyName)) {
           seencompanyNames[item.companyName] = true;
           this.uncheckedData.companyName.push({ 'checked': !isChecked ? false : true, 'companyName': item.companyName });
+          if (isChecked) {
+            this.checkedCompanyNames.push(item.companyName);
+          }
         }
         return isChecked;
       });
@@ -487,6 +505,7 @@ export class OfficeAssignmentComponent implements OnInit {
 
   showFilterOptioncompanyName(data: any) {
     this.companies = [];
+    this.checkedCompanyNames = [];
     if (!this.claimData) return;
     this.filteredCompanyName = JSON.parse(JSON.stringify(data));
     const newArray: any = [];
@@ -500,6 +519,9 @@ export class OfficeAssignmentComponent implements OnInit {
       if (!seencompanyNames.hasOwnProperty(item.companyName)) {
         seencompanyNames[item.companyName] = true;
         newArray.push({ 'checked': isCompanyNameUnchecked ? false : true, 'companyName': item.companyName });
+        if (isCompanyNameUnchecked ? false : true) {
+          this.checkedCompanyNames.push(item.companyName);
+        }
       }
     });
     this.filteredCompanyName = newArray;
