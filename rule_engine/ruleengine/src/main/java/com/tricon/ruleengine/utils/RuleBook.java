@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -365,11 +366,13 @@ public class RuleBook {
 					cbook = "";
 				if (ivfBook == null)
 					ivfBook = "";
+				if (ivfBook.trim().equals("-"))
+					ivfBook = "";
 				boolean checkforDowngrade = false;
 				if (downGrade1.equalsIgnoreCase("yes") || downGrade2.equalsIgnoreCase("yes")
 						|| downGrade3.equalsIgnoreCase("yes"))
 					checkforDowngrade = true;
-				RuleEngineLogger.generateLogs(clazz, "Coverage Book-" + ivf.getPlanCoverageBook()
+				RuleEngineLogger.generateLogs(clazz, "Coverage Book-" + ivfBook
 						+ " :: Coverage Book Header Name-" + pat.getCovBookHeaderName(), Constants.rule_log_debug, bw);
 				if (ivf.getIvFormTypeId() != Constants.IV_ORAL_SURGERY_FORM_NAME_ID) {
 					if (checkforDowngrade && ivfBook.equalsIgnoreCase("none") && cbook.equalsIgnoreCase("none")) {
@@ -575,7 +578,7 @@ public class RuleBook {
 					} else if (checkforDowngrade && !ivfBook.trim().equalsIgnoreCase(cbook.trim())) {
 						dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 								messageSource.getMessage("rule4.error.message_1",
-										new Object[] { ivf.getPlanCoverageBook(), pat.getCovBookHeaderName(), ER_MSG },
+										new Object[] { ivfBook, pat.getCovBookHeaderName(), ER_MSG },
 										locale),
 								Constants.FAIL, "", "", ""));
 						pass = false;
@@ -1544,7 +1547,7 @@ public class RuleBook {
 			// if (DateUtils.checkForAgeLimit(age, Integer.parseInt(sealantAL))) { // { if
 			// (age <=
 			// Integer.parseInt(sealantAL)) {
-			// date logic removed after chat -27 Aug
+			// date logic removed after chat -27 Aug ,2018 Abhinav Sir
 			if (true) {
 				List<String> primaryMolarTCList = new ArrayList<>();
 				primaryMolarTCList.add("A");
@@ -1588,7 +1591,11 @@ public class RuleBook {
 				 * 
 				 * }
 				 */
-
+				
+				
+				Set<String> validToothsPrimaryMolar= new HashSet<>();
+				Set<String> validToothsPermanentMolar= new HashSet<>();
+				Set<String> validToothsPreMolar= new HashSet<>();
 				for (Object obj : tpList) {
 					CommonDataCheck tp = (CommonDataCheck) obj;
 					// IF Any more Sealants are there plz add in OR Conditions
@@ -1599,6 +1606,46 @@ public class RuleBook {
 					if (tp.getServiceCode().equalsIgnoreCase("D1351")) {
 
 						String tooths[] = ToothUtil.getToothsFromTooth(tp.getTooth());
+						validToothsPrimaryMolar.addAll(Arrays.asList(tooths));//A B C //1,2,3
+						validToothsPermanentMolar.addAll(Arrays.asList(tooths));//A B C //1,2,3
+						validToothsPreMolar.addAll(Arrays.asList(tooths));//A B C //1,2,3
+						
+					}
+				}	
+				
+				//Need to check is its YES --PASS as per princy 18 Jan 2025
+				//Need to check is its NO --  THEN Check --> If tooth given are present in the list given -->pass else fail
+				if (primaryMolar.trim().equalsIgnoreCase("no")) {
+					
+					validToothsPrimaryMolar.removeAll(primaryMolarTCList);
+					//primaryMolarT= validTooths.stream().filter(x-> primaryMolarTCList.contains(x)).collect(Collectors.toList());
+				
+				}
+				if (premanentMolar.trim().equalsIgnoreCase("no")) {
+					
+					validToothsPermanentMolar.removeAll(permanentMolarTCList);
+				
+				}
+				if (preMolar.trim().equalsIgnoreCase("no")) {
+					
+					validToothsPreMolar.removeAll(preMolarCList);
+				
+				}
+				
+               /*
+				for (Object obj : tpList) {
+					
+					CommonDataCheck tp = (CommonDataCheck) obj;
+					// IF Any more Sealants are there plz add in OR Conditions
+					if (!insZero && (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0")
+							|| tp.getEstInsurance().equals("0.00") || tp.getEstInsurance().equals("0.0")))
+						continue;
+
+					if (tp.getServiceCode().equalsIgnoreCase("D1351")) {
+
+						String tooths[] = ToothUtil.getToothsFromTooth(tp.getTooth());
+						//validTooths.addAll(Arrays.asList(tooths));
+						
 						for (String tooth : tooths) {
 							RuleEngineLogger.generateLogs(clazz, "primaryMolar-" + primaryMolar + " -Tooth-" + tooth,
 									Constants.rule_log_debug, bw);
@@ -1607,7 +1654,7 @@ public class RuleBook {
 								Collection<String> prit = Collections2.filter(primaryMolarTCList,
 										th -> th.equals(tooth));
 								for (String x : prit) {
-									primaryMolarT.add(x);
+									//primaryMolarT.add(x);
 								}
 							}
 							RuleEngineLogger.generateLogs(clazz,
@@ -1618,7 +1665,7 @@ public class RuleBook {
 								Collection<String> permat = Collections2.filter(permanentMolarTCList,
 										th -> th.equals(tooth));
 								for (String x : permat) {
-									permamentMolarT.add(x);
+									//permamentMolarT.add(x);
 								}
 							}
 							RuleEngineLogger.generateLogs(clazz, "preMolar-" + preMolar + " -Tooth-" + tooth,
@@ -1626,39 +1673,39 @@ public class RuleBook {
 							if (preMolar.trim().equalsIgnoreCase("yes")) {
 								Collection<String> perm = Collections2.filter(preMolarCList, th -> th.equals(tooth));
 								for (String x : perm) {
-									preMolarT.add(x);
+									//preMolarT.add(x);
 								}
 							}
 
 						} // For loop end= Tooth
 					}
 				} // For LOOP end
-
-				if (primaryMolarT.size() > 0) {
+                 */
+				if (primaryMolar.trim().equalsIgnoreCase("no") && validToothsPrimaryMolar.size() > 0) {
 					// String.join(", ", primaryMolarT)
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule14.error.message1",
-									new Object[] { " Primary Molar (Tooth # " + String.join(",", primaryMolarT) + ")" },
+									new Object[] { " Primary Molar (Tooth # " + String.join(",", validToothsPrimaryMolar) + ")" },
 									locale),
 							Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
 							String.join(",", fcodes)));
 
 					pass = false;
 				}
-				if (permamentMolarT.size() > 0) {
+				if (premanentMolar.trim().equalsIgnoreCase("no") && validToothsPermanentMolar.size() > 0) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule14.error.message1",
 									new Object[] {
-											" Permanent Molar (Tooth # " + String.join(",", permamentMolarT) + ")" },
+											" Permanent Molar (Tooth # " + String.join(",", validToothsPermanentMolar) + ")" },
 									locale),
 							Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
 							String.join(",", fcodes)));
 					pass = false;
 				}
-				if (preMolarT.size() > 0) {
+				if (preMolar.trim().equalsIgnoreCase("no") && validToothsPreMolar.size() > 0) {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule14.error.message1",
-									new Object[] { " Pre-Molar (Tooth  # " + String.join(",", preMolarT) + ")" },
+									new Object[] { " Pre-Molar (Tooth  # " + String.join(",", validToothsPreMolar) + ")" },
 									locale),
 							Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
 							String.join(",", fcodes)));
@@ -2880,7 +2927,7 @@ public class RuleBook {
 									pass = false;
 									d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule.nouser.input", new Object[] {}, locale),
-											Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+											Constants.ALERT, String.join(",", surfaces), String.join(",", teethC),
 											String.join(",", fcodes)));
 
 								}
@@ -2898,7 +2945,7 @@ public class RuleBook {
 									pass = false;
 									d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule.nouser.input", new Object[] {}, locale),
-											Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+											Constants.ALERT, String.join(",", surfaces), String.join(",", teethC),
 											String.join(",", fcodes)));
 
 								}
@@ -2952,7 +2999,7 @@ public class RuleBook {
 							d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule10.error.message3",
 											new Object[] { narrative, tooth, scode, notes }, locale),
-									Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+									Constants.ALERT, String.join(",", surfaces), String.join(",", teethC),
 									String.join(",", fcodes)));
 						}
 					}
@@ -2976,7 +3023,7 @@ public class RuleBook {
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule10.error.message4",
 									new Object[] { String.join(", ", combinedY) }, locale),
-							Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+							Constants.ALERT, String.join(",", surfaces), String.join(",", teethC),
 							String.join(",", fcodes)));
 
 			}
@@ -6755,9 +6802,10 @@ public class RuleBook {
 			String emp = ivf.getEmployerName();
 
 			CRAReqMappingDto dto = getMappingFromCRA(mappingData, insName, planType, group, emp);
+			//RuleEngineLogger.generateLogs(clazz, "CRA ORI-" + dto.getCraRequired()+"-", Constants.rule_log_debug, bw);
 			if (dto != null) {
 
-				cra = dto.getCraRequired().trim().equalsIgnoreCase("yes") ? "yes" : "No";
+				cra = dto.getCraRequired().trim().equalsIgnoreCase("No") ? "No" : "Yes";
 			} else {
 				cra = "No";
 			}
@@ -6776,9 +6824,9 @@ public class RuleBook {
 							"EST INS.-" + tp.getEstInsurance() + " - CODE" + tp.getServiceCode(),
 							Constants.rule_log_debug, bw);
 
-					if (!insZero && (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0")
+					/*if (!insZero && (tp.getEstInsurance().equals("") || tp.getEstInsurance().equals("0")
 							|| tp.getEstInsurance().equals("0.00") || tp.getEstInsurance().equals("0.0")))
-						continue;
+						continue;*/
 
 					if (tp.getServiceCode().equalsIgnoreCase("D0120") || tp.getServiceCode().equalsIgnoreCase("D0150")
 							|| tp.getServiceCode().equalsIgnoreCase("D0145")) {
@@ -6835,7 +6883,7 @@ public class RuleBook {
 			 * Constants.PASS)); }
 			 */
 		} catch (Exception x) {
-
+            x.printStackTrace();
 			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
 					Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
@@ -6906,7 +6954,7 @@ public class RuleBook {
 
 				}
 
-				if (fee > Constants.insurance_Medicaid_max_fee) {
+				if (fee >= Constants.insurance_Medicaid_max_fee) {
 					RuleEngineLogger.generateLogs(clazz,
 							" Rule Fails  (" + Constants.insurance_Medicaid_max_fee + ")<" + fee,
 							Constants.rule_log_debug, bw);
@@ -10572,11 +10620,11 @@ public class RuleBook {
 				pass = false;
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule44.error.message2", new Object[] { ER_MSG }, locale),
-						Constants.FAIL, "", "", ""));
+						Constants.ALERT, "", "", ""));
 			} else {
 				if (pass == false) {
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule44.error.message1", new Object[] {}, locale), Constants.FAIL,
+							messageSource.getMessage("rule44.error.message1", new Object[] {}, locale), Constants.ALERT,
 							"", "", ""));
 				}
 			}
@@ -10759,7 +10807,7 @@ public class RuleBook {
 				RuleEngineLogger.generateLogs(clazz, "Date of Birth-" + dob, Constants.rule_log_debug, bw);
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule1.error.message.date", new Object[] { dob }, locale),
-						Constants.FAIL, "", "", ""));
+						Constants.ALERT, "", "", ""));
 				return d;
 			}
 			boolean pass = true;
@@ -10788,7 +10836,7 @@ public class RuleBook {
 								pass = false;
 								d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule.nouser.input", new Object[] {}, locale),
-										Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+										Constants.ALERT, String.join(",", surfaces), String.join(",", teethC),
 										String.join(",", fcodes)));
 							}
 							for (QuestionAnswerDto ans : ansL) {
@@ -10819,7 +10867,7 @@ public class RuleBook {
 												d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 														messageSource.getMessage("rule46.error.message2",
 																new Object[] {}, locale),
-														Constants.FAIL, String.join(",", surfaces),
+														Constants.ALERT, String.join(",", surfaces),
 														String.join(",", teethC), String.join(",", fcodes)));
 											}
 										}
@@ -10838,7 +10886,7 @@ public class RuleBook {
 						String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
 			else if (d.size() == 0) {
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule46.error.message1", new Object[] {}, locale), Constants.FAIL,
+						messageSource.getMessage("rule46.error.message1", new Object[] {}, locale), Constants.ALERT,
 						String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
 			}
 		} catch (Exception x) {
@@ -10894,7 +10942,7 @@ public class RuleBook {
 									chk = true;
 									d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 											messageSource.getMessage("rule.nouser.input", new Object[] {}, locale),
-											Constants.FAIL, "", "", ""));
+											Constants.ALERT, "", "", ""));
 								}
 
 							}
@@ -10909,7 +10957,7 @@ public class RuleBook {
 										d.add(new TPValidationResponseDto(
 												rule.getId(), rule.getName(), messageSource
 														.getMessage("rule47.error.message1", new Object[] {}, locale),
-												Constants.FAIL, "", "", ""));
+												Constants.ALERT, "", "", ""));
 									}
 								}
 							}
@@ -10926,7 +10974,7 @@ public class RuleBook {
 											d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule47.error.message1", new Object[] {},
 															locale),
-													Constants.FAIL, "", "", ""));
+													Constants.ALERT, "", "", ""));
 										}
 										if (sp.startsWith("false") && pass) {
 											// This means answer is not present we can say reference no missing
@@ -10934,7 +10982,7 @@ public class RuleBook {
 											d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 													messageSource.getMessage("rule47.error.message1", new Object[] {},
 															locale),
-													Constants.FAIL, "", "", ""));
+													Constants.ALERT, "", "", ""));
 										}
 
 									}

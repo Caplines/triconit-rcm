@@ -1907,9 +1907,13 @@ public class ConnectAndReadSheets {
 				if (ct<=heading_rows)
 				continue;
 				int x = -1;
+				try {
 				dto = new InsuranceMappingDto(obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
 					
 				list.add(dto);
+				}catch(Exception p) {
+					p.printStackTrace();
+				}
 			} catch (Exception ex) {
 				ex.printStackTrace();
 				continue;
