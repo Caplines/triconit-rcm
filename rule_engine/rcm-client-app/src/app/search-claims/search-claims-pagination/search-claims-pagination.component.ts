@@ -6,10 +6,12 @@ import { ngxCsv } from 'ngx-csv/ngx-csv';
 import Utils from '../../util/utils';
 import { formatNumber } from '@angular/common';
 import { DownLoadService } from 'src/app/service/download.service';
+import { ClaimIdPipe } from 'src/app/pipe/claim-id-pipe';
 @Component({
   selector: 'app-search-claims-pagination',
   templateUrl: './search-claims-pagination.component.html',
-  styleUrls: ['./search-claims-pagination.component.scss']
+  styleUrls: ['./search-claims-pagination.component.scss'],
+  providers: [ClaimIdPipe]
 })
 export class SearchClaimsPaginationComponent {
   selectedBtype: number = 0;
@@ -47,7 +49,7 @@ export class SearchClaimsPaginationComponent {
     }
   }
 
-  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private downloadService: DownLoadService) {
+  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private downloadService: DownLoadService, private claimIdPipe: ClaimIdPipe) {
     this.selectedBtype = this.appConstants.BILLING_ID;
   }
 
@@ -544,9 +546,9 @@ export class SearchClaimsPaginationComponent {
       return {
         "Clients": e.clientName,
         "Office Name": e.officeName,
-        "Claim Id": e.newClaimId,
-        "Patient ID": e.patientId,
-        "Patient Name": e.patientName,
+        "Claim Id": this.claimIdPipe.transform(e.newClaimId),
+        "Patient ID": e.patientId || "",
+        "Patient Name": e.patientName || "",
         'DOS': e.dos,
         "Claim Age": e.claimAge,
         "TFL": e.timelyFilingLimitData ? e.timelyFilingLimitData : "-",
