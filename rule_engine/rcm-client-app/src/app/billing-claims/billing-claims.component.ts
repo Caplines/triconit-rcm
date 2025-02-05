@@ -2310,7 +2310,15 @@ export class BillingClaimsComponent {
             this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'] = this.convertStringToDateForDatePicker(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']);
           }
           // console.log(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'])
+          if (this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data != null) {
+            this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data.forEach((e: any) => {
+              if (e.paymentIssueTo == 'provider') e.paymentIssueTo = 'Provider';
+              if (e.paymentIssueTo == 'patient') e.paymentIssueTo = 'Patient';
+              if (e.checkDeliverTo == null || e.checkDeliverTo == '') e.checkDeliverTo = "N/A";
+            });
+          }
           this.clearCheckDeliverOtherThanModeCheck();
+          this.clearAllPaymentInformation();
         }
       }
 
@@ -2343,7 +2351,8 @@ export class BillingClaimsComponent {
           if (!this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.some((e: any) => e.serviceCode == 'Undistributed')) {
             this.addUndistributedSectionLevelField();
           }
-
+          let paidAmount = 0;
+          let allowedAmount = 0;
           this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
             if (e.surface == null || e.surface == '' || e.surface == 'NA') {
               e.surface = 'N/A';
@@ -2369,9 +2378,14 @@ export class BillingClaimsComponent {
                 this.rebilledServiceCodeCount++;
               }
             }
-            this.sectionLevelInfoTotalConfig.paidAmount = this.sectionLevelInfoTotalConfig.paidAmount + e.paidAmount;
-            this.sectionLevelInfoTotalConfig.allowedAmount = this.sectionLevelInfoTotalConfig.allowedAmount + e.allowedAmount;
+            //x=31.42, y=105 => Add in browser  console
+            paidAmount = paidAmount + parseFloat(e.paidAmount.toFixed(2));
+            allowedAmount = allowedAmount + parseFloat(e.allowedAmount.toFixed(2));
+            paidAmount = Number(paidAmount.toFixed(2));
+            allowedAmount = Number(allowedAmount.toFixed(2));
           })
+          this.sectionLevelInfoTotalConfig.paidAmount = paidAmount;
+          this.sectionLevelInfoTotalConfig.allowedAmount = allowedAmount;
 
           this.getTotalServiceLevelInfo(false);
           this.getAllServiceCodes();
@@ -3229,6 +3243,11 @@ export class BillingClaimsComponent {
         const dp = [...this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data];
         this.clearAllPaymentInformation();
         this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data = dp;
+        this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'].data.forEach((e: any) => {
+          if (e.paymentIssueTo == 'provider') e.paymentIssueTo = 'Provider';
+          if (e.paymentIssueTo == 'patient') e.paymentIssueTo = 'Patient';
+          if (e.checkDeliverTo == null || e.checkDeliverTo == '') e.checkDeliverTo = "N/A";
+        });
 
       })
     }
@@ -3501,14 +3520,26 @@ export class BillingClaimsComponent {
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['balanceFromEsAfterPosting'] = Number(this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting);
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['serviceLevelBody'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;
 
+
+    let totalBtpAmount = 0;
+    let totalAdjustmentAmount = 0;
+    let totalPaidAmount = 0;
+    let totalCreditAdjustmentAmount = 0;
+    let totalDebitAdjustmentAmount = 0;
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
-      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalBtpAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalBtpAmount'] + +e.billToPatientAmount;
-      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalAdjustmentAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalAdjustmentAmount'] + +e.adjustmentAmount;
-      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] + +e.paidAmount;
-      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalCreditAdjustmentAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalCreditAdjustmentAmount'] + +e.creditAdjustmentAmount;
-      this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalDebitAdjustmentAmount'] = this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalDebitAdjustmentAmount'] + +e.debitAdjustmentAmount;
+      totalBtpAmount = totalBtpAmount + parseFloat(e.billToPatientAmount.toFixed(2));
+      totalAdjustmentAmount = totalAdjustmentAmount + parseFloat(e.adjustmentAmount.toFixed(2));
+      totalPaidAmount = totalPaidAmount + parseFloat(e.paidAmount.toFixed(2));
+      totalCreditAdjustmentAmount = totalCreditAdjustmentAmount + parseFloat(e.creditAdjustmentAmount.toFixed(2));
+      totalDebitAdjustmentAmount = totalDebitAdjustmentAmount + parseFloat(e.debitAdjustmentAmount.toFixed(2));
 
     });
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalBtpAmount'] = Number(totalBtpAmount.toFixed(2));
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalAdjustmentAmount'] = Number(totalAdjustmentAmount.toFixed(2));
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalPaidAmount'] = Number(totalPaidAmount.toFixed(2));
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalCreditAdjustmentAmount'] = Number(totalCreditAdjustmentAmount.toFixed(2));
+    this.claimSectionModal['SERVICE_LEVEL_INFORMATION']['serviceLevelTotalAmount']['totalDebitAdjustmentAmount'] = Number(totalDebitAdjustmentAmount.toFixed(2));
+
     this.updatBalanceFromESBeforePosting();
 
     if (!isFinal) {
@@ -4637,8 +4668,8 @@ export class BillingClaimsComponent {
   //   }
   // }
   receiveChildEventdate(event: any) {
-    console.log('dddddddddd');
-    console.log(event);
+    // console.log('dddddddddd');
+    //console.log(event);
     if (event['action'] === 'changeDatePicker') {
       if (event.model == 'SUB_DET_DT') {
         this.removeErrorDisplayKeyById('SUB_DET_DT');
