@@ -48,6 +48,12 @@ export class DatePickerComponent implements OnInit, AfterViewInit {
     };
   }
 
+  resetDate(){
+    this.emitToParent.emit({ action: 'changeDatePicker', value: null, model: this.datePickerRef.elementRef.nativeElement.parentNode.id });
+    this.datePickerRef.displayValue = null;
+    this.datePickerRef.innerValue = new Date();
+  }
+
   validateDate(event: any) {
     let value = event.value;
     if (value === '' || value == null) {

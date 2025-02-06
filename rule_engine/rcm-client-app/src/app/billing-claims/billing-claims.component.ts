@@ -22,6 +22,7 @@ import { DownLoadService } from '../service/download.service';
 import { DatePipe } from '@angular/common';
 import { PdfViewerComponent } from 'ng2-pdf-viewer';
 import { PmlDatePicker } from '../shared/date-picker/datepicker-options';
+import { DatePickerComponent } from '../shared/date-picker/date-picker/date-picker.component';
 
 // import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 
@@ -468,6 +469,8 @@ export class BillingClaimsComponent {
   ];
   showClaimDetailTable: boolean = false;
   scrollThreshold: number = 10;
+  @ViewChild('checkCashDate') checkCashDate: DatePickerComponent;
+  @ViewChild('amountDateReceivedInBank') amountDateReceivedInBank: DatePickerComponent;
 
 
   constructor(public appService: ApplicationServiceService, public appConstants: AppConstants,
@@ -3248,7 +3251,8 @@ export class BillingClaimsComponent {
           if (e.paymentIssueTo == 'patient') e.paymentIssueTo = 'Patient';
           if (e.checkDeliverTo == null || e.checkDeliverTo == '') e.checkDeliverTo = "N/A";
         });
-
+        this.checkCashDate.resetDate();
+        this.amountDateReceivedInBank.resetDate();
       })
     }
     return this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'];
