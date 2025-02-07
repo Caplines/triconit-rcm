@@ -936,6 +936,19 @@ export class ListOfClaimsComponent implements OnInit {
       if (res.status === 200) {
         ths.claimDetail = this.removePrefix(res.data);
         // ths.claimDetail =  res.data;
+
+        let data: any = ths.claimDetail.map((e: any) => {
+          if (e.claimId.endsWith("_P")) {
+            e['EstAmount'] = e.primeSecSubmittedTotal;
+          } else {
+            e['EstAmount'] = e.secTotal;
+          }
+          e['dueDateSort'] = e.followUpDate == null ? e.pendingSince : e.followUpDate;
+          if (e['nextAction'] == ths.appConstants.NEED_TO_RE_BILL) e['statusType'] = ths.appConstants.RE_BILLING_ID;
+          return e;
+        })
+        ths.claimDetail = data;
+
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
