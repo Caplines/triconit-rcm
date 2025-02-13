@@ -271,10 +271,10 @@ public class DateUtils {
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(dos);
 		calendar.set(calendar.get(Calendar.YEAR) , calendar.get(Calendar.MONTH)+months, calendar.get(Calendar.DATE));
-		Date date12m=calendar.getTime();
-		System.out.println(date12m);
+		Date dateXm=calendar.getTime();
+		System.out.println(dateXm);
 		//isDatesBetweenDates(a, b, d)
-		if (tpDate.compareTo(date12m)>0 ){
+		if (tpDate.compareTo(dateXm)>0 ){
 			return true;
 		}else{
 			return false;

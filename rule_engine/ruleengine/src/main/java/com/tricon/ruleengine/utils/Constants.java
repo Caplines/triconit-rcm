@@ -162,6 +162,11 @@ public class Constants {
 	public static final String RULE_ID_119="SSC and Fillings done within 12 months";
 	public static final String RULE_ID_120="Quads Allowed Per Day for SRP";
 	public static final String RULE_ID_121="D4346 Frequency Sharing with Prophy - DQ(NM)";
+	
+	public static final String RULE_ID_122="D2950 with Non covered Bridges/Crowns";
+	public static final String RULE_ID_123="D0140 sharing frequency with D0150 and D0120";
+	public static final String RULE_ID_124="Dental Procedures and Nomenclature - D9944, D9945";
+	
 	//public static final String RULE_ID_RuleXXX="Deductible Coverage Match";
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
@@ -239,6 +244,8 @@ public class Constants {
 	public static String errorMessOPen="<b class='error-message-api'>";
 	public static String errorMessClose="</b>";
 	
+	//- Coverage rule book 
+	//DASH --IV -> PASS ES NULL Pass
 	//public static String microsoft_coverage_sheet_name="Coverage";
 	public static String microsoft_treatement_sheet_name="Treatment Plan";
 	//public static String microsoft_fsname="FS Name";

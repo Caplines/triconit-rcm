@@ -1590,6 +1590,17 @@ public class FreqencyUtils {
 
 		return alikecodepresent;
 	}
+	
+	public static boolean checkforAlikeCodesrule122(String tpCodes, String historyCode) {
+		boolean alikecodepresent = false;
+		
+		if (compairThreeVlaues(tpCodes, historyCode, "D0140", "D0150", "D0120") != null) {
+			alikecodepresent = true;
+		}
+		
+
+		return alikecodepresent;
+	}
 
 	private static Boolean compairThreeVlaues(String tpCodes, String historyCode, String one, String two,
 			String three) {
