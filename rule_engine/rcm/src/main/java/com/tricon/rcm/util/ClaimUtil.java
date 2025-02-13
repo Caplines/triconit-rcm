@@ -66,12 +66,19 @@ public class ClaimUtil {
 			claims.setPrimeSecSubmittedTotal(re.getPrimSecSubmittedTotal());
 			claims.setPrimStatus(re.getPrimSecStatus());
 			claims.setPrimePolicyHolder(re.getPrimeSecPolicyHolder());
-			try {
+			/*try {
 				if (re.getPrimeSecPolicyHolder().equalsIgnoreCase(re.getPatientName()))
 					claims.setPrimePolicyHolderDob(
 							new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
 			} catch (Exception dt) {
+			}*/
+			
+			try {
+				claims.setPrimePolicyHolderDob(
+							new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getSubscriberDoB()).getTime()));
+			} catch (Exception dt) {
 			}
+			
 		}
 		if (claimTypeEnum.getType().equals(Constants.insuranceTypeSecondary)) {
 			claims.setPrimary(false);
@@ -87,10 +94,16 @@ public class ClaimUtil {
 						new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getPrimDateSent()).getTime()));//// extra
 			} catch (Exception dt) {
 			}
+			/*
 			try {
 				if (re.getPrimeSecPolicyHolder().equalsIgnoreCase(re.getPatientName()))
 					claims.setPrimePolicyHolderDob(
 							new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getBirthDate()).getTime()));
+			} catch (Exception dt) {
+			}*/
+			try {
+				claims.setSecPolicyHolderDob(
+							new java.sql.Date(Constants.SDF_MYSL_DATE.parse(re.getSubscriberDoB()).getTime()));
 			} catch (Exception dt) {
 			}
 		}

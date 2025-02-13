@@ -3435,6 +3435,9 @@ export class BillingClaimsComponent {
           let serviceCodesForMultiSelect: any = [];
           let requirementsForMultiSelect: any = [];
           this.claimSectionModal['REBILLING']['modal'] = res.data;
+          if (res.data && res.data.allRebillingDto) {
+            this.claimSectionModal['REBILLING']['data'] = res.data.allRebillingDto;
+          }
           this.claimSectionModal['REBILLING']['modal']['rebillingStatus'] = this.claimRcm.rebilledStatus;
           res.data.originalServiceCodes.forEach((e: any) => {
             serviceCodesForMultiSelect.push({ name: e, checked: false })

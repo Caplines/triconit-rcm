@@ -236,7 +236,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	}
 	
 	@GetMapping(value = "api/get-eob-info/{claimUuid}")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<?> getEOBInfo(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
@@ -296,7 +296,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	@GetMapping(value = "api/get-service-level-info/{claimUuid}")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<?> getServiceLevelInfo(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
@@ -313,7 +313,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	@GetMapping(value = "api/get-follow-up-info/{claimUuid}")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<?> getFollowUpInfo(@PathVariable("claimUuid") String claimUuid,Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
@@ -425,7 +425,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	}
 
 	@GetMapping(value = "api/request-rebilling-info/{claimUuid}")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<?> getRequestRebillingCodes(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)
@@ -443,7 +443,7 @@ public class RcmClaimSectionController extends BaseHeaderController {
 	}
 	
 	@GetMapping(value = "api/rebiiling-info/{claimUuid}")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<?> getRebillingInfo(@PathVariable("claimUuid") String claimUuid, Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader == null)

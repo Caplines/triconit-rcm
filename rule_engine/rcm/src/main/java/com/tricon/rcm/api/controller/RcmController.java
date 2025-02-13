@@ -737,7 +737,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api for updating status of Claim to UNArchive", response = String.class, responseContainer = "Map")
 	@PostMapping("api/unarchivesub")
-	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")
+	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','ADMIN')")
 	public ResponseEntity<Object> unArchiveClaim(@RequestBody ClaimStatusUpdate dto,Model model) {
 		String response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -916,7 +916,7 @@ public class RcmController extends BaseHeaderController{
 
 	
 	@PostMapping(value = "api/save-section-info")
-	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','ASSO','SUPER_ADMIN','ADMIN')")
 	public ResponseEntity<?> saveSectionsData(@RequestBody CommonSectionsRequestBodyDto sectionRequestBody,
 			Model model) {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

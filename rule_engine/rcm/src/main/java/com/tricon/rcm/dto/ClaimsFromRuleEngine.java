@@ -66,11 +66,14 @@ public class ClaimsFromRuleEngine {
 	@JsonProperty("c19")
 	String cellPhone;
 	
-	//Now for Secondary
 	@JsonProperty("c20")
+	String subscriberDoB;
+	
+	//Now for Secondary
+	@JsonProperty("c21")
 	String primDateSent;
 	
-	@JsonProperty("c21")
+	@JsonProperty("c22")
 	float primTotalPaid;
 	
 

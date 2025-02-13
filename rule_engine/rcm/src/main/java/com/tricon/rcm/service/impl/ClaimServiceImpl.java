@@ -2643,12 +2643,12 @@ public class ClaimServiceImpl {
 						When any user selects the ""Next Action Required"" as ""Need to Bill to Secondary"", then the secondary claim of that claim should become active to be worked upon by Billing or internal audt team (depending on the insurance type) 
 						For, Internal Audit team, they should be able to work on secondary even if primary is open"
 					 */
-					implDto.setAssoicatedClaimStatus(ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getId()!=(int) s[1]);
+					implDto.setAssoicatedClaimStatus(true);//!(ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getId()==(int) s[1] || ClaimStatusEnum.Close_The_claim.getId()==(int) s[1]));
 					implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					implDto.setPrimInsurance(s[2]==null?"":s[2].toString());
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
 					if (implDto.getCurrentTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
-						implDto.setAssoicatedClaimStatus(false);
+						////implDto.setAssoicatedClaimStatus(false);
 						implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					}
 				}
@@ -2660,7 +2660,7 @@ public class ClaimServiceImpl {
 				if (sec != null) {
 					Object s[] = (Object[]) sec;
 					implDto.setAssoicatedClaimUuid(s[0].toString());
-					implDto.setAssoicatedClaimStatus(ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getId()!=(int) s[1]);
+					implDto.setAssoicatedClaimStatus(true);
 					implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					implDto.setSecInsurance(s[2].toString());//For Primary see if we have Primary
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));

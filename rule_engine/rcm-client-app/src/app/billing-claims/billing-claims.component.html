@@ -2777,7 +2777,8 @@
                                                     <label for="checkCashDate"
                                                         *ngIf="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] == 'Recoupment'">Recoupment
                                                         Run Date #</label>
-                                                    <app-date-picker id="checkCashDate" class="claimDatepicker" #checkCashDate
+                                                    <app-date-picker id="checkCashDate" class="claimDatepicker"
+                                                        #checkCashDate
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                         [inputDate]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']"
                                                         (emitToParent)="receiveChildEventdate($event)"
@@ -2790,8 +2791,8 @@
                                                 <div class="custom-row text-number">
                                                     <label for="amountDateReceivedInBank">Date when Amount Received in
                                                         Bank</label>
-                                                    <app-date-picker id="amountDateReceivedInBank" #amountDateReceivedInBank
-                                                        class="claimDatepicker"
+                                                    <app-date-picker id="amountDateReceivedInBank"
+                                                        #amountDateReceivedInBank class="claimDatepicker"
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                         [inputDate]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
                                                         (emitToParent)="receiveChildEventdate($event)"
@@ -3228,44 +3229,6 @@
                                                             </div>
                                                         </div>
 
-                                                        <!-- <div class="col-md-4 mb-2">
-                                                            <div class="custom-row text-number">
-                                                                <label for="nextReviewDate">Next Review Date</label> -->
-                                                        <!-- <input type="date" id="nextReviewDate"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']"
-                                                                class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate']}"> -->
-                                                        <!-- <app-date-picker id="nextReviewDate"
-                                                                    class="claimDatepicker"
-                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextReviewDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
-                                                                    [inputDate]="this.claimSectionModal.PATIENT_STATEMENT['nextReviewDate']"
-                                                                    (emitToParent)="receiveChildEventdate($event)"
-                                                                    (ngModelChange)="onSelectDate($event)">
-                                                                </app-date-picker>
-                                                            </div>
-                                                        </div> -->
-
-                                                        <!-- <div class="col-md-4 mb-2">
-                                                            <div class="custom-row text-number">
-                                                                <label for="statementSendingDate">Date of sending
-                                                                    Statement</label>
-                                                                <input type="date" id="statementSendingDate"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
-                                                                class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate']}">
-                                                                <app-date-picker id="statementSendingDate" 
-                                                                    class="claimDatepicker"
-                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['statementSendingDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
-                                                                    [inputDate]="this.claimSectionModal.PATIENT_STATEMENT['statementSendingDate']"
-                                                                    (emitToParent)="receiveChildEventdate($event)" 
-                                                                    (ngModelChange)="onSelectDate($event)">
-                                                                </app-date-picker>
-                                                            </div>
-                                                        </div> -->
-
-
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="remarks">Enter Remarks &nbsp;<span
@@ -3323,24 +3286,7 @@
                                                             </div>
                                                         </div>
 
-                                                        <!-- <div class="col-md-4 mb-2">
-                                                            <div class="custom-row text-number">
-                                                                <label for="nextStatementDate">Next Statement
-                                                                    Date</label>
-                                                                <input type="date" id="nextStatementDate"
-                                                                [disabled]="!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                [(ngModel)]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']"
-                                                                class="form-control"
-                                                                [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate']}">
-                                                                <app-date-picker id="nextStatementDate" 
-                                                                    class="claimDatepicker"
-                                                                    [ngClass]="{'is-invalid':emptyFields['PATIENT_STATEMENT'] && emptyFields['PATIENT_STATEMENT']['nextStatementDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.allowEdit)}"
-                                                                    [inputDate]="this.claimSectionModal.PATIENT_STATEMENT['nextStatementDate']"
-                                                                    (emitToParent)="receiveChildEventdate($event)" 
-                                                                    (ngModelChange)="onSelectDate($event)">
-                                                                </app-date-picker>
-                                                            </div>
-                                                        </div> -->
+
                                                         <div class="col-md-4 mb-2">
                                                             <div class="custom-row text-number">
                                                                 <label for="statementNotes">Statement Notes &nbsp;<span
@@ -3397,7 +3343,7 @@
                                                             <button class="btn btn-success"
                                                                 (click)="savePatientStaementInfo(false)"
                                                                 [disabled]="loader.patientStaementInfo"
-                                                                *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0  && !allowOtherSaveWhileReqRebilling()">
+                                                                *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_STATEMENT']['sectionId'],'edit') && claimRcm.currentState==0"><!-- remmoved to ad per gagan -&& !allowOtherSaveWhileReqRebilling() -->
                                                                 Save
                                                             </button>
                                                             <div *ngIf="loader.patientStaementInfo" class="mr-2">
@@ -3628,7 +3574,7 @@
                                                             <button class="btn btn-success"
                                                                 (click)="savePatientPaymentInfo(false)"
                                                                 [disabled]="loader.patientPaymentInfo"
-                                                                *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling()">
+                                                                *ngIf="isPrimaryClaimClosed() && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_PAYMENT']['sectionId'],'edit') && claimRcm.currentState==0">
                                                                 Save
                                                             </button>
                                                             <div *ngIf="loader.patientPaymentInfo" class="mr-2">
@@ -4524,7 +4470,7 @@
                                                                 <th>Service Codes Rebilled</th>
                                                                 <th>Attachments Attached</th>
                                                                 <th>Used AI?</th>
-                                                                <th>Rebilling Remarks</th>
+                                                                <th>Reason For Rebilling</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -4534,10 +4480,10 @@
                                                                 <td>{{data.requestedBy}}</td>
                                                                 <td>{{data.requestedRemarks}}</td>
                                                                 <td>{{data.dateOfRebiiling|date :'MM/dd/yyyy'}}</td>
-                                                                <td>{{data.rebillingServiceCodes}}</td>
-                                                                <td>{{data?.rebillingRequirements}}</td>
+                                                                <td>{{data.originalServiceCodes}}</td>
+                                                                <td>{{data?.originalRequirements}}</td>
                                                                 <td>{{data.usedAI}}</td>
-                                                                <td>{{data.rebillingRemarks}}</td>
+                                                                <td>{{data.reasonForRebilling}}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -5129,7 +5075,6 @@
                                             </div>
                                         </div>
                                     </ng-container>
-
                                     <ng-container
                                         *ngIf="isPrimaryClaimClosed() && ( !claimRcm.rebilledStatus || !claimSectionModal.REBILLING['modal']['rebillingStatus']) && !claimRcm.pending &&  claimRcm.allowEdit && claimRcm.currentStatus!=appConstants.claimClosedId && checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
                                         <div class="bold-b-text"

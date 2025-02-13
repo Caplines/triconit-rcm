@@ -64,7 +64,7 @@ public class RcmAttachmentController extends BaseHeaderController {
 	}
 
 	@GetMapping("/api/get-attachments/{claimUuid}")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','ADMIN')")
 	public ResponseEntity<?> getClaimAttachments(@PathVariable("claimUuid") String claimUuid, Model model) {
 		List<ClaimAttachmentsResponseDto> response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

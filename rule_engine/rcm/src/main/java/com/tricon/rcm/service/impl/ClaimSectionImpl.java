@@ -80,6 +80,7 @@ import com.tricon.rcm.dto.RcmTeamDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto;
 import com.tricon.rcm.dto.RcmTeamSectionAccessDto.SectionData;
 import com.tricon.rcm.dto.RebillingDto;
+import com.tricon.rcm.dto.RebillingDtoSub;
 import com.tricon.rcm.dto.RebillingResponseDto;
 
 import com.tricon.rcm.dto.RecreateClaimRequestDto;
@@ -1409,11 +1410,16 @@ public class ClaimSectionImpl {
 							.findByTeamIdAndName(assignToTeam.getId(), inst.getCode());
 					if (data != null) {
 						Calendar calendarForNextFollowUpDate = Calendar.getInstance();
-						Date date = claim.getNextFollowUpDate() != null ? claim.getNextFollowUpDate() : new Date();
+						Date date = new Date();//always current Date claim.getNextFollowUpDate() != null ? claim.getNextFollowUpDate() : new Date();
 						calendarForNextFollowUpDate.setTime(date);
 						calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, data.getNextFollowUpGap());
 						claim.setNextFollowUpDate(calendarForNextFollowUpDate.getTime());
+						claim.setUpdatedDate(date);
 						logger.info("Next Follow Up Data in RcmTable:" + claim.getNextFollowUpDate());
+					}else {
+						Date date = new Date();
+						claim.setNextFollowUpDate(date);
+						claim.setUpdatedDate(date);
 					}
 				}
 			}
@@ -1580,7 +1586,8 @@ public class ClaimSectionImpl {
 			requestRebillingSection.setReasonForRebilling(requestRebillingInfoModel.getReasonForRebilling());
 			requestRebillingSection.setRebillingRequirements(requestRebillingInfoModel.getRebillingRequirements());
 			requestRebillingSection.setRebillingType(requestRebillingInfoModel.getRebillingType());	
-			requestRebillingSection.setRemarks(requestRebillingInfoModel.getRemarks());		
+			requestRebillingSection.setRemarks(requestRebillingInfoModel.getRemarks());	
+			requestRebillingSection.setUsedAI(requestRebillingSection.getUsedAI());	
 			requestRebillingSection = requestRebillingSectionRepo.save(requestRebillingSection);
 
 			// update rebilled status true in rcm_claims table
@@ -1816,7 +1823,8 @@ public class ClaimSectionImpl {
 
 	public RebillingDto fetchRequestRebillingServiceCodesInformation(PartialHeader partialHeader, String claimUuid)
 			throws Exception {
-		RebillingDto responseDto = null;
+		//List<RcmRequestRebiilingSection> responseDtos = new ArrayList<>();
+		RebillingDto responseDto = new RebillingDto();
 		RcmRequestRebiilingSection requestRebillingData = null;
 		requestRebillingData = requestRebillingSectionRepo.findFirstByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
 		if (requestRebillingData != null) {
@@ -1838,9 +1846,42 @@ public class ClaimSectionImpl {
 			responseDto.setRequestedRemarks(requestRebillingData.getRemarks());
 			responseDto.setReasonForRebilling(requestRebillingData.getReasonForRebilling());
 			responseDto.setClaimTransferNextTeamId(requestRebillingData.getTeam().getId());
-			return responseDto;
+			responseDto.setUsedAI(requestRebillingData.getUsedAI());
+			responseDto.setDateOfRebiiling(Constants.SDF_MYSL_DATE.format(requestRebillingData.getCreatedDate()));
+			//return responseDto;
+			
+		List<RcmRequestRebiilingSection> listData = requestRebillingSectionRepo.findByClaimClaimUuidOrderByCreatedDateDesc(claimUuid);
+		List<RebillingDtoSub> dl= new ArrayList<>();
+		RebillingDtoSub responseDtoSub=null;
+		if (listData!=null) {
+		for(RcmRequestRebiilingSection d:listData) {
+			responseDtoSub = new RebillingDtoSub();
+			if (StringUtils.isNoneBlank(d.getRebillingServiceCodes())) {
+
+				String serviceCodes[] = d.getRebillingServiceCodes().split(",");
+				responseDtoSub.setOriginalServiceCodes(Arrays.asList(serviceCodes));
+			}
+
+			if (StringUtils.isNoneBlank(d.getRebillingRequirements())) {
+				String requirements[] = d.getRebillingRequirements().split(",");
+				responseDtoSub.setOriginalRequirements(Arrays.asList(requirements));		
+			}
+
+			RcmUser requestedBy1 = userRepo.findByUuid(d.getCreatedBy().getUuid());
+			responseDtoSub.setRequestedBy(requestedBy1.getFirstName());
+			responseDtoSub.setRequestedByUuid(requestedBy1.getUuid());
+			responseDtoSub.setRequestedRemarks(d.getRemarks());
+			responseDtoSub.setReasonForRebilling(d.getReasonForRebilling());
+			responseDtoSub.setClaimTransferNextTeamId(d.getTeam().getId());
+			responseDtoSub.setDateOfRebiiling(Constants.SDF_MYSL_DATE.format(d.getCreatedDate()));
+			responseDtoSub.setUsedAI(d.getUsedAI());
+			dl.add(responseDtoSub);
 		}
-		return null;
+		 }
+		responseDto.setAllRebillingDto(dl);
+		}
+		
+		return responseDto;
 	}
 	
 	public List<RebillingResponseDto> fetchRebillingInformation(PartialHeader partialHeader, String claimUuid)

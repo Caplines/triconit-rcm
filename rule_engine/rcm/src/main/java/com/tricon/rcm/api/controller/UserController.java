@@ -202,7 +202,7 @@ public class UserController extends BaseHeaderController {
 	}
 	
 	@RequestMapping(value = "/gsheet-link", method = RequestMethod.GET)
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
+	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO')")
 	public ResponseEntity<?> gSheetLink(Model model) {
 		List<RcmCompanyWithGsheetDto> response = null;
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");

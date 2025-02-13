@@ -32,11 +32,7 @@
                                                     Sheet</label>
                                             </div>
                                         </ng-container>
-                                        <!-- <ng-container *ngIf="cName !== '614c4beb-7df2-11e8-8432-8c16451459cd'">
-                                <div class="form-check-inline">
-                                    <label class="form-check-label gs-link" (click)="fetchGSheet()" >Through Google Sheet</label>
-                                </div>
-                            </ng-container> -->
+
                                     </div>
                                     <div class="alert alert-info" role="alert">
                                         <img src="../../assets/img/info-icon-border.png">If you'd like to update the
@@ -90,15 +86,19 @@
                             </div>-->
                             <div class="form-row collapse" style="border-radius: 10px 10px 0px 0px;"
                                 [ngClass]="{'show':expandCollapse.expandTeamRemarks}" id="teamRemarks">
-                                <a *ngIf="issueClaimsCount?.issueCount > 0 || issueClaimsCount?.archiveCount > 0" [routerLink]="['issue-claims']" target="_blank" class="btn btn-danger"><img src="../../assets/img/claim-issue.png"/>Upload Errors </a>
+                                <a *ngIf="issueClaimsCount?.issueCount > 0 || issueClaimsCount?.archiveCount > 0"
+                                    [routerLink]="['issue-claims']" target="_blank" class="btn btn-danger"><img
+                                        src="../../assets/img/claim-issue.png" />Upload Errors </a>
                                 <div class="update-button" style="float: right; margin-right: 12px;"><a
-                                        href="javascript:void(0);" [ngClass]="{'disabled':hasUpdateClaims.length==0 || !updateClaimbtnDisable}"
+                                        href="javascript:void(0);"
+                                        [ngClass]="{'disabled':hasUpdateClaims.length==0 || !updateClaimbtnDisable}"
                                         class="btn btn-success" (click)="pullFreshClaims()"><span
                                             *ngIf="loader.updateClaims" class="spinner-grow spinner-grow-sm"
                                             role="status" aria-hidden="true"></span>
                                         Update Latest Claim</a></div>
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar toolupdateTable"
+                                    <table
+                                        class="table table-striped table-wrapper-scroll-y table-inner-scrollbar toolupdateTable"
                                         id="table" *ngIf="log.length>0">
                                         <thead>
                                             <tr>
@@ -108,20 +108,21 @@
                                                 <th colspan="6">Upload Status</th>
                                                 <th colspan="6">Latest Attempt</th>
                                                 <th colspan="6"># of Claims Uploaded</th>
-                                                <th colspan="6"> 
-                                                     <!-- <button class="btn btn-danger"
+                                                <th colspan="6">
+                                                    <!-- <button class="btn btn-danger"
                                                         style="min-width: 105px;justify-content: center;"
                                                         (click)="selectAll(hasUpdateClaims.length==0 ? true : false)">{{hasUpdateClaims.length==0
                                                         ? 'Select All' : 'Unselect All'}}</button> -->
 
-                                                        <div class="dFlex nowrap-text unarchiveAll">  
-                                                            <label class="no-css-checkbox-container" for="unarchive" (change)="selectAll($event)">
-                                                                <input type="checkbox" id="unarchive" #unArchiveSelectBox>
-                                                                <div class="checkmark"></div>
-                                                              </label>  &nbsp;<strong> {{hasUpdateClaims.length==0
-                                                                ? 'Select All Offices' : 'Unselect All'}}</strong> 
-                                                        </div>
-                                                    </th>
+                                                    <div class="dFlex nowrap-text unarchiveAll">
+                                                        <label class="no-css-checkbox-container" for="unarchive"
+                                                            (change)="selectAll($event)">
+                                                            <input type="checkbox" id="unarchive" #unArchiveSelectBox>
+                                                            <div class="checkmark"></div>
+                                                        </label> &nbsp;<strong> {{hasUpdateClaims.length==0
+                                                            ? 'Select All Offices' : 'Unselect All'}}</strong>
+                                                    </div>
+                                                </th>
 
                                             </tr>
                                         </thead>
