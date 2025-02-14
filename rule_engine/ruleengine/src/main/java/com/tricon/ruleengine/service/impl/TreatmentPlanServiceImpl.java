@@ -988,14 +988,22 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		if (espatients != null && espatients.get(patKey) != null
 				&& espatients.get(patKey).size() > 0)
 			feeKey = ((EagleSoftPatient) espatients.get(patKey).get(0)).getFeeScheduleId();
+		 if (feeKey ==null) feeKey="-1";
 		if (esfeess != null && espatients != null && espatients.get(patKey).size() > 0) {
 			dtoRL = rb.Rule4_B(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
 					esfeess.get(feeKey), espatients.get(patKey),preferanceFeeSchedules==null?null:preferanceFeeSchedules.get(patKey), bw,type);//preferanceFeeSchedules.get(patKey
 		} else {
-			if (esfeess == null)
+			if (esfeess == null || feeKey== null) {
 				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
 						Constants.FAIL,"","",""));
+				feeKey="-1";
+				esfeess = new HashMap<>();
+				EagleSoftFeeShedule s= new EagleSoftFeeShedule();
+				List<EagleSoftFeeShedule> t =new ArrayList<>();
+				t.add(s);
+				esfeess.put("-1",t);
+			}
 			else if (espatients == null)
 				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 						.getMessage("rule.patient.notfound", new Object[] { "Patient ID-"
@@ -1120,11 +1128,17 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 			RuleEngineLogger.generateLogs(clazz, Constants.RULE_ID_19 + "-rule.fee.notfound ",
 					Constants.rule_log_debug, bw);
-
-			if (esfeess == null)
+			if (esfeess == null || feeKey== null) {
 				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
 						Constants.FAIL,"","",""));
+				feeKey="-1";
+				esfeess = new HashMap<>();
+				EagleSoftFeeShedule s= new EagleSoftFeeShedule();
+				List<EagleSoftFeeShedule> t =new ArrayList<>();
+				t.add(s);
+				esfeess.put("-1",t);
+			}
 			if (espatients == null)
 				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.patient.notfound",
@@ -2732,7 +2746,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
              		 Constants.rule_log_debug, bw);
          //END Quads Allowed Per Day for SRP		
 
-         //D4346 Frequency Sharing with Prophy - DQ(NM)
+        //D4346 Frequency Sharing with Prophy - DQ(NM)
   		rule = getRulesFromList(rules, Constants.RULE_ID_121);
   		dtoRL = rb.Rule121(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
   		if (dtoRL != null) {
@@ -2745,8 +2759,49 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
   		 }
          RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_121,
               		 Constants.rule_log_debug, bw);
-          //END D4346 Frequency Sharing with Prophy - DQ(NM)
-                 
+       //END D4346 Frequency Sharing with Prophy - DQ(NM)
+       //D2950 with Non covered Bridges/Crowns
+   		rule = getRulesFromList(rules, Constants.RULE_ID_122);
+   		dtoRL = rb.Rule122(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+   		if (dtoRL != null) {
+   				list.addAll(dtoRL);
+   				for (TPValidationResponseDto t : dtoRL) {
+   					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+   						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+   						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+   			}
+   		 }
+          RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_122,
+               		 Constants.rule_log_debug, bw);
+        //D2950 with Non covered Bridges/Crowns
+         //Dental Procedures and Nomenclature - D9944, D9945
+     		rule = getRulesFromList(rules, Constants.RULE_ID_124);
+     		dtoRL = rb.Rule124(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+     		if (dtoRL != null) {
+     				list.addAll(dtoRL);
+     				for (TPValidationResponseDto t : dtoRL) {
+     					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+     						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+     						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+     			}
+     		 }
+            RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_124,
+                 		 Constants.rule_log_debug, bw);
+            //Dental Procedures and Nomenclature - D9944, D9945  
+            //D0140 sharing frequency with D0150 and D0120
+    		rule = getRulesFromList(rules, Constants.RULE_ID_123);
+    		dtoRL = rb.Rule123(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+    		if (dtoRL != null) {
+    				list.addAll(dtoRL);
+    				for (TPValidationResponseDto t : dtoRL) {
+    					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+    						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+    						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+    			}
+    		 }
+           RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_123,
+                		 Constants.rule_log_debug, bw);
+        //D0140 sharing frequency with D0150 and D0120                 
 		
 		// RULE_ID_79 "Insurance and Address"
 		/*
@@ -2788,7 +2843,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		if (espatients != null && espatients.get(patKey) != null
 				&& espatients.get(patKey).size() > 0)
 			feeKey = ((EagleSoftPatient) espatients.get(patKey).get(0)).getFeeScheduleId();
-
+        if (feeKey ==null) feeKey="-1";
 		
 		
 		// RULE_ID_5 "Remaining Deductible, Remaining Balance and Benefit Max as per IV
@@ -2827,11 +2882,17 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			dtoRL = rb.Rule4_B(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
 					esfeess.get(feeKey), espatients.get(patKey),preferanceFeeSchedules==null?null:preferanceFeeSchedules.get(patKey), bw,type);//
 		} else {
-			if (esfeess == null)
+			if (esfeess == null || feeKey== null) {
 				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.fee.notfound", new Object[] { "" }, locale),
 						Constants.FAIL,"","",""));
-			else if (espatients == null)
+				feeKey="-1";
+				esfeess = new HashMap<>();
+				EagleSoftFeeShedule s= new EagleSoftFeeShedule();
+				List<EagleSoftFeeShedule> t =new ArrayList<>();
+				t.add(s);
+				esfeess.put("-1",t);
+			}else if (espatients == null)
 				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource
 						.getMessage("rule.patient.notfound", new Object[] { "Patient ID-"
 								+ ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getPatientId() },
