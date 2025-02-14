@@ -5797,8 +5797,10 @@ public class ClaimServiceImpl {
 					} else {
 						previousCycleData.setStatusUpdated(previousCycleData.getStatus());
 					}
+				}else {
+					
 				}
-				clamCycleRepo.save(previousCycleData);
+				if (previousCycleData!=null )clamCycleRepo.save(previousCycleData);
 				
 				if (nextAction!=null) {
 					/*

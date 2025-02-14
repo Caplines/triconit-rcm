@@ -1069,6 +1069,7 @@ public class ClaimSectionImpl {
 		// now we update totalPaid amount,adjustment amount and btp amount,CreditAdjustmentAmount,DebitAdjustmentAmount in rcm claim
 		// table
 		if (finalSubmit) {
+			//May be error if Same Service Code exits it will deactivate all the service codes
 		 if (oldServiceCodes!=null && oldServiceCodes.size()>0) {
 			 //mark old record as deleted.
 			 claimDetailRepo.deActivatedRcmDetailWithClaimUUidAndCode(claim.getClaimUuid(),oldServiceCodes);
