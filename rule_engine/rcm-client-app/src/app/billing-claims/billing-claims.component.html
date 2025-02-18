@@ -3359,19 +3359,34 @@
                                                             <td><a href="javascript:void(0);"
                                                                     *ngIf="data.balanceSheetLink!=null"
                                                                     (click)="viewLink(data.balanceSheetLink)">View
-                                                                    Link</a></td>
-                                                            <td>{{data.reason}}</td>
-                                                            <td>{{data.remarks}}</td>
-                                                            <td>{{data.modeOfStatement}}</td>
-                                                            <td>{{data.amountStatement}}</td>
-                                                            <td>{{data.statementType}}</td>
-                                                            <td>{{data.statementNotes}}</td>
-                                                            <td>{{data.statementSendingDate}}</td>
+                                                                    Link</a>
+                                                                <ng-container
+                                                                    *ngIf="data.balanceSheetLink==null">N/A</ng-container>
+                                                            </td>
+
+                                                            <td>{{data.reason==null||
+                                                                data.reason==''?"N/A":data.reason}}</td>
+                                                            <td>{{data.remarks==null?"N/A":data.remarks}}</td>
+                                                            <td>{{data.modeOfStatement==null?"N/A":data.modeOfStatement}}
+                                                            </td>
+                                                            <td>{{data.amountStatement==null?"N/A":data.amountStatement}}
+                                                            </td>
+                                                            <td>{{data.statementType==null?"N/A":data.statementType}}
+                                                            </td>
+                                                            <td>{{data.statementNotes==null?"N/A":data.statementNotes}}
+                                                            </td>
+                                                            <td>{{data.statementSendingDate==null||
+                                                                data.statementSendingDate==""
+                                                                ?"N/A":data.statementSendingDate}}
+                                                            </td>
                                                             <td><a href="javascript:void(0);"
                                                                     *ngIf="data.attachStatement!=null"
                                                                     (click)="viewLink(data.attachStatement)">View
-                                                                    Link</a></td>
-                                                            <td>{{data.status}}</td>
+                                                                    Link</a>
+                                                                <ng-container
+                                                                    *ngIf="data.attachStatement==null">N/A</ng-container>
+                                                            </td>
+                                                            <td>{{data.status==null?"N/A":data.status}}</td>
 
                                                         </tr>
 
@@ -4013,14 +4028,20 @@
                                                                 <td>{{data.createdDate|date :'MM/dd/yyyy hh:mm
                                                                     a':'UTC'+timeZone}}
                                                                 </td>
-                                                                <td>{{data.debtNumber}}</td>
-                                                                <td>{{data.collectionType}}</td>
-                                                                <td>{{data.amountReceived}}</td>
-                                                                <td>{{data.modeOfPayment}}</td>
-                                                                <td>{{data.commisionCharged}}</td>
-                                                                <td>{{data.netAmountReceived}}</td>
-                                                                <td>{{data.reason}}</td>
-                                                                <td>{{data.remarks}}</td>
+                                                                <td>{{data.debtNumber==null?"N/A":data.debtNumber}}</td>
+                                                                <td>{{data.collectionType==null?"N/A":data.collectionType}}
+                                                                </td>
+                                                                <td>{{data.buttonType == 2? data.amountReceived:"N/A"}}
+                                                                </td>
+                                                                <td>{{data.modeOfPayment==null||data.modeOfPayment==''
+                                                                    ?"N/A":data.modeOfPayment}}
+                                                                </td>
+                                                                <td>{{data.buttonType==2?data.commisionCharged:"N/A"}}
+                                                                </td>
+                                                                <td>{{data.buttonType==2?data.netAmountReceived:"N/A"}}
+                                                                </td>
+                                                                <td>{{data.reason==null?"N/A":data.reason}}</td>
+                                                                <td>{{data.remarks==null?"N/A":data.remarks}}</td>
                                                             </tr>
 
                                                         </tbody>
@@ -4178,7 +4199,13 @@
                                                             </td>
                                                             <td>{{data.modeOfAppeal}}</td>
                                                             <td>{{data.aiToolUsed}}</td>
-                                                            <td>{{data.appealDocument}}</td>
+                                                            <td> <a href="javascript:void(0);"
+                                                                    *ngIf="data.appealDocument!=null && data.appealDocument!=''"
+                                                                    (click)="viewLink(data.appealDocument)">View
+                                                                    Link</a>
+                                                                <ng-container
+                                                                    *ngIf="data.appealDocument==null || data.appealDocument==''">N/A</ng-container>
+                                                            </td>
                                                             <td>{{data.remarks}}</td>
                                                         </tr>
 

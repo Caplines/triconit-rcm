@@ -2727,7 +2727,7 @@ public class ClaimServiceImpl {
                List<ProviderCodeWithOffice> pCodeList = pro.stream()
    					.filter(e -> e.getOffice().trim().equalsIgnoreCase(officeName)
    							&&  e.getClientName().trim().equalsIgnoreCase(clientName)
-   							&& e.getEsCode().trim().equalsIgnoreCase(proIdFinal))
+   							&& e.getEsCode()!=null && e.getEsCode().trim().equalsIgnoreCase(proIdFinal))
    					.collect(Collectors.toList());
                
    			if (pCodeList != null && pCodeList.size() > 0) {
@@ -2775,7 +2775,7 @@ public class ClaimServiceImpl {
    				claim.setProviderOnClaimFromSheet(providerOnClaimFromSheet);
    			///}
 				}catch(Exception c) {
-					
+					//c.printStackTrace();
 				}
 			}
 			if (claim!=null  && !pdf) {

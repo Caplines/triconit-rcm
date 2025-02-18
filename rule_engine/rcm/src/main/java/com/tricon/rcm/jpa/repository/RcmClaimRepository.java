@@ -419,7 +419,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal, prime_sec_submitted_total primeSecSubmittedTotal, "
 			+ " case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,"
 			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
-			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,team.name as assignedToTeam "
 			+ " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "

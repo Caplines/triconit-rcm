@@ -41,4 +41,5 @@ public interface FreshClaimDataDto {
 	boolean getClaimTypeStatus();
 	String getAssignedToFName();
 	String getAssignedToLName();
+	String getAssignedToTeam();
 }
