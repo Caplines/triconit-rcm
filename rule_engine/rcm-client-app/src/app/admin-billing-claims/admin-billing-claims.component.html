@@ -10,7 +10,7 @@
                 <div class="listClaimBox mt-2 mb-1">
                   <div class="date-range-box">
                     <label>Client Name </label>
-                    <select class="form-control" [(ngModel)]="selectedCompanyUuid">
+                    <select class="form-control" [(ngModel)]="selectedCompanyUuid" (change)="onCompanySelect()">
                       <option value="" disabled selected hidden>Select Client</option>
                       <ng-container *ngFor="let comp of companyData">
                         <option *ngIf="comp.name !== ''" value="{{comp.companyUuid}}">{{comp.name}}</option>

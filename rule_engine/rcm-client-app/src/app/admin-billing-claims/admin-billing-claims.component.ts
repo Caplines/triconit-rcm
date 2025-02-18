@@ -53,6 +53,7 @@ export class AdminBillingClaimsComponent implements OnInit {
   showLoader: boolean = false;
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   selectedCompanyUuid: any = "";
+  selectedClientName: string = "";
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -569,6 +570,15 @@ export class AdminBillingClaimsComponent implements OnInit {
     this.clearAssigmentArray();
   }
 
+  onCompanySelect() {
+    const selectedCompany = this.companyData.find((comp: any) => comp.companyUuid == this.selectedCompanyUuid);
+    if (selectedCompany) {
+      this.selectedClientName = selectedCompany.name;
+    } else {
+      this.selectedClientName = '';
+    }
+  }
+
   exportToCsv() {
     this.loader.exportCSVLoader = true;
     const headerConfigs = {
@@ -670,7 +680,7 @@ export class AdminBillingClaimsComponent implements OnInit {
 
     this.date = new Date();
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-    new ngxCsv(excelData, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
+    new ngxCsv(excelData, `${'Bulk Billing'} ${this.selectedClientName} ${this.date}`, options);
     this.loader.exportCSVLoader = false;
   }
 
