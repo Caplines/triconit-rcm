@@ -3439,9 +3439,11 @@ export class BillingClaimsComponent {
             this.claimSectionModal['REBILLING']['data'] = res.data.allRebillingDto;
           }
           this.claimSectionModal['REBILLING']['modal']['rebillingStatus'] = this.claimRcm.rebilledStatus;
-          res.data.originalServiceCodes.forEach((e: any) => {
-            serviceCodesForMultiSelect.push({ name: e, checked: false })
-          });
+          if (res.data.originalServiceCodes != null) {
+            res.data.originalServiceCodes.forEach((e: any) => {
+              serviceCodesForMultiSelect.push({ name: e, checked: false })
+            });
+          }
           if (res.data.originalRequirements != null) {
             res.data.originalRequirements.forEach((e: any) => {
               requirementsForMultiSelect.push({ name: e, checked: false })

@@ -1672,7 +1672,7 @@ export class OtherTeamsWorkComponent implements OnInit {
       this.tabSwitch.unSubmitted = false;
       this.tabSwitch.submitted = false;
       this.tabSwitch.myClaims = true;
-      this.fetchClaimsLead('Fresh');
+      this.fetchClaimsLead('MyClaims');
     }
   }
 

@@ -555,7 +555,7 @@
                                         </div>
                                     </div> -->
                                     <ng-container *ngIf="smilePoint">
-                                        <ng-container *ngIf="actionButtons && (isBilling || isInternalAudit)">
+                                        <ng-container *ngIf="actionButtons">
                                             <a (click)="reval()"
                                                 *ngIf="claimRcm.allowEdit && claimRcm.pending && checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId'],'edit')"
                                                 style="cursor: pointer;">

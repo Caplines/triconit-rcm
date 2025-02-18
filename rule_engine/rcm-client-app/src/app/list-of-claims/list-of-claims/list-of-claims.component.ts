@@ -990,7 +990,7 @@ export class ListOfClaimsComponent implements OnInit {
       this.tabSwitch.Fresh = false;
       this.tabSwitch.sendBack = false;
       this.tabSwitch.MyClaims = true;
-      this.fetchClaimsLead('Fresh');
+      this.fetchClaimsLead('MyClaims');
     }
 
     // tab.withDos = !tab.withDos;
@@ -1180,7 +1180,7 @@ export class ListOfClaimsComponent implements OnInit {
         } else if (ths.tabSwitch.sendBack) {
           ths.switchTab("sendBack");
         } else if (ths.tabSwitch.MyClaims) {
-          ths.switchTab("MyClaims");
+          ths.switchTab("F");
         }
 
 
