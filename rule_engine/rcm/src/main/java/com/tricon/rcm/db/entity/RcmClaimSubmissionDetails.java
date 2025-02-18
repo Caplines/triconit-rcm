@@ -54,13 +54,13 @@ public class RcmClaimSubmissionDetails extends BaseAuditEntity implements Serial
 	private String channel;//0 RemoteLite  |  0 Fax  |  0 Mail  |  0 Portal		
 	
 	@Column(name = "attachment_send", columnDefinition = "BIT default 1")
-    private boolean attachmentSend;		
+    private Boolean attachmentSend;		
 	
 	@Column(name = "preauth", columnDefinition = "BIT default 1")
-    private boolean preauth;
+    private Boolean preauth;
 
 	@Column(name = "refferal_letter", columnDefinition = "BIT default 1")
-    private boolean refferalLetter;		
+    private Boolean refferalLetter;		
 
 	@Column(name = "claim_no")
     private String claimNumber;		
@@ -75,5 +75,5 @@ public class RcmClaimSubmissionDetails extends BaseAuditEntity implements Serial
     private boolean primaryEOBAttached;
 	
 	@Column(name = "clean_claim", columnDefinition = "BIT default 1")
-    private boolean cleanClaim;	
+    private Boolean cleanClaim;	
 }

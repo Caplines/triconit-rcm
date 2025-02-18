@@ -10,14 +10,14 @@ public class ClaimSubmissionDto {
 	String claimUuid;
 	Date esDate;
 	String channel;
-	boolean attachmentSend;
-	boolean preauth;
-	boolean refferalLetter;
+	Boolean attachmentSend;
+	Boolean preauth;
+	Boolean refferalLetter;
 	String claimNumber;
 	String preauthNo;
 	String providerRefNo;
 	String esTime;
-	boolean cleanClaim;
+	Boolean cleanClaim;
 	boolean primaryEOBAttached;
 
 }

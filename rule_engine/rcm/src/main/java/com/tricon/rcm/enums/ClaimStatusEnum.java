@@ -85,7 +85,9 @@ public enum ClaimStatusEnum {
 	Need_to_Call_Insurance_For_reprocessing(77,"Need to call Insurance for reprocessing"),
 	NEED_TO_REBILL(78,"Need to re-bill"),
 	APPEAL_UPHELD(79,"Appeal Upheld"),
-	NEED_TO_FOLLOWUP_ON_VOID(80,"Need to followup on void");
+	NEED_TO_FOLLOWUP_ON_VOID(80,"Need to followup on void"),
+	Additional_Information_Provided_For_Claim(81,"Additional Information Provided For Claim")
+	;
 	
 	
 	

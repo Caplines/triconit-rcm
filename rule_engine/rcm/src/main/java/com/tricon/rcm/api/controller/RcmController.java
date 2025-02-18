@@ -206,7 +206,7 @@ public class RcmController extends BaseHeaderController{
 		
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchUnBilledClaimByTeamAndClient(dto,partialHeader)));
+				claimServiceImpl.fetchAllUnBilledClaimClient(dto,partialHeader)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching Fresh Billing Claims Details (Billing Pendency Dashboard)", response = FreshClaimDataDto.class, responseContainer = "List")

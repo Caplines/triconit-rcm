@@ -2095,6 +2095,9 @@ public class ClaimServiceImpl {
 	public List<FreshClaimDataDto> fetchFreshClaimDetailsLead(int teamId, int billingORRebill, String sub,
 			PartialHeader partialHeader) {
 
+		if (sub.equals("MyClaims")) {
+			return rcmClaimRepository.fetchMyClaimDetailsInd(partialHeader.getCompany().getUuid(), teamId, partialHeader.getJwtUser().getUuid());
+		}
 		return rcmClaimRepository.fetchFreshClaimDetailsInd(partialHeader.getCompany().getUuid(), teamId, partialHeader.getJwtUser().getUuid());
 	
 	}
@@ -3901,17 +3904,17 @@ public class ClaimServiceImpl {
 		det.setCreatedBy(user);
 		det.setClaim(claim);
 		if(dto.getEsDate()==null) {
-			dto.setEsDate(new java.sql.Date(date.getTime()));
+			//dto.setEsDate(new java.sql.Date(date.getTime()));
 		}
 		det.setEsDate(dto.getEsDate());
-		det.setPreauth(dto.isPreauth());
+		det.setPreauth(dto.getPreauth());
 		det.setPreauthNo(dto.getPreauthNo());
 		det.setChannel(dto.getChannel());
 		det.setClaimNumber(dto.getClaimNumber());
 		det.setProviderRefNo(dto.getProviderRefNo());
-		det.setRefferalLetter(dto.isRefferalLetter());
-		det.setAttachmentSend(dto.isAttachmentSend());
-		det.setCleanClaim(dto.isCleanClaim());
+		det.setRefferalLetter(dto.getRefferalLetter());
+		det.setAttachmentSend(dto.getAttachmentSend());
+		det.setCleanClaim(dto.getCleanClaim());
 		det.setPrimaryEOBAttached(dto.isPrimaryEOBAttached());
 		det.setEsTime(dto.getEsTime());
 
@@ -4532,17 +4535,17 @@ public class ClaimServiceImpl {
 					}
 					
 					 if (dto.getAssignToTeam()==RcmTeamEnum.BILLING.getId()) {
-						 createStatus = ClaimStatusEnum.Pending_For_Billing.getType(); 
-						 nextAction =ClaimStatusEnum.Need_to_Bill.getType();
+						 createStatus = ClaimStatusEnum.Additional_Information_Provided_For_Claim.getType(); 
+						 nextAction =ClaimStatusEnum.Additional_Information_Provided_For_Claim.getType();
 					 }
 					 // As per phase 2 this will never happen
-					 else if ( dto.getAssignToTeam()==RcmTeamEnum.INTERNAL_AUDIT.getId()) {
-						 createStatus = ClaimStatusEnum.Need_to_Audit.getType(); 
-						 nextAction= ClaimStatusEnum.Need_to_Audit.getType(); 
-					 }
+					// else if ( dto.getAssignToTeam()==RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+					//	 createStatus = ClaimStatusEnum.Need_to_Audit.getType(); 
+					//	 nextAction= ClaimStatusEnum.Need_to_Audit.getType(); 
+					 //}
 					 else {
 						 //What to do here 
-						 createStatus = ClaimStatusEnum.Need_Additional_Information_For_Claim.getType(); 
+						 createStatus = ClaimStatusEnum.Need_Additional_Information_For_Claim.getType();  
 						 nextAction= ClaimStatusEnum.Need_Additional_Information_For_Claim.getType(); 
 					 }
 				}
@@ -6578,7 +6581,7 @@ public class ClaimServiceImpl {
 	}
 	
 
-	public List<FreshClaimDataViewDto> fetchUnBilledClaimByTeamAndClient(AssignUnAssignResAsignClaimsDto dto, PartialHeader partialHeader){
+	public List<FreshClaimDataViewDto> fetchAllUnBilledClaimClient(AssignUnAssignResAsignClaimsDto dto, PartialHeader partialHeader){
 		List<FreshClaimDataDto> list=null;
 		List<FreshClaimDataViewDto> listView=new ArrayList<>();
 		dto.setTeamId(RcmTeamEnum.BILLING.getId());
@@ -6587,7 +6590,8 @@ public class ClaimServiceImpl {
 		if (!ClaimUtil.checkifCompanyIdMatchesList(dto.getClientId(), companies)) {
 			return null;
 		}
-		list =rcmClaimRepository.fetchUnBilledClaimByTeamAndClient(dto.getClientId(), dto.getTeamId());
+		int status= ClaimStatusEnum.Pending_For_Billing.getId();
+		list =rcmClaimRepository.fetchAllUnBilledClaimByClient(dto.getClientId(),status);
 		list.forEach(data->{
 			final FreshClaimDataViewDto	dataView = new FreshClaimDataViewDto();
 			BeanUtils.copyProperties(data, dataView);
@@ -6765,8 +6769,8 @@ public class ClaimServiceImpl {
 				String clientUuid= partialHeader.getCompany().getUuid();
 				claims.forEach( claim-> {
 					//claim.getOffice().getUuid();
-					if (!claim.isPending()) return ;//onlt for pending/unbilled claims.
-					if (claim.getCurrentTeamId().getId() !=  RcmTeamEnum.BILLING.getId()) return ;//onlt for pending/unbilled claims.
+					if (!claim.isPending() || claim.getCurrentStatus()!=ClaimStatusEnum.Pending_For_Billing.getId()) return ;//only for pending/unbilled claims.
+					if (claim.getCurrentTeamId().getId() !=  RcmTeamEnum.BILLING.getId()) return ;//only for pending/unbilled claims.
 					RcmOffice office = offices.get(claim.getOffice().getUuid());
 					if (office==null) {
 						office = officeRepo.findByUuid(claim.getOffice().getUuid());
