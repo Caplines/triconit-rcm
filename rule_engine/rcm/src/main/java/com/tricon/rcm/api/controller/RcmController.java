@@ -1047,7 +1047,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For Multiple Claim Assigmentment/UnAssigmentment by TL (Same Team /Other Team/Same team Other member)", response = String.class)
 	@PostMapping("/api/assign_unassign_reassign_claimbytl")
-	@PreAuthorize("hasAnyRole('TL')")
+	@PreAuthorize("hasAnyRole('TL','ADMIN','SUPER_ADMIN')")
 	public ResponseEntity<Object> assignResAssignClaimByTL(
 			@RequestBody AssignUnAssignResAsignClaimsDto dto, Model model) {
 		
