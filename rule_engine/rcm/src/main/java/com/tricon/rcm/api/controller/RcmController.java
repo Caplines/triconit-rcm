@@ -1085,7 +1085,7 @@ public class RcmController extends BaseHeaderController{
 	
 	@ApiOperation(value = "Api For List for user for claim Assgignments", response = UserClaimsAssignmentResponseDto.class, responseContainer = "List")
 	@PostMapping("/api/usersbyTeam")
-	@PreAuthorize("hasAnyRole('TL')")
+	@PreAuthorize("hasAnyRole('TL','ADMIN','SUPER_ADMIN')")
 	public ResponseEntity<Object> getUsersByTeamForClaimAssignment(
 			@RequestBody ClaimAssignmentsOfficeDto dto, Model model) {
 		
