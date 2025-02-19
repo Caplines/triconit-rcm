@@ -57,6 +57,7 @@ export class BaseService {
     'ivdetails': "/api/ivfdata",
     'editRoles': "/editRole",
     'getOfficesByUuid': "/getOffices",
+    'getOfficesByClientUuid': "/getOffices",
     'other_user_team': "/user/other_teams",
     'tl_user': "/user/users_by_role/tl",
     'other_team_remark': "/api/remarks-other",

@@ -371,6 +371,10 @@ export class ApplicationServiceService extends BaseService {
     this.getData({}, this.httpUrl['getOfficesByUuid'], callback)
   }
 
+  fetchOfficeByClientUuid(clientUuid: string, callback: any) {
+    this.getData({}, this.httpUrl['getOfficesByClientUuid'] + "/" + clientUuid, callback)
+  }
+
   setPaddingRightContainer() {
     let m: any = document.getElementsByClassName("gray-bar");
     if (m !== undefined && m.length > 0) { // On claim detail page gray bar is not shown.

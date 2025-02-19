@@ -347,33 +347,14 @@
                             </span>
                           </div>
                         </th>
-                        <th class="lc3Row lastTeam">
+                        <th class="lc3Row">
                           <div class="dFlex">
-                            Assigned By
-                            <div class="dropdown">
-                              <div class="dropdown-menu filter-dropdown-menu" *ngIf="showFilteredDropdown.lastTeamWorked">
-                                <div class="clearClose">
-                                  <label class="mx-1">
-                                    <input type="checkbox" [checked]="isFilterAllSelected.lastTeamWorked" value="selectAll"
-                                      (change)="selectAll($event,'lastTeam')">
-                                    {{isFilterAllSelected.lastTeamWorked ?
-                                    'Clear All':'Select All'}}</label>
-                                  <button (click)="showFilteredDropdown.lastTeamWorked=false;" type="button" class="close" data-dismiss="modal"
-                                    aria-label="Close"><span>&times;</span></button>
-                                </div>
-                                <ng-container *ngFor="let data of filteredColumnData.lastTeamWorked">
-                                  <label class="mx-1">
-                                    <input type="checkbox" checked="true" [(ngModel)]="data.checked" value="{{data.claimType}}"
-                                      (change)="filterLastTeamWorked('lastTeam')">
-                                    {{data.lastTeam}}
-                                  </label>
-                                </ng-container>
-                              </div>
-                            </div><span class="sorting">
-                              <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted}"
-                                (click)="sortData(filteredItems,'lastTeam','asc','string'); isSorted = false"></a>
-                              <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted}"
-                                (click)="sortData(filteredItems,'lastTeam','desc','string');isSorted = true"></a>
+                            Assigned Team
+                            <span class="sorting">
+                              <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['assignedToTeam']}"
+                                (click)="sortData(filteredItems,'assignedToTeam','asc','string'); isSorted['assignedToTeam'] = false"></a>
+                              <a href="javascript:void(0);" class="arrow-down" [ngClass]="{'selected': isSorted['assignedToTeam']}"
+                                (click)="sortData(filteredItems,'assignedToTeam','desc','string');isSorted['assignedToTeam'] = true"></a>
                             </span>
                           </div>
                         </th>
@@ -499,7 +480,7 @@
                               {{det.billedAmount |
                               currency:'USD':'symbol':'.0-0'}}</td>
                             <td [ngClass]="{'changeColor' : det.colorChange}" class="NA">
-                              {{det.lastTeam==null?'N/A':det.lastTeam}}</td>
+                              {{det.assignedToTeam || 'N/A'}}</td>
                             <td [ngClass]="{'changeColor' : det.colorChange}">
                               {{(det.dueDateSort) | date:'MMM dd, yyyy'}}</td>
                             <td [ngClass]="{'changeColor' : det.colorChange}">

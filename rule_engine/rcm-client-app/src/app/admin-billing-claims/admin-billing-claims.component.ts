@@ -108,7 +108,7 @@ export class AdminBillingClaimsComponent implements OnInit {
         this.filterOptionActionRequired();
         this.filterOptionInsuranceName();
         this.filterOptionInsuranceType();
-        this.filterOptionLastTeamWorked();
+        // this.filterOptionLastTeamWorked();
         this.filterOptionAgeBracket();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
       }
@@ -117,7 +117,7 @@ export class AdminBillingClaimsComponent implements OnInit {
   }
 
   fetchOfficeByUuid() {
-    this.appService.fetchOfficeByUuid((res: any) => {
+    this.appService.fetchOfficeByClientUuid(this.selectedCompanyUuid, (res: any) => {
       if (res.status) {
         res.data = res.data.map((e: any) => {
           return {
@@ -201,12 +201,12 @@ export class AdminBillingClaimsComponent implements OnInit {
     this.isFilterAllSelected.insuranceType = true;
   }
 
-  filterOptionLastTeamWorked() {
-    this.appConstants.teamData.forEach((e: any) => {
-      this.filteredColumnData.lastTeamWorked.push({ 'checked': true, 'lastTeam': e.teamName });
-    })
-    this.isFilterAllSelected.lastTeamWorked = true;
-  }
+  // filterOptionLastTeamWorked() {
+  //   this.appConstants.teamData.forEach((e: any) => {
+  //     this.filteredColumnData.lastTeamWorked.push({ 'checked': true, 'lastTeam': e.teamName });
+  //   })
+  //   this.isFilterAllSelected.lastTeamWorked = true;
+  // }
 
   removePrefix(data: any) {
     let arr: any = data;
@@ -553,22 +553,22 @@ export class AdminBillingClaimsComponent implements OnInit {
     this.clearAssigmentArray();
   }
 
-  filterLastTeamWorked(filterProperty: any) {
-    let isAllSelected: boolean = true;
-    for (let i = 0; i < this.filteredColumnData.lastTeamWorked.length; i++) {
-      if (this.filteredColumnData.lastTeamWorked[i].checked == false) {
-        isAllSelected = false;
-        break;
-      }
-    }
-    this.isFilterAllSelected.lastTeamWorked = isAllSelected;
-    this.filteredItems = this.claimDetail.filter((item: any) => {
-      return this.filteredColumnData.lastTeamWorked.some((checkbox: any) => {
-        return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
-      });
-    });
-    this.clearAssigmentArray();
-  }
+  // filterLastTeamWorked(filterProperty: any) {
+  //   let isAllSelected: boolean = true;
+  //   for (let i = 0; i < this.filteredColumnData.lastTeamWorked.length; i++) {
+  //     if (this.filteredColumnData.lastTeamWorked[i].checked == false) {
+  //       isAllSelected = false;
+  //       break;
+  //     }
+  //   }
+  //   this.isFilterAllSelected.lastTeamWorked = isAllSelected;
+  //   this.filteredItems = this.claimDetail.filter((item: any) => {
+  //     return this.filteredColumnData.lastTeamWorked.some((checkbox: any) => {
+  //       return checkbox.checked && checkbox[filterProperty] == item[filterProperty];
+  //     });
+  //   });
+  //   this.clearAssigmentArray();
+  // }
 
   onCompanySelect() {
     const selectedCompany = this.companyData.find((comp: any) => comp.companyUuid == this.selectedCompanyUuid);
@@ -581,8 +581,9 @@ export class AdminBillingClaimsComponent implements OnInit {
 
   exportToCsv() {
     this.loader.exportCSVLoader = true;
-    const headerConfigs = {
-      Fresh: [
+    let options: any = {
+      showLabels: true,
+      headers: [
         "Office",
         "Claim Id",
         "Patient ID",
@@ -598,14 +599,10 @@ export class AdminBillingClaimsComponent implements OnInit {
         "Insurance Type",
         "Estimated Amount",
         "BillingAmount",
-        "Assigned By",
-        "Due Date"
+        "Assigned Team",
+        "Due Date",
+        "Assigned To"
       ]
-    }
-
-    let options: any = {
-      showLabels: true,
-      headers: headerConfigs.Fresh
     }
 
     let excelData: any;
@@ -632,9 +629,6 @@ export class AdminBillingClaimsComponent implements OnInit {
         e = { ...e, ['claimType']: "Primary" };
       } else {
         e = { ...e, ['claimType']: "Secondary" };
-      }
-      if (e.lastTeam == null) {
-        e = { ...e, lastTeam: '-' }
       }
       if (e.pendingSince) {
         let date: Date = new Date(e.pendingSince);
@@ -670,9 +664,9 @@ export class AdminBillingClaimsComponent implements OnInit {
         "Insurance Type": e.prName ? e.prName : e.secName,
         "Estimated Amount": e.claimId?.endsWith("_P") ? (e.primeSecSubmittedTotal ? '$' + formatNumber(e.primeSecSubmittedTotal, this.locale, '.0-0').toString() : "$0") : e.secTotal ? '$' + formatNumber(e.secTotal, this.locale, '.0-0').toString() : "$0",
         "BillingAmount": e.billedAmount ? '$' + formatNumber(e.billedAmount, this.locale, '.0-0').toString() : "$0",
-        "Last Team that Worked on this claim": e.lastTeam,
-        "Due Date": e.dueDateSort
-
+        "Assigned Team": e.assignedToTeam,
+        "Due Date": e.dueDateSort,
+        "Assigned To": e.assignedTo || ""
       }
     })  //method aligns the header to the value in CSV.
     excelData = excelData.map(
