@@ -48,6 +48,7 @@ export interface ClaimRcmDataModel {
 	secPolicyHolder?: string;
 	assoicatedClaimUuid?: string;
 	assoicatedClaimStatus?: string;
+	assoicatedClaimStatusString?: string;
 	assoicatedClaimCurrentStatus?: number;
 	primary?: boolean;
 	claimNotes?: Array<ClaimNotesModel>;

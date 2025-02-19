@@ -2650,9 +2650,19 @@ public class ClaimServiceImpl {
 					implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					implDto.setPrimInsurance(s[2]==null?"":s[2].toString());
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
+					implDto.setAssoicatedClaimStatusString("");
+					try {
+						if (s[3]!=null) {
+							Optional<RcmClaimStatusType> st = rcmClaimStatusTypeRepo.findById(Integer.parseInt(s[3].toString()));
+							if (st.isPresent())
+;							implDto.setAssoicatedClaimStatusString(st.get().getStatus());
+						}
+					}catch(Exception n) {
+						
+					}
 					if (implDto.getCurrentTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 						////implDto.setAssoicatedClaimStatus(false);
-						implDto.setAssoicatedClaimStatusValue(s[3].toString());
+						//implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					}
 				}
 
@@ -2667,9 +2677,19 @@ public class ClaimServiceImpl {
 					implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					implDto.setSecInsurance(s[2].toString());//For Primary see if we have Primary
 					implDto.setAssoicatedClaimCurrentStatus(s[3]==null?0:Integer.parseInt(s[3].toString()));
+					implDto.setAssoicatedClaimStatusString("");
+					try {
+						if (s[3]!=null) {
+							Optional<RcmClaimStatusType> st = rcmClaimStatusTypeRepo.findById(Integer.parseInt(s[3].toString()));
+							if (st.isPresent())
+;							implDto.setAssoicatedClaimStatusString(st.get().getStatus());
+						}
+						}catch(Exception n) {
+							
+						}
 					if (implDto.getCurrentTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
-						implDto.setAssoicatedClaimStatus(false);
-						implDto.setAssoicatedClaimStatusValue(s[3].toString());
+						//implDto.setAssoicatedClaimStatus(false);
+						//implDto.setAssoicatedClaimStatusValue(s[3].toString());
 					}
 				}else {
 					implDto.setSecInsurance("N/A");

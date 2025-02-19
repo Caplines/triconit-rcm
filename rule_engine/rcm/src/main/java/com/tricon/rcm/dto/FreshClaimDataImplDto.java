@@ -175,5 +175,6 @@ public class FreshClaimDataImplDto {
     int recreatedSection;
     
     String assoicatedClaimStatusValue;
+    String assoicatedClaimStatusString;
 }
 

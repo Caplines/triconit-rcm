@@ -105,6 +105,7 @@ export class BillingClaimsComponent {
   isPdfError: boolean = false;
   // isNextFollowUpRequired: boolean = false;
   isInitialDenialRequired: boolean = false;
+  needToBillSecondaryInsuranceinStep=false;
   checkDeliveredTo = false;
   showAssignToTeam: boolean = false;
   showAssignToTeamLead: boolean = false;
@@ -563,6 +564,8 @@ export class BillingClaimsComponent {
 
   fetchClaimsByUuid(uuid: string) {
     let ths = this;
+    this.needToBillSecondaryInsuranceinStep=false;
+    this.infoMessage="";
     ths.claimUUid = uuid;
     ths.updateUrl("/billing-claims/" + uuid);
     this.loader.claimDetail = this.loader.linkToRelatedDoc = true;
@@ -571,6 +574,9 @@ export class BillingClaimsComponent {
         this.loader.claimDetail = this.loader.linkToRelatedDoc = false;
         if (res.data != null) {
           ths.claimRcm = res.data;
+          if (!this.claimRcm.primary && ths.claimRcm.assoicatedClaimUuid){
+            this.fetchClaimStepsPrimary(ths.claimRcm.assoicatedClaimUuid);
+          } 
           if (ths.claimRcm.preferredModeOfSubmission != null) {
             if (ths.claimRcm.preferredModeOfSubmission != "") {
               let prfMode = ths.claimRcm.preferredModeOfSubmission;
@@ -596,7 +602,6 @@ export class BillingClaimsComponent {
           this.updatedIvfId = ths.claimRcm.ivfId;
           this.updatedTpId = ths.claimRcm.tpId;
           this.updatedTpId = ths.claimRcm.tpId;
-          ths.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus) ? (ths.claimRcm.assoicatedClaimStatus != null && ths.claimRcm.assoicatedClaimStatusValue == "30" ? "Primary Claim is Closed" : "Primary Claim is Open") : "";
           ths.fetchOtherTeamRemarks();
           ths.fetchClaimNotes();
           ths.getServiceLevelCodes();
@@ -3746,6 +3751,34 @@ export class BillingClaimsComponent {
       });
   }
 
+  fetchClaimStepsPrimary(uuid: string) {
+    let ths = this;
+    this.needToBillSecondaryInsuranceinStep=false;
+    ths.claimService.fetchClaimSteps(uuid,
+      (res: any) => {
+        if (res.status === 200) {
+          let data = res.data;
+          if (data.length === 0) {
+            this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep) ?  "(Primary) "+ths.claimRcm.assoicatedClaimStatusString : "";
+            return ;
+          }
+          for (let i = 1; i < data.length; i++) {
+            let current = data[i];
+            if (current.nextAction=='Need to Bill Secondary Insurance' || 
+              current.statusUpdated=='Need to Bill Secondary Insurance' || 
+              current.status=='Need to Bill Secondary Insurance' 
+            ){
+              this.needToBillSecondaryInsuranceinStep=true;
+             
+              }
+            }
+            this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep) ?  "(Primary) "+ths.claimRcm.assoicatedClaimStatusString : "";
+          
+         
+        }
+      });
+  }
+
   filterConsecutiveDuplicates(data: any) {
     if (data.length === 0) return data;
     data[0]['done'] = 'done';
@@ -3753,6 +3786,7 @@ export class BillingClaimsComponent {
 
     let pointer: any = [];
     for (let i = 1; i < data.length; i++) {
+      
       //let prev = filteredData[filteredData.length - 1];
       let current = data[i];
       //we are using this else  block and when -
@@ -4580,6 +4614,9 @@ export class BillingClaimsComponent {
     // }
   }
 
+  //This method is used to display Save for 
+  //1 .Primary Claim/Secondary Claim is not closed
+  //2 Secondary Claim if Primary had given Bill to secondary option any time
   isPrimaryClaimClosed() {
     if (this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS) {
       return false;
@@ -4587,8 +4624,14 @@ export class BillingClaimsComponent {
     if (!this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS) {
       return false;
     }
-    if (!this.claimRcm.primary && this.claimRcm.assoicatedClaimCurrentStatus != this.appConstants.CLOSED_CLAIM_STATUS)
+    if (!this.claimRcm.primary && !this.needToBillSecondaryInsuranceinStep) {
       return false;
+    }
+    /*if (!this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS) {
+      return false;
+    }
+    if (!this.claimRcm.primary && this.claimRcm.assoicatedClaimCurrentStatus != this.appConstants.CLOSED_CLAIM_STATUS)
+      return false;*/
     else return true;
   }
 
