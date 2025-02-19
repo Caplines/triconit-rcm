@@ -577,7 +577,7 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th *ngIf="isRoleLead" style="z-index:9999">
+                                                    <th *ngIf="!isRoleAssociate" style="z-index:9999">
                                                         <div class="dFlex">
                                                             <label for="reassignment" class="reassignmentcl"
                                                                 (change)="selectAllReAssigment($event)">
@@ -716,7 +716,7 @@
                                                                 {{det.assignedTo}}
                                                             </td>
                                                             <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                                *ngIf="isRoleLead">
+                                                                *ngIf="!isRoleAssociate">
                                                                 <input type="checkbox" [(ngModel)]="det.assignAction"
                                                                     (change)="createClaimAssignmentList($event,det)">
                                                             </td>

@@ -37,7 +37,7 @@
                                         type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()"
                                         style="margin-left: 15px;">
                                         <strong>Send to Aging</strong> </button>
-                                    <div *ngIf="isRoleLead" class="update-button" style="float: right;"><a
+                                    <div *ngIf="!isRoleAssociate" class="update-button" style="float: right;"><a
                                             href="javascript:void(0);" class="btn btn-success"
                                             [ngClass]="{'disabled':listofClaimsForAssignAction.length==0}"
                                             (click)="openAssigmentPopUp()">
@@ -799,7 +799,7 @@
                                                         </span>
                                                     </div>
                                                 </th>
-                                                <th *ngIf="isRoleLead" style="z-index:9999">
+                                                <th *ngIf="!isRoleAssociate" style="z-index:9999">
                                                     <div class="dFlex">
                                                         <label for="reassignment" class="reassignmentcl"
                                                             (change)="selectAllReAssigment($event)">
@@ -980,7 +980,7 @@
                                                             {{det.assignedTo}}
                                                         </td>
                                                         <td [ngClass]="{'changeColor' : det.colorChange}"
-                                                            *ngIf="isRoleLead">
+                                                            *ngIf="!isRoleAssociate">
                                                             <input type="checkbox" [(ngModel)]="det.assignAction"
                                                                 (change)="createClaimAssignmentList($event,det)">
                                                         </td>
