@@ -122,6 +122,23 @@ public class UserController extends BaseHeaderController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
 	}
 	
+	@ApiOperation(value = "Api For Fetching offices basis of Login User clientUuid", response = RcmOfficeDto.class, responseContainer = "List")
+	@RequestMapping(value = "getOffices/{cid}", method = RequestMethod.GET)
+	public ResponseEntity<?> officesByClientId(@PathVariable("cid") String cid,Model model) {
+		List<RcmOfficeDto> response = null;
+		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
+		if(partialHeader==null)return ResponseEntity
+				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		try {
+			response = commonService.getOfficesByUuid(cid);
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
+		}
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
+	}
+	
 	@ApiOperation(value = "Api For Fetching TeamName Details basis of Login User teamId", response = RcmTeamDto.class, responseContainer = "List")
 	@RequestMapping(value = "/user/other_teams", method = RequestMethod.GET)
 	public ResponseEntity<?> teamNameByUserTeamId(Model model) {
