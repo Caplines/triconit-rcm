@@ -5,7 +5,17 @@ import java.util.List;
 
 import lombok.Data;
 
-@Data
+
 public class RebillingDto extends RebillingDtoMain{
 	private List<RebillingDtoSub> allRebillingDto= new ArrayList<>();
+
+	public List<RebillingDtoSub> getAllRebillingDto() {
+		return allRebillingDto;
+	}
+
+	public void setAllRebillingDto(List<RebillingDtoSub> allRebillingDto) {
+		this.allRebillingDto = allRebillingDto;
+	}
+	
+	
 }

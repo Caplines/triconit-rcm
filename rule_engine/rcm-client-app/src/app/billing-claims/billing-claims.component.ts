@@ -105,7 +105,7 @@ export class BillingClaimsComponent {
   isPdfError: boolean = false;
   // isNextFollowUpRequired: boolean = false;
   isInitialDenialRequired: boolean = false;
-  needToBillSecondaryInsuranceinStep=false;
+  needToBillSecondaryInsuranceinStep = false;
   checkDeliveredTo = false;
   showAssignToTeam: boolean = false;
   showAssignToTeamLead: boolean = false;
@@ -564,8 +564,8 @@ export class BillingClaimsComponent {
 
   fetchClaimsByUuid(uuid: string) {
     let ths = this;
-    this.needToBillSecondaryInsuranceinStep=false;
-    this.infoMessage="";
+    this.needToBillSecondaryInsuranceinStep = false;
+    this.infoMessage = "";
     ths.claimUUid = uuid;
     ths.updateUrl("/billing-claims/" + uuid);
     this.loader.claimDetail = this.loader.linkToRelatedDoc = true;
@@ -574,9 +574,9 @@ export class BillingClaimsComponent {
         this.loader.claimDetail = this.loader.linkToRelatedDoc = false;
         if (res.data != null) {
           ths.claimRcm = res.data;
-          if (!this.claimRcm.primary && ths.claimRcm.assoicatedClaimUuid){
+          if (!this.claimRcm.primary && ths.claimRcm.assoicatedClaimUuid) {
             this.fetchClaimStepsPrimary(ths.claimRcm.assoicatedClaimUuid);
-          } 
+          }
           if (ths.claimRcm.preferredModeOfSubmission != null) {
             if (ths.claimRcm.preferredModeOfSubmission != "") {
               let prfMode = ths.claimRcm.preferredModeOfSubmission;
@@ -2362,6 +2362,10 @@ export class BillingClaimsComponent {
           let paidAmount = 0;
           let allowedAmount = 0;
           this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
+            if (e.action != null && e.action != undefined && e.action == 'Post') {
+              e.actionTaken = 'N/A';
+              e.additionalInfoProvided = 'N/A';
+            }
             if (e.surface == null || e.surface == '' || e.surface == 'NA') {
               e.surface = 'N/A';
             }
@@ -2816,7 +2820,7 @@ export class BillingClaimsComponent {
         isSectionValidated = false;
       }
       if (obj.action != null && obj.action != "Assign") {
-        obj.actionTaken = obj.additionalInfoProvided = "";
+        obj.actionTaken = obj.additionalInfoProvided = "N/A";
       }
     });
 
@@ -3753,28 +3757,28 @@ export class BillingClaimsComponent {
 
   fetchClaimStepsPrimary(uuid: string) {
     let ths = this;
-    this.needToBillSecondaryInsuranceinStep=false;
+    this.needToBillSecondaryInsuranceinStep = false;
     ths.claimService.fetchClaimSteps(uuid,
       (res: any) => {
         if (res.status === 200) {
           let data = res.data;
           if (data.length === 0) {
-            this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep) ?  "(Primary) "+ths.claimRcm.assoicatedClaimStatusString : "";
-            return ;
+            this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep) ? "(Primary) " + ths.claimRcm.assoicatedClaimStatusString : "";
+            return;
           }
           for (let i = 1; i < data.length; i++) {
             let current = data[i];
-            if (current.nextAction=='Need to Bill Secondary Insurance' || 
-              current.statusUpdated=='Need to Bill Secondary Insurance' || 
-              current.status=='Need to Bill Secondary Insurance' 
-            ){
-              this.needToBillSecondaryInsuranceinStep=true;
-             
-              }
+            if (current.nextAction == 'Need to Bill Secondary Insurance' ||
+              current.statusUpdated == 'Need to Bill Secondary Insurance' ||
+              current.status == 'Need to Bill Secondary Insurance'
+            ) {
+              this.needToBillSecondaryInsuranceinStep = true;
+
             }
-            this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep) ?  "(Primary) "+ths.claimRcm.assoicatedClaimStatusString : "";
-          
-         
+          }
+          this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep) ? "(Primary) " + ths.claimRcm.assoicatedClaimStatusString : "";
+
+
         }
       });
   }
@@ -3786,7 +3790,7 @@ export class BillingClaimsComponent {
 
     let pointer: any = [];
     for (let i = 1; i < data.length; i++) {
-      
+
       //let prev = filteredData[filteredData.length - 1];
       let current = data[i];
       //we are using this else  block and when -
@@ -4932,6 +4936,18 @@ export class BillingClaimsComponent {
       && !this.claimRcm.assoicatedClaimStatus) {
       this.errorMsgForNextAction = "Secondary claim not on file";
     }
+  }
+
+  seriveLevelInfoSetAction(event: any, action: any, id: any, data: any) {
+    console.log(event);
+    if (action == 'Post') {
+      data.actionTaken = 'N/A';
+      data.additionalInfoProvided = 'N/A';
+    } else {
+      data.actionTaken = '';
+      data.additionalInfoProvided = '';
+    }
+
   }
 
 }

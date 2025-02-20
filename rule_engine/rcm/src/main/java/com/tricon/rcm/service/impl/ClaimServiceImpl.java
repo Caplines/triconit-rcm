@@ -154,6 +154,7 @@ import com.tricon.rcm.dto.customquery.UserClaimsAssignmentResponseDto;
 import com.tricon.rcm.dto.RcmOfficeDto;
 import com.tricon.rcm.dto.RcmResponseMessageDto;
 import com.tricon.rcm.dto.RcmUnarchiveClaimsDto;
+import com.tricon.rcm.dto.RebillingDto;
 import com.tricon.rcm.dto.ReconciliationDto;
 import com.tricon.rcm.dto.ReconciliationResponseDto;
 import com.tricon.rcm.dto.RemoteLietStatusCount;
@@ -2378,7 +2379,9 @@ public class ClaimServiceImpl {
 			}
 			implDto.setLinkedClaims(linkedClaimsList);
 			String ivfId = "", tpId = "",ivDos="",tpDos="";
-			String[] clT = implDto.getClaimId().split("_");
+			String tmpId1=implDto.getClaimId().split("_arc_").length>1?implDto.getClaimId().split("_arc_")[1]:implDto.getClaimId();
+			String[] clT = tmpId1.split("_");
+			//[1739528858860, arc, 7026, P]
 			String claimSubTy = Constants.insuranceTypeSecondary;// May be needed latter
 
 			if (("_" + clT[1]).equals(ClaimTypeEnum.P.getSuffix())) {
@@ -2634,9 +2637,21 @@ public class ClaimServiceImpl {
 			
 			
 			if (implDto != null && implDto.getClaimId().endsWith(ClaimTypeEnum.S.getSuffix())) {
+				String tmpId=implDto.getClaimId();
+				if (implDto.getCurrentState()==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
+					tmpId=tmpId.split("_arc_").length>1?tmpId.split("_arc_")[1]:tmpId;
+				}
 				Object sec = rcmClaimRepository.getClaimsUuidClaimIdPrim(
-						implDto.getClaimId().split(ClaimTypeEnum.S.getSuffix())[0] + ClaimTypeEnum.P.getSuffix(),
+						tmpId.split(ClaimTypeEnum.S.getSuffix())[0] + ClaimTypeEnum.P.getSuffix(),
 						implDto.getOfficeUuid());
+				if (sec == null) {
+					//May be primary is Archived;
+					//1739528868634_arc_7026_S
+					sec = rcmClaimRepository.getClaimsUuidClaimIdPrimArc("%_arc_"+
+							tmpId.split(ClaimTypeEnum.S.getSuffix())[0] + ClaimTypeEnum.P.getSuffix(),
+							implDto.getOfficeUuid());
+					
+				}
 				if (sec != null) {
 					Object s[] = (Object[]) sec;
 					implDto.setAssoicatedClaimUuid(s[0].toString());
@@ -2667,9 +2682,21 @@ public class ClaimServiceImpl {
 				}
 
 			} else {
+				String tmpId=implDto.getClaimId();
+				if (implDto.getCurrentState()==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
+					tmpId=tmpId.split("_arc_").length>1?tmpId.split("_arc_")[1]:tmpId;
+				}
 				Object sec = rcmClaimRepository.getClaimsUuidClaimIdSec(
-						implDto.getClaimId().split(ClaimTypeEnum.P.getSuffix())[0] + ClaimTypeEnum.S.getSuffix(),
+						tmpId.split(ClaimTypeEnum.P.getSuffix())[0] + ClaimTypeEnum.S.getSuffix(),
 						implDto.getOfficeUuid());
+				
+				if (sec == null) {
+					//May be primary is Archived;
+					sec = rcmClaimRepository.getClaimsUuidClaimIdSecArch("%_arc_"+
+							tmpId.split(ClaimTypeEnum.P.getSuffix())[0] + ClaimTypeEnum.S.getSuffix(),
+							implDto.getOfficeUuid());
+					
+				}
 				if (sec != null) {
 					Object s[] = (Object[]) sec;
 					implDto.setAssoicatedClaimUuid(s[0].toString());
@@ -5655,7 +5682,11 @@ public class ClaimServiceImpl {
 		return null;
 	}
 	
-	
+	public static void main(String[] d) {
+		RebillingDto dd = new RebillingDto();
+		System.out.println(dd.getClass().getName());
+		//dd.getSectionId();
+	}
 	public Object saveClaimSectionDataAfterSubmission(CommonSectionsRequestBodyDto sectionRequestBody,
 			PartialHeader partialHeader) throws Exception {
 
@@ -5734,9 +5765,18 @@ public class ClaimServiceImpl {
 			} else {
 				field.setAccessible(true);
 				int sectionId=0;
+				Field f = null;
 				Object value = field.get(sectionRequestBody); // Get the value of the field
 				if (value != null) {
+					if (value.getClass().getName().equals("com.tricon.rcm.dto.RebillingDto")) {
+						 f = RebillingDto.class.getSuperclass().getDeclaredField("sectionId");
+					}else {
+						 f = value.getClass().getDeclaredField("sectionId");
+					}
+					/*System.out.println(value.getClass());
+					if 
 					Field f = value.getClass().getDeclaredField("sectionId");
+					;*/
 					f.setAccessible(true);
 					if (f.get(value) instanceof Integer) {
 						sectionId = (int) f.get(value);
@@ -6900,7 +6940,7 @@ public class ClaimServiceImpl {
 	}
 	
 	private String getToothOrSurfaceFromClaimDetails(List<RcmClaimDetail> cList,boolean byTooth) {
-		String data="NA";
+		String data="N/A";
 		if (cList!=null) {
 			List<String> tooths = cList.stream()
 					.filter(i -> i.getTooth()!=null)

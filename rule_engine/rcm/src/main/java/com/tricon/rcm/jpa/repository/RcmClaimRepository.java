@@ -939,11 +939,23 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " cl.office_id=:officeId and cl.claim_id=:claimid ")
 	Object getClaimsUuidClaimIdSec(@Param("claimid") String claimid,@Param("officeId") String officeId);
 	
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name secInsurance,cl.current_status currentStatus from rcm_claims cl "
+			+ " left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id "
+			+ " where "
+			+ " cl.office_id=:officeId and cl.claim_id like :claimid and current_state=1 order by cl.updated_date desc limit 1 ")
+	Object getClaimsUuidClaimIdSecArch(@Param("claimid") String claimid,@Param("officeId") String officeId);
+	
 	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name primInsurance,cl.current_status currentStatus from rcm_claims cl "
 			+ " left join rcm_insurance sins on sins.id = cl.prim_insurance_company_id "
 			+ " where "
 			+ " cl.office_id=:officeId and cl.claim_id=:claimid ")
 	Object getClaimsUuidClaimIdPrim(@Param("claimid") String claimid,@Param("officeId") String officeId);
+	
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name primInsurance,cl.current_status currentStatus from rcm_claims cl "
+			+ " left join rcm_insurance sins on sins.id = cl.prim_insurance_company_id "
+			+ " where "
+			+ " cl.office_id=:officeId and cl.claim_id like :claimid and current_state=1 order by cl.updated_date desc limit 1")
+	Object getClaimsUuidClaimIdPrimArc(@Param("claimid") String claimid,@Param("officeId") String officeId);
 	
 	
 	@Query(nativeQuery = true, value = ""

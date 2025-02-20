@@ -19,7 +19,7 @@ import { DateRangeModule } from '../shared/date-range-picker/date-range-picker.m
 export class ReconciliationComponent {
 
   private title = inject(Title);
-  
+
   reconcileResponseData: ReconcilltationResponseModel[] = [];
   reconcilltationRequestModel: ReconcilltationRequestModel = {
     officeUuid: '',
@@ -44,7 +44,7 @@ export class ReconciliationComponent {
   }
 
   fetchOffice() {
-    this._service.fetchOfficeData((res: any) => {
+    this._service.fetchOfficeByUuid((res: any) => {
       if (res) {
         this.officeData = res.data;
       }

@@ -220,7 +220,7 @@
                                             <div class="col-md-3 mb-2">
                                                 <div class="custom-row">
                                                     <label for="" class="">Primary Insurance </label>
-                                                    <div class="NA">{{claimRcm.primInsurance}}</div>
+                                                    <div class="NA1">{{claimRcm.primInsurance}}</div>
                                                 </div>
                                                 <div class="custom-row">
                                                     <label for="" class="">Primary EOB </label>
@@ -1855,8 +1855,8 @@
                                                             <th>Bill to Patient Amount&nbsp;<span
                                                                     class="text-danger">*</span></th>
                                                             <th>BTP Reason</th>
-                                                            <th>Action (Radio Button)&nbsp;<span
-                                                                    class="text-danger">*</span></th>
+                                                            <th>Settlement Type&nbsp;<span class="text-danger">*</span>
+                                                            </th>
                                                             <th>Action Taken</th>
                                                             <th>Additional Info Provided</th>
                                                             <!--<th>Notes</th>
@@ -1948,11 +1948,7 @@
                                                                         (blur)="getTotalServiceLevelInfo(true)"
                                                                         (keyup)="validate_SERVICE_LEVEL_INFORMATION()" />
                                                                 </td>
-                                                                <!-- <td> <input type="number"
-                                                                    class="attach-secondary-width form-control"
-                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit)"
-                                                                    [(ngModel)]="data.adjustmentAmount"
-                                                                    (blur)="getTotalServiceLevelInfo()"> </td> -->
+
                                                                 <td>
                                                                     <select class="attach-secondary-width form-control"
                                                                         [(ngModel)]="data.adjustmentReason"
@@ -1992,9 +1988,10 @@
                                                                 <td>
                                                                     <div class="form-check-inline">
                                                                         <input type="radio" class="form-check-input"
-                                                                            [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['action']}"
+                                                                            [ngClass]="{'is-invalid':emptyFields['c'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['action']}"
                                                                             [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                             id="post" name="action{{idx}}" value="Post"
+                                                                            (click)="seriveLevelInfoSetAction($event,'Post','action{{idx}}',data)"
                                                                             [(ngModel)]="data.action">
                                                                         <label class="form-check-label" for="post">First
                                                                             Pass
@@ -2006,6 +2003,7 @@
                                                                             [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                             id="assign" class="form-check-input"
                                                                             name="action{{idx}}" value="Assign"
+                                                                            (click)="seriveLevelInfoSetAction($event,'Assign','action{{idx}}',data)"
                                                                             [(ngModel)]="data.action">
                                                                         <label class="form-check-label wdthlbl"
                                                                             for="assign">Val. Add</label>
@@ -2023,6 +2021,15 @@
                                                                             *ngFor="let op of appConstants.serviceCodeActionTaken">
                                                                             {{op.action}}</option>
                                                                     </select>
+                                                                    <select class="attach-secondary-width form-control"
+                                                                        *ngIf="data.action=='Post'"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['actionTaken']}"
+                                                                        [(ngModel)]="data.actionTaken">
+                                                                        <option value="N/A">N/A
+                                                                        </option>
+
+                                                                    </select>
                                                                 </td>
                                                                 <td>
                                                                     <select class="attach-secondary-width form-control"
@@ -2036,31 +2043,19 @@
                                                                             *ngFor="let op of appConstants.serviceCodeAdditionalInfoProvided">
                                                                             {{op.addtional}}</option>
                                                                     </select>
-                                                                </td>
-                                                                <!--
-                                                                <td>
-                                                                    <textarea style="overflow:hidden;width:200px;"
-                                                                        rows="4" cols="40" rows="4" cols="40"
+                                                                    <select class="attach-secondary-width form-control"
+                                                                        *ngIf="data.action=='Post'"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
-                                                                        [(ngModel)]="data.notes"></textarea>
-                                                                </td>
-                                                                <td> <a href="javascript:void(0)"
-                                                                        (click)="viewFullNotes(data.serviceCodeNotes)">View
-                                                                        More</a> </td>
-                                                                -->
-                                                                <!--<td>
-                                                                <img src="../../assets/img/correct_mark.png"
-                                                                    *ngIf="data.reconciliation">
+                                                                        [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['additionalInfoProvided']}"
+                                                                        [(ngModel)]="data.additionalInfoProvided">
+                                                                        <option value="N/A">N/A
+                                                                        </option>
 
-                                                                <img src="../../assets/img/cross_incorrec.png"
-                                                                    *ngIf="!data.reconciliation">
-                                                            </td>-->
-                                                                <!-- <td>
-                                                                <div class="custom-control custom-switch custom-switch-lg">
-                                                                    <input type="checkbox"  [checked]="data.flag"  [(ngModel)]="data.flag" id="flag" class="custom-control-input" id="customSwitch{{idx}}">
-                                                                    <label class="custom-control-label" for="customSwitch{{idx}}"></label>
-                                                                </div>
-                                                            </td> -->
+                                                                    </select>
+                                                                </td>
+
+
+
                                                                 <ng-container *ngIf="!smilePoint">
                                                                     <td *ngIf="!last"
                                                                         style="border-left:1px solid #ccc">
@@ -2825,7 +2820,8 @@
                                                             <td>{{data.amountPostedInEs}}</td>
                                                             <td>{{data.checkDeliverTo}}</td>
                                                             <td>{{data.checkNumber}}</td>
-                                                            <td>{{data.checkCashDate|date :'MM/dd/yyyy'}}</td>
+                                                            <td>{{(data.checkCashDate==null || data.checkCashDate=='')
+                                                                ?"N/A": data.checkCashDate|date :'MM/dd/yyyy'}}</td>
 
                                                             <td>{{data.amountDateReceivedInBank|date :'MM/dd/yyyy'}}
                                                             </td>
@@ -5543,7 +5539,7 @@
                                 </div>
 
                                 <!-- Modal End -->
-                                <div class="action-buttons">
+                                <div class="action-buttons 99">
                                     <span
                                         *ngIf="claimRcm.pending && claimRcm.currentState==0 && actionButtons && (isBilling || isInternalAudit)">
                                         <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
@@ -5564,13 +5560,13 @@
                                             Mark as Submitted
                                         </button>
 
-                                        <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
+                                        <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && needToBillSecondaryInsuranceinStep && claimRcm.pending) ||
                                                          (claimRcm.primary && claimRcm.pending)
                                                        )" type="button" class="btn btn-success" [disabled]="inSave"
                                             (click)="saveClaim('assign',false)">
                                             Assign to Other Team
                                         </button>
-                                        <button *ngIf="claimRcm.allowEdit && isInternalAudit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
+                                        <button *ngIf="claimRcm.allowEdit && isInternalAudit && ( (!claimRcm.primary && needToBillSecondaryInsuranceinStep && claimRcm.pending) ||
                                                                                          (claimRcm.primary && claimRcm.pending)
                                                                                        )" type="button"
                                             class="btn btn-success" [disabled]="inSave"
@@ -5824,7 +5820,7 @@
                                 <label for="sta">Selected Mode of Submission is {{submissionDto.channel}}</label>
 
                             </div>
-                            <div class="action-buttons">
+                            <div class="action-buttons 42">
                                 <label for="sta">Do you want to continue </label>
                                 <button class="btn btn-success" (click)="markValidPreffered('yes')"
                                     type="button">YES</button>
