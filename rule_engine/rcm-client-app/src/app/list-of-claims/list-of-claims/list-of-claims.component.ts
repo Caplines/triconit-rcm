@@ -125,7 +125,7 @@ export class ListOfClaimsComponent implements OnInit {
             e['EstAmount'] = e.secTotal;
           }
           e['dueDateSort'] = e.followUpDate == null ? e.pendingSince : e.followUpDate;
-          if (e['nextAction'] == ths.appConstants.NEED_TO_RE_BILL) e['statusType'] = ths.appConstants.RE_BILLING_ID;
+          if (e['rebilledStatus'] == ths.appConstants.LIST_CLAIM_REBILL) e['statusType'] = ths.appConstants.RE_BILLING_ID;
           return e;
         })
         ths.claimDetail = data;

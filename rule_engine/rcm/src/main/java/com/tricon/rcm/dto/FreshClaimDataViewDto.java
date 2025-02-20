@@ -44,6 +44,7 @@ public class FreshClaimDataViewDto {
 	String assignedToLName;
 	String assignedTo;
 	String assignedToTeam;
+	int rebilledStatus;
 	
 	public String getAssignedTo() {
 		String name="";

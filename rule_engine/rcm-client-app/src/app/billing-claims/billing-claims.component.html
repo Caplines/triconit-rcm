@@ -37,7 +37,7 @@
                         </span> |
                         <span class="claim-item">
                             <strong>Ins: </strong>
-                            <span class="NA" [title]="claimRcm.primInsurance">
+                            <span class="NA1" [title]="claimRcm.primInsurance">
                                 {{claimRcm.primInsurance}}
                             </span>
                         </span> |
@@ -2021,7 +2021,13 @@
                                                                             *ngFor="let op of appConstants.serviceCodeActionTaken">
                                                                             {{op.action}}</option>
                                                                     </select>
-                                                                    <select class="attach-secondary-width form-control"
+                                                                    <input *ngIf="data.action=='Post'"
+                                                                        class="attach-secondary-width form-control"
+                                                                        readonly id="actionTaken{{idx}}"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                                        [(ngModel)]="data.actionTaken"
+                                                                        name="actionTaken{{idx}}" value="N/A" />
+                                                                    <!--<select class="attach-secondary-width form-control"
                                                                         *ngIf="data.action=='Post'"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['actionTaken']}"
@@ -2029,7 +2035,7 @@
                                                                         <option value="N/A">N/A
                                                                         </option>
 
-                                                                    </select>
+                                                                    </select>-->
                                                                 </td>
                                                                 <td>
                                                                     <select class="attach-secondary-width form-control"
@@ -2043,7 +2049,15 @@
                                                                             *ngFor="let op of appConstants.serviceCodeAdditionalInfoProvided">
                                                                             {{op.addtional}}</option>
                                                                     </select>
-                                                                    <select class="attach-secondary-width form-control"
+                                                                    <input *ngIf="data.action=='Post'"
+                                                                        class="attach-secondary-width form-control"
+                                                                        readonly id="additionalInfoProvided{{idx}}"
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                                        [(ngModel)]="data.additionalInfoProvided"
+                                                                        name="additionalInfoProvided{{idx}}"
+                                                                        value="N/A" />
+                                                                    <!--<select
+                                                                        class="attach-secondary-width form-control"
                                                                         *ngIf="data.action=='Post'"
                                                                         [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                                         [ngClass]="{'is-invalid':emptyFields['SERVICE_LEVEL_INFORMATION'+idx] && emptyFields['SERVICE_LEVEL_INFORMATION'+idx]['additionalInfoProvided']}"
@@ -2051,7 +2065,7 @@
                                                                         <option value="N/A">N/A
                                                                         </option>
 
-                                                                    </select>
+                                                                    </select>-->
                                                                 </td>
 
 
@@ -3362,12 +3376,15 @@
 
                                                             <td>{{data.reason==null||
                                                                 data.reason==''?"N/A":data.reason}}</td>
-                                                            <td>{{data.remarks==null?"N/A":data.remarks}}</td>
-                                                            <td>{{data.modeOfStatement==null?"N/A":data.modeOfStatement}}
+                                                            <td>{{data.remarks==null||data.remarks==''?"N/A":data.remarks}}
                                                             </td>
-                                                            <td>{{data.amountStatement==null?"N/A":data.amountStatement}}
+                                                            <td>{{data.modeOfStatement==null||
+                                                                data.modeOfStatement==''?"N/A":data.modeOfStatement}}
                                                             </td>
-                                                            <td>{{data.statementType==null?"N/A":data.statementType}}
+                                                            <td>{{data.amountStatement==null||
+                                                                data.amountStatement==''?"N/A":data.amountStatement}}
+                                                            </td>
+                                                            <td>{{data.statementType==null||data.statementType==''?"N/A":data.statementType}}
                                                             </td>
                                                             <td>{{data.statementNotes==null?"N/A":data.statementNotes}}
                                                             </td>

@@ -8,18 +8,21 @@
                             <div class="btn-group-toggle" data-toggle="buttons">
                                 <label class="btn btn-light" style="min-width: 270px;"
                                     [ngClass]="{'active':tabSwitch.withoutDos}">
-                                    <input class="form-check-input" [disabled]="showLoader.loader" type="radio" name="options" id="option1"
-                                         (change)="switchTab('withoutDos')"># of Pending Claims
+                                    <input class="form-check-input" [disabled]="showLoader.loader" type="radio"
+                                        name="options" id="option1" (change)="switchTab('withoutDos')"># of Pending
+                                    Claims
                                 </label>
-                                <label class="btn btn-light" style="min-width: 270px;" 
+                                <label class="btn btn-light" style="min-width: 270px;"
                                     [ngClass]="{'active':tabSwitch.withDos}">
-                                    <input class="form-check-input" [disabled]="showLoader.loader" type="radio" (change)="switchTab('withDOS')"
-                                        name="options" id="option2">Days since oldest pending claim (DOS)
+                                    <input class="form-check-input" [disabled]="showLoader.loader" type="radio"
+                                        (change)="switchTab('withDOS')" name="options" id="option2">Days since oldest
+                                    pending claim (DOS)
                                 </label>
-                                <label class="btn btn-light" style="min-width: 270px;" 
+                                <label class="btn btn-light" style="min-width: 270px;"
                                     [ngClass]="{'active':tabSwitch.withDateOfPending}">
-                                    <input class="form-check-input" type="radio" [disabled]="showLoader.loader" (change)="switchTab('withDOP')"
-                                        name="options" id="option3">Days since oldest pending claim (Upload date)
+                                    <input class="form-check-input" type="radio" [disabled]="showLoader.loader"
+                                        (change)="switchTab('withDOP')" name="options" id="option3">Days since oldest
+                                    pending claim (Upload date)
                                 </label>
                             </div>
                             <!-- <div class="pendancy-label">Pendency From Other Teams</div> -->
@@ -27,33 +30,33 @@
                             <div *ngIf="tabSwitch.withoutDos">
                                 <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="pendencyData?.length==0 || showLoader.exportPDFLoader">
-                                    <img src="../../assets/img/pdf.png" /></button><span *ngIf="showLoader.exportPDFLoader"
-                                    class="spinner-border text-danger mx-1"></span>
-                                <button type="button" class="icon-btn"
-                                    (click)="exportToCsv('table')" [disabled]="pendencyData?.length==0">
-                                    <img src="../../assets/img/xls.png" /></button><span *ngIf="showLoader.exportCSVLoader"
-                                    class="spinner-border text-success mx-1"></span>
+                                    <img src="../../assets/img/pdf.png" /></button><span
+                                    *ngIf="showLoader.exportPDFLoader" class="spinner-border text-danger mx-1"></span>
+                                <button type="button" class="icon-btn" (click)="exportToCsv('table')"
+                                    [disabled]="pendencyData?.length==0">
+                                    <img src="../../assets/img/xls.png" /></button><span
+                                    *ngIf="showLoader.exportCSVLoader" class="spinner-border text-success mx-1"></span>
                             </div>
 
                             <div *ngIf="tabSwitch.withDos">
                                 <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="pendencyData?.length==0 || showLoader.exportPDFLoader">
-                                    <img src="../../assets/img/pdf.png" /> </button><span *ngIf="showLoader.exportPDFLoader"
-                                    class="spinner-border text-danger mx-1"></span>
-                                <button type="button" class="icon-btn"
-                                    (click)="exportToCsv('dos-table')" [disabled]="pendencyData?.length==0">
-                                    <img src="../../assets/img/xls.png" /></button><span *ngIf="showLoader.exportCSVLoader"
-                                    class="spinner-border text-success mx-1"></span>
+                                    <img src="../../assets/img/pdf.png" /> </button><span
+                                    *ngIf="showLoader.exportPDFLoader" class="spinner-border text-danger mx-1"></span>
+                                <button type="button" class="icon-btn" (click)="exportToCsv('dos-table')"
+                                    [disabled]="pendencyData?.length==0">
+                                    <img src="../../assets/img/xls.png" /></button><span
+                                    *ngIf="showLoader.exportCSVLoader" class="spinner-border text-success mx-1"></span>
                             </div>
                             <div *ngIf="tabSwitch.withDateOfPending">
                                 <button type="button" class="icon-btn" (click)="downloadPdf()"
                                     [disabled]="pendencyData?.length==0 || showLoader.exportPDFLoader">
-                                    <img src="../../assets/img/pdf.png" /></button><span *ngIf="showLoader.exportPDFLoader"
-                                    class="spinner-border text-danger mx-1"></span>
-                                <button type="button" class="icon-btn"
-                                    (click)="exportToCsv('dop-table')" [disabled]="pendencyData?.length==0">
-                                    <img src="../../assets/img/xls.png" /></button><span *ngIf="showLoader.exportCSVLoader"
-                                    class="spinner-border text-success mx-1"></span>
+                                    <img src="../../assets/img/pdf.png" /></button><span
+                                    *ngIf="showLoader.exportPDFLoader" class="spinner-border text-danger mx-1"></span>
+                                <button type="button" class="icon-btn" (click)="exportToCsv('dop-table')"
+                                    [disabled]="pendencyData?.length==0">
+                                    <img src="../../assets/img/xls.png" /></button><span
+                                    *ngIf="showLoader.exportCSVLoader" class="spinner-border text-success mx-1"></span>
                             </div>
                         </div>
                     </div>
@@ -66,10 +69,11 @@
                                             id="table">
                                             <thead>
                                                 <tr>
-                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.clientName ? 9999 : 9 }">
+                                                    <th
+                                                        [ngStyle]="{'z-index': showFilteredDropdown.clientName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Clients
-                                                             <span class="sorting">
+                                                            <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
                                                                     [ngClass]="{'selected': !isSorted['clientName']}"
                                                                     (click)="sortData(filteredItems,'clientName','asc','string'); isSorted['clientName'] = false"></a>
@@ -78,8 +82,11 @@
                                                                     (click)="sortData(filteredItems,'clientName','desc','string');isSorted['clientName'] = true"></a>
                                                             </span>
                                                             <div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('clientName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                <img (click)="showHideFilteredDropdown('clientName')"
+                                                                    src="../../assets/img/filterIcon.png"
+                                                                    style="cursor: pointer; margin-left: 6px;" />
+                                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                                    (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.clientName">
                                                                     <div class="clearClose">
                                                                         <label class="mx-1">
@@ -87,13 +94,14 @@
                                                                                 [checked]="isFilterAllSelected.clientName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'clientName')">
-                                                                            {{isFilterAllSelected.clientName ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.clientName ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.clientName=false;"
                                                                             type="button" class="close"
                                                                             data-dismiss="modal"
                                                                             aria-label="Close"><span>&times;</span></button>
-                                                                </div>
+                                                                    </div>
                                                                     <ng-container
                                                                         *ngFor="let data of filteredClientName">
                                                                         <label class="mx-1">
@@ -109,7 +117,8 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.officeName ? 9999 : 9 }">
+                                                    <th
+                                                        [ngStyle]="{'z-index': showFilteredDropdown.officeName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Office <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
@@ -120,8 +129,11 @@
                                                                     (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                             </span>
                                                             <div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('officeName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                <img (click)="showHideFilteredDropdown('officeName')"
+                                                                    src="../../assets/img/filterIcon.png"
+                                                                    style="cursor: pointer; margin-left: 6px;" />
+                                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                                    (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.officeName">
                                                                     <div class="clearClose">
                                                                         <label class="mx-1">
@@ -129,13 +141,14 @@
                                                                                 [checked]="isFilterAllSelected.officeName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.officeName ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.officeName=false;"
                                                                             type="button" class="close"
                                                                             data-dismiss="modal"
                                                                             aria-label="Close"><span>&times;</span></button>
-                                                                </div>
+                                                                    </div>
                                                                     <ng-container
                                                                         *ngFor="let data of filteredOfficeName">
                                                                         <label class="mx-1">
@@ -152,17 +165,23 @@
                                                         </div>
                                                     </th>
                                                     <ng-container *ngFor="let data of teamData;let last = last;">
-                                                        <th *ngIf="currentTeamId != data.teamId" [ngStyle]="{'z-index':showTooltipConfig[data.unFormatedName] ? 999999 : 99}">
+                                                        <th *ngIf="currentTeamId != data.teamId"
+                                                            [ngStyle]="{'z-index':showTooltipConfig[data.unFormatedName] ? 999999 : 99}">
                                                             <div class="dFlex">
-                                                                   {{data.teamName}}
-                                                                   <ng-container *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                {{data.teamName}}
+                                                                <ng-container
+                                                                    *ngIf="showTooltipConfig[data.unFormatedName]">
                                                                     <div class="tooltip-backdrop"></div>
                                                                 </ng-container>
-                                                                <div class="tooltip2 ml-1" *ngIf="(data.teamId == 11 || data.teamId == 19 || data.teamId == 3 ||data.teamId == 4 ||data.teamId == 14 ||data.teamId == 20 ||data.teamId == 10 || data.teamId == 6 || data.teamId == 18 || data.teamId == 12 || data.teamId == 13 || data.teamId == 16)">
-                                                                    <img src="../../assets/img/question-icon.png" (click)="toggleTooltip(data.unFormatedName);" />
-                                                                    <span class="tooltiptext"  *ngIf="showTooltipConfig[data.unFormatedName]">
-                                                                           <span class="tooltip-cross-btn" (click)="showTooltipConfig[data.unFormatedName]=false;">×</span>
-                                                                          {{tooltipText[data.unFormatedName]}}
+                                                                <div class="tooltip2 ml-1"
+                                                                    *ngIf="(data.teamId == 11 || data.teamId == 19 || data.teamId == 3 ||data.teamId == 4 ||data.teamId == 14 ||data.teamId == 20 ||data.teamId == 10 || data.teamId == 6 || data.teamId == 18 || data.teamId == 12 || data.teamId == 13 || data.teamId == 16)">
+                                                                    <img src="../../assets/img/question-icon.png"
+                                                                        (click)="toggleTooltip(data.unFormatedName);" />
+                                                                    <span class="tooltiptext"
+                                                                        *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                        <span class="tooltip-cross-btn"
+                                                                            (click)="showTooltipConfig[data.unFormatedName]=false;">×</span>
+                                                                        {{tooltipText[data.unFormatedName]}}
                                                                     </span>
                                                                 </div>
                                                                 <span class="sorting">
@@ -182,7 +201,7 @@
                                             </thead>
                                             <tbody>
                                                 <tr class="totalRow">
-                                                    <td>Total</td>
+                                                    <td>Total1</td>
                                                     <td></td>
                                                     <ng-container *ngFor="let ct of totalCount;let last;">
                                                         <ng-container *ngIf="ct.teamId != currentTeamId">
@@ -207,8 +226,10 @@
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData;">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
-                                                                <td class="text-center" [ngClass]="{'opac-zero':office.counts1[team.unFormatedName|uppercase] == 0 }">
-                                                                    {{office.counts1[team.unFormatedName|uppercase] | number}}
+                                                                <td class="text-center"
+                                                                    [ngClass]="{'opac-zero':office.counts1[team.unFormatedName|uppercase] == 0 }">
+                                                                    {{office.counts1[team.unFormatedName|uppercase] |
+                                                                    number}}
                                                                 </td>
                                                             </ng-container>
                                                         </ng-container>
@@ -233,14 +254,16 @@
                             <div class="detail-box-form">
                                 <div class="form-row  without-heading">
                                     <div class="table-responsive">
-                                        <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar tdSmallPadding"
+                                        <table
+                                            class="table table-striped table-wrapper-scroll-y table-inner-scrollbar tdSmallPadding"
                                             id="dos-table">
                                             <thead>
                                                 <tr>
-                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.clientName ? 9999 : 9 }">
+                                                    <th
+                                                        [ngStyle]="{'z-index': showFilteredDropdown.clientName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Clients
-                                                             <span class="sorting">
+                                                            <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
                                                                     [ngClass]="{'selected': !isSorted['clientName']}"
                                                                     (click)="sortData(filteredItems,'clientName','asc','string'); isSorted['clientName'] = false"></a>
@@ -249,8 +272,11 @@
                                                                     (click)="sortData(filteredItems,'clientName','desc','string');isSorted['clientName'] = true"></a>
                                                             </span>
                                                             <div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('clientName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                <img (click)="showHideFilteredDropdown('clientName')"
+                                                                    src="../../assets/img/filterIcon.png"
+                                                                    style="cursor: pointer; margin-left: 6px;" />
+                                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                                    (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.clientName">
                                                                     <div class="clearClose">
                                                                         <label class="mx-1">
@@ -258,13 +284,14 @@
                                                                                 [checked]="isFilterAllSelected.clientName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'clientName')">
-                                                                            {{isFilterAllSelected.clientName ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.clientName ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.clientName=false;"
                                                                             type="button" class="close"
                                                                             data-dismiss="modal"
                                                                             aria-label="Close"><span>&times;</span></button>
-                                                                </div>
+                                                                    </div>
                                                                     <ng-container
                                                                         *ngFor="let data of filteredClientName">
                                                                         <label class="mx-1">
@@ -280,7 +307,8 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.officeName ? 9999 : 9 }">
+                                                    <th
+                                                        [ngStyle]="{'z-index': showFilteredDropdown.officeName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Office <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
@@ -291,8 +319,11 @@
                                                                     (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                             </span>
                                                             <div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('officeName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                <img (click)="showHideFilteredDropdown('officeName')"
+                                                                    src="../../assets/img/filterIcon.png"
+                                                                    style="cursor: pointer; margin-left: 6px;" />
+                                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                                    (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.officeName">
                                                                     <div class="clearClose">
                                                                         <label class="mx-1">
@@ -300,7 +331,8 @@
                                                                                 [checked]="isFilterAllSelected.officeName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.officeName ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.officeName=false;"
                                                                             type="button" class="close"
@@ -323,20 +355,26 @@
                                                         </div>
                                                     </th>
                                                     <ng-container *ngFor="let data of teamData;let last=last">
-                                                        <th *ngIf="currentTeamId != data.teamId" [ngStyle]="{'z-index':showTooltipConfig[data.unFormatedName] ? 999999 : 99}">
+                                                        <th *ngIf="currentTeamId != data.teamId"
+                                                            [ngStyle]="{'z-index':showTooltipConfig[data.unFormatedName] ? 999999 : 99}">
                                                             <div class="dFlex">
-                                                                   {{data.teamName}}
-                                                                   <ng-container *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                {{data.teamName}}
+                                                                <ng-container
+                                                                    *ngIf="showTooltipConfig[data.unFormatedName]">
                                                                     <div class="tooltip-backdrop"></div>
                                                                 </ng-container>
-                                                                <div class="tooltip2 ml-1" *ngIf="(data.teamId == 11 || data.teamId == 19 || data.teamId == 3 ||data.teamId == 4 ||data.teamId == 14 ||data.teamId == 20 ||data.teamId == 10 || data.teamId == 6 || data.teamId == 18 || data.teamId == 12 || data.teamId == 13 || data.teamId == 16)">
-                                                                    <img src="../../assets/img/question-icon.png" (click)="toggleTooltip(data.unFormatedName);" />
-                                                                    <span class="tooltiptext"  *ngIf="showTooltipConfig[data.unFormatedName]">
-                                                                           <span class="tooltip-cross-btn" (click)="showTooltipConfig[data.unFormatedName]=false;">×</span>
-                                                                          {{tooltipText[data.unFormatedName]}}
+                                                                <div class="tooltip2 ml-1"
+                                                                    *ngIf="(data.teamId == 11 || data.teamId == 19 || data.teamId == 3 ||data.teamId == 4 ||data.teamId == 14 ||data.teamId == 20 ||data.teamId == 10 || data.teamId == 6 || data.teamId == 18 || data.teamId == 12 || data.teamId == 13 || data.teamId == 16)">
+                                                                    <img src="../../assets/img/question-icon.png"
+                                                                        (click)="toggleTooltip(data.unFormatedName);" />
+                                                                    <span class="tooltiptext"
+                                                                        *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                        <span class="tooltip-cross-btn"
+                                                                            (click)="showTooltipConfig[data.unFormatedName]=false;">×</span>
+                                                                        {{tooltipText[data.unFormatedName]}}
                                                                     </span>
                                                                 </div>
-                                                                    <span class="sorting">
+                                                                <span class="sorting">
                                                                     <a href="javascript:void(0);" class="arrow-up"
                                                                         [ngClass]="{'selected': !isSorted[data.unFormatedName]}"
                                                                         (click)="sortData(filteredItems,'count','asc','nestedDate',data.unFormatedName); isSorted[data.unFormatedName] = false"></a>
@@ -364,15 +402,16 @@
                                                         <td>{{office.officeName}}</td>
                                                         <ng-container *ngFor="let team of teamData">
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
-                                                       
+
                                                                 <td class="text-center">
 
                                                                     <div class="nowrap-div">
                                                                         {{office.dates1[team.unFormatedName|uppercase] ?
-                                                                        (office.dates1[team.unFormatedName|uppercase]| date: 'MMM dd, YYYY') : "-"}}
-                                                                    
+                                                                        (office.dates1[team.unFormatedName|uppercase]|
+                                                                        date: 'MMM dd, YYYY') : "-"}}
+
                                                                     </div>
-                                                                   
+
                                                                 </td>
                                                             </ng-container>
                                                         </ng-container>
@@ -397,14 +436,16 @@
                             <div class="detail-box-form">
                                 <div class="form-row  without-heading">
                                     <div class="table-responsive">
-                                        <table class="table table-striped table-wrapper-scroll-y table-inner-scrollbar tdSmallPadding"
+                                        <table
+                                            class="table table-striped table-wrapper-scroll-y table-inner-scrollbar tdSmallPadding"
                                             id="dop-table">
                                             <thead>
                                                 <tr>
-                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.clientName ? 9999 : 9 }">
+                                                    <th
+                                                        [ngStyle]="{'z-index': showFilteredDropdown.clientName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Clients
-                                                             <span class="sorting">
+                                                            <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
                                                                     [ngClass]="{'selected': !isSorted['clientName']}"
                                                                     (click)="sortData(filteredItems,'clientName','asc','string'); isSorted['clientName'] = false"></a>
@@ -413,8 +454,11 @@
                                                                     (click)="sortData(filteredItems,'clientName','desc','string');isSorted['clientName'] = true"></a>
                                                             </span>
                                                             <div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('clientName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                <img (click)="showHideFilteredDropdown('clientName')"
+                                                                    src="../../assets/img/filterIcon.png"
+                                                                    style="cursor: pointer; margin-left: 6px;" />
+                                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                                    (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.clientName">
                                                                     <div class="clearClose">
                                                                         <label class="mx-1">
@@ -422,13 +466,14 @@
                                                                                 [checked]="isFilterAllSelected.clientName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'clientName')">
-                                                                            {{isFilterAllSelected.clientName ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.clientName ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.clientName=false;"
                                                                             type="button" class="close"
                                                                             data-dismiss="modal"
                                                                             aria-label="Close"><span>&times;</span></button>
-                                                                </div>
+                                                                    </div>
                                                                     <ng-container
                                                                         *ngFor="let data of filteredClientName">
                                                                         <label class="mx-1">
@@ -444,7 +489,8 @@
                                                             </span>
                                                         </div>
                                                     </th>
-                                                    <th [ngStyle]="{'z-index': showFilteredDropdown.officeName ? 9999 : 9 }">
+                                                    <th
+                                                        [ngStyle]="{'z-index': showFilteredDropdown.officeName ? 9999 : 9 }">
                                                         <div class="dFlex">
                                                             Office <span class="sorting">
                                                                 <a href="javascript:void(0);" class="arrow-up"
@@ -455,8 +501,11 @@
                                                                     (click)="sortData(filteredItems,'officeName','desc','string');isSorted['officeName'] = true"></a>
                                                             </span>
                                                             <div class="dropdown">
-                                                                <img  (click)="showHideFilteredDropdown('officeName')" src="../../assets/img/filterIcon.png" style="cursor: pointer; margin-left: 6px;"/>
-                                                                <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                                                <img (click)="showHideFilteredDropdown('officeName')"
+                                                                    src="../../assets/img/filterIcon.png"
+                                                                    style="cursor: pointer; margin-left: 6px;" />
+                                                                <div class="dropdown-menu filter-dropdown-menu"
+                                                                    (mouseleave)="onMouseLeave($event)"
                                                                     *ngIf="showFilteredDropdown.officeName">
                                                                     <div class="clearClose">
                                                                         <label class="mx-1">
@@ -464,7 +513,8 @@
                                                                                 [checked]="isFilterAllSelected.officeName"
                                                                                 value="selectAll"
                                                                                 (change)="selectAll($event,'officeName')">
-                                                                            {{isFilterAllSelected.officeName ? 'Clear All':'Select All'}}</label>
+                                                                            {{isFilterAllSelected.officeName ? 'Clear
+                                                                            All':'Select All'}}</label>
                                                                         <button
                                                                             (click)="showFilteredDropdown.officeName=false;"
                                                                             type="button" class="close"
@@ -487,17 +537,23 @@
                                                         </div>
                                                     </th>
                                                     <ng-container *ngFor="let data of teamData;let last=last">
-                                                        <th *ngIf="currentTeamId != data.teamId" [ngStyle]="{'z-index':showTooltipConfig[data.unFormatedName] ? 999999 : 99}">
+                                                        <th *ngIf="currentTeamId != data.teamId"
+                                                            [ngStyle]="{'z-index':showTooltipConfig[data.unFormatedName] ? 999999 : 99}">
                                                             <div class="dFlex">
                                                                 {{data.teamName}}
-                                                                <ng-container *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                <ng-container
+                                                                    *ngIf="showTooltipConfig[data.unFormatedName]">
                                                                     <div class="tooltip-backdrop"></div>
                                                                 </ng-container>
-                                                                <div class="tooltip2 ml-1" *ngIf="(data.teamId == 11 || data.teamId == 19 || data.teamId == 3 ||data.teamId == 4 ||data.teamId == 14 ||data.teamId == 20 ||data.teamId == 10 || data.teamId == 6 || data.teamId == 18 || data.teamId == 12 || data.teamId == 13 || data.teamId == 16)">
-                                                                    <img src="../../assets/img/question-icon.png" (click)="toggleTooltip(data.unFormatedName);" />
-                                                                    <span class="tooltiptext"  *ngIf="showTooltipConfig[data.unFormatedName]">
-                                                                           <span class="tooltip-cross-btn" (click)="showTooltipConfig[data.unFormatedName]=false;">×</span>
-                                                                          {{tooltipText[data.unFormatedName]}}
+                                                                <div class="tooltip2 ml-1"
+                                                                    *ngIf="(data.teamId == 11 || data.teamId == 19 || data.teamId == 3 ||data.teamId == 4 ||data.teamId == 14 ||data.teamId == 20 ||data.teamId == 10 || data.teamId == 6 || data.teamId == 18 || data.teamId == 12 || data.teamId == 13 || data.teamId == 16)">
+                                                                    <img src="../../assets/img/question-icon.png"
+                                                                        (click)="toggleTooltip(data.unFormatedName);" />
+                                                                    <span class="tooltiptext"
+                                                                        *ngIf="showTooltipConfig[data.unFormatedName]">
+                                                                        <span class="tooltip-cross-btn"
+                                                                            (click)="showTooltipConfig[data.unFormatedName]=false;">×</span>
+                                                                        {{tooltipText[data.unFormatedName]}}
                                                                     </span>
                                                                 </div>
                                                                 <span class="sorting">
@@ -530,10 +586,12 @@
                                                             <ng-container *ngIf="team.teamId != currentTeamId">
                                                                 <td class="text-center">
                                                                     <div class="nowrap-div">
-                                                                        {{office.datesPending[team.unFormatedName|uppercase] ?
-                                                                        (office.datesPending[team.unFormatedName|uppercase]| date: 'MMM dd, YYYY') : "-"}}
+                                                                        {{office.datesPending[team.unFormatedName|uppercase]
+                                                                        ?
+                                                                        (office.datesPending[team.unFormatedName|uppercase]|
+                                                                        date: 'MMM dd, YYYY') : "-"}}
                                                                     </div>
-                                                                   
+
                                                                 </td>
                                                             </ng-container>
                                                         </ng-container>

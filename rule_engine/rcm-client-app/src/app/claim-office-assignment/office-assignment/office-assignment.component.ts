@@ -79,7 +79,7 @@ export class OfficeAssignmentComponent implements OnInit {
     window.addEventListener("resize", this.setTopOnTotalRow);  //event added todynamically set style top on totalRow
   }
 
-  ngAfterViewInit(){ // Adjusts total row when thead height changes dynamically
+  ngAfterViewInit() { // Adjusts total row when thead height changes dynamically
     let thead = document.querySelector('thead tr');
     this.resizeObserver = new ResizeObserver(() => {
       this.setTopOnTotalRow();
@@ -124,11 +124,11 @@ export class OfficeAssignmentComponent implements OnInit {
 
     ths.claimAssigmentPullModel.repeatType = repeatType || null;
 
-    if (this.tabSwitch.userPendency){
-      if (this.checkedCompanyNames.length > 0){
+    if (this.tabSwitch.userPendency) {
+      if (this.checkedCompanyNames.length > 0) {
         ths.claimAssigmentPullModel.clients = this.checkedCompanyNames;
       }
-    } 
+    }
 
     ths.appService.fetchClaimAssignments(ths.claimAssigmentPullModel, (res: any) => {
 
@@ -137,21 +137,23 @@ export class OfficeAssignmentComponent implements OnInit {
         if (this.originalClaimData.length == 0) {
           this.originalClaimData = [...res.data];
         }
-        if (this.tabValue == 'freshpend' || this.tabValue == 'repeatpend'){
+        if (this.tabValue == 'freshpend' || this.tabValue == 'repeatpend') {
           this.filteredItems = this.claimData.filter(claimData => {
             this.originalClaimData.some(orgClaimData => {
               orgClaimData.officeUuid == claimData.officeUuid;
             })
           })
-        } 
-        if(this.tabSwitch.userPendency) {
+        }
+        if (this.tabSwitch.userPendency) {
           this.switchTab("userPendency");
         } else {
           this.filterCompanyName();
           this.filterOnDropdownType();
           this.showFilterOptioncompanyName(ths.claimData);
+
         }
         this.setTopOnTotalRow();
+        this.calcCount(this.filteredItems);//Deepak Added need to confirm with venkat
         ths.loader.showLoader = false;
       } else {
         //ERROR
@@ -225,9 +227,11 @@ export class OfficeAssignmentComponent implements OnInit {
 
   calcCount(data: any) {
     this.totalClaimData.totalCount = 0;
+
     data.forEach((e: any) => {
       this.totalClaimData.totalCount = this.totalClaimData.totalCount + e.count;
     });
+
   }
 
   calcRemLiteReject(data: any) {
@@ -305,7 +309,7 @@ export class OfficeAssignmentComponent implements OnInit {
     excelData = excelData.map(
       ({ officeUuid, assignedUser, ...newClaimData }: any) => newClaimData);
 
-    if (this.tabSwitch.userPendency){
+    if (this.tabSwitch.userPendency) {
       excelData = excelData.map((e: any) => {
         return {
           "User Assignment": e.officeAssignedTo,
@@ -611,7 +615,7 @@ export class OfficeAssignmentComponent implements OnInit {
   }
 
   switchTab(tab: any) {
-    if(tab == 'teamPendency'){
+    if (tab == 'teamPendency') {
       this.tabValue = 'teamPendency';
       this.tabSwitch.teamPendency = true;
       this.tabSwitch.userPendency = false;

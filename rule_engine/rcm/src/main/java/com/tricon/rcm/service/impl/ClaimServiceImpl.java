@@ -6976,7 +6976,8 @@ public class ClaimServiceImpl {
 				listOfPrimaryClaims.removeIf(primary -> (primary.getOfficeName().equals(secondary.getOfficeName())
 						&& primary.getPatientId().equals(secondary.getPatientId())
 						&& secondaryClaimId[0].equals(primary.getClaimId().split("_")[0])
-						&& !primary.isClaimTypeStatus()) && !primary.getNextAction().equals(status));
+						&& !primary.isClaimTypeStatus()) //&& !primary.getNextAction().equals(status)
+						);
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error("Inside filterPrimarySecondaryClaimsWithUsingPrimaryStatus:" + e.getMessage());

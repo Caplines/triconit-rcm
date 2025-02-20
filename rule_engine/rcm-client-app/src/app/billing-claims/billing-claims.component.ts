@@ -3763,7 +3763,7 @@ export class BillingClaimsComponent {
         if (res.status === 200) {
           let data = res.data;
           if (data.length === 0) {
-            this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep) ? "(Primary) " + ths.claimRcm.assoicatedClaimStatusString : "";
+            this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep && ths.claimRcm.assoicatedClaimStatusString != "") ? "Primary " + ths.claimRcm.assoicatedClaimStatusString : "";
             return;
           }
           for (let i = 1; i < data.length; i++) {
@@ -3884,6 +3884,9 @@ export class BillingClaimsComponent {
     this.claimSectionModal['PATIENT_STATEMENT']['sectionId'] = this.sectionIds['PATIENT_STATEMENT']['sectionId'];
 
     if (!isFinal && this.validate_PATIENT_STATEMENT()) {
+      if (this.claimSectionModal['PATIENT_STATEMENT']['buttonType'] == '1') {
+        this.claimSectionModal['PATIENT_STATEMENT']['statementType'] = null;
+      }
       this.loader.patientStaementInfo = true;
       let params: any = {
         claimUuid: this.claimUUid,

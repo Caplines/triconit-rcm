@@ -42,4 +42,5 @@ public interface FreshClaimDataDto {
 	String getAssignedToFName();
 	String getAssignedToLName();
 	String getAssignedToTeam();
+	int getRebilledStatus();
 }
