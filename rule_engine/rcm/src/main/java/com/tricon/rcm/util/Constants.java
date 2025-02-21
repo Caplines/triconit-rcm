@@ -119,6 +119,7 @@ public class Constants {
 	public static final String ARCHIVE_PREFIX="arc_";
 	
 	public static final int CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED=0;
+	public static final String Need_to_Bill_Secondary_Insurance="Need to Bill Secondary Insurance";
 	public static final int CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED=1;
 	public static final List<String> SKIP_URL_FROM_RCM_LOGS = Arrays.asList("/api/list-of-claim/d/pdf",
 				"/api/issue-claim/d/pdf", "/api/other-teams-work/d/pdf", "/api/ivf/d/pdf", "/api/tp-link/d/pdf",
