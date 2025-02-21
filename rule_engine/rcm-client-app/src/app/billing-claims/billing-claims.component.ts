@@ -3776,7 +3776,7 @@ export class BillingClaimsComponent {
 
             }
           }
-          this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep) ? "(Primary) " + ths.claimRcm.assoicatedClaimStatusString : "";
+          this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep && ths.claimRcm.assoicatedClaimStatusString != "") ? "Primary " + ths.claimRcm.assoicatedClaimStatusString : "";
 
 
         }

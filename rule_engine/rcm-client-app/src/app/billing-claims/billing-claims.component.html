@@ -5590,6 +5590,12 @@
                                             (click)="saveClaim('reviewed',false)">
                                             Reviewed
                                         </button>
+                                        <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus) ||
+                                                                           (claimRcm.primary))" type="button"
+                                            class="btn btn-success" [disabled]="inSave"
+                                            (click)="saveClaim('assign',false)">
+                                            Assign to Other Team
+                                        </button>
                                         <button
                                             *ngIf="claimRcm.pending  && selectedTeam == claimRcm.currentTeamId && isSuperAdmin"
                                             type="button" class="btn btn-success" [disabled]="inSave"
