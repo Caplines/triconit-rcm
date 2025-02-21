@@ -39,13 +39,13 @@ public class RcmRebillingSection extends BaseAuditEntity implements java.io.Seri
 	@JoinColumn(name = "requested_by",referencedColumnName="uuid")
 	private RcmUser requestedBy;
 	
-	@Column(name = "remarks_rebilling")
+	@Column(name = "remarks_rebilling",columnDefinition = "TEXT")
 	private String remarks;
 	
-	@Column(name = "remarks_requested")
+	@Column(name = "remarks_requested",columnDefinition = "TEXT")
 	private String requestedRemarks;
 
-	@Column(name = "reason_for_rebilling")
+	@Column(name = "reason_for_rebilling",columnDefinition = "TEXT")
 	private String reasonForRebilling;
 	
 	@Column(name = "rebilling_requirements")

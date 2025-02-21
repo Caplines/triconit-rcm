@@ -3078,6 +3078,9 @@ public class ClaimServiceImpl {
 				for(ClaimDetailDto cdt:cdList) {
 					
 					rcmClaimDetail = new RcmClaimDetail();
+					if (cdt.getTooth()!=null && cdt.getTooth().equalsIgnoreCase("NA")) {
+						 cdt.setTooth("N/A");
+					}
 					BeanUtils.copyProperties(cdt, rcmClaimDetail, "id");
 					rcmClaimDetail.setIdEs(cdt.getId()); 
 					rcmClaimDetail.setClaim(claim);
