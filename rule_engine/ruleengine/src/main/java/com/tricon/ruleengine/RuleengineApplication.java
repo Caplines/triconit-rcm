@@ -18,6 +18,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 //https://graph.microsoft.com/v1.0/me/drive/root/children from graph explorer to get ID of sheet..
 /* https://github.com/SeleniumHQ/htmlunit-driver/releases
 /* to create build of front end--- ng build --prod*/ //for local its npm start
+//nvm --version nvm list ->nvm use 14.17.0
 //3.23.130.139
 //from cmd in folder \capline\rule_engine\ruleengine>mvn clean then   mvn initialize package
 /* CD /opt/tomcat Delete root Folder in webapps
@@ -27,7 +28,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  *  CapDent$1 Pukumar@321
  *  admin_admin R&D00
  * dev is for Developers
- * test_test_cl --> 12345678 user6_user6_cl
+ * test_test_cl --> 12345678 user6_user6_cl 12345678
  * in Front end 
  * app.component.ts static API_URL="http://ip"; 
  * angular.json line no 17 "index": "src/index.jsp",

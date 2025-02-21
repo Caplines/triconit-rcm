@@ -149,7 +149,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " does_exam_share_freq as doesExamShareFreq,d5110_20_percentage as d511020Percentage, "
 			+ " d5130_40_percentage as d513040Percentage,d5810_c_percentage as d5810CPercentage,d9310 as d9310,d9310_fr as d9310fr,"
 			+ " d6011 as d6011,d6011_fr as d6011fr,d5862 as d5862,d5862_fr as d5862fr,d7311_select as d7311Select,d5213142625 as d5213142625,d5213142625_fr as d5213142625fr,d2954 as d2954,d2954_fr as d2954fr,"
-			+ " policy21 as policy21,share_fr2 as shareFr2 ";
+			+ " policy21 as policy21,share_fr2 as shareFr2,policy20 as policy20 ";
 	
 	@Override
 	public Patient checkforPatientWithId(String patientid, Office off) {

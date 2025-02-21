@@ -391,6 +391,14 @@
             </tr>
 
              <tr class="lightGray">
+                   
+                 <td>Sec AOB Accepted</td>
+                 <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy20"/></xsl:call-template></td>
+				 <td colspan="8"></td>
+             
+             </tr>
+			 
+             <tr class="lightGray">
                    <xsl:if test="contains(translate(basicInfo3, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'physicians mutual')">
                  <td>Applicable Schedule</td>
                  <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy21"/></xsl:call-template></td>
@@ -761,6 +769,17 @@
                 <td class="dullRed">Crown Paid on Date</td>
                 <td class="dullRed" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="prosthetics3"/></xsl:call-template></td>
             </tr>
+			<tr>
+                <td class="dullBlue">Does D0140 Share Frequency with D0120 and D0150?</td>
+                <td class="dullBlue" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="shareFr2"/></xsl:call-template></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow"></td>
+                <td class="dullYellow align-right"></td>
+                <td class="dullYellow align-right"></td>
+                <td class="borderNone"></td>
+                <td class="dullRed"></td>
+                <td class="dullRed" colspan="2"></td>  
+            </tr>
             <tr>
                 <td class="rowHeading">Radiographs</td>
                 <td class="rowHeading">Pct.</td>
@@ -839,7 +858,7 @@
                 <td class="dullRed">No. of Crowns / Year </td>
                 <td class="dullRed" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="crn1"/></xsl:call-template></td>  
             </tr>
-            <tr>
+			<tr>
                 <td class="rowHeading">Prophylaxis</td>
                 <td class="rowHeading">Pct.</td>
                 <td class="rowHeading">Freq</td>
