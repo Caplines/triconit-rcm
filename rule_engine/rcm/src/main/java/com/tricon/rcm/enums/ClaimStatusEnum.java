@@ -78,7 +78,8 @@ public enum ClaimStatusEnum {
 	Need_to_Call_Insurance_For_EOB(70,"Need to Call Insurance for EOB"),
 	Need_to_Check_Payment_Status(71,"Need to Check Payment Status"),
 	Need_to_Check_Claim_Status_On_Web(72,"Need to Check Claim Status on Web"),
-	Need_to_Bill_Secondary_Insurance(73,"Need to Bill Secondary Insurance"),
+	Need_to_Bill_Secondary_Insurance(73,"Need to Bill Secondary Insurance"),//Same name in Constants also
+	//public static final String Need_to_Bill_Secondary_Insurance="Need to Bill Secondary Insurance";
 	Need_Additional_Information_For_Claim(74,"Need Additional Information For Claim"),
 	Need_to_Follow_Up_For_Void_Request(75,"Need to follow up for Void Request"),
 	Need_to_Get_Provider_Credentialed(76,"Need to get Provider Credentialed"),

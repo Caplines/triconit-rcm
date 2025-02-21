@@ -2102,7 +2102,7 @@ public class ClaimSectionImpl {
 						List<ClaimLogDto> responseForSecondaryClaim = claimServiceImpl
 								.createSecondaryClaimDataFromRecreateSection(dtoSheet,
 										partialHeader.getCompany().getUuid(), primaryClaim.getOffice().getUuid(),
-										createdBy, team,primaryClaim.getStatusES());
+										createdBy, team,primaryClaim.getStatusES(),recreateClaimRequestInfoModel.getRecreateTeam());
 						logger.info("ResponseForSecondaryClaim->>" + responseForSecondaryClaim);
 						break;
 					}
@@ -2128,6 +2128,8 @@ public class ClaimSectionImpl {
 					} else {
 						response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, primaryClaim, createdBy,
 								team, finalSubmit);
+						
+						
 						return response != null ? true : null;
 					}
 				}
@@ -2159,6 +2161,9 @@ public class ClaimSectionImpl {
 
 					if (isPrimary) {
 						logger.info("Inside current claim primary->>>>>>>>>>>>>>>");
+						
+						
+						
                         //REDO
 						// active false for service level table for selected service codes for current
 						// claim
@@ -2378,7 +2383,25 @@ public class ClaimSectionImpl {
 				}
 				
 				//Move New Claim to New team
+				
 				RcmClaims associatedClaim =rcmClaimRepository.findByClaimIdAndOffice(associatedClaimId,office);
+				
+				
+				// first we insert current claim linked_data from newClaim data
+				RcmLinkedClaims linkedClaimsForCurrent = new RcmLinkedClaims();
+				linkedClaimsForCurrent.setRcmClaims(currentClaim);
+				linkedClaimsForCurrent.setCreatedBy(createdBy);
+				linkedClaimsForCurrent.setLinkedClaims(associatedClaim);
+				rcmLinkedClaimsRepo.save(linkedClaimsForCurrent);
+
+				// second we insert new claim linked_data from current claim data
+				RcmLinkedClaims linkedClaimsForNew = new RcmLinkedClaims();
+				linkedClaimsForNew.setRcmClaims(associatedClaim);
+				linkedClaimsForNew.setCreatedBy(createdBy);
+				linkedClaimsForNew.setLinkedClaims(currentClaim);
+				rcmLinkedClaimsRepo.save(linkedClaimsForNew);
+				
+				
 				RcmTeam newTeam = rcmTeamRepo.findById(recreateClaimRequestInfoModel.getRecreateTeam());
 				RcmTeam oldTeam = rcmTeamRepo.findById(associatedClaim.getCurrentTeamId().getId());
 				RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByCurrentTeamIdIdAndClaimsClaimUuidAndActive(
@@ -2386,18 +2409,22 @@ public class ClaimSectionImpl {
 				associatedClaim.setCurrentTeamId(newTeam);
 				if (newTeam.getId() != oldTeam.getId() && assign!=null) {
 					
-				ClaimStatusEnum nextAction =ClaimStatusEnum.getByType("Need to Review");
-				associatedClaim.setCurrentStatus(nextAction.getId());
+				//ClaimStatusEnum nextAction =ClaimStatusEnum.getByType("Need to Review");
+				//associatedClaim.setCurrentStatus(nextAction.getId());
 				associatedClaim.setRecreatedSection(Constants.RecreatedSection_ONE);
+				//if Moving to other team Apart from  Billing then marked as billed
+				if (newTeam.getId()!=RcmTeamEnum.BILLING.getId()) associatedClaim.setPending(false);
 				
-				String newCycleStatus="Unbilled";
+				//String newCycleStatus="Unbilled";
 				//What about pending
-				  String assignActionName="Assign To Team";////Same we have in ui if change needed update that also (billing-claims.component.ts)
-				  PartialHeader newPH=new PartialHeader();
-				  newPH.setTeamId(recreateClaimRequestInfoModel.getRecreateTeam());
+				String createStatus = ClaimStatusEnum.Need_Additional_Information_For_Claim.getType();  
+				String  nextAction= ClaimStatusEnum.Need_Additional_Information_For_Claim.getType(); 
+				String assignActionName="Assign To Team";////Same we have in ui if change needed update that also (billing-claims.component.ts)
+				  PartialHeader newPH1=new PartialHeader();
+				  newPH1.setTeamId(recreateClaimRequestInfoModel.getRecreateTeam());
 				  //partialHeader.setTeamId(recreateClaimRequestInfoModel.getRecreateTeam());
-				   String claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(partialHeader, associatedClaim.getClaimUuid(),
-						   newTeam.getId(), recreateClaimRequestInfoModel.getRecreationRemarks(), associatedClaim, assign, createdBy, office, null,newCycleStatus,nextAction.getType(),assignActionName,
+				   String claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(newPH1, associatedClaim.getClaimUuid(),
+						   newTeam.getId(), recreateClaimRequestInfoModel.getRecreationRemarks(), associatedClaim, assign, createdBy, office, null,createStatus,nextAction,assignActionName,
 						   newTeam);
 				   rcmClaimAssignmentRepo.save(assign);
 				}
@@ -2493,6 +2520,35 @@ public class ClaimSectionImpl {
 								team, finalSubmit);
 					}
 
+					
+					
+					RcmTeam newTeam = rcmTeamRepo.findById(recreateClaimRequestInfoModel.getRecreateTeam());
+					RcmTeam oldTeam = rcmTeamRepo.findById(newLinkedClaim.getCurrentTeamId().getId());
+					RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByCurrentTeamIdIdAndClaimsClaimUuidAndActive(
+							newLinkedClaim.getCurrentTeamId().getId(),newLinkedClaim.getClaimUuid(), true);
+					newLinkedClaim.setCurrentTeamId(newTeam);
+					if (newTeam.getId() != oldTeam.getId() && assign!=null) {
+						
+					//ClaimStatusEnum nextAction =ClaimStatusEnum.getByType("Need to Review");
+					//associatedClaim.setCurrentStatus(nextAction.getId());
+						newLinkedClaim.setRecreatedSection(Constants.RecreatedSection_ONE);
+					//if Moving to other team Apart from  Billing then marked as billed
+					if (newTeam.getId()!=RcmTeamEnum.BILLING.getId()) newLinkedClaim.setPending(false);
+					
+					//String newCycleStatus="Unbilled";
+					//What about pending
+					String createStatus = ClaimStatusEnum.Need_Additional_Information_For_Claim.getType();  
+					String  nextAction= ClaimStatusEnum.Need_Additional_Information_For_Claim.getType(); 
+					String assignActionName="Assign To Team";////Same we have in ui if change needed update that also (billing-claims.component.ts)
+					  PartialHeader newPH1=new PartialHeader();
+					  newPH1.setTeamId(recreateClaimRequestInfoModel.getRecreateTeam());
+					  //partialHeader.setTeamId(recreateClaimRequestInfoModel.getRecreateTeam());
+					   String claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(newPH1, newLinkedClaim.getClaimUuid(),
+							   newTeam.getId(), recreateClaimRequestInfoModel.getRecreationRemarks(), newLinkedClaim, assign, createdBy, office, null,createStatus,nextAction,assignActionName,
+							   newTeam);
+					   rcmClaimAssignmentRepo.save(assign);
+					}
+					
 					logger.info("saveRecreateClaimData:" + response);
 
 				} else {
@@ -2567,6 +2623,32 @@ public class ClaimSectionImpl {
 								team, finalSubmit);
 					}
 
+					RcmTeam newTeam = rcmTeamRepo.findById(recreateClaimRequestInfoModel.getRecreateTeam());
+					RcmTeam oldTeam = rcmTeamRepo.findById(newLinkedClaim.getCurrentTeamId().getId());
+					RcmClaimAssignment assign = rcmClaimAssignmentRepo.findByCurrentTeamIdIdAndClaimsClaimUuidAndActive(
+							newLinkedClaim.getCurrentTeamId().getId(),newLinkedClaim.getClaimUuid(), true);
+					newLinkedClaim.setCurrentTeamId(newTeam);
+					if (newTeam.getId() != oldTeam.getId() && assign!=null) {
+						
+					//ClaimStatusEnum nextAction =ClaimStatusEnum.getByType("Need to Review");
+					//associatedClaim.setCurrentStatus(nextAction.getId());
+						newLinkedClaim.setRecreatedSection(Constants.RecreatedSection_ONE);
+					//if Moving to other team Apart from  Billing then marked as billed
+					if (newTeam.getId()!=RcmTeamEnum.BILLING.getId()) newLinkedClaim.setPending(false);
+					
+					//String newCycleStatus="Unbilled";
+					//What about pending
+					String createStatus = ClaimStatusEnum.Need_Additional_Information_For_Claim.getType();  
+					String  nextAction= ClaimStatusEnum.Need_Additional_Information_For_Claim.getType(); 
+					String assignActionName="Assign To Team";////Same we have in ui if change needed update that also (billing-claims.component.ts)
+					  PartialHeader newPH1=new PartialHeader();
+					  newPH1.setTeamId(recreateClaimRequestInfoModel.getRecreateTeam());
+					  //partialHeader.setTeamId(recreateClaimRequestInfoModel.getRecreateTeam());
+					   String claimTransfer=rcmClaimLogServiceImpl.assignClaimToOtherTeamWithRemarkCommon(newPH1, newLinkedClaim.getClaimUuid(),
+							   newTeam.getId(), recreateClaimRequestInfoModel.getRecreationRemarks(), newLinkedClaim, assign, createdBy, office, null,createStatus,nextAction,assignActionName,
+							   newTeam);
+					   rcmClaimAssignmentRepo.save(assign);
+					}
 					logger.info("saveRecreateClaimData:" + response);
 
 				}

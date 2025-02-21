@@ -122,6 +122,17 @@ public enum RcmTeamEnum {
 		return null;
 	}
 	
+	public static RcmTeamEnum getTeamEnumByTeamId(int teamId)
+	{
+		//RcmTeamEnum teamName=null;
+		Optional<RcmTeamEnum> teamEnum = Arrays.stream(values()).filter(x -> x.getId() ==teamId).findFirst();
+		if(teamEnum.isPresent()) {
+			 
+			 return teamEnum.get();
+		}
+		return null;
+	}
+	
 //	public static List<RcmRolesResponseDto> getRolesByTeamId(int teamId) {
 //		RcmRoleEnum rolesEnum[] = null;
 //		List<RcmRolesResponseDto> roles = new ArrayList<>();
