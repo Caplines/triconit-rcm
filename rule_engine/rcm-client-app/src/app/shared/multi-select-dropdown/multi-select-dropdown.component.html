@@ -557,6 +557,30 @@
         </div>
     </div>
 
+    <!-- Claim Detail Required Rebilling  -->
+    <div class="detail-page-required-rebilling" (mouseleave)="showDropDown = false"
+        *ngIf="inputConfig?.isDetailPage && inputConfig?.requiredReBilling">
+        <button class="drop-toggle btn flat"
+            (click)="showDropDown=!showDropDown;toggleSelectedItem('requiredReBilling')">
+            <span *ngIf="claimDetailPageConfig.requiredReBilling.length<=0">Select</span>
+            <span *ngIf="claimDetailPageConfig.requiredReBilling.length>0"
+                [ngClass]="{'hide-item':showSelectedData['requiredReBilling']}">
+                <ng-container *ngFor="let item of claimDetailPageConfig.requiredReBilling; let last = last"> {{
+                    item.name
+                    }}</ng-container>
+            </span>
+            <i class="fa fa-angle-down"></i>
+        </button>
+        <div class="drop-show search-claim-dropdown" *ngIf="showDropDown">
+
+            <label *ngFor="let item of inputConfig.requiredReBilling;let idx = index">
+                <input type="checkbox" [(ngModel)]="item.checked"
+                    (change)="getSelectedValue(item.checked,item,'requiredReBilling','requiredReBilling')" />
+                <span>{{item.name}}</span>
+            </label>
+        </div>
+    </div>
+
     <!-- Claim Detail Recreate Service Codes  -->
     <div class="detail-page-recreate-service-codes" (mouseleave)="showDropDown = false"
         *ngIf="inputConfig?.isDetailPage && inputConfig?.recreateServiceCodesWithTooth">
