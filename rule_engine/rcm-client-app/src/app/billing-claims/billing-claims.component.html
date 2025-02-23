@@ -5583,7 +5583,7 @@
                                             (click)="saveClaim('assign',false)">
                                             Assign to Other Team
                                         </button>
-                                        <button *ngIf="claimRcm.allowEdit && isInternalAudit && ( (!claimRcm.primary && needToBillSecondaryInsuranceinStep && claimRcm.pending) ||
+                                        <button *ngIf="claimRcm.allowEdit && isInternalAudit && ( (!claimRcm.primary && claimRcm.pending) ||
                                                                                          (claimRcm.primary && claimRcm.pending)
                                                                                        )" type="button"
                                             class="btn btn-success" [disabled]="inSave"
