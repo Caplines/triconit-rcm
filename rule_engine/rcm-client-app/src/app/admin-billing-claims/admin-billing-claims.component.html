@@ -347,9 +347,31 @@
                             </span>
                           </div>
                         </th>
-                        <th class="lc3Row">
+                        <th class="lastTeam">
                           <div class="dFlex">
                             Assigned Team
+                            <div class="dropdown">
+                              <img (click)="showHideFilteredDropdown('assignedToTeam')" src="../../assets/img/filterIcon.png"
+                                style="cursor: pointer; margin-left: 6px;" />
+                              <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                *ngIf="showFilteredDropdown.assignedToTeam">
+                                <div class="clearClose">
+                                  <label class="mx-1">
+                                    <input type="checkbox" [checked]="isFilterAllSelected.assignedToTeam" value="selectAll"
+                                      (change)="selectAll($event,'assignedToTeam')">
+                                    {{isFilterAllSelected.assignedToTeam ? 'Clear All':'Select All'}}</label>
+                                  <button (click)="showFilteredDropdown.assignedToTeam=false;" type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close"><span>&times;</span></button>
+                                </div>
+                                <ng-container *ngFor="let data of filteredColumnData.assignedToTeam">
+                                  <label class="mx-1">
+                                    <input type="checkbox" checked="true" [(ngModel)]="data.checked" value="{{data.assignedToTeam}}"
+                                      (change)="filterAssignedToTeam('assignedToTeam')">
+                                    {{data.assignedToTeam}}
+                                  </label>
+                                </ng-container>
+                              </div>
+                            </div>
                             <span class="sorting">
                               <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['assignedToTeam']}"
                                 (click)="sortData(filteredItems,'assignedToTeam','asc','string'); isSorted['assignedToTeam'] = false"></a>
@@ -369,9 +391,31 @@
                             </span>
                           </div>
                         </th>
-                        <th>
+                        <th class="lastTeam">
                           <div class="dFlex">
                             Assigned To
+                            <div class="dropdown">
+                              <img (click)="showHideFilteredDropdown('assignedTo')" src="../../assets/img/filterIcon.png"
+                                style="cursor: pointer; margin-left: 6px;" />
+                              <div class="dropdown-menu filter-dropdown-menu" (mouseleave)="onMouseLeave($event)"
+                                *ngIf="showFilteredDropdown.assignedTo">
+                                <div class="clearClose">
+                                  <label class="mx-1">
+                                    <input type="checkbox" [checked]="isFilterAllSelected.assignedTo" value="selectAll"
+                                      (change)="selectAll($event,'assignedTo')">
+                                    {{isFilterAllSelected.assignedTo ? 'Clear All':'Select All'}}</label>
+                                  <button (click)="showFilteredDropdown.assignedTo=false;" type="button" class="close" data-dismiss="modal"
+                                    aria-label="Close"><span>&times;</span></button>
+                                </div>
+                                <ng-container *ngFor="let data of filteredColumnData.assignedTo">
+                                  <label class="mx-1">
+                                    <input type="checkbox" checked="true" [(ngModel)]="data.checked" value="{{data.assignedTo}}"
+                                      (change)="filterAssignedTo('assignedTo')">
+                                    {{data.assignedTo || "N/A"}}
+                                  </label>
+                                </ng-container>
+                              </div>
+                            </div>
                             <span class="sorting">
                               <a href="javascript:void(0);" class="arrow-up" [ngClass]="{'selected': !isSorted['assignedTo']}"
                                 (click)="sortData(filteredItems,'assignedTo','asc','string'); isSorted['assignedTo'] = false"></a>

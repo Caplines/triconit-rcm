@@ -276,7 +276,7 @@ a.arrow-down.selected {
 .filter-dropdown-menu label:first-child {
     color: #dc3545;
     font-weight: 700;
-    width: 100%;
+    width: fit-content;
 }
 
 .filter-dropdown-menu label:first-child input[type=checkbox] {
