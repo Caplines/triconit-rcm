@@ -1018,6 +1018,7 @@ public class RuleEngineService {
 			RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 			//
 			RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUUid);
+			if (claim.isForceUnassigned()) continue;
 			//if (claim.getFirstWorkedTeamId().getId() == teamId) {
 			UserAssignOffice assignedUser = userAssignOfficeRepo
 					.findByOfficeUuidAndTeamId(claim.getOffice().getUuid(), teamId);

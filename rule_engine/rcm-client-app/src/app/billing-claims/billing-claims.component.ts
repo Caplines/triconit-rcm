@@ -3792,7 +3792,12 @@ export class BillingClaimsComponent {
     for (let i = 1; i < data.length; i++) {
 
       //let prev = filteredData[filteredData.length - 1];
+
       let current = data[i];
+      //To fix wrong step if Claim is pending it cannnot be billed
+      if (current.statusUpdated == 'Billed' && !this.claimRcm.pending) {
+        // continue;
+      }
       //we are using this else  block and when -
       //1- claim is Archive then we need to replace cureent next action to previous status
       //2  when claim is Unarchive then we need to find previous next action before last claim was archive
