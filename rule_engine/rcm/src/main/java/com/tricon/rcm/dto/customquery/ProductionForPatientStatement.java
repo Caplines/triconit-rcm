@@ -2,7 +2,7 @@ package com.tricon.rcm.dto.customquery;
 
 public interface ProductionForPatientStatement {
 
-	int getStatementType();
+	//int getStatementType();
 
 	int getTotal();
 
@@ -17,4 +17,8 @@ public interface ProductionForPatientStatement {
 	String getCompanyName();
 	
 	int getId();
+	
+	int getStatementType1();
+	int getStatementType2();
+	int getStatementType3();
 }

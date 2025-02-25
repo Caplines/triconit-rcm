@@ -162,6 +162,7 @@ import com.tricon.rcm.dto.RuleRemarkDto;
 import com.tricon.rcm.dto.SearchParamDto;
 import com.tricon.rcm.dto.SectionDto;
 import com.tricon.rcm.dto.ServiceValidationDataDto;
+import com.tricon.rcm.dto.StatementType;
 import com.tricon.rcm.dto.TPValidationResponseDto;
 import com.tricon.rcm.dto.TimelyFilingLimitDto;
 import com.tricon.rcm.dto.UnArchiveClaimDto;
@@ -2136,7 +2137,8 @@ public class ClaimServiceImpl {
 		
 		  // search secondary claims from listView for some extra manipulations
 		  String filterStatus= ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getType();
-		  List<FreshClaimDataViewDto> listOfClaims=filterPrimarySecondaryClaimsWithUsingPrimaryStatus(listView,filterStatus);
+		  List<FreshClaimDataViewDto> listOfClaims=filterPrimarySecondaryClaimsWithUsingPrimaryStatus(listView,filterStatus,
+				  partialHeader.getCompany().getUuid());
 		  return listOfClaims;
 	}
 	
@@ -3592,20 +3594,25 @@ public class ClaimServiceImpl {
 						.filter(x -> x.getOfficeName().equals(pd.getOfficeName())).collect(Collectors.toList());
 				for (ProductionForPatientCalling pc : filterData) {
 					pd.setOfficeName(pc.getOfficeName());
-					if (pc.getDesposition()==null) {
-					}else if (pc.getDesposition().equals(DispositionEnumForProduction.VOICE_MAIL_LEFT.getName())) {
-						pd.setVoiceMailLeft(pd.getVoiceMailLeft() + 1);
-					} else if (pc.getDesposition().equals(DispositionEnumForProduction.PAYMENT_PROMISED.getName())) {
-						pd.setPaymentPromised(pd.getPaymentPromised() + 1);
-					} else if (pc.getDesposition().equals(DispositionEnumForProduction.PAYMENT_MADE.getName())) {
-						pd.setPaymentMade(pd.getPaymentMade() + 1);
-					} else if (pc.getDesposition().equals(DispositionEnumForProduction.WRONG_NO.getName())) {
-						pd.setWrongNo(pd.getWrongNo() + 1);
-					} else if (pc.getDesposition().equals(DispositionEnumForProduction.NOT_READY_TO_PAY.getName())) {
-						pd.setNotReadyToPay(pd.getNotReadyToPay() + 1);
-					} else if (pc.getDesposition().equals(DispositionEnumForProduction.STATEMENT_REQUESTED.getName())) {
-						pd.setStatementRequested(pd.getStatementRequested() + 1);
+					if (pc.getVoice()>0) {
+						pd.setVoiceMailLeft(pc.getVoice());
 					}
+					if (pc.getPp()>0) {//Payment Promised
+						pd.setPaymentPromised(pc.getVoice());
+					} 
+					if (pc.getFullPay()>0) {//Payment Made
+						pd.setPaymentMade(pc.getFullPay());
+					} 
+					if (pc.getWrong()>0) {//Wrong No.
+						pd.setWrongNo(pc.getWrong());
+					} 
+					if (pc.getStReq()>0) {//Statement Requested
+						pd.setStatementRequested(pc.getStReq());
+					}
+					if (pc.getNotReady()> 0) {//Not Ready To Pay
+						pd.setNotReadyToPay(pc.getNotReady());
+					}
+					
 				}
 			}
 			return data;
@@ -3622,13 +3629,13 @@ public class ClaimServiceImpl {
 				patientStatementData = rcmClaimRepository.claimProductionForPatientStatement(companies,
 						partialHeader.getTeamId(), dto.getStartDate(), dto.getEndDate());
 			}
-
+             System.out.println("QUERY DONE...");
 			List<String> userUuids = patientStatementData.stream().map(x -> x.getUuid()).distinct()
 					.collect(Collectors.toList());
 
 			for (String userUuid : userUuids) {
 				ProductionStatementTypeWiseDto statementTypeDto = new ProductionStatementTypeWiseDto(userUuid, 0, 0,
-						" ", " "," ", new ProductionStatementTypeWiseDto().new StatementType());
+						" ", " "," ", new StatementType());
 				data.add(statementTypeDto);
 			}
 
@@ -3641,12 +3648,14 @@ public class ClaimServiceImpl {
 					pd.setLname(ps.getLName());
 					pd.setTotal(ps.getTotal());
 					pd.setDays(ps.getDays());
-					if (ps.getStatementType() == 1) {
-						pd.getStatementType().setStatementType1(pd.getStatementType().getStatementType1() + 1);
-					} else if (ps.getStatementType() == 2) {
-						pd.getStatementType().setStatementType2(pd.getStatementType().getStatementType2() + 1);
-					} else if (ps.getStatementType() == 3) {
-						pd.getStatementType().setStatementType3(pd.getStatementType().getStatementType3() + 1);
+					if (ps.getStatementType1() >0) {
+						pd.getStatementType().setStatementType1(ps.getStatementType1());
+					}	
+					if (ps.getStatementType2() >0) {
+						pd.getStatementType().setStatementType2(ps.getStatementType2());
+					}
+					if (ps.getStatementType3() >0) {
+						pd.getStatementType().setStatementType3(ps.getStatementType3());
 					}
 				}
 			}
@@ -3783,7 +3792,17 @@ public class ClaimServiceImpl {
 	public List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(String companyId, String claimuuid, int teamId) {
 
 		List<ClaimRemarksDto> list = rcmClaimAssignmentRepo.fetchClaimRemarksOtherTeam(claimuuid);
-
+		List<ClaimRemarksDto> listClose  =rcmClaimAssignmentRepo.fetchClaimClosedRemarksNextAction(claimuuid);
+		if (listClose!=null  && !listClose.isEmpty()) list.addAll(listClose);
+		if (list!=null){
+		try {	
+		Collections.sort(list, 
+                (o1, o2) -> o1.getCd().compareTo(o2.getCd()));
+		
+		}catch(Exception x) {
+			x.printStackTrace();
+		  }
+		}
 		return list;
 	}
 	
@@ -6710,7 +6729,7 @@ public class ClaimServiceImpl {
 			});
 		// search secondary claims from listView for some extra manipulations
 		  String filterStatus= ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getType();
-		  List<FreshClaimDataViewDto> listOfClaims=filterPrimarySecondaryClaimsWithUsingPrimaryStatus(listView,filterStatus);
+		  List<FreshClaimDataViewDto> listOfClaims=filterPrimarySecondaryClaimsWithUsingPrimaryStatus(listView,filterStatus,partialHeader.getCompany().getUuid());
 		  return listOfClaims;
 	
 	}
@@ -6754,7 +6773,7 @@ public class ClaimServiceImpl {
 						return;
 					}
 					
-					rcmClaimRepository.updateClaimCurrentTeamWithForceUnassign(dto.getTeamId(), user.getUuid(), claim.getClaimUuid());
+					rcmClaimRepository.updateClaimCurrentTeamWithForceUnassign(dto.getTeamId(), user.getUuid(), claim.getClaimUuid(),true);
 					RcmClaimAssignment assignOld= rcmClaimAssignmentRepo.findFirstByClaimsClaimUuidAndActiveIsTrueOrderByIdDesc(claim.getClaimUuid());
 					assignOld.setActive(false);
 					rcmClaimAssignmentRepo.save(assignOld);
@@ -6810,7 +6829,7 @@ public class ClaimServiceImpl {
 					if (claim.getCurrentTeamId().getId()!= partialHeader.getTeamId()) {
 						return;
 					}
-					rcmClaimRepository.updateClaimCurrentTeamWithForceUnassign(partialHeader.getTeamId(), user.getUuid(), claim.getClaimUuid());
+					rcmClaimRepository.updateClaimCurrentTeamWithForceUnassign(partialHeader.getTeamId(), user.getUuid(), claim.getClaimUuid(),true);
 					RcmClaimAssignment assignOld= rcmClaimAssignmentRepo.findFirstByClaimsClaimUuidAndActiveIsTrueOrderByIdDesc(claim.getClaimUuid());
 					if (assignOld==null) assignOld= rcmClaimAssignmentRepo.findFirstByClaimsClaimUuidAndActiveIsFalseOrderByIdDesc(claim.getClaimUuid());
 					if (assignOld==null) {
@@ -6821,6 +6840,7 @@ public class ClaimServiceImpl {
 							rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, null,
 									claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT);
 							rcmAssigment.setPendingSince(claim.getCreatedDate());
+							rcmAssigment.setForceUnassigned(true);
 		                     rcmClaimAssignmentRepo.save(rcmAssigment);
 							ClaimStatusEnum status = null;
 							ClaimStatusEnum nextAction = null;
@@ -6846,7 +6866,7 @@ public class ClaimServiceImpl {
 							rcmAssigment.setAssignedTo(assignedTo);
 							rcmAssigment.setCommentAssignedBy(dto.getComment());
 							rcmAssigment.setActive(true);
-							rcmAssigment.setForceUnassigned(false);
+							rcmAssigment.setForceUnassigned(true);
 							rcmClaimAssignmentRepo.save(rcmAssigment);
 							assignOld.setActive(false);
 							rcmClaimAssignmentRepo.save(assignOld);
@@ -6876,7 +6896,7 @@ public class ClaimServiceImpl {
 				//RcmTeam newTeam = rcmTeamRepo.findById(dto.getTeamId());
 				Map<String,RcmOffice> offices= new HashMap<>();
 				Map<String,UserAssignOffice> uaofs= new HashMap<>();
-				String clientUuid= partialHeader.getCompany().getUuid();
+				//String clientUuid= partialHeader.getCompany().getUuid();
 				claims.forEach( claim-> {
 					//claim.getOffice().getUuid();
 					if (!claim.isPending() || claim.getCurrentStatus()!=ClaimStatusEnum.Pending_For_Billing.getId()) return ;//only for pending/unbilled claims.
@@ -6899,7 +6919,7 @@ public class ClaimServiceImpl {
 					}
 					RcmClaimAssignment assignOld= rcmClaimAssignmentRepo.findFirstByClaimsClaimUuidAndActiveIsTrueOrderByIdDesc(claim.getClaimUuid());
 					if (assignOld==null) return ;
-					rcmClaimRepository.updateClaimCurrentTeamWithForceUnassign(dto.getTeamId(), user.getUuid(), claim.getClaimUuid());
+					rcmClaimRepository.updateClaimCurrentTeamWithForceUnassign(dto.getTeamId(), user.getUuid(), claim.getClaimUuid(),false);
 					
 					// update old status
 					ClaimCycle previousCycleData = clamCycleRepo.findFirstByClaimAndCurrentTeamIdOrderByCreatedDateDescIdDesc(claim,
@@ -7008,7 +7028,7 @@ public class ClaimServiceImpl {
 	 * where below Conditions will fulfill
 	 */
 	private List<FreshClaimDataViewDto> filterPrimarySecondaryClaimsWithUsingPrimaryStatus(
-			List<FreshClaimDataViewDto> listView, String status) {
+			List<FreshClaimDataViewDto> listView, String status,String companyUuid) {
 
 		// Filter secondary claims where nextAction is need to bill insurance of primary
 		// claims
@@ -7020,20 +7040,103 @@ public class ClaimServiceImpl {
 		LinkedList<FreshClaimDataViewDto> listOfAllClaims = new LinkedList<>(listView);
 		//logger.info("ListOfClaims:" + listOfPrimaryClaims);
 		//logger.info("SecondaryClaimList:" + secondaryClaims);
+		Map<String,List<FreshClaimDataViewDto>> primaryMissingForSecondary= new HashMap<>();
 		secondaryClaims.forEach(secondary -> {
 			try {
 				String secondaryClaimId[] = secondary.getClaimId().split("_");
-				listOfAllClaims.removeIf(primary -> (primary.getOfficeName().equals(secondary.getOfficeName())
-						&& primary.getPatientId().equals(secondary.getPatientId())
-						&& secondaryClaimId[0].equals(primary.getClaimId().split("_")[0])
-						&& !primary.isClaimTypeStatus() && primary.getSecondaryStarted()!=null) //&& !primary.getNextAction().equals(status)
-						);
+				FreshClaimDataViewDto  correspondingPrimary = listOfAllClaims.stream().filter(x -> x.isClaimTypeStatus()
+						&& x.getOfficeName().equals(secondary.getOfficeName()) && x.getPatientId().equals(secondary.getPatientId())
+						&& secondaryClaimId[0].equals(x.getClaimId().split("_")[0])).findFirst().orElse(null);
+				
+				if (correspondingPrimary!=null) {
+					if (correspondingPrimary.getSecondaryStarted()==null) {
+						//Remove
+						listOfAllClaims.removeIf(all -> (all.getOfficeName().equals(secondary.getOfficeName())
+								&& all.getPatientId().equals(secondary.getPatientId())
+								&& secondary.getClaimId().split("_")[0].equals(all.getClaimId().split("_")[0] )));	
+						
+					}
+				}else {
+					FreshClaimDataViewDto  ds= new FreshClaimDataViewDto();
+					BeanUtils.copyProperties(secondary, ds);
+					ds.setClaimTypeStatus(true);
+					ds.setClaimId(secondaryClaimId[0]+"_"+"P");
+					if (primaryMissingForSecondary.get(secondary.getOfficeName())==null){
+			           List<FreshClaimDataViewDto> l1= new ArrayList<>();
+			           l1.add(ds);
+			         //Prepair list of primary if its missing from  List
+			           primaryMissingForSecondary.put(secondary.getOfficeName(),l1);
+		             }else {
+		            	//Prepair list of primary if its missing from  List
+		            	 List<FreshClaimDataViewDto> l1 = primaryMissingForSecondary.get(secondary.getOfficeName());
+		            	 l1.add(ds);
+		             }
+					
+					
+				}
+				/*		listOfAllClaims.stream().
+				listOfAllClaims.removeIf(all -> (all.getOfficeName().equals(secondary.getOfficeName())
+						&& all.getPatientId().equals(secondary.getPatientId())
+						&& secondaryClaimId[0].equals(all.getClaimId().split("_")[0])
+						&& !all.isClaimTypeStatus() && all.getSecondaryStarted()!=null) //&& !primary.getNextAction().equals(status)
+						);*/
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error("Inside filterPrimarySecondaryClaimsWithUsingPrimaryStatus:" + e.getMessage());
 			}
 		});
+		
+		//There can be case where Secondary is Present  by Primary is not there 
+		//so we need to fetch corresponding primary and see id That Primary allows to  work on secondary of not
+		List<FreshClaimDataViewDto> remainPrimaryListView = new ArrayList<>();
+		for (Map.Entry<String, List<FreshClaimDataViewDto>> entry : primaryMissingForSecondary.entrySet()) {
+			List <String > claims  = new ArrayList<>();
+			entry.getValue().stream().map(FreshClaimDataViewDto::getClaimId).forEach(claims::add);
+		   List<FreshClaimDataDto> remainPrimary= rcmClaimRepository.fetchPrimaryClaimsWithIds(companyUuid, entry.getKey(), claims);
+		   
+		   remainPrimary.forEach(data->{
+				final FreshClaimDataViewDto	dataView = new FreshClaimDataViewDto();
+				dataView.setClaimId(data.getClaimId());
+				dataView.setOfficeName(data.getOfficeName());
+				dataView.setPatientId(data.getPatientId());
+				dataView.setSecondaryStarted(data.getSecondaryStarted());
+				dataView.setClaimTypeStatus(data.getClaimTypeStatus());
+				remainPrimaryListView.add(dataView);
+				// System.out.println("primary:"+dataView.getClaimId()+":dataView.setOfficeName():"+dataView.getOfficeName()  +":dataView.getSecondaryStarted():"+dataView.getSecondaryStarted());
+				});
+		 }
+		 secondaryClaims.forEach(secondary -> {
+			try {
+				String secondaryClaimId[] = secondary.getClaimId().split("_");
+			  // System.out.println("secondary:"+secondaryClaimId[0]);
+				FreshClaimDataViewDto  correspondingPrimary = remainPrimaryListView.stream().filter(x -> x.isClaimTypeStatus()
+						&& x.getOfficeName().equals(secondary.getOfficeName()) && x.getPatientId().equals(secondary.getPatientId())
+						&& secondaryClaimId[0].equals(x.getClaimId().split("_")[0])).findFirst().orElse(null);
+				
+				if (correspondingPrimary!=null) {
+					 //System.out.println("REMOVE11 secondary:"+secondaryClaimId[0]);
+					if (correspondingPrimary.getSecondaryStarted()==null) {
+						//Remove
+						 // System.out.println("REMOVE secondary:"+secondaryClaimId[0]);
+						listOfAllClaims.removeIf(all -> (all.getOfficeName().equals(secondary.getOfficeName())
+								&& !secondary.isClaimTypeStatus()
+								&& all.getPatientId().equals(secondary.getPatientId())
+								&& secondary.getClaimId().split("_")[0].equals(all.getClaimId().split("_")[0] )));	
+						
+					}
+				}
+			
+			} catch (Exception e) {
+				e.printStackTrace();
+				logger.error("Inside filterPrimarySecondaryClaimsWithUsingPrimaryStatus:" + e.getMessage());
+			}
+		});
+		
+		
+		
+		
 		List<FreshClaimDataViewDto> finalList = new ArrayList<>(listOfAllClaims.size());
+		
 		finalList.addAll(listOfAllClaims);
 		return finalList;
 	}

@@ -1597,7 +1597,8 @@ public class ClaimSectionImpl {
 			rcmClaimRepository.save(claim);
 
 			//String newCycleStatus = requestRebillingInfoModel.getCurrentAction();
-			int nextTeam = requestRebillingInfoModel.getTeamId();
+			//Assign  Claim to Payment Posting  in ReBilling
+			int nextTeam = RcmTeamEnum.PAYMENT_POSTING.getId();//requestRebillingInfoModel.getTeamId();
 			ClaimStatusEnum nextAction = ClaimStatusEnum.getByType(requestRebillingInfoModel.getNextAction());
 
 			if (nextAction != null) {

@@ -68,6 +68,15 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	+ "")
     List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(@Param("claim_id") String claimId);
 	
+	@Query(nativeQuery = true, value = "  "
+			+"select remarks comment,assign.created_date cd, tm.description teamName,us.first_name fName,us.last_name lName,0 attchmentsWithRemarks "
+			+"  from  rcm_next_action_required_section assign left join rcm_user us on us.uuid=assign.created_by"
+			+" left join rcm_user_team rut on rut.rcm_user_id=us.uuid and rut.team_id=assign.team_id"
+			+" left join rcm_team tm on tm.id=assign.team_id "
+			+" where claim_uuid='9d53e0e7-3365-4696-bdec-d63b0ff83e7c' and assign.current_claim_status_rcm='Case Closed'  order by assign.created_date asc"  
+	+ "")
+   List<ClaimRemarksDto> fetchClaimClosedRemarksNextAction(@Param("claim_id") String claimId);
+	
 	/*
 	 * Before calling this Method Make sure u see claim is for valid Client 
 	 */

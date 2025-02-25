@@ -7,6 +7,11 @@ public interface ProductionForPatientCalling {
 	String getOfficeName();
 
 	String getDesposition();
-
-	int getId();
+	int getVoice();
+	int getPp();
+	int getFullPay();
+	int getWrong();
+	int getNotReady();
+	int getStReq();
+	//int getId();
 }
