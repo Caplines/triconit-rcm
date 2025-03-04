@@ -340,10 +340,10 @@ public class RuleBookServiceImpl {
 			String claimofficeName, String insuranceCodeFromSheet, String insName) {
 
 		logger.info(RuleConstants.rule_log_enter + "-" + rule.getName());
-		logger.info("-->" + creList.size());
+		
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
-
+			logger.info("-->" + creList.size());
 			// List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>)
 			// providerSheetData[1];
 

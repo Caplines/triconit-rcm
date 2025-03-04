@@ -176,5 +176,6 @@ public class FreshClaimDataImplDto {
     
     String assoicatedClaimStatusValue;
     String assoicatedClaimStatusString;
+    int assoicatedClaimCurrentState;
 }
 

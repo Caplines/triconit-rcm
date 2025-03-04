@@ -514,17 +514,23 @@ public class RcmController extends BaseHeaderController{
 				claimServiceImpl.assignClaimToTL(partialHeader,dto,partialHeader.getTeamId())));
 	}
 	
-	
-	@ApiOperation(value = "Api For Assigning Un Assigned Claim to Assocaited Users", response = String.class)
-	@GetMapping("/api/assign-unsassigned_claims")
-	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')")
-	public ResponseEntity<Object> assignUnsAsignedClaims(Model model) {
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if (partialHeader ==null) return null;
-		
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.assignedUnsAssignedClaims(partialHeader)));
-	}
+	/*
+	 * used used API
+	 * 
+	 * @ApiOperation(value =
+	 * "Api For Assigning Un Assigned Claim to Assocaited Users", response =
+	 * String.class)
+	 * 
+	 * @GetMapping("/api/assign-unsassigned_claims")
+	 * 
+	 * @PreAuthorize("hasAnyRole('TL','SUPER_ADMIN')") public ResponseEntity<Object>
+	 * assignUnsAsignedClaims(Model model) { PartialHeader partialHeader =
+	 * (PartialHeader) model.getAttribute("headerInfo"); if (partialHeader ==null)
+	 * return null;
+	 * 
+	 * return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
+	 * claimServiceImpl.assignedUnsAssignedClaims(partialHeader))); }
+	 */
 	
 
 	@ApiOperation(value = "Api For Running Automated  rules on Claims", response = String.class)

@@ -121,7 +121,7 @@ public class RcmClaimLogServiceImpl {
 				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 						assignedUser.getUser(), claimUuid, claim,
 						assignToComment, systemStatusBilling,assignedTeam,
-						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
+						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")", new Date());
 				rcmAssigment.setCurrentTeamId(oldTeam); 
 				rcmAssigment.setAssignedTo(oldRcmUser);
 				rcmAssigment.setActive(false);
@@ -142,8 +142,15 @@ public class RcmClaimLogServiceImpl {
 				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 						assignedUser.getUser(), claimUuid, claim,
 						"", systemStatusBilling,assignedTeam,
-						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
-                if (rcmAssigment.isActive()) rcmAssigment.setActionName(assignmentStatus);
+						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")", new Date());
+                if (rcmAssigment.isActive()) {
+                	if (claim.getNextFollowUpDate()!=null && rcmAssigment.getPendingSince()!=null
+    						&& rcmAssigment.getPendingSince().compareTo(claim.getNextFollowUpDate())<0) {
+    						claim.setNextFollowUpDate(rcmAssigment.getPendingSince());
+    				}
+                	rcmAssigment.setActionName(assignmentStatus);
+                	
+                }
 				rcmClaimAssignmentRepo.save(rcmAssigment);
 				claimCycleService.createNewClaimCycleWithOldStatus(claim,assignedTeam,assignedUser.getUser(),newCycleStatus,nextAction);
 				
@@ -157,7 +164,7 @@ public class RcmClaimLogServiceImpl {
 			  rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 						null, claimUuid, claim,
 						assignToComment, systemStatusBilling,assignedTeam,
-						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
+						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")",new Date());
 			  rcmAssigment.setCurrentTeamId(oldTeam);
 			  rcmAssigment.setAssignedTo(oldRcmUser);
 			  rcmAssigment.setActive(false);
@@ -170,8 +177,15 @@ public class RcmClaimLogServiceImpl {
 				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 						null, claimUuid, claim,
 						"", systemStatusBilling,assignedTeam,
-						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")");
-				if (rcmAssigment.isActive()) rcmAssigment.setActionName(assignmentStatus);
+						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")", new Date());
+				if (rcmAssigment.isActive()) {
+					if (claim.getNextFollowUpDate()!=null && rcmAssigment.getPendingSince()!=null
+						&&  rcmAssigment.getPendingSince().compareTo(claim.getNextFollowUpDate())<0) {
+						claim.setNextFollowUpDate(rcmAssigment.getPendingSince());
+				    }
+						
+					rcmAssigment.setActionName(assignmentStatus);
+				}
 				rcmClaimAssignmentRepo.save(rcmAssigment);
 				claimCycleService.createNewClaimCycleWithOldStatus(claim,assignedTeam,user,newCycleStatus,nextAction);
 				

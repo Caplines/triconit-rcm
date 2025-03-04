@@ -58,6 +58,7 @@ import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
 import com.tricon.rcm.db.entity.UserAssignOffice;
+import com.tricon.rcm.dto.AssignUserOfficeDto;
 import com.tricon.rcm.dto.CaplineIVFFormDto;
 import com.tricon.rcm.dto.ClaimAppointmentDto;
 import com.tricon.rcm.dto.ClaimDataDetails;
@@ -65,12 +66,15 @@ import com.tricon.rcm.dto.ClaimDetailDto;
 import com.tricon.rcm.dto.ClaimReconcillationDto;
 import com.tricon.rcm.dto.ClaimSourceDto;
 import com.tricon.rcm.dto.ClaimsFromRuleEngine;
+import com.tricon.rcm.dto.DueBalDto;
 import com.tricon.rcm.dto.InsuranceFromRuleEngine;
 import com.tricon.rcm.dto.InsuranceNameTypeDto;
 import com.tricon.rcm.dto.RcmClaimAppointmentDatas;
 import com.tricon.rcm.dto.RcmClaimAppointmentMainRootDto;
 import com.tricon.rcm.dto.RcmClaimDataDto;
 import com.tricon.rcm.dto.RcmClaimDetMainRootDto;
+import com.tricon.rcm.dto.RcmClaimDueBalDatas;
+import com.tricon.rcm.dto.RcmClaimDueBalMainRootDto;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -82,6 +86,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -415,7 +421,7 @@ public class RuleEngineService {
 											//
 											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 													assignedUserBilling.getUser(), claimUUid, claim,
-													"", systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT);
+													"", systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT, new Date());
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
 											claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Billing.getId());
@@ -429,7 +435,7 @@ public class RuleEngineService {
 											//
 											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 													assignedUserInternalAudit.getUser(), claimUUid, claim,
-													"", systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT);
+													"", systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT, new Date());
 
 											rcmClaimAssignmentRepo.save(rcmAssigment);
 											claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Review.getId());
@@ -867,7 +873,7 @@ public class RuleEngineService {
 		return dto;
 	}
 	
-	public String pullDueBalResParty(String claimId, String companyId, String officeId) {
+	public String pullDueBalResParty(String patientId, String companyId, String officeId) {
 
 		logger.info(" In pull Due Balance From RE");
 		String val = null;
@@ -875,18 +881,19 @@ public class RuleEngineService {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			String param = "?cmpId=" + companyId;
 			param = param + "&office=" + officeId;
-			param = param + "&claimId=" + claimId;
+			param = param + "&patientId=" + patientId;
+			param = param + "&password=" + eagleSoftDBDetailsRepo.findByOffice(officeRepo.findByUuid(officeId)).getPassword();
 			// Call Rule Engine API..
-			ResponseEntity<RcmClaimAppointmentMainRootDto> result = restTemplate.exchange(
+			ResponseEntity<RcmClaimDueBalMainRootDto> result = restTemplate.exchange(
 					ev.getProperty("rcm.dueBalquery") + param, HttpMethod.GET, entity,
-					RcmClaimAppointmentMainRootDto.class);
+					RcmClaimDueBalMainRootDto.class);
 
-			RcmClaimAppointmentMainRootDto rootDto = result.getBody();
+			RcmClaimDueBalMainRootDto rootDto = result.getBody();
 
-			for (RcmClaimAppointmentDatas datas : rootDto.getData().getDatas()) {
+			for (RcmClaimDueBalDatas datas : rootDto.getData().getDatas()) {
 				try {
-					for (ClaimAppointmentDto re : datas.getData()) {
-						val = re.getStartDate();
+					for (DueBalDto re : datas.getData()) {
+						val = re.getDueBal();//This is due balance
 					}
 				} catch (Exception e) {
 					// TODO: handle exception
@@ -894,7 +901,7 @@ public class RuleEngineService {
 			}
 
 		} catch (Exception n) {
-			logger.error("Error in " + claimId);
+			logger.error("Error in " + patientId);
 			logger.error(n.getMessage());
 		}
 
@@ -1003,11 +1010,11 @@ public class RuleEngineService {
 	}
 	
 	@Transactional(rollbackFor = Exception.class)
-	public boolean assignedUnsAssignedClaimsByTeam(String companyId,RcmUser assignedBy,int teamId)  {
+	public boolean assignedUnsAssignedClaimsByTeam(String companyId,RcmUser assignedBy,int teamId,List<String> offices)  {
 		
 		//Assign Unassigned Claims
 		try {
-		List<String> claims =rcmClaimRepository.getUnAsignedClaims(companyId);
+		List<String> claims =rcmClaimRepository.getUnAsignedClaims(companyId,offices);
 		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
 				.findByStatus(ClaimStatusEnum.Billing.getType());
 		RcmTeam assignedTeam  = rcmTeamRepo.findById(teamId);
@@ -1015,6 +1022,7 @@ public class RuleEngineService {
 		int ct=0;
 		for(String claimUUid:claims) {
 			logger.info("MY COUNT--"+ (++ct));
+			
 			RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 			//
 			RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUUid);
@@ -1028,7 +1036,7 @@ public class RuleEngineService {
 				if (recordCount == 0 && teamId == claim.getCurrentTeamId().getId()) {
 				 //Insert only then	
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
-							claimUUid, claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT);
+							claimUUid, claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT, new Date());
 					rcmClaimAssignmentRepo.save(rcmAssigment);
 					ClaimStatusEnum status = null;
 					ClaimStatusEnum nextAction = null;
@@ -1039,7 +1047,30 @@ public class RuleEngineService {
 					else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 						status=ClaimStatusEnum.Pending_For_Review;
 						nextAction = ClaimStatusEnum.Need_to_Audit;
+					}else if(teamId == RcmTeamEnum.PAYMENT_POSTING.getId()) {
+						status=ClaimStatusEnum.Need_to_Post;
+						try {
+							int newCycleStatusId =claim.getClaimStatusType().getId();
+							status = ClaimStatusEnum.getById(newCycleStatusId);
+						}catch(Exception x){
+							
+							x.printStackTrace();
+							
+						}
+						nextAction = ClaimStatusEnum.Need_to_Post;
+					}else if(teamId == RcmTeamEnum.PAYMENT_POSTING.getId()) {
+						status=ClaimStatusEnum.Additional_Information_Provided_For_Claim;
+						try {
+							int newCycleStatusId =claim.getClaimStatusType().getId();
+							status = ClaimStatusEnum.getById(newCycleStatusId);
+						}catch(Exception x){
+							
+							x.printStackTrace();
+							
+						}
+						nextAction = ClaimStatusEnum.Additional_Information_Provided_For_Claim;
 					}
+					
 					if (status!= null) {
 						rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), claimUUid);		
 						claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),assignedTeam, assignedBy);
@@ -1105,7 +1136,7 @@ public class RuleEngineService {
 					RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 					
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
-							s[0].toString(), claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT);
+							s[0].toString(), claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT, new Date());
 					if (pendingSincedate != null) {
 						Timestamp stp = (Timestamp) pendingSincedate;
 						rcmAssigment.setPendingSince(new Date(stp.getTime()));
@@ -1197,15 +1228,19 @@ public class RuleEngineService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void reAssignClaimToUserByOffices(RcmCompany company,
-			int teamId,JwtUser jwtUser) {
+			int teamId,JwtUser jwtUser,List<AssignUserOfficeDto> userOfficeData) {
 		
 		int currentStatusClosed=ClaimStatusEnum.Case_Closed.getId();
+		//List<String> offices = new ArrayList<>();
+		List<String> offices =userOfficeData.stream().map(AssignUserOfficeDto::getOfficeId).collect(Collectors.toList());
 		//int currentStatusVoided=ClaimStatusEnum.Voided.getId();
-		List<PendingClaimToReAssignDto> claimList= rcmClaimRepository.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(company.getUuid(),teamId,currentStatusClosed);
+		List<PendingClaimToReAssignDto> claimList= rcmClaimRepository.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamIdWithOffice(company.getUuid(),teamId,currentStatusClosed,offices);
 		List<UserAssignOffice> userAssignOffices = new ArrayList<>();
 		RcmUser assignedBy= userRepo.findByUuid(jwtUser.getUuid()) ;
 		for(PendingClaimToReAssignDto cl:claimList) {
-			 
+		
+			
+			
 			   //Logic added so that we do minimum Data base call to rcm_user_assign_office table
 			  // if assigned to Same User and Team Then do not do anything else reassign
 				UserAssignOffice exists = userAssignOffices.stream().filter(s -> {
@@ -1228,6 +1263,7 @@ public class RuleEngineService {
 						//do reassignment
 						Optional<RcmClaimAssignment> rcaOpt = rcmClaimAssignmentRepo.findById(cl.getClaimAssignmentId());
 						if (rcaOpt.isPresent()) {
+								
 							RcmClaimAssignment rca = rcaOpt.get();
 							rca.setActive(false);
 							rca.setSystemComment("Claim taken back from Pendency Screen by :"+assignedBy.getEmail());
@@ -1247,7 +1283,7 @@ public class RuleEngineService {
 				
 			
 		}
-		this.assignedUnsAssignedClaimsByTeam(company.getUuid(),assignedBy,teamId);   
+		this.assignedUnsAssignedClaimsByTeam(company.getUuid(),assignedBy,teamId,offices);   
 		
 		
 	}

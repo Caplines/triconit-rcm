@@ -1423,6 +1423,11 @@ public class ClaimSectionImpl {
 						claim.setUpdatedDate(date);
 					}
 				}
+			}else {
+				/*Date date = new Date();
+				claim.setNextFollowUpDate(date);
+				claim.setUpdatedDate(date);
+			*/	
 			}
 			//update es_satus in claim table
 			claim.setStatusESUpdated(nextActionRequiredInfoModel.getCurrentClaimStatusEs());
@@ -1597,8 +1602,8 @@ public class ClaimSectionImpl {
 			rcmClaimRepository.save(claim);
 
 			//String newCycleStatus = requestRebillingInfoModel.getCurrentAction();
-			//Assign  Claim to Payment Posting  in ReBilling
-			int nextTeam = RcmTeamEnum.PAYMENT_POSTING.getId();//requestRebillingInfoModel.getTeamId();
+			//Assign  Claim to BILLING  in ReBilling
+			int nextTeam = RcmTeamEnum.BILLING.getId();//requestRebillingInfoModel.getTeamId();
 			ClaimStatusEnum nextAction = ClaimStatusEnum.getByType(requestRebillingInfoModel.getNextAction());
 
 			if (nextAction != null) {
@@ -1798,10 +1803,17 @@ public class ClaimSectionImpl {
 				}
 
 				// claim transfer
-
-				String newCycleStatus = ClaimStatusEnum.Billed.getType();
-				int nextTeam = rebillingInfoModel.getClaimTransferNextTeamId();
-				ClaimStatusEnum nextAction = ClaimStatusEnum.Billed;
+				String newCycleStatus = ClaimStatusEnum.Need_to_Post.getType();
+				try {
+					int newCycleStatusId =claim.getClaimStatusType().getId();
+					newCycleStatus = ClaimStatusEnum.getById(newCycleStatusId).getType();
+				}catch(Exception x){
+					
+					x.printStackTrace();
+					
+				}
+				int nextTeam = RcmTeamEnum.PAYMENT_POSTING.getId();//rebillingInfoModel.getClaimTransferNextTeamId();
+				ClaimStatusEnum nextAction = ClaimStatusEnum.Need_to_Post;
 
 				if (nextAction != null) {
 					RcmOffice office = officeRepo.findByUuid(claim.getOffice().getUuid());

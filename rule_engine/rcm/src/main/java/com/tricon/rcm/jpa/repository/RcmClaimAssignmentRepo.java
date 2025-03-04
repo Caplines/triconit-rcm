@@ -59,7 +59,7 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	
 	//assign.current_team_id!=:teamId and tm.id!=:teamId Removed Condition so that all remarks can come
 		//,@Param("teamId") int teamId
-	@Query(nativeQuery = true, value = " select "
+	@Query(nativeQuery = true, value = " select distinct "
 			 +" comment_assigned_by comment,assign.created_date cd, tm.description teamName,us.first_name fName,us.last_name lName,assign.attachment_with_remarks attchmentsWithRemarks "
 			 +" from  rcm_claim_assignment assign inner join rcm_user us on us.uuid=assign.assigned_by "
 			 //+" inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
@@ -73,7 +73,7 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			+"  from  rcm_next_action_required_section assign left join rcm_user us on us.uuid=assign.created_by"
 			+" left join rcm_user_team rut on rut.rcm_user_id=us.uuid and rut.team_id=assign.team_id"
 			+" left join rcm_team tm on tm.id=assign.team_id "
-			+" where claim_uuid='9d53e0e7-3365-4696-bdec-d63b0ff83e7c' and assign.current_claim_status_rcm='Case Closed'  order by assign.created_date asc"  
+			+" where claim_uuid=:claim_id and assign.current_claim_status_rcm='Case Closed'  order by assign.created_date asc"  
 	+ "")
    List<ClaimRemarksDto> fetchClaimClosedRemarksNextAction(@Param("claim_id") String claimId);
 	
@@ -170,6 +170,13 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			RcmClaimAssignment findFirstByClaimsClaimUuidAndActiveIsTrueOrderByIdDesc(String claimUuid);
 			
 			RcmClaimAssignment findFirstByClaimsClaimUuidAndActiveIsFalseOrderByIdDesc(String claimUuid);
+			
+			@Modifying
+			@Query(value = "update rcm_claim_assignment set active =false where claim_id=:claimUuid and id in "
+					+" (select * from ( select min(id) from  rcm_claim_assignment where active=1 and claim_id=:claimUuid group by claim_id,active having count(claim_id)>1 order by id asc) tblTmp) "
+					+ " ", nativeQuery = true)
+			int  updateAllClaimIssueAssignment(@Param("claimUuid")String claimUuid);
+
 			
 			
 }

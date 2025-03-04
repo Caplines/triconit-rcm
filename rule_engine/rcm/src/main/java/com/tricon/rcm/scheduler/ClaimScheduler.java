@@ -73,7 +73,8 @@ public class ClaimScheduler {
 		}
 		
 		//Assign unassinedClaims
-		ruleEngineService.assignedUnsAssignedClaimsByTeam(comp.getUuid(),user,RcmTeamEnum.BILLING.getId());
+		// not needed
+		//ruleEngineService.assignedUnsAssignedClaimsByTeam(comp.getUuid(),user,RcmTeamEnum.BILLING.getId());
 		//Pull Claim Details From Rue Engine
 		logger.info("ClaimScheduler End at :-" + new Date());
 	}

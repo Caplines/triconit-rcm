@@ -295,6 +295,39 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
 			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
 			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  and rca.active=true "
+			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
+			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join rcm_claim_assignment rca1 on rca1.claim_id=claims.claim_uuid   "
+			+" and rca1.id =( "
+			+" select  min(fa.id) "
+			+"     FROM rcm_claim_assignment fa "
+			+"     WHERE fa.claim_id=claims.claim_uuid and fa.current_team_id!=:teamid and  fa.active=false "
+			+"     LIMIT 1) "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and off.active is true and rca.assigned_to=:userid and (claims.last_work_team_id!=:teamid or rca1.id is not null ) and off.company_id=:companyId " + "  "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
+	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBillingByUser(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userId);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,"
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
 			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,"
 			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
 			+ " from rcm_claims claims "
@@ -928,7 +961,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			" SELECT rd.group_run,rd.report_id,iv_date FROM reports_claim r inner join report_claim_detail rd"+
 			" on rd.report_id=r.id "+
 			" where r.claim_id=:claim_id and r.patient_id=:patientid and "+
-			"  r.office_id=:office_id order by STR_TO_DATE( iv_date, '%m/%d/%Y'),rd.group_run desc limit 1) r1 "+
+			"  r.office_id=:office_id order by rd.group_run desc,STR_TO_DATE( iv_date, '%m/%d/%Y') desc limit 1) r1 "+
 			"  on r.id=r1.report_id and r.group_run=r1.group_run "+
 			" inner join report_claim_detail rd "+
 			" on r.id=rd.report_id and rd.group_run=r1.group_run inner join office off on off.uuid=r.office_id "
@@ -955,25 +988,25 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			@Param("primarysecnnoifo") List<String> primarysecnnoifo);//Primary Secondary no information*/
 	
 	
-	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name secInsurance,cl.current_status currentStatus from rcm_claims cl "
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name secInsurance,cl.current_status currentStatus,cl.current_state currentState from rcm_claims cl "
 			+ " left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id "
 			+ " where "
 			+ " cl.office_id=:officeId and cl.claim_id=:claimid ")
 	Object getClaimsUuidClaimIdSec(@Param("claimid") String claimid,@Param("officeId") String officeId);
 	
-	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name secInsurance,cl.current_status currentStatus from rcm_claims cl "
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name secInsurance,cl.current_status currentStatus,cl.current_state currentState from rcm_claims cl "
 			+ " left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id "
 			+ " where "
 			+ " cl.office_id=:officeId and cl.claim_id like :claimid and current_state=1 order by cl.updated_date desc limit 1 ")
 	Object getClaimsUuidClaimIdSecArch(@Param("claimid") String claimid,@Param("officeId") String officeId);
 	
-	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name primInsurance,cl.current_status currentStatus from rcm_claims cl "
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name primInsurance,cl.current_status currentStatus,cl.current_state currentState from rcm_claims cl "
 			+ " left join rcm_insurance sins on sins.id = cl.prim_insurance_company_id "
 			+ " where "
 			+ " cl.office_id=:officeId and cl.claim_id=:claimid ")
 	Object getClaimsUuidClaimIdPrim(@Param("claimid") String claimid,@Param("officeId") String officeId);
 	
-	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name primInsurance,cl.current_status currentStatus from rcm_claims cl "
+	@Query(nativeQuery = true, value = "select cl.claim_uuid,cl.next_action,sins.name primInsurance,cl.current_status currentStatus,cl.current_state currentState from rcm_claims cl "
 			+ " left join rcm_insurance sins on sins.id = cl.prim_insurance_company_id "
 			+ " where "
 			+ " cl.office_id=:officeId and cl.claim_id like :claimid and current_state=1 order by cl.updated_date desc limit 1")
@@ -982,11 +1015,13 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	
 	@Query(nativeQuery = true, value = ""
 			+ " select cl.claim_uuid from rcm_claims cl inner join office off on off.uuid=cl.office_id and "
-			+ " off.company_id=:companyId  where cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_uuid "
+			+ " off.company_id=:companyId  where cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+"  "
+			+ " and cl.office_id in (:offices) and"
+			+ "  cl.claim_uuid "
 			+ " not in (select cl.claim_uuid ascl from rcm_claims cl inner join rcm_claim_assignment ass on "
 			+ " ass.claim_id=cl.claim_uuid inner join office off on off.uuid=cl.office_id  where  "
 			+ " ass.active=1 and cl.is_force_unassigned=0 and  ass.assigned_to is not null and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and off.company_id=:companyId )")
-	List<String> getUnAsignedClaims(@Param("companyId") String companyId);
+	List<String> getUnAsignedClaims(@Param("companyId") String companyId,@Param("offices") List<String> offices);
 	
 	@Query(nativeQuery = true, value = ""
 			+" select cl.claim_uuid,cl.office_id from rcm_claims cl inner join office off on off.uuid=cl.office_id "
@@ -1088,8 +1123,10 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		"	select cl.claim_uuid claimUuid,rca.assigned_to claimAssignedTo,rca.id  claimAssignmentId,cl.office_id officeId from rcm_claims cl inner join office off on off.uuid=cl.office_id "+
 		"	inner join company com on com.uuid =off.company_id "+
 		"	inner join rcm_claim_assignment rca on rca.claim_id=cl.claim_uuid and rca.active is true  and rca.current_team_id =:teamId "+
-		"	where  com.uuid=:companyId and cl.current_status<>:currentStatusClosed and cl.is_force_unassigned is false and  cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+"")
-	List<PendingClaimToReAssignDto> fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamId(@Param("companyId") String companyId,@Param("teamId")  int teamId, @Param("currentStatusClosed")int currentStatusClosed) ;
+		"	where  com.uuid=:companyId and cl.current_status<>:currentStatusClosed and cl.is_force_unassigned is false and  cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+"  and cl.office_id in (:offices) ")
+	List<PendingClaimToReAssignDto> fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamIdWithOffice(@Param("companyId") String companyId,@Param("teamId")  int teamId, @Param("currentStatusClosed")int currentStatusClosed,
+			@Param("offices") List<String> offices) ;
 
 	@Query(value = "select cl.id as Id,cl.is_archive as IsArchive,cl.claim_id claimId,cl.issue,cl.source,off.name officeName,cl.created_date createdDate from rcm_issue_claims cl "
 			+ "left join office off on off.uuid=cl.office_id "

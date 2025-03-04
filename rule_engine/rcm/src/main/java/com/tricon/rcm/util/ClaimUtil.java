@@ -289,7 +289,7 @@ public class ClaimUtil {
 
 	public static RcmClaimAssignment createAssginmentData(RcmClaimAssignment assignment, RcmUser assigneByUser,
 			RcmUser assigneToUser, String uuid, RcmClaims claims, String commentsBy,
-			RcmClaimStatusType rcmClaimStatusType, RcmTeam assignedTeam, String systemComment) {
+			RcmClaimStatusType rcmClaimStatusType, RcmTeam assignedTeam, String systemComment,Date date) {
 
 		assignment.setAssignedBy(assigneByUser);
 		assignment.setAssignedTo(assigneToUser);
@@ -301,7 +301,7 @@ public class ClaimUtil {
 		assignment.setSystemComment(systemComment);
 		assignment.setActive(true);
 		assignment.setTakenBack(false);
-		assignment.setCreatedDate(new Date());
+		assignment.setCreatedDate(date);
 		assignment.setPendingSince(assignment.getCreatedDate());
 		return assignment;
 	}
