@@ -187,6 +187,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/tp-data-form-es",
                 "/ivf-data-for-rcm",
                 "/allrulereport",
+                "/duebal-query",
                 "/",
                 "/*.html",
                 "/index.jsp",
