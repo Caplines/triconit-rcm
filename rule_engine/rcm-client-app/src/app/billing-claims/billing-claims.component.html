@@ -316,16 +316,22 @@
                                                     <div [innerHTML]="claimRcm.assignedToRoleName"></div>
                                                 </div>
 
-
-                                                <!-- <div *ngIf="!staticUtil.isNotTeamPatientStatement()" class="custom-row">
+                                                <!--*ngIf="!staticUtil.isNotTeamPatientStatement()"-->
+                                                <div class="custom-row">
                                                     <label for="" class="">Due Balance
-                                                        <img src="../../../assets/img/refresh.png" (click)="fetchDueBalance()" />
                                                     </label>
+                                                    <!-- <img src="../../../assets/img/refresh.png" (click)="fetchDueBalance()" />
+                                                       -->
+
                                                     <div>
-                                                        <div *ngIf="loader.duebal" class="duebal-loader"></div>
-                                                        <div *ngIf="!loader.duebal">{{ claimRcm.dueBalanceResponsibleParty || "N/A" }}</div>
+                                                        <!--<div *ngIf="loader.duebal" class="duebal-loader"></div>
+                                                       <div *ngIf="!loader.duebal">{{ claimRcm.dueBalanceResponsibleParty || "N/A" }}</div>
+                                                       -->
+                                                        <div *ngIf="claimRcm.dueBalanceResponsibleParty!=null">
+                                                            ${{claimRcm.dueBalanceResponsibleParty}}</div>
+                                                        <div *ngIf="claimRcm.dueBalanceResponsibleParty==null">N/A</div>
                                                     </div>
-                                                </div> -->
+                                                </div>
                                             </div>
                                             <div class="col-md-3 mb-2" *ngIf="isORMNotesNeeded()">
                                                 <div class="custom-row">
@@ -615,7 +621,7 @@
                                                                 <textarea class="form-control" id="" rows="1"
                                                                     [(ngModel)]='rule.remark' id="CL_RU{{rule.ruleId}}"
                                                                     (keydown)="removeErrorDisplayKey($event)"
-                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId'])"></textarea>
+                                                                    [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"></textarea>
                                                             </td>
 
                                                         </tr>
@@ -694,7 +700,7 @@
                                                                                     name="mant{{rule.ruleId}}" value="3"
                                                                                     (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                     [(ngModel)]='rule.messageType'
-                                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                    [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
                                                                                 Not
                                                                                 Available
                                                                             </label>
@@ -707,7 +713,7 @@
                                                                                     name="mant{{rule.ruleId}}" value="3"
                                                                                     (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                     [(ngModel)]='rule.messageType'
-                                                                                    [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                    [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
                                                                                 Not needed
                                                                             </label>
                                                                         </ng-container>
@@ -725,7 +731,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="2"
                                                                                 (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
                                                                             Attached
                                                                         </label>
                                                                     </div>
@@ -739,7 +745,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="1"
                                                                                 (click)="rule.messageType=1;removeErrorDisplayKeyById('CL_RU',rule.ruleId);removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
                                                                             Other
                                                                         </label>
                                                                     </div>
@@ -750,7 +756,7 @@
                                                                         [(ngModel)]='rule.remark'
                                                                         id="CL_RU{{rule.ruleId}}"
                                                                         (keydown)="removeErrorDisplayKey($event)"
-                                                                        [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])"></textarea>
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"></textarea>
                                                                 </td>
 
                                                             </ng-container>
@@ -777,7 +783,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="3"
                                                                                 (click)="rule.messageType=3;removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
                                                                             Yes
                                                                         </label>
 
@@ -797,7 +803,7 @@
                                                                                 name="mant{{rule.ruleId}}" value="2"
                                                                                 (click)="rule.messageType=2;removeErrorDisplayKeyById('CL_P_F_',rule.ruleId)"
                                                                                 [(ngModel)]='rule.messageType'
-                                                                                [disabled]="makeReadOnlyWithPermission(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'])">
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
                                                                             No &nbsp;
                                                                             &nbsp;
                                                                         </label>
@@ -1182,7 +1188,8 @@
                                                                                 (click)="d.answer='Not Available';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                         removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                                 [(ngModel)]='d.answer'
-                                                                                [disabled]="makeReadOnly()"> Not
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
+                                                                            Not
                                                                             Available
                                                                         </label>
 
@@ -1197,7 +1204,7 @@
                                                                                 (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                                                                             removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                                 [(ngModel)]='d.answer'
-                                                                                [disabled]="makeReadOnly()">
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
                                                                             Attached
                                                                         </label>
                                                                     </div>
@@ -1211,7 +1218,7 @@
                                                                                 (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);
                                                                                                                                     removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);"
                                                                                 [(ngModel)]='d.answer'
-                                                                                [disabled]="makeReadOnly()">Other
+                                                                                [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">Other
                                                                         </label>
                                                                     </div>
                                                                 </td>
@@ -1221,7 +1228,7 @@
                                                                         [(ngModel)]='d.remark'
                                                                         id="SERV_C_V_M{{d.remarkUuid}}"
                                                                         (click)="removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);"
-                                                                        [disabled]="makeReadOnly()"></textarea>
+                                                                        [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"></textarea>
                                                                 </td>
 
                                                             </tr>
@@ -1247,7 +1254,8 @@
                                                                                     value="Not Available"
                                                                                     (click)="d.answer='Not Available';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);enableDisable300ManualSub(false,d);"
                                                                                     [(ngModel)]='d.answer'
-                                                                                    [disabled]="makeReadOnly()"> Not
+                                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
+                                                                                Not
                                                                                 Available
                                                                             </label>
 
@@ -1261,7 +1269,7 @@
                                                                                     value="Complete"
                                                                                     (click)="d.answer='Complete';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);;enableDisable300ManualSub(true,d);"
                                                                                     [(ngModel)]='d.answer'
-                                                                                    [disabled]="makeReadOnly()">
+                                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">
                                                                                 Attached
                                                                             </label>
                                                                         </div>
@@ -1274,7 +1282,7 @@
                                                                                     value="Incorrect"
                                                                                     (click)="d.answer='Incorrect';removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);removeErrorDisplayKeyById('serviceCodeValidationsM',d.remarkUuid);;enableDisable300ManualSub(true,d);"
                                                                                     [(ngModel)]='d.answer'
-                                                                                    [disabled]="makeReadOnly()">Other
+                                                                                    [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)">Other
                                                                             </label>
                                                                         </div>
                                                                     </td>
@@ -1284,7 +1292,7 @@
                                                                             [(ngModel)]='d.remark'
                                                                             id="SERV_C_V_M{{d.remarkUuid}}"
                                                                             (click)="removeErrorDisplayKeyById('SERV_C_V_M',d.remarkUuid);"
-                                                                            [disabled]="makeReadOnly()"></textarea>
+                                                                            [disabled]="!(checkForSectionAccess(sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"></textarea>
                                                                     </td>
 
                                                                 </tr>
@@ -5210,8 +5218,10 @@
                                                                         <option value="Closed">Closed</option>
                                                                     </ng-container>
                                                                     <ng-container *ngIf="!claimRcm.primary">
+                                                                        <option value="Open">Open</option>
                                                                         <option value="Unbilled">Unbilled</option>
                                                                         <option value="Billed">Billed</option>
+                                                                        <option value="Closed">Closed</option>
                                                                     </ng-container>
                                                                 </select>
                                                             </div>
@@ -5539,11 +5549,13 @@
                                             </ng-container>
                                             <ng-container *ngIf="assignModel.toOtherTeam">
                                                 <button *ngIf="assignType == 'reviewed'" type="button"
-                                                    class="btn btn-success" (click)="assignToOtherTeam()">
+                                                    [disabled]="loader.assignToLeadModal" class="btn btn-success"
+                                                    (click)="assignToOtherTeam()">
                                                     Ready to be Submitted
                                                 </button>
                                                 <button *ngIf="assignType == 'assign'" type="button"
-                                                    class="btn btn-success" (click)="assignToOtherTeam()">
+                                                    [disabled]="loader.assignToLeadModal" class="btn btn-success"
+                                                    (click)="assignToOtherTeam()">
                                                     Assign to Other
                                                     Team
                                                 </button>
@@ -5565,12 +5577,7 @@
                                             [disabled]="inSave" (click)="saveClaim('latter',false)">
                                             Save For Later Processing
                                         </button>
-                                        <button
-                                            *ngIf="claimRcm.allowEdit && claimRcm.pending  && selectedTeam== claimRcm.currentTeamId"
-                                            type="button" class="btn btn-success" [disabled]="inSave"
-                                            (click)="saveClaim('assigntl',false)">
-                                            Assign to Team Lead
-                                        </button>
+
                                         <button *ngIf="claimRcm.allowEdit && (  (!claimRcm.primary && (needToBillSecondaryInsuranceinStep  || (claimRcm.assoicatedClaimCurrentStatus!=null && claimRcm.assoicatedClaimCurrentStatus == appConstants.CLOSED_CLAIM_STATUS)) && claimRcm.pending) ||
                                                           (claimRcm.primary && claimRcm.pending)
                                                        ) && isBilling " type="button" class="btn btn-success"
@@ -5578,12 +5585,7 @@
                                             Mark as Submitted
                                         </button>
 
-                                        <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && (needToBillSecondaryInsuranceinStep  || (claimRcm.assoicatedClaimCurrentStatus!=null && claimRcm.assoicatedClaimCurrentStatus == appConstants.CLOSED_CLAIM_STATUS)) && claimRcm.pending) ||
-                                                         (claimRcm.primary && claimRcm.pending)
-                                                       )" type="button" class="btn btn-success" [disabled]="inSave"
-                                            (click)="saveClaim('assign',false)">
-                                            Assign to Other Team
-                                        </button>
+
                                         <button *ngIf="claimRcm.allowEdit && isInternalAudit && ( (!claimRcm.primary && claimRcm.pending) ||
                                                                                          (claimRcm.primary && claimRcm.pending)
                                                                                        )" type="button"
@@ -5591,27 +5593,13 @@
                                             (click)="saveClaim('reviewed',false)">
                                             Reviewed
                                         </button>
-                                        <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus) ||
-                                                                           (claimRcm.primary))" type="button"
-                                            class="btn btn-success" [disabled]="inSave"
-                                            (click)="saveClaim('assign',false)">
-                                            Assign to Other Team
-                                        </button>
-                                        <button
-                                            *ngIf="claimRcm.pending  && selectedTeam == claimRcm.currentTeamId && isSuperAdmin"
-                                            type="button" class="btn btn-success" [disabled]="inSave"
-                                            (click)="saveClaim('assign',false)">
-                                            Assign to Other Team
-                                        </button>
+
+
                                     </span>
                                     <!-- FOR REBLLING CASE  ASSIGN  TO TL-->
-                                    <span
-                                        *ngIf="claimRcm.allowEdit && claimRcm.rebilledStatus && !claimRcm.pending  && selectedTeam== claimRcm.currentTeamId">
-                                        <button type="button" class="btn btn-success" [disabled]="inSave"
-                                            (click)="saveClaim('assigntl',false)">
-                                            Assign to Team Lead
-                                        </button>
-                                    </span>
+
+
+
                                     <span
                                         *ngIf="!claimRcm.pending  && actionButtons  && selectedTeam== claimRcm.currentTeamId">
                                         <button *ngIf="claimRcm.currentState!=0 && claimRcm.claimCmpMatchesLoggedCmp"
@@ -5620,8 +5608,10 @@
                                             Unarchive
                                         </button>
                                     </span>
+
+                                    <!--Claim in Rebilled status does not show Next action Section -->
                                     <span
-                                        *ngIf="claimRcm.currentState==0 && actionButtons && claimRcm.pending && !(isBilling || isInternalAudit)">
+                                        *ngIf="claimRcm.currentState==0  && (claimRcm.pending || !( !claimRcm.rebilledStatus ||  !claimSectionModal.REBILLING['modal']['rebillingStatus']))">
                                         <button *ngIf="selectedTeam== claimRcm.currentTeamId" type="button"
                                             class="btn btn-success" [disabled]="inSave"
                                             (click)="saveClaim('assigntl',false)">
@@ -5634,9 +5624,8 @@
                                             (click)="saveClaim('submit',false)">
                                             Mark as Submitted
                                         </button>
-                                        <button *ngIf="claimRcm.allowEdit  && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus) ||
-                                   (claimRcm.primary))" type="button" class="btn btn-success" [disabled]="inSave"
-                                            (click)="saveClaim('assign',false)">
+                                        <button *ngIf="claimRcm.allowEdit" type="button" class="btn btn-success"
+                                            [disabled]="inSave" (click)="saveClaim('assign',false)">
                                             Assign to Other Team
                                         </button>
 
@@ -5654,7 +5643,7 @@
                                         </button>
                                     </span>
                                     <button
-                                        *ngIf="claimRcm.allowEdit && claimRcm.pending && claimRcm.currentState==0 && claimRcm.claimCmpMatchesLoggedCmp && actionButtons"
+                                        *ngIf="claimRcm.allowEdit && claimRcm.currentState==0 && (claimRcm.pending || !( !claimRcm.rebilledStatus ||  !claimSectionModal.REBILLING['modal']['rebillingStatus'])) "
                                         type="button" class="btn btn-success" [disabled]="inSave"
                                         (click)="openArchivedModal()">
                                         Archive

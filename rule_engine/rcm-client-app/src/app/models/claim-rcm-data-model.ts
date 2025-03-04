@@ -118,6 +118,7 @@ export interface ClaimRcmDataModel {
 	dueBalanceResponsibleParty?: string;
 	recreatedSection?: number;
 	assoicatedClaimStatusValue?: string;
+	assoicatedClaimCurrentState?:number;//1 - Archive
 }
 
 
