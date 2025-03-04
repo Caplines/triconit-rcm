@@ -648,7 +648,7 @@ public class RcmController {
 	public ResponseEntity<?> fetchDeuBalance(@RequestHeader("x-api-key") String apiKey,
 			@RequestParam(value = "office", required = true) String officeUuid,
 			@RequestParam(value = "password", required = true) String password,
-			@RequestParam(value = "claimId", required = true) String claimId)
+			@RequestParam(value = "patientId", required = true) String patientId)
 			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
 
 		String ids = null;
@@ -674,7 +674,7 @@ public class RcmController {
 
 			}
 			String queryReplace = rcmDueBalQuery.getQuery();
-			queryReplace=queryReplace.replaceAll("claimId", claimId);
+			queryReplace=queryReplace.replaceAll("patientIdId", patientId);
 			GenericResponse data = (GenericResponse) googleReportsController
 					.fethESGoogleresponse(rcmDueBalQuery.getQuerySelectcolumns(), queryReplace, ids,
 							Integer.parseInt(rcmDueBalQuery.getQueryCount()), password, officeName, null, null)
