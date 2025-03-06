@@ -37,4 +37,7 @@ public class RcmDueBalanceResParty extends BaseAuditEntity implements java.io.Se
 	
 	@Column(name = "due_balance_res_party")
 	private String dueBalanceResponsibleParty;
+	
+	@Column(name = "res_party")
+	private String responsibleParty;
 }

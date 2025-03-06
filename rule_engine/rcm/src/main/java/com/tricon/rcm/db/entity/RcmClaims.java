@@ -338,4 +338,7 @@ public class RcmClaims extends BaseAuditEntity implements Serializable {
 	
 	@Column(name = "due_balance_res_party")
 	private String dueBalanceResponsibleParty;
+	
+	@Column(name = "res_party")
+	private String responsibleParty;
 }

@@ -254,6 +254,16 @@
                                                     </ng-container>
 
                                                 </div>
+                                                <div class="custom-row">
+                                                    <label for="" class="">Responsible Party</label>
+                                                    <div>
+                                                        {{
+                                                        claimRcm.responsibleParty==null ?
+                                                        "NA":claimRcm.responsibleParty
+                                                        }}
+                                                    </div>
+
+                                                </div>
 
 
                                             </div>
@@ -5095,7 +5105,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-container
-                                        *ngIf="isPrimaryClaimClosed() && ( !claimRcm.rebilledStatus || !claimSectionModal.REBILLING['modal']['rebillingStatus']) && !claimRcm.pending &&  claimRcm.allowEdit && claimRcm.currentStatus!=appConstants.claimClosedId && checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
+                                        *ngIf="isPrimaryClaimClosed()  && !claimRcm.pending &&  claimRcm.allowEdit && claimRcm.currentStatus!=appConstants.claimClosedId && checkForSectionAccess(sectionIds['CURRENT_STATUS_AND_NEXT_ACTION']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['CURRENT_STATUS_AND_NEXT_ACTION']}">
                                             <div>
@@ -5610,8 +5620,7 @@
                                     </span>
 
                                     <!--Claim in Rebilled status does not show Next action Section -->
-                                    <span
-                                        *ngIf="claimRcm.currentState==0  && (claimRcm.pending || !( !claimRcm.rebilledStatus ||  !claimSectionModal.REBILLING['modal']['rebillingStatus']))">
+                                    <span *ngIf="claimRcm.currentState==0  && (claimRcm.pending)">
                                         <button *ngIf="selectedTeam== claimRcm.currentTeamId" type="button"
                                             class="btn btn-success" [disabled]="inSave"
                                             (click)="saveClaim('assigntl',false)">
@@ -5643,7 +5652,7 @@
                                         </button>
                                     </span>
                                     <button
-                                        *ngIf="claimRcm.allowEdit && claimRcm.currentState==0 && (claimRcm.pending || !( !claimRcm.rebilledStatus ||  !claimSectionModal.REBILLING['modal']['rebillingStatus'])) "
+                                        *ngIf="claimRcm.allowEdit && claimRcm.currentState==0 && (claimRcm.pending ) "
                                         type="button" class="btn btn-success" [disabled]="inSave"
                                         (click)="openArchivedModal()">
                                         Archive

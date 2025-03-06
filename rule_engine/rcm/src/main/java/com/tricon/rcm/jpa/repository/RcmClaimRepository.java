@@ -880,7 +880,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "COALESCE(cl.btp, 0) as btp,COALESCE(cl.adjustment, 0) as adjustment,COALESCE(cl.payment_received, 0) as paymentReceived,COALESCE(cl.paid_amount, 0) as paidAmount, "
 			+ "COALESCE(cl.balance_from_es_after_posting, 0) as balanceFromEsAfterPosting,COALESCE(cl.balance_from_es_before_posting, 0) as balanceFromEsBeforePosting ,cl.first_posting_date as firstPostingDate, "
 			+ "cl.first_rebilled_date as firstRebilledDate, cl.reconciliation_pass as reconciliationPass, COALESCE(cl.amount_collected_claims,0) as amountCollectedClaims,cl.status_es_updated as statusESUpdated,cl.next_follow_up_date as nextFollowUpDate,"
-			+ "COALESCE(cl.last_work_team_id,-1) as lastTeamWorkId,cl.due_balance_res_party as dueBalanceResponsibleParty,cl.recreated_section as recreatedSection from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
+			+ "COALESCE(cl.last_work_team_id,-1) as lastTeamWorkId,cl.due_balance_res_party as dueBalanceResponsibleParty,res_party as responsibleParty,cl.recreated_section as recreatedSection from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "+
 			"  inner join company cmp on cmp.uuid=off.company_id"+
 			"  inner join rcm_claim_status_type ct on ct.id=cl.claim_status_type_id"+
 			"  left join rcm_team Cteam  on Cteam.id=cl.current_team_id"+
@@ -1556,8 +1556,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		
 		@Modifying
 		@Transactional
-		@Query(value = "update rcm_claims set due_balance_res_party=:bal  where claim_uuid =:claimUuid ", nativeQuery = true)
-		void updateDueBalResParty(@Param("bal")String bal,@Param("claimUuid") String claimUuid);
+		@Query(value = "update rcm_claims set due_balance_res_party=:bal,res_party=:res  where claim_uuid =:claimUuid ", nativeQuery = true)
+		void updateDueBalResParty(@Param("bal")String bal,@Param("res")String res,@Param("claimUuid") String claimUuid);
 		
 
 }

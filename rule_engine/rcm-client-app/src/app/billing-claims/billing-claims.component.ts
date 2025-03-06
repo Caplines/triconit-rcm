@@ -75,7 +75,7 @@ export class BillingClaimsComponent {
   loader: any = {
     claimDetail: false, linkToRelatedDoc: false, remarksByOther: false, rebilledClaims: false, automatedValidation: false, manualValidation: false, ruleEngValid: false, serviceCode: false, claimSubmission: false,
     EOB_INSURANCE_LETTER: false, claimLevelInfo: false, insuranceFollowUpInfo: false, patientCommunicationSection: false, patientStaementInfo: false, patientPaymentInfo: false, collectionAgencyInfo: false, appealLevelinfo: false,
-    serviceLevelInfo: false, insurancePaymentInfo: false, duebal: false,assignToLeadModal:false
+    serviceLevelInfo: false, insurancePaymentInfo: false, duebal: false, assignToLeadModal: false
   }
   //ivfData:any=[];
   updatedIvfId: any;
@@ -1565,7 +1565,8 @@ export class BillingClaimsComponent {
     ths.claimService.getDueBalResParty(ths.claimRcm.uuid, (res: any) => {
       if (res.status === 200) {
         ths.loader.duebal = false;
-        ths.claimRcm.dueBalanceResponsibleParty = res.data;
+        ths.claimRcm.dueBalanceResponsibleParty = res.data[0];
+        ths.claimRcm.responsibleParty = res.data[1];
       }
     })
 
@@ -1578,7 +1579,7 @@ export class BillingClaimsComponent {
 
   assignToOtherTeam() {
     console.log(this.claimEditModel.assignToTeam);
-    this.loader.assignToLeadModal=true;
+    this.loader.assignToLeadModal = true;
     this.isOtherTLExist(this.alert, (res: any) => {
       if (res) {
 
@@ -1595,13 +1596,13 @@ export class BillingClaimsComponent {
         if (rem.value.trim() === '') {
           ths.addErrorDisplay(document.getElementById("assignToComment"));
           valid = false;
-          ths.loader.assignToLeadModal=false;
+          ths.loader.assignToLeadModal = false;
         }
         //debugger;
         if (ths.claimEditModel.assignToTeam == -1) {
           ths.addErrorDisplay(document.getElementById("selectTeam"));//selectTeam
           valid = false;
-          ths.loader.assignToLeadModal=false;
+          ths.loader.assignToLeadModal = false;
         }
 
         if (valid) {
@@ -3766,7 +3767,7 @@ export class BillingClaimsComponent {
         if (res.status === 200) {
           let data = res.data;
           if (data.length === 0) {
-            this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep && ths.claimRcm.assoicatedClaimStatusString != "") ? "Primary " + (ths.claimRcm.assoicatedClaimCurrentState==0?ths.claimRcm.assoicatedClaimStatusString:"Archived") : "";
+            this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep && ths.claimRcm.assoicatedClaimStatusString != "") ? "Primary " + (ths.claimRcm.assoicatedClaimCurrentState == 0 ? ths.claimRcm.assoicatedClaimStatusString : "Archived") : "";
             return;
           }
           for (let i = 1; i < data.length; i++) {
@@ -3779,7 +3780,7 @@ export class BillingClaimsComponent {
 
             }
           }
-          this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep && ths.claimRcm.assoicatedClaimStatusString != "") ? "Primary " + (ths.claimRcm.assoicatedClaimCurrentState==0?ths.claimRcm.assoicatedClaimStatusString:"Archived") : "";
+          this.infoMessage = (!ths.claimRcm.primary && ths.claimRcm.assoicatedClaimStatus && !ths.needToBillSecondaryInsuranceinStep && ths.claimRcm.assoicatedClaimStatusString != "") ? "Primary " + (ths.claimRcm.assoicatedClaimCurrentState == 0 ? ths.claimRcm.assoicatedClaimStatusString : "Archived") : "";
 
 
         }
@@ -4643,27 +4644,27 @@ export class BillingClaimsComponent {
     /*if (!this.claimRcm.primary && (!this.needToBillSecondaryInsuranceinStep && this.claimRcm.assoicatedClaimStatusValue!=this.appConstants.CLOSED_CLAIM_STATUS+'') ) {
       return false;
     }*/
-    if (!this.claimRcm.primary){
+    if (!this.claimRcm.primary) {
       //If close then Seconday can be worked
-       if (this.claimRcm.assoicatedClaimStatusValue==this.appConstants.CLOSED_CLAIM_STATUS+''){
+      if (this.claimRcm.assoicatedClaimStatusValue == this.appConstants.CLOSED_CLAIM_STATUS + '') {
         return true;
-       }else{
-       //If needToBillSecondaryInsuranceinStep Seconday can be worked
-       //console.log(this.needToBillSecondaryInsuranceinStep);
-        if (!this.needToBillSecondaryInsuranceinStep){
-            return false;
+      } else {
+        //If needToBillSecondaryInsuranceinStep Seconday can be worked
+        //console.log(this.needToBillSecondaryInsuranceinStep);
+        if (!this.needToBillSecondaryInsuranceinStep) {
+          return false;
         }
-       }
-    } 
-    
-    
+      }
+    }
+
+
     return true;
     /*if (!this.claimRcm.primary && this.claimRcm.currentStatus === this.appConstants.CLOSED_CLAIM_STATUS) {
       return false;
     }
     if (!this.claimRcm.primary && this.claimRcm.assoicatedClaimCurrentStatus != this.appConstants.CLOSED_CLAIM_STATUS)
       return false;*/
-    
+
   }
 
   hideSideBar() {

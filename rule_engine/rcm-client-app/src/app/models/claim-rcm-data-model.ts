@@ -116,9 +116,10 @@ export interface ClaimRcmDataModel {
 	lastTeamWorkId?: number;
 	officeActive?: boolean;
 	dueBalanceResponsibleParty?: string;
+	responsibleParty?: string;
 	recreatedSection?: number;
 	assoicatedClaimStatusValue?: string;
-	assoicatedClaimCurrentState?:number;//1 - Archive
+	assoicatedClaimCurrentState?: number;//1 - Archive
 }
 
 

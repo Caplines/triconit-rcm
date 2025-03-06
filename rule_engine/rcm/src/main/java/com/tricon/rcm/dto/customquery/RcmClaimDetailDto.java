@@ -116,5 +116,7 @@ public interface RcmClaimDetailDto {
 	
 	String getDueBalanceResponsibleParty();
 	
+	String getResponsibleParty();
+	
 	int getRecreatedSection();
 }

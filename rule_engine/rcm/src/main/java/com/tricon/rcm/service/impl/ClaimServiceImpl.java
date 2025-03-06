@@ -4713,7 +4713,7 @@ public class ClaimServiceImpl {
 						createStatus,nextAction,dto.getActionName(),rcmTeamRepo.findById(partialHeader.getTeamId()));
 				
 				rcmClaimAssignmentRepo.save(assign);
-			}/*else if(dto.isAssignToTL()){//Separate API
+			}/*\\else if(dto.isAssignToTL()){//Separate API
 				//RcmUser assignuser = userRepo.findByUuid(jwtUser.getUuid());
 				claim.setUpdatedBy(user);
 				claim.setUpdatedDate(new Date());
@@ -7064,11 +7064,11 @@ public class ClaimServiceImpl {
 	}
 	
 	@Transactional(rollbackFor = Exception.class)
-	public String fetchDueBalanceRespart(String claimUuid,PartialHeader partialHeader) {
+	public String[] fetchDueBalanceRespart(String claimUuid,PartialHeader partialHeader) {
 
 		//Rule Engine up and running is needed
         boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
-		String dueBal=null;
+		String[] dueBal=null;
 		if (!validateClaimRight) {
 			return null;
 		}
@@ -7080,10 +7080,11 @@ public class ClaimServiceImpl {
 					off.getUuid());
 			 if(dueBal != null) {
 				 RcmTeam currentTeam = rcmTeamRepo.findById(partialHeader.getTeamId());
-			     rcmClaimRepository.updateDueBalResParty(dueBal, claimUuid);
+			     rcmClaimRepository.updateDueBalResParty(dueBal[0],dueBal[1], claimUuid);
 				 RcmDueBalanceResParty party=new RcmDueBalanceResParty();
 				 party.setClaim(claim);
-				 party.setDueBalanceResponsibleParty(dueBal);
+				 party.setDueBalanceResponsibleParty(dueBal[0]);
+				 party.setResponsibleParty(dueBal[1]);
 				 party.setPulledByTeam(currentTeam);
 				 rcmDueBalanceResPartyRepo.save(party);
 			}

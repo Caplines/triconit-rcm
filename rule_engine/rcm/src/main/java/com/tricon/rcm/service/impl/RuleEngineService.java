@@ -873,10 +873,10 @@ public class RuleEngineService {
 		return dto;
 	}
 	
-	public String pullDueBalResParty(String patientId, String companyId, String officeId) {
+	public String[] pullDueBalResParty(String patientId, String companyId, String officeId) {
 
 		logger.info(" In pull Due Balance From RE");
-		String val = null;
+		String[] val = new String[2];
 		try {
 			HttpEntity<String> entity = new HttpEntity<String>(headers);
 			String param = "?cmpId=" + companyId;
@@ -893,7 +893,8 @@ public class RuleEngineService {
 			for (RcmClaimDueBalDatas datas : rootDto.getData().getDatas()) {
 				try {
 					for (DueBalDto re : datas.getData()) {
-						val = re.getDueBal();//This is due balance
+						val[0] = re.getDueBal();//This is due balance
+						val[1] = re.getResParty();
 					}
 				} catch (Exception e) {
 					// TODO: handle exception
