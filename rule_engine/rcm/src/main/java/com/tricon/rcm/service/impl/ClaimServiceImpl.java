@@ -3818,8 +3818,11 @@ public class ClaimServiceImpl {
 
 		List<ClaimRemarksDto> list = rcmClaimAssignmentRepo.fetchClaimRemarksOtherTeam(claimuuid);
 		List<ClaimRemarksDto> listClose  =rcmClaimAssignmentRepo.fetchClaimClosedRemarksNextAction(claimuuid);
+		List<ClaimRemarksDto> submissionsectionRem  =rcmClaimCommentRepo.fetchClaimRemarks(claimuuid);
 		if (listClose!=null  && !listClose.isEmpty()) list.addAll(listClose);
+		if (listClose!=null  && !submissionsectionRem.isEmpty()) list.addAll(submissionsectionRem);
 		if (list!=null){
+			
 		try {	
 		Collections.sort(list, 
                 (o1, o2) -> o1.getCd().compareTo(o2.getCd()));

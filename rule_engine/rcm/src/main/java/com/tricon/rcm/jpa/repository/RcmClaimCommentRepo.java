@@ -22,8 +22,17 @@ public interface RcmClaimCommentRepo extends JpaRepository<RcmClaimComment, Stri
 			+ " where com.claim_id=:claim_id and com.team_id =:teamId order by com.created_date desc "
 			+ "")
 	List<ClaimRemarksDto> fetchClaimRemarksSameTeam(@Param("claim_id") String claimId,@Param("teamId") int teamId);
+	
+	@Query(nativeQuery = true, value = " select "
+			+ " com.comments comment,com.created_date cd,us.first_name fName,us.last_name lName,tm.name teamName,0 as attchmentsWithRemarks from rcm_claim_comment com "
+			+ " inner join rcm_user us on us.uuid=com.commented_by left join rcm_team tm on tm.id=com.team_id "
+			+ " where com.claim_id=:claim_id  order by com.created_date desc "
+			+ "")
+	List<ClaimRemarksDto> fetchClaimRemarks(@Param("claim_id") String claimId);
  
 	RcmClaimComment findByCommentedByUuidAndClaimsClaimUuid(String commentedBy,String claimuuid);
+	
+	//List<RcmClaimComment> findByClaimsClaimUuid(String claimuuid);
 	
 	//RcmClaimComment findByClaimsClaimUuid(String claimuuid);
 	

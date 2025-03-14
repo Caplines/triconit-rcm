@@ -123,11 +123,11 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
 		
-		if (!(partialHeader.getTeamId() == RcmTeamEnum.BILLING.getId()
+		/*if (!(partialHeader.getTeamId() == RcmTeamEnum.BILLING.getId()
 				|| partialHeader.getTeamId() == RcmTeamEnum.INTERNAL_AUDIT.getId() || partialHeader.getRole().equals(RcmTeamEnum.REPORTING.getName()))) {
 			
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
-		}
+		}*/
 		Object sucess = null;
 		dto.setCompanyuuid(partialHeader.getCompany().getUuid());
 		sucess = claimServiceImpl.pullClaimFromSource(dto, null, partialHeader);
