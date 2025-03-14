@@ -166,7 +166,9 @@ public class Constants {
 	public static final String RULE_ID_122="D2950 with Non covered Bridges/Crowns";
 	public static final String RULE_ID_123="D0140 sharing frequency with D0150 and D0120";
 	public static final String RULE_ID_124="Dental Procedures and Nomenclature - D9944, D9945";
-	
+	public static final String RULE_ID_125="Exams found without xrays";
+	public static final String RULE_ID_126="Filling on Primary Posterior tooths";
+	public static final String RULE_ID_127="D0145 with D9994, D1120 and D1206";
 	//public static final String RULE_ID_RuleXXX="Deductible Coverage Match";
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	
@@ -255,6 +257,7 @@ public class Constants {
 	public static String google_ivf_sheet="IVF Sheet";
 	public static String insurance_Medicaid="medicaid";
 	public static String adult_Medicaid="Adult Medicaid";
+	public static String child_Medicaid="Child Medicaid";
 	
 	public static String insurance_Mcna="mcna";
 	public static String insurance_PPO="ppo";

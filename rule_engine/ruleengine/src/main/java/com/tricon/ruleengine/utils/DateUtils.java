@@ -169,6 +169,11 @@ public class DateUtils {
 		System.out.println(diffInMillies);
 		return tm.convert(diffInMillies, TimeUnit.MILLISECONDS);
 	}
+	
+	public static boolean daysBetweenDates(Date d1, Date d2,int days) {
+		long diff = daysBetweenDates(d1, d2);
+		return diff>days;
+	}
 
 	
 

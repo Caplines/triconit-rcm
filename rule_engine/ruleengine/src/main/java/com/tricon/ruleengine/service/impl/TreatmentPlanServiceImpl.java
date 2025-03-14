@@ -2773,37 +2773,81 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
    		 }
           RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_122,
                		 Constants.rule_log_debug, bw);
-        //D2950 with Non covered Bridges/Crowns
-         //Dental Procedures and Nomenclature - D9944, D9945
-     		rule = getRulesFromList(rules, Constants.RULE_ID_124);
-     		dtoRL = rb.Rule124(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
-     		if (dtoRL != null) {
-     				list.addAll(dtoRL);
-     				for (TPValidationResponseDto t : dtoRL) {
-     					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-     						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-     						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-     			}
-     		 }
-            RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_124,
-                 		 Constants.rule_log_debug, bw);
-            //Dental Procedures and Nomenclature - D9944, D9945  
-            //D0140 sharing frequency with D0150 and D0120
-    		rule = getRulesFromList(rules, Constants.RULE_ID_123);
-    		dtoRL = rb.Rule123(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
-    		if (dtoRL != null) {
-    				list.addAll(dtoRL);
-    				for (TPValidationResponseDto t : dtoRL) {
-    					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-    						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-    						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-    			}
-    		 }
-           RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_123,
-                		 Constants.rule_log_debug, bw);
-        //D0140 sharing frequency with D0150 and D0120                 
-		
-		// RULE_ID_79 "Insurance and Address"
+        //End D2950 with Non covered Bridges/Crowns
+        //Dental Procedures and Nomenclature - D9944, D9945
+ 		rule = getRulesFromList(rules, Constants.RULE_ID_124);
+ 		dtoRL = rb.Rule124(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+ 		if (dtoRL != null) {
+ 				list.addAll(dtoRL);
+ 				for (TPValidationResponseDto t : dtoRL) {
+ 					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+ 						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+ 						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+ 			}
+ 		 }
+        RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_124,
+             		 Constants.rule_log_debug, bw);
+        //End Dental Procedures and Nomenclature - D9944, D9945  
+        //D0140 sharing frequency with D0150 and D0120
+		rule = getRulesFromList(rules, Constants.RULE_ID_123);
+		dtoRL = rb.Rule123(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+		if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		 }
+         RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_123,
+            		 Constants.rule_log_debug, bw);
+        //End D0140 sharing frequency with D0150 and D0120                 
+       //Exams found without xrays
+		rule = getRulesFromList(rules, Constants.RULE_ID_125);
+		dtoRL = rb.Rule125(tList ,messageSource, rule, bw,type);
+		if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		 }
+         RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_125,
+           		 Constants.rule_log_debug, bw);
+       //End Exams found without xrays                 
+      //Filling on Primary Posterior tooths
+		rule = getRulesFromList(rules, Constants.RULE_ID_126);
+		dtoRL = rb.Rule126(tList,ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
+		if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		 }
+         RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_126,
+          		 Constants.rule_log_debug, bw);
+      //End Filling on Primary Posterior tooths
+      //D0145 with D9994, D1120 and D1206
+ 		rule = getRulesFromList(rules, Constants.RULE_ID_127);
+ 		
+ 		dtoRL =  rb.Rule127(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+ 		if (dtoRL != null) {
+ 				list.addAll(dtoRL);
+ 				for (TPValidationResponseDto t : dtoRL) {
+ 					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+ 						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+ 						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+ 			}
+ 		 }
+ 	  	 
+       RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_127,
+           		 Constants.rule_log_debug, bw);
+       //End D0145 with D9994, D1120 and D1206	   
+	
+     // RULE_ID_79 "Insurance and Address"
 		/*
 		rule = getRulesFromList(rules, Constants.RULE_ID_79);
 		//ivfMap.get(ivx).get(0), messageSource, rule, espatients.get(patKey)
