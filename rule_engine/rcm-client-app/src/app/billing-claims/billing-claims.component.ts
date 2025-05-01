@@ -2868,6 +2868,7 @@ export class BillingClaimsComponent {
       this.emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkNumber'] = true;
       isSectionValidated = false;
     }
+
     return isSectionValidated;
   }
 
@@ -3237,6 +3238,7 @@ export class BillingClaimsComponent {
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountReceivedInBank'];  //converting into Number type using bitwise operator
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['amountPostedInEs'];  //converting into Number type using bitwise operator
     this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'] = +this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION']['checkNumber'];  //converting into Number type using bitwise operator
+
     if (!isFinalSubmit && this.validate_INSURANCE_PAYMENT_INFORMATION()) {
       this.loader.insurancePaymentInfo = true;
       let params: any = {
@@ -3249,6 +3251,19 @@ export class BillingClaimsComponent {
           amountDateReceivedInBank: this.convertStringToDateForApiCall(this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'])
         }
       }
+      if (this.checkCashDate.datePickerRef.displayValue != undefined &&
+        params.paymentInformationInfoModel.checkCashDate == undefined
+      ) {
+        params.paymentInformationInfoModel.checkCashDate =
+          this.convertStringToDateForApiCall(this.checkCashDate.datePickerRef.displayValue);
+      }
+      if (this.amountDateReceivedInBank.datePickerRef.displayValue != undefined &&
+        params.paymentInformationInfoModel.amountDateReceivedInBank == undefined
+      ) {
+        params.paymentInformationInfoModel.amountDateReceivedInBank =
+          this.convertStringToDateForApiCall(this.amountDateReceivedInBank.datePickerRef.displayValue);
+      }
+
       this.appService.saveClaimLevelInfoSection(params, (res: any) => {
         this.showAlert(res, 'INSURANCE_PAYMENT_INFORMATION', '3');
         this.loader.insurancePaymentInfo = false;
@@ -3264,8 +3279,8 @@ export class BillingClaimsComponent {
           if (e.paymentIssueTo == 'patient') e.paymentIssueTo = 'Patient';
           if (e.checkDeliverTo == null || e.checkDeliverTo == '') e.checkDeliverTo = "N/A";
         });
-        this.checkCashDate.resetDate();
-        this.amountDateReceivedInBank.resetDate();
+        if (this.checkCashDate != undefined) this.checkCashDate.resetDate();
+        if (this.amountDateReceivedInBank != undefined) this.amountDateReceivedInBank.resetDate();
       })
     }
     return this.claimSectionModal['INSURANCE_PAYMENT_INFORMATION'];
@@ -4027,9 +4042,13 @@ export class BillingClaimsComponent {
     if (this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['paymentMode'] != 'Check') {
       this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkDeliverTo'] = "";
       this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkNumber'] = null;
-      this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'] = null;
+      //this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate'] = null;
       this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank'] = null;
     }
+    if (this.checkCashDate != undefined) this.checkCashDate.resetDate();
+    if (this.amountDateReceivedInBank != undefined) this.amountDateReceivedInBank.resetDate();
+
+
   }
   clearAllPaymentInformation() {
     this.checkDeliveredTo = false;

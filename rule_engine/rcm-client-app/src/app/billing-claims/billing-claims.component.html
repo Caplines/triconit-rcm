@@ -2780,7 +2780,8 @@
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['checkCashDate'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                         [inputDate]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['checkCashDate']"
                                                         (emitToParent)="receiveChildEventdate($event)"
-                                                        (ngModelChange)="onSelectDate($event)">
+                                                        (ngModelChange)="onSelectDate($event)"
+                                                        (paste)="onSelectDate($event)">
                                                     </app-date-picker>
                                                 </div>
                                             </div>
@@ -2794,7 +2795,8 @@
                                                         [ngClass]="{'is-invalid':emptyFields['INSURANCE_PAYMENT_INFORMATION'] && emptyFields['INSURANCE_PAYMENT_INFORMATION']['amountDateReceivedInBank'], 'dp-disable':!(checkForSectionAccess(sectionIds['INSURANCE_PAYMENT_INFORMATION']['sectionId'],'edit') && claimRcm.allowEdit  && claimRcm.currentState==0)}"
                                                         [inputDate]="this.claimSectionModal.INSURANCE_PAYMENT_INFORMATION['amountDateReceivedInBank']"
                                                         (emitToParent)="receiveChildEventdate($event)"
-                                                        (ngModelChange)="onSelectDate($event)">
+                                                        (ngModelChange)="onSelectDate($event)"
+                                                        (paste)="onSelectDate($event)">
                                                     </app-date-picker>
                                                 </div>
                                             </div>
@@ -4718,7 +4720,7 @@
                                     </ng-container>
 
                                     <ng-container
-                                        *ngIf="((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( !claimRcm.pending && checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
+                                        *ngIf="((claimRcm.rebilledStatus && claimSectionModal.REBILLING['modal']['reCeationOptionChoosen']) || (!claimRcm.rebilledStatus)) && ( checkForSectionAccess(sectionIds['RECREATE_CLAIM']['sectionId'],'view'))">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['RECREATE_CLAIM'] || activeServiceCodeCount === 0 }">
                                             <div>
