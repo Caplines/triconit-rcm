@@ -4907,10 +4907,11 @@ export class BillingClaimsComponent {
     this.claimSectionModal["PATIENT_COMMUNICATION"]['modal'].remarks = null;
   }
 
-  fillServiceLevelInfo(rowObject: any, serviceLevelInfo: any) {
-    let matchingIndex = serviceLevelInfo.findIndex((item: any) => {
-      return item.serviceCode.trim().toLowerCase() == rowObject['Service Code'].trim().toLowerCase()
-        && item.tooth.trim().toLowerCase() == rowObject['Tooth#'].trim().toLowerCase();
+  fillServiceLevelInfo(rowObject: any, serviceLevelInfo: any, usedIndexes: Set<number>) {
+    let matchingIndex = serviceLevelInfo.findIndex((item: any, index: number) => {
+      return !usedIndexes.has(index) &&
+        item.serviceCode.trim().toLowerCase() == rowObject['Service Code'].trim().toLowerCase() &&
+        item.tooth.trim().toLowerCase() == rowObject['Tooth#'].trim().toLowerCase();
     });
     if (matchingIndex != -1) {
       let matchingRecord = serviceLevelInfo[matchingIndex];
@@ -4921,6 +4922,8 @@ export class BillingClaimsComponent {
       matchingRecord.creditAdjustmentAmount = parseFloat(rowObject['Credit Adjustment Amount']);
       matchingRecord.debitAdjustmentAmount = parseFloat(rowObject['Debit Adjustment Amount']);
       matchingRecord.billToPatientAmount = parseFloat(rowObject['Bill to Patient Amount']);
+
+      usedIndexes.add(matchingIndex);
     }
   }
 
@@ -4929,6 +4932,7 @@ export class BillingClaimsComponent {
     if (serviceLevelInfo.length === 1 && serviceLevelInfo[0].serviceCode.trim().toLowerCase() === 'undistributed') {
       return;
     }
+    let usedIndexes: Set<number> = new Set();
     let excelData = await navigator.clipboard.readText();
     let cleanedData = excelData.replace(/\r/g, '');
     let rows = cleanedData.split('\n');
@@ -4944,7 +4948,7 @@ export class BillingClaimsComponent {
       headers.forEach((header, index) => {
         rowObject[header] = columns[index] || '';
       });
-      this.fillServiceLevelInfo(rowObject, serviceLevelInfo);
+      this.fillServiceLevelInfo(rowObject, serviceLevelInfo, usedIndexes);
     });
     this.getTotalServiceLevelInfo(true);
     this.validate_SERVICE_LEVEL_INFORMATION();
