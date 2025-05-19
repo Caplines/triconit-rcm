@@ -900,6 +900,8 @@ export class BillingClaimsComponent {
     //debugger;
     ths.claimRules.forEach(x => {
       //console.log(x.ruleId);
+      //CLAIM_LEVEL_VALIDATION_AUTO &&  CLAIM_LEVEL_VALIDATION_MANUAL both
+      //console.log(this.checkForSectionAccess(this.sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId'], 'edit'));//Done
       if ((x.remark == null || x.remark.trim() === '') && x.messageType === 1 && x.ruleType == 'C'
         && document.getElementById("CL_RU" + x.ruleId) != null) {//on NO only
         ths.addErrorDisplay(document.getElementById("CL_RU" + x.ruleId));
@@ -1039,21 +1041,30 @@ export class BillingClaimsComponent {
       });
     }
     if (this.smilePoint) {
+      // console.log(this.checkForSectionAccess(this.sectionIds['CLAIM_LEVEL_VALIDATION_AUTO']['sectionId'], 'edit'));//Done
+      // console.log(this.checkForSectionAccess(this.sectionIds['CLAIM_LEVEL_VALIDATION_MANUAL']['sectionId'], 'edit'));//Done
+      // console.log(this.checkForSectionAccess(this.sectionIds['SERVICE_LEVEL_VALIDATION_AUTO']['sectionId'], 'edit'));//Done
+      // console.log(this.checkForSectionAccess(this.sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'], 'edit'));//Done
+
       if (ths.claimServiceLevelModel.claimFound) {
 
         ths.claimServiceLevelModel.dto.forEach((x, i) => {
           //debugger;
+          //SERVICE_LEVEL_VALIDATION_AUTO
           if ((x.manualAuto == 'Automated' && (x.remark == null || x.remark.trim() === '')) && x.messageType === 1) {//on NO only
             ths.addErrorDisplay(document.getElementById("SERV_C_V_A" + x.remarkUuid));
             valid = false;
           }
 
         });
+
         ths.claimServiceLevelModel.dto.forEach((x, i) => {
-          if ((x.manualAuto == 'Manual') && (x.answer == null || x.answer.trim() === '')) {//on NO only
+          if (this.checkForSectionAccess(this.sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'], 'edit') && (x.manualAuto == 'Manual') && (x.answer == null || x.answer.trim() === '')) {//on NO only
+            //SERVICE_LEVEL_VALIDATION_MANUAL
             ths.addErrorDisplay(document.getElementById("serviceCodeValidationsM" + x.remarkUuid));
             valid = false;
-          } else if ((x.manualAuto == 'Manual' && (x.remark == null || x.remark.trim() === '')) && x.answer === 'Incorrect') {//on NO only
+          } else if (this.checkForSectionAccess(this.sectionIds['SERVICE_LEVEL_VALIDATION_MANUAL']['sectionId'], 'edit') && (x.manualAuto == 'Manual' && (x.remark == null || x.remark.trim() === '')) && x.answer === 'Incorrect') {//on NO only
+            //
             ths.addErrorDisplay(document.getElementById("SERV_C_V_M" + x.remarkUuid));
             valid = false;
           }
@@ -2038,7 +2049,7 @@ export class BillingClaimsComponent {
           setTimeout(() => {
             this.alertArch.showAlertPopup = false;
             window.location.reload();
-          }, 5000);
+          }, 500);
 
         } else {
           this.alertArch.alertMsg = res.data;
@@ -3198,6 +3209,7 @@ export class BillingClaimsComponent {
   finalSaveSection(moveToNextTeam: boolean, showResponseStatus: boolean) {
     this.finalSaveClaimDataModel['claimUuid'] = this.claimUUid;
     this.finalSaveClaimDataModel['moveToNextTeam'] = moveToNextTeam;
+    //console.log(this.finalSaveClaimDataModel);
 
     this.appService.saveClaimLevelInfoSection(this.finalSaveClaimDataModel, (res: any) => {
       if (res.status) {
