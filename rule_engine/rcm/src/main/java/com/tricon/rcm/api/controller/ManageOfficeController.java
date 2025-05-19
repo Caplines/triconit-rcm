@@ -29,6 +29,7 @@ import com.tricon.rcm.dto.RcmUserToDto;
 import com.tricon.rcm.dto.UsersByTeamsAndCompanyDto;
 import com.tricon.rcm.enums.RcmTeamEnum;
 import com.tricon.rcm.security.JwtUser;
+import com.tricon.rcm.service.impl.ClaimServiceImpl;
 import com.tricon.rcm.service.impl.ManageOfficeServiceImpl;
 import com.tricon.rcm.service.impl.RcmProcessLoggerImpl;
 import com.tricon.rcm.service.impl.UserServiceImpl;
@@ -40,6 +41,9 @@ import com.tricon.rcm.util.MessageConstants;
 public class ManageOfficeController extends BaseHeaderController {
 
 	private final Logger logger = LoggerFactory.getLogger(ManageOfficeController.class);
+	
+	@Autowired
+	ClaimServiceImpl claimServiceImpl;
 	
 	
 	@Autowired
@@ -68,6 +72,15 @@ public class ManageOfficeController extends BaseHeaderController {
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
+		
+		//Added for safer side .. No transaction needed
+		try {
+			claimServiceImpl.updateDuplicateActives();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}
+		
+		///END
 		try {
 			logger.info("------------------Start Process (Manage Offce) ---------------------");
 			processLogger = rcmProcessLoggerImpl.startProcessLogger("Manage Office", dto.toString(),

@@ -176,6 +176,16 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 					+" (select * from ( select min(id) from  rcm_claim_assignment where active=1 and claim_id=:claimUuid group by claim_id,active having count(claim_id)>1 order by id asc) tblTmp) "
 					+ " ", nativeQuery = true)
 			int  updateAllClaimIssueAssignment(@Param("claimUuid")String claimUuid);
+			
+			
+			@Modifying
+			@Query(value =  " update rcm_claim_assignment set active=false  where id in ( "
+							+ "select id from (select min(id) as id from  rcm_claim_assignment where active=1 "
+							+"  group by claim_id,active "
+							+" having count(claim_id)>1 order by id asc) n )" 
+							
+					+ " ", nativeQuery = true)
+			int  updateDuplicateActives();
 
 			
 			

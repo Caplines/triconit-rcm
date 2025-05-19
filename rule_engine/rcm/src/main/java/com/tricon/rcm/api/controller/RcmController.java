@@ -144,7 +144,11 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
 		
-		
+		/*try {
+			claimServiceImpl.updateDuplicateActives();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}*/
 		return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchFreshClaimLogs(partialHeader.getCompany().getUuid())));
 	}
@@ -170,7 +174,11 @@ public class RcmController extends BaseHeaderController{
 		if (partialHeader==null) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
-		
+		/*try {
+			claimServiceImpl.updateDuplicateActives();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}*/
 		if (partialHeader.getTeamId()!=RcmTeamEnum.BILLING.getId()) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
@@ -188,7 +196,11 @@ public class RcmController extends BaseHeaderController{
 		if (partialHeader==null) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
-		
+		/*try {
+			claimServiceImpl.updateDuplicateActives();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}*/
 		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.fetchFreshClaimDetails(partialHeader.getTeamId(), type, subType,partialHeader)));
@@ -220,7 +232,11 @@ public class RcmController extends BaseHeaderController{
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
 		
-		
+		/*try {
+			claimServiceImpl.updateDuplicateActives();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}*/
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				claimServiceImpl.fetchFreshClaimDetailsLead(partialHeader.getTeamId(), type, subType,partialHeader)));
 	}
@@ -264,7 +280,11 @@ public class RcmController extends BaseHeaderController{
 		
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader ==null) return null;
-		
+		/*try {
+			claimServiceImpl.updateDuplicateActives();
+			}catch (Exception e) {
+				e.printStackTrace();
+			}*/
 		return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.OK, "", claimServiceImpl.fetchClaimsForAssignments(dto,partialHeader)));
 	}
@@ -1119,6 +1139,7 @@ public class RcmController extends BaseHeaderController{
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
 				object));
 	}
+	
 	
 	
 	

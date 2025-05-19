@@ -4540,6 +4540,9 @@ public class ClaimServiceImpl {
 
 					}
 					
+					if (dto.getClaimRemark() != null) {
+						saveClaimRemark(dto.getClaimRemark(), claim, user, partialHeader);
+					}
 
 					if (dto.getSubmissionDto() != null)
 						saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
@@ -4598,8 +4601,14 @@ public class ClaimServiceImpl {
 						saveClaimRemark(dto.getClaimRemark(), claim, user, partialHeader);
 					}
 					
-					if (dto.getSubmissionDto() != null && claim.getRecreatedSection() == Constants.RecreatedSection_ONE)
+					
+					if (dto.getSubmissionDto() != null && claim.getRecreatedSection() == Constants.RecreatedSection_ONE) {
+						if (dto.getClaimRemark() != null) {
+							saveClaimRemark(dto.getClaimRemark(), claim, user, partialHeader);
+						}
 						saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
+						
+					}
 				}
 				
 				
@@ -4655,6 +4664,16 @@ public class ClaimServiceImpl {
 				 }
 				}
 				
+				if (dto.getClaimRemark() != null) {
+					saveClaimRemark(dto.getClaimRemark(), claim, user, partialHeader);
+				}
+				
+				
+				if (dto.getSubmissionDto() != null) {
+					
+					saveClaimSubmissionDetails(user, claim, dto.getSubmissionDto());
+					
+				}
 				
 				message="Submitted";
 				
@@ -5509,8 +5528,9 @@ public class ClaimServiceImpl {
     
     
     @Transactional(rollbackFor = Exception.class)
-    public String archiveActiveClaim(@RequestBody ClaimStatusUpdate dto,PartialHeader partialHeader,String... archiveClaimId) {
+    public String archiveActiveClaim(@RequestBody ClaimStatusUpdate dto,PartialHeader partialHeader) {//,String... archiveClaimId) {
     	
+    	String archiveClaimId="";
 		 boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
 			
 			if (!validateClaimRight) {
@@ -5528,7 +5548,7 @@ public class ClaimServiceImpl {
 	    //RcmOffice off = claim.getOffice();
 		//RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(off.getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		if (validateClaimRight) {
-			archiveSteps(dto,claim,partialHeader,archiveClaimId);
+			archiveClaimId =archiveSteps(dto,claim,partialHeader);//,archiveClaimId);
 			RcmClaims associatedClaim= null;
 			String[] clT = oriClaimId.split("_");
 			if (claim.getClaimId().endsWith(ClaimTypeEnum.P.getSuffix())) {
@@ -5538,21 +5558,21 @@ public class ClaimServiceImpl {
 			}
 			
 			if (associatedClaim!=null && associatedClaim.getCurrentState()==Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED) {
-				archiveSteps(dto,associatedClaim,partialHeader,archiveClaimId);
+				archiveSteps(dto,associatedClaim,partialHeader);//,archiveClaimId);
 			}
 			
 		}else return "Wrong Client";
-    	return "Claim Archived";
+    	return archiveClaimId;
     }
     
-    private void archiveSteps(ClaimStatusUpdate dto,RcmClaims claim,PartialHeader partialHeader,String... archiveClaimId) {
+    private String archiveSteps(ClaimStatusUpdate dto,RcmClaims claim,PartialHeader partialHeader) {//,String... archiveClaimId) {
     	Date date = new Date();
 		RcmClaimArchiveHistory history=new RcmClaimArchiveHistory();
 		history.setReason(dto.getReason());
 		history.setClaim(claim);
 		history.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED);
 		rcmClaimArchiveHistoryRepo.save(history);
-		String claimId=archiveClaimId!=null && archiveClaimId.length>0?archiveClaimId[0]:date.getTime()+Constants.HYPHEN+Constants.ARCHIVE_PREFIX+claim.getClaimId();
+		String claimId=date.getTime()+Constants.HYPHEN+Constants.ARCHIVE_PREFIX+claim.getClaimId();
 		claim.setClaimId(claimId);
 		claim.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED);
 		RcmUser updatedBy= userRepo.findByUuid(partialHeader.getJwtUser().getUuid()) ;
@@ -5561,6 +5581,8 @@ public class ClaimServiceImpl {
 		
 		claimCycleService.createNewClaimCycle(claim,ClaimStatusEnum.Claim_Archived.getType(),
 				ClaimStatusEnum.getById(claim.getCurrentStatus()).getType(),claim.getCurrentTeamId(),updatedBy);
+		
+		return claimId;
     	
     }
     
@@ -7156,7 +7178,8 @@ public class ClaimServiceImpl {
 					if (correspondingPrimary.getSecondaryStarted()==null) {
 						//Remove
 						listOfAllClaims.removeIf(all -> (all.getOfficeName().equals(secondary.getOfficeName())
-								&& all.getPatientId().equals(secondary.getPatientId())
+								&& all.getPatientId().equals(secondary.getPatientId()) 
+								&& !all.isClaimTypeStatus()
 								&& secondary.getClaimId().split("_")[0].equals(all.getClaimId().split("_")[0] )));	
 						
 					}
@@ -7243,5 +7266,10 @@ public class ClaimServiceImpl {
 		
 		finalList.addAll(listOfAllClaims);
 		return finalList;
+	}
+	
+	@Transactional
+	public void updateDuplicateActives() {
+		rcmClaimAssignmentRepo.updateDuplicateActives();
 	}
 }

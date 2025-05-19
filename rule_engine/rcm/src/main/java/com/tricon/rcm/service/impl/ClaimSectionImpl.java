@@ -1038,12 +1038,12 @@ public class ClaimSectionImpl {
 			serviceLevelData.setSurface((data.getSurface()==null || data.getSurface().isEmpty())?"N/A":data.getSurface());
 			serviceLevelData.setCreditAdjustmentAmount(data.getCreditAdjustmentAmount());
 			serviceLevelData.setDebitAdjustmentAmount(data.getDebitAdjustmentAmount());
-			serviceLevelRepo.save(serviceLevelData);
+			serviceLevelRepo.save(serviceLevelData); 
 			//update Original rcm_claim_detail in
 		    if (finalSubmit && claimDetailData!=null) {
 		      Optional<RcmClaimDetail> 	 oldRecord= claimDetailData.stream().filter( dt ->dt.getServiceCode().equalsIgnoreCase(data.getServiceCode())).findFirst();
 		      if (oldRecord.isPresent()) {
-		    	  //Do nothing and  add rest data latter id needed
+		    	  //Do nothing and  add rest data latter if needed
 		    	  if (oldServiceCodes!=null) {
 		    		  oldServiceCodes.remove(data.getServiceCode());
 		    		  if (!oldRecord.get().isActive()) {
@@ -1104,7 +1104,7 @@ public class ClaimSectionImpl {
 
 		int maxRun = serviceLevelRepo.getMaxRunFromServiceLevel(claimUuid);
 		List<RcmServiceLevelInformation> serviceLevelData = serviceLevelRepo
-				.findServiceLevelCodesByClaimUuid(claimUuid,maxRun);// all data max data
+				.findServiceLevelCodesByClaimUuid(claimUuid,maxRun);// all data max data 
 		if (serviceLevelData.isEmpty()) {
 			// fetch data from rcm claim_detail table and insert into
 			// rcm_service_level_information table
@@ -2504,10 +2504,11 @@ public class ClaimSectionImpl {
 					ClaimStatusUpdate dto = new ClaimStatusUpdate();
 					dto.setClaimUuid(oldPrimary.getClaimUuid());
 					dto.setReason(recreateClaimRequestInfoModel.getReasonForRecreation());
-					String archiveId = new Date().getTime() + Constants.HYPHEN + Constants.ARCHIVE_PREFIX
-							+ oldPrimary.getClaimId();
-					String archiveResponse = claimServiceImpl.archiveActiveClaim(dto, partialHeader, archiveId);
-					logger.info("Archive response:" + archiveResponse);
+					//String archiveId = new Date().getTime() + Constants.HYPHEN + Constants.ARCHIVE_PREFIX
+					//		+ oldPrimary.getClaimId();
+					//Archive both primary and secondary
+					String archiveId = claimServiceImpl.archiveActiveClaim(dto, partialHeader);//, archiveId);
+					logger.info("Archive response:" + archiveId);
 					// reset rebilled_satatus false
 					oldPrimary.setRebilledStatus(false);
 					oldPrimary.setClaimId(archiveId);
@@ -2519,14 +2520,15 @@ public class ClaimSectionImpl {
 						ClaimStatusUpdate dto2 = new ClaimStatusUpdate();
 						dto2.setClaimUuid(secondaryClaim.getClaimUuid());
 						dto2.setReason(recreateClaimRequestInfoModel.getReasonForRecreation());
-						String archiveIdForSecondary = new Date().getTime() + Constants.HYPHEN
+						/*String archiveIdForSecondary = new Date().getTime() + Constants.HYPHEN
 								+ Constants.ARCHIVE_PREFIX + secondaryClaim.getClaimId();
 						String archiveResponse2 = claimServiceImpl.archiveActiveClaim(dto, partialHeader,
 								archiveIdForSecondary);
 						logger.info("Archive response:" + archiveResponse2);
+						*/
 						// reset rebilled_satatus false
 						secondaryClaim.setRebilledStatus(false);
-						secondaryClaim.setClaimId(archiveIdForSecondary);
+						//secondaryClaim.setClaimId(archiveIdForSecondary);
 						secondaryClaim.setCurrentState(Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED);
 						rcmClaimRepository.save(secondaryClaim);
 						response = this.saveRecreateClaimData(recreateClaimRequestInfoModel, secondaryClaim, createdBy,
@@ -2609,10 +2611,11 @@ public class ClaimSectionImpl {
 					ClaimStatusUpdate dto = new ClaimStatusUpdate();
 					dto.setClaimUuid(primaryClaim.getClaimUuid());
 					dto.setReason(recreateClaimRequestInfoModel.getReasonForRecreation());
-					String archiveId = new Date().getTime() + Constants.HYPHEN + Constants.ARCHIVE_PREFIX
-							+ primaryClaim.getClaimId();
-					String archiveResponse = claimServiceImpl.archiveActiveClaim(dto, partialHeader, archiveId);
-					logger.info("Archive response:" + archiveResponse);
+					//String archiveId = new Date().getTime() + Constants.HYPHEN + Constants.ARCHIVE_PREFIX
+					//		+ primaryClaim.getClaimId();
+					//Archive both primary and secondary
+					String archiveId = claimServiceImpl.archiveActiveClaim(dto, partialHeader);
+					logger.info("Archive response:" + archiveId);
 					// reset rebilled_satatus false
 					primaryClaim.setRebilledStatus(false);
 					primaryClaim.setClaimId(archiveId);
@@ -2624,11 +2627,11 @@ public class ClaimSectionImpl {
 						ClaimStatusUpdate dto2 = new ClaimStatusUpdate();
 						dto2.setClaimUuid(secondaryClaim.getClaimUuid());
 						dto2.setReason(recreateClaimRequestInfoModel.getReasonForRecreation());
-						String archiveIdForSecondary = new Date().getTime() + Constants.HYPHEN
-								+ Constants.ARCHIVE_PREFIX + secondaryClaim.getClaimId();
-						String archiveResponse2 = claimServiceImpl.archiveActiveClaim(dto, partialHeader,
-								archiveIdForSecondary);
-						logger.info("Archive response:" + archiveResponse2);
+						//Already done using above 
+						//String archiveIdForSecondary = new Date().getTime() + Constants.HYPHEN
+						//		+ Constants.ARCHIVE_PREFIX + secondaryClaim.getClaimId();
+						//String archiveId2 = claimServiceImpl.archiveActiveClaim(dto, partialHeader);//,archiveIdForSecondary);
+						//logger.info("Archive response:" + archiveId2);
 						// reset rebilled_satatus false
 						secondaryClaim.setRebilledStatus(false);
 						rcmClaimRepository.save(secondaryClaim);
