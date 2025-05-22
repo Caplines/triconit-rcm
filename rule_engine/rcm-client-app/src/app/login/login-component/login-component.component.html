@@ -1,29 +1,30 @@
 <!-- <div class="body-2 theme-2"> -->
 
-    <div class="page-header">
-        <div class="container">
-            <a class="logo" href="javascript:void(0);" routerLink="/"><img src="../assets/img/RCM-logo.png" /></a>
+<div class="page-header">
+    <div class="container">
+        <a class="logo" href="javascript:void(0);" routerLink="/"><img src="../assets/img/RCM-logo-1.png" /></a>
 
+    </div>
+</div>
+<div class="container-fluid inner-page-bg">
+    <div class="info-box">
+        <div class="info-text-capline">
+            Experience the
+            <span>Capline</span>
+            Difference!
+        </div>
+        <div class="logos">
+            <img src="../assets/img/google-rating.png" class="googleRating" /><br />
+            <img src="../assets/img/inc-logo.png" class="incLogo" />
+            <img src="../assets/img/BBB-Logo.png" class="BBBLogo" />
         </div>
     </div>
-    <div class="container-fluid inner-page-bg">
-        <div class="info-box">
-            <div class="info-text-capline">
-                Experience the
-                <span>Capline</span>
-                Difference!
-            </div>
-            <div class="logos">
-                <img src="../assets/img/google-rating.png"  class="googleRating"/><br />
-                <img src="../assets/img/inc-logo.png" class="incLogo" />
-                <img src="../assets/img/BBB-Logo.png" class="BBBLogo" />
-            </div>
-        </div>
-        <ng-container *ngIf="!forgotPassObj.showForgotPasswordBox && !forgotPassObj.showResetEmailMsg">
+    <ng-container *ngIf="!forgotPassObj.showForgotPasswordBox && !forgotPassObj.showResetEmailMsg">
         <div class="inner-container">
             <div class="rcm-logo">RCM Login</div>
 
-            <form class="login-box" name="form" *ngIf="!isLoggedIn" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm" novalidate>
+            <form class="login-box" name="form" *ngIf="!isLoggedIn" (ngSubmit)="f.form.valid && onSubmit()" #f="ngForm"
+                novalidate>
                 <div class="row">
                     <div class="col-md-12 mb-3">
                         <label for="user">Username</label>
@@ -37,45 +38,50 @@
                 <div class="row">
                     <div class="col-md-12 mb-2">
                         <label for="Password">Password</label>
-                        <input type="password" id="" name="password" class="form-control form-control-sm" placeholder="Enter your Password"
-                            [(ngModel)]="form.password" required minlength="6" #password="ngModel" [ngClass]="{'is-invalid': password.errors && f.submitted &&  (password.errors['required'] || password.errors['minlength'])}">
-                            <ng-container *ngIf="password.errors && f.submitted">
-                                <div class="invalid-feedback" role="alert" *ngIf="password.errors['required']">
-                                    Password is required
-                                </div>
-                                <div class="invalid-feedback" role="alert"  *ngIf="password.errors['minlength']">
-                                    Password must be at least 6 characters
-                                </div>
-                            </ng-container>
+                        <input type="password" id="" name="password" class="form-control form-control-sm"
+                            placeholder="Enter your Password" [(ngModel)]="form.password" required minlength="6"
+                            #password="ngModel"
+                            [ngClass]="{'is-invalid': password.errors && f.submitted &&  (password.errors['required'] || password.errors['minlength'])}">
+                        <ng-container *ngIf="password.errors && f.submitted">
+                            <div class="invalid-feedback" role="alert" *ngIf="password.errors['required']">
+                                Password is required
+                            </div>
+                            <div class="invalid-feedback" role="alert" *ngIf="password.errors['minlength']">
+                                Password must be at least 6 characters
+                            </div>
+                        </ng-container>
                         <span class="focus-input password"></span>
                     </div>
 
                 </div>
-                <div class="form-group re-captcha mt-2" >
-                     <re-captcha name="token" id=""  (resolved)="resolved($event)" ></re-captcha>
-                   
+                <div class="form-group re-captcha mt-2">
+                    <re-captcha name="token" id="" (resolved)="resolved($event)"></re-captcha>
+
                 </div>
                 <div class="mb-2 mt-3 remberMe">
-                <div class="custom-checkbox">
-                    <!-- <input type="checkbox" class="custom-control-input" id="remember"> -->
-                    <!-- <label class="custom-control-label" for="remember">Remember me</label> -->
+                    <div class="custom-checkbox">
+                        <!-- <input type="checkbox" class="custom-control-input" id="remember"> -->
+                        <!-- <label class="custom-control-label" for="remember">Remember me</label> -->
+                    </div>
+                    <a href="javascript:void(0);" (click)="showForgotPassBox()">Forgot password?</a>
                 </div>
-                <a href="javascript:void(0);" (click)="showForgotPassBox()">Forgot password?</a>
-            </div>
                 <div class="row">
                     <div class="col-md-12 mt-2 mb-3">
-                        <button class="btn btn-lg btn-bca mt-2" type="submit" [disabled]="!isRecaptchaSolved && username.errors && password.errors">Log in</button>
+                        <button class="btn btn-lg btn-bca mt-2" type="submit"
+                            [disabled]="!isRecaptchaSolved && username.errors && password.errors">Log in</button>
                     </div>
-                    <div  class="note">
-                        <span class="info">*</span>Need assistance? Please reach out to us at 832-369-6783 or email us at ar@caplineservices.com
+                    <div class="note">
+                        <span class="info">*</span>Need assistance? Please reach out to us at 832-369-6783 or email us
+                        at ar@caplineservices.com
                     </div>
                 </div>
                 <div class="form-group">
-                    <div class="alert alert-danger" role="alert" *ngIf="f.submitted && isLoginFailed && errorMessage!==''">
+                    <div class="alert alert-danger" role="alert"
+                        *ngIf="f.submitted && isLoginFailed && errorMessage!==''">
                         Login failed: {{ errorMessage }}
                     </div>
                 </div>
-                
+
             </form>
         </div>
     </ng-container>
@@ -84,8 +90,9 @@
             <div class="forgot-pass-header">Forgot <span>Password</span></div>
             <div class="mb-3 forgot-pass-box">
                 <label for="user">Email</label>
-                <input type="email" name="email" class="form-control form-control-sm " [ngClass]="{'is-invalid':errorMessage!==''}"
-                       placeholder="Enter your Email address" [(ngModel)]="forgotPassObj.email" required='true' />
+                <input type="email" name="email" class="form-control form-control-sm "
+                    [ngClass]="{'is-invalid':errorMessage!==''}" placeholder="Enter your Email address"
+                    [(ngModel)]="forgotPassObj.email" required='true' />
                 <span _ngcontent-hon-c49="" class="focus-input"></span>
                 <div class="invalid-feedback" role="alert" *ngIf="errorMessage!==''">
                     {{ errorMessage }}
@@ -93,21 +100,25 @@
             </div>
             <div class="row">
                 <div class="col-md-12 mt-2 mb-3">
-                    <button class="btn btn-lg btn-bca mt-2"  (click)="forgotPass()">Submit</button>
-                    <div class="text-center cancel-link" (click)="forgotPassObj.showForgotPasswordBox=false;forgotPassObj.showResetEmailMsg=false;"><a href="javascript:void(0);">Cancel</a></div>
+                    <button class="btn btn-lg btn-bca mt-2" (click)="forgotPass()">Submit</button>
+                    <div class="text-center cancel-link"
+                        (click)="forgotPassObj.showForgotPasswordBox=false;forgotPassObj.showResetEmailMsg=false;"><a
+                            href="javascript:void(0);">Cancel</a></div>
                 </div>
             </div>
-    </div>
+        </div>
     </ng-container>
     <ng-container *ngIf="forgotPassObj.showResetEmailMsg">
         <div class="inner-container">
-            <div class="alert alert-success alert-dismissible fade show" role="alert" style="margin-top: 165px; margin-bottom:235px;">
+            <div class="alert alert-success alert-dismissible fade show" role="alert"
+                style="margin-top: 165px; margin-bottom:235px;">
                 <strong>Password has been sent to your Email! </strong>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                  <span aria-hidden="true" (click)="forgotPassObj.showForgotPasswordBox=false;forgotPassObj.showResetEmailMsg=false;">&times;</span>
+                    <span aria-hidden="true"
+                        (click)="forgotPassObj.showForgotPasswordBox=false;forgotPassObj.showResetEmailMsg=false;">&times;</span>
                 </button>
-              </div>
+            </div>
         </div>
     </ng-container>
 
-<!-- </div> -->
+    <!-- </div> -->

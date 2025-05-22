@@ -1,18 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
 body {
-    font-family: "Montserrat", sans-serif!important;
+    font-family: "Montserrat", sans-serif !important;
     font-size: 16px;
 }
+
 .login-bg {
     background: url(../../../assets/img/RCM-Login.jpg) no-repeat;
     background-size: 100%;
-    background-position:0px 30px;
+    background-position: 0px 30px;
 }
 
 .inner-container {
     position: relative;
     width: 33%;
-    padding:50px 35px 20px;
+    padding: 50px 35px 20px;
     background: #fff;
     margin-top: 5%;
     border-radius: 20px;
@@ -34,23 +36,28 @@ label {
     display: inline-block;
     margin-bottom: .5rem;
 }
+
 .logos {
     text-align: right;
     position: absolute;
     bottom: 0px;
     right: 0px;
 }
+
 .googleRating {
-    width:100px;
+    width: 100px;
 }
+
 .incLogo {
     width: 58px;
     margin-right: 10px;
     margin-bottom: 11px;
 }
+
 .BBBLogo {
     width: 100px;
 }
+
 .page-header {
     background: #fff;
     height: 100px;
@@ -82,9 +89,9 @@ label {
     text-align: center;
 }
 
-    .page-heading strong {
-        color: #333;
-    }
+.page-heading strong {
+    color: #333;
+}
 
 .login-box {
     padding: 0px 25px;
@@ -184,9 +191,9 @@ input::placeholder {
     font-size: 14px;
 }
 
-    .remberMe .custom-checkbox {
-        line-height: 20px;
-    }
+.remberMe .custom-checkbox {
+    line-height: 20px;
+}
 
 .info-box {
     width: 58%;
@@ -198,8 +205,9 @@ input::placeholder {
     color: #fff;
     text-transform: uppercase;
     font-weight: 800;
-    position:relative;
+    position: relative;
 }
+
 .info-text-capline {
     text-align: left;
     float: right;
@@ -213,6 +221,7 @@ input::placeholder {
         display: block;
     }
 }
+
 .rcm-logo {
     font-size: 32px;
     font-weight: 700;
@@ -222,9 +231,9 @@ input::placeholder {
     margin-bottom: 35px;
 }
 
-    .rcm-logo span {
-        margin-left: 6px;
-    }
+.rcm-logo span {
+    margin-left: 6px;
+}
 
 .custom-control-label::before {
     background-color: #fff;
@@ -246,7 +255,7 @@ input::placeholder {
     border: 1px solid rgb(173, 182, 190);
 }
 
-.custom-control-input:checked ~ .custom-control-label::before {
+.custom-control-input:checked~.custom-control-label::before {
     color: #fff;
     border-color: #00c37f;
     background: rgb(52 219 161);
@@ -285,95 +294,101 @@ input::placeholder {
     position: relative;
 }
 
-    .info-box ul li strong {
-        color: #1c212d;
-        margin-bottom: 3px;
-        display: block;
-        font-weight: 600;
-        font-size: 14px;
-    }
+.info-box ul li strong {
+    color: #1c212d;
+    margin-bottom: 3px;
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+}
 
-    .info-box ul li em {
-        position: absolute;
-        box-shadow: 2px 1px 8px #cfcfcf;
-        width: 65px;
-        height: 65px;
-        border-radius: 50%;
-        display: flex;
-        justify-content: center;
-        line-height: 60px;
-        left: -20px;
-        font-size: 30px;
-        font-style: normal;
-        background: #34dba1;
-        color: #fff;
-        text-shadow: 1px 1px 0px #22b984;
-    }
+.info-box ul li em {
+    position: absolute;
+    box-shadow: 2px 1px 8px #cfcfcf;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    line-height: 60px;
+    left: -20px;
+    font-size: 30px;
+    font-style: normal;
+    background: #34dba1;
+    color: #fff;
+    text-shadow: 1px 1px 0px #22b984;
+}
 
-    .inner-container .errorMessage{
-        width:200%;
-    }
+.inner-container .errorMessage {
+    width: 200%;
+}
 
-    .inner-container .closeIcon{
-        cursor:pointer;
-         font-size:25px;
-    }
+.inner-container .closeIcon {
+    cursor: pointer;
+    font-size: 25px;
+}
 
-    .inner-container .cancel-link a{
-        cursor:pointer;
-         text-decoration:none;
-    }
+.inner-container .cancel-link a {
+    cursor: pointer;
+    text-decoration: none;
+}
 
-    .inner-container .cancel-link {
-        margin-top:10px;
-    }
+.inner-container .cancel-link {
+    margin-top: 10px;
+}
 
-    .forgot-pass-header{
-        font-size: 22px;
-        width: 225px;
-        display: flex;
-        margin: 0 auto 50px;
-        background: #fff;
-        justify-content: center;
-        align-items: center;
-        height: 60px;
-        border-radius: 10px;
-        box-shadow: 0px 0px 6px #e7e7e7;
-        font-weight: 700;
-        color: #1c212d;
-    }
-    .forgot-pass-header span {
-        margin-left: 6px;
-    }
+.forgot-pass-header {
+    font-size: 22px;
+    width: 225px;
+    display: flex;
+    margin: 0 auto 50px;
+    background: #fff;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 6px #e7e7e7;
+    font-weight: 700;
+    color: #1c212d;
+}
+
+.forgot-pass-header span {
+    margin-left: 6px;
+}
 
 .forgot-password .cancel-link {
-    font-size:14px;
-    font-weight:600;
-    margin-bottom:65px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 65px;
 }
-    .forgot-password .cancel-link:hover {
-        text-decoration:underline;
-    }
-    .form-control.is-invalid, .was-validated .form-control:invalid {
-        border-color: #dc3545;
-        padding-right: calc(1.5em + 0.75rem);
-        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
-        background-repeat: no-repeat;
-        background-position: right calc(0.375em + 0.1875rem) center;
-        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
-    }
+
+.forgot-password .cancel-link:hover {
+    text-decoration: underline;
+}
+
+.form-control.is-invalid,
+.was-validated .form-control:invalid {
+    border-color: #dc3545;
+    padding-right: calc(1.5em + 0.75rem);
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='%23dc3545' viewBox='0 0 12 12'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right calc(0.375em + 0.1875rem) center;
+    background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
 
 .invalid-feedback {
     display: block;
 }
+
 .forgot-pass-box {
-    position:relative;
+    position: relative;
 }
-    .forgot-pass-box .focus-input::after {
-        left: -8px;
-        top: 33px;
-    
-    }
+
+.forgot-pass-box .focus-input::after {
+    left: -8px;
+    top: 33px;
+
+}
 
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
@@ -389,14 +404,16 @@ select:-webkit-autofill:focus {
     border-bottom: 2px solid #53b4e3;
     font-family: "Montserrat", sans-serif;
 }
-.note{
+
+.note {
     font-size: 13px;
     color: #000;
     line-height: normal;
     padding: 0 20px;
     margin-top: 10px;
 }
-.info{
+
+.info {
     color: red;
     font-size: 15px;
     position: relative;
@@ -409,74 +426,77 @@ select:-webkit-autofill:focus {
         width: auto;
         margin-top: 14%;
     }
+
     .info-text-capline {
         float: inherit;
     }
+
     .inner-container {
         width: 100%;
         margin-bottom: 30px;
     }
+
     .inner-page-bg {
         display: block;
     }
 }
 
 
-    @media screen and (max-width: 540px) {
-        .page-header {
-            height: 80px;
-        }
-
-        .page-header .logo img {
-            width: 75%;
-        }
-
-        .inner-page-bg {
-            display: block;
-        }
-
-        .inner-container {
-            width: 100%;
-            margin-right: 0px;
-            padding: 20px 0 10px 0px;
-            box-shadow: 0px 2px 9px rgba(0, 0, 0, 0.2);
-            margin-bottom: 20px;
-            margin-top: 8%;
-            border-radius: 10px;
-        }
-
-        .info-box {
-            width: auto;
-            font-size: 30px;
-            padding-top: 7%;
-            margin-top: 5%;
-        }
-
-        .info-text-capline {
-            float: inherit;
-            font-size: 20px;
-        }
-
-        .info-text-capline span {
-            font-size: 42px;
-            margin-top: 2px;
-        }
-
-        .incLogo {
-            width: 45px;
-            margin-right: 7px;
-            margin-bottom: 0px;
-        }
-
-        .googleRating {
-            width: 80px;
-        }
-
-        .BBBLogo {
-            width: 80px;
-        }
-
-        .page-header .container {
-            padding: 0 6%;
-        }
+@media screen and (max-width: 540px) {
+    .page-header {
+        height: 80px;
     }
+
+    .page-header .logo img {
+        width: 75%;
+    }
+
+    .inner-page-bg {
+        display: block;
+    }
+
+    .inner-container {
+        width: 100%;
+        margin-right: 0px;
+        padding: 20px 0 10px 0px;
+        box-shadow: 0px 2px 9px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+        margin-top: 8%;
+        border-radius: 10px;
+    }
+
+    .info-box {
+        width: auto;
+        font-size: 30px;
+        padding-top: 7%;
+        margin-top: 5%;
+    }
+
+    .info-text-capline {
+        float: inherit;
+        font-size: 20px;
+    }
+
+    .info-text-capline span {
+        font-size: 42px;
+        margin-top: 2px;
+    }
+
+    .incLogo {
+        width: 45px;
+        margin-right: 7px;
+        margin-bottom: 0px;
+    }
+
+    .googleRating {
+        width: 80px;
+    }
+
+    .BBBLogo {
+        width: 80px;
+    }
+
+    .page-header .container {
+        padding: 0 6%;
+    }
+}
