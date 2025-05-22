@@ -31,6 +31,7 @@ import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmEagleSoftDBDetailsRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceRepo;
+import com.tricon.rcm.jpa.repository.RcmInsuranceTypeDateMappingRepo;
 import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmIssueClaimsRepo;
 import com.tricon.rcm.jpa.repository.RcmMappingTableRepo;
@@ -51,6 +52,7 @@ import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmCompany;
 import com.tricon.rcm.db.entity.RcmInsurance;
 import com.tricon.rcm.db.entity.RcmInsuranceType;
+import com.tricon.rcm.db.entity.RcmInsuranceTypeDateMapping;
 import com.tricon.rcm.db.entity.RcmIssueClaims;
 import com.tricon.rcm.db.entity.RcmMappingTable;
 import com.tricon.rcm.db.entity.RcmOffice;
@@ -80,6 +82,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -169,6 +172,9 @@ public class RuleEngineService {
 	
 	@Autowired
 	ClaimCycleServiceImpl claimCycleService;
+	
+	@Autowired
+	RcmInsuranceTypeDateMappingRepo insuranceTypeDateMappingRepo;
 
 	HttpHeaders headers = null;
 
@@ -1073,6 +1079,27 @@ public class RuleEngineService {
 					}
 					
 					if (status!= null) {
+						//add logic like date > updater date then update..
+						RcmInsuranceType ins = claim.getRcmInsuranceType();
+						RcmInsuranceType inst = rcmInsuranceTypeRepo.findById(ins.getId());
+						if (inst != null) {
+							RcmInsuranceTypeDateMapping data = insuranceTypeDateMappingRepo
+									.findByTeamIdAndName(teamId, inst.getCode());
+							if (data != null) {
+								Calendar calendarForNextFollowUpDate = Calendar.getInstance();
+								Date date = new Date();//always current Date claim.getNextFollowUpDate() != null ? claim.getNextFollowUpDate() : new Date();
+								calendarForNextFollowUpDate.setTime(date);
+								calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, data.getNextFollowUpGap());
+								claim.setNextFollowUpDate(calendarForNextFollowUpDate.getTime());
+								claim.setUpdatedDate(date);
+								logger.info("Next Follow Up Data in RcmTable:" + claim.getNextFollowUpDate());
+							}else {
+								Date date = new Date();
+								claim.setNextFollowUpDate(date);
+								claim.setUpdatedDate(date);
+							}
+						}
+						
 						rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), claimUUid);		
 						claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),assignedTeam, assignedBy);
 					}
