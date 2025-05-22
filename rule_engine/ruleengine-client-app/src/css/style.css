@@ -178,10 +178,11 @@ button.btn:active:focus, button.btn.active:focus {
 .navbar-brand {
 	float: left;
     height: 80px;
-    background: url(../assets/img/logo.png) no-repeat 15px 16px;
+    background: url(../assets/img/logo-1.png) no-repeat 15px 16px;
     text-indent: -9999px;
     background-repeat: no-repeat;
-    width:255px;
+    width:280px;
+    margin-top:-7px;
   }
   .navbar-default .navbar-text {    color: #3d5273;
     padding: 0px;
