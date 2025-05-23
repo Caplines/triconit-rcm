@@ -2508,7 +2508,8 @@ export class BillingClaimsComponent {
         if (!isSectionVal) {
           ths.isSectionValidated = false;
         } else {
-          if (isSectionValOriginal) ths.createSectionModal(section.sectionName);
+          // Even if Validation failed for SERVICE_LEVEL_INFORMATION we are creating model.
+          if (isSectionValOriginal || methodName == 'validate_SERVICE_LEVEL_INFORMATION') ths.createSectionModal(section.sectionName);
         }
       }
     }
