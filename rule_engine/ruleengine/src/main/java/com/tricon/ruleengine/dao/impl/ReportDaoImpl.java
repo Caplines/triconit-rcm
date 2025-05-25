@@ -1,5 +1,6 @@
 package com.tricon.ruleengine.dao.impl;
 
+import java.math.BigInteger;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -16,11 +17,14 @@ import com.tricon.ruleengine.dto.EnhancedValidateBatchNumReportDto;
 import com.tricon.ruleengine.dto.EnhancedValidateBatchReportDto;
 import com.tricon.ruleengine.dto.EnhancedValidateTxNumReportDto;
 import com.tricon.ruleengine.dto.EnhancedValidateTxReportDto;
+import com.tricon.ruleengine.dto.RcmClaimDto;
 import com.tricon.ruleengine.dto.ReportDto;
 import com.tricon.ruleengine.dto.ReportResponseDto;
 import com.tricon.ruleengine.dto.RuleMessageDetailDto;
 import com.tricon.ruleengine.dto.RuleReportDto;
+import com.tricon.ruleengine.dto.RuleStatusDto;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
+import com.tricon.ruleengine.model.db.Office;
 import com.tricon.ruleengine.utils.Constants;
 
 @Repository
@@ -670,5 +674,91 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 
 	}
 
+	@Override
+	public List<RuleStatusDto> getFailedRulesByData(RcmClaimDto dto,Office office,int groupRun) {
+		Session session=null;
+		List<RuleStatusDto>  list=null;
+		
+		try {
+			 session=getSession();
+			 String t="reports as rep, report_detail as rd ";
+			 
+			 String o= " rep.office_id='"+office.getUuid()+"' and ";
+			 
+			 String tp_cl= " rep.treatement_plan_id='"+dto.getClaimOrTreatmentId()+"' and ";
+				
+			 if (dto.getClaimOrTreatment()!=null && dto.getClaimOrTreatment().equalsIgnoreCase("claim")) {
+				 t="reports_claim as rep, report_claim_detail as rd";
+				 tp_cl=" rep.claim_id='"+dto.getClaimOrTreatmentId()+"' and ";
+			 }
+			 String queryString="SELECT message_type as messageType, "+
+					" DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as createdDate,"
+			 		+ "rd.error_message as message FROM " +  t  
+			 		+ ",office as offi where rd.message_type=1 and rep.ivf_form_id='"+dto.getIvId()+"' and "+o+ 
+			 		" rep.id=rd.report_id  " + 
+			 		" and offi.uuid=rep.office_id and "+tp_cl +" rep.patient_id='"+dto.getPatientId()+"' and rep.group_run="+groupRun;
+				  
+				 
+				 
+						 
+			 list=session.createSQLQuery(queryString).setResultTransformer(Transformers.aliasToBean(RuleStatusDto.class)).list();
+			 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			closeSession(session);
+
+		}
+		
+		return list;
+		
+	}
+	
+	@Override
+	public int getFailedRulesByDataMaxGroupRun(RcmClaimDto dto,Office office) {
+		Session session=null;
+		Object result =null;
+		
+		try {
+			 session=getSession();
+			 String t="reports as rep ";
+			 
+			 String o= " rep.office_id='"+office.getUuid()+"' and ";
+			 
+			 String tp_cl= " rep.treatement_plan_id='"+dto.getClaimOrTreatmentId()+"' and ";
+				
+			 if (dto.getClaimOrTreatment()!=null && dto.getClaimOrTreatment().equalsIgnoreCase("claim")) {
+				 t="reports_claim as rep ";
+				 tp_cl=" rep.claim_id='"+dto.getClaimOrTreatmentId()+"' and ";
+			 }
+			 String queryString="SELECT max(rep.group_run) FROM " + 
+		            t + 
+			 		"  ,office as offi where rep.ivf_form_id='"+dto.getIvId()+"' and "+o+ 
+			 		" offi.uuid=rep.office_id and "+tp_cl +" rep.patient_id='"+dto.getPatientId()+"'";
+				 
+				 
+			
+			 
+			 result=session.createSQLQuery(queryString).uniqueResult();
+			 
+			 if (result==null ) return 0;
+				else 
+				return Integer.parseInt(result.toString());
+			
+			 
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			closeSession(session);
+
+		}
+		
+		return 0;
+		
+	}
+
+	
 	
 }

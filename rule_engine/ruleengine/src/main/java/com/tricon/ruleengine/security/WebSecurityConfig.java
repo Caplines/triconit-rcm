@@ -139,6 +139,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 "/queryivdatafromdbgoogle",
                 "/queryivdatahistoryfromdbgoogle",
                 "/queryrcmtoolclaimdata",
+                "/queryrulesstatus",
                 "/open/*",
                 "/login",
                 "/readDriveSuc",

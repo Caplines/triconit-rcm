@@ -697,5 +697,54 @@ public class CaplineIVFGoogleFormController {
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", cap));
 
 	}
+	
+	
+	@CrossOrigin
+	@GetMapping
+	@RequestMapping(value = "/queryrulesstatus")
+	public ResponseEntity<Object> queryrulesStatus(
+			@RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "patientId", required = false) String  patientId,
+            @RequestParam(value = "claimOrTreatment", required = true) String claimOrTreatment,// Claim or Treatement
+            @RequestParam(value = "claimOrTreatmentId", required = true) String  claimOrTreatmentId,
+            @RequestParam(value = "ivId", required = true) String  ivId,
+            @RequestParam(value = "client", required = true) String client,
+            @RequestParam(value = "office", required = true) String office) {
+		//Example
+		/*
+		 localhost:8080/queryrulesstatus?password=134568&patientId=12120&claimOrTreatment=Treatment&client=Smilepoint&claimOrTreatmentId=16344&ivId=505084&office=Riverwalk
+		 */
+
+		List<Object> cap = null;
+		RcmClaimDto dto = new RcmClaimDto();
+		
+		dto.setClient(client);
+		dto.setIvId(ivId);
+		dto.setPassword(password);
+		dto.setPatientId(patientId);
+		dto.setClaimOrTreatment(claimOrTreatment);
+		dto.setClaimOrTreatmentId(claimOrTreatmentId);
+		dto.setOffice(office);
+		try {
+			Company cmp = companyDao.getCompanyByName(client);
+			Office off = od.getOfficeByName(office,cmp.getUuid());
+
+			//EagleSoftDBDetails esDB = tvd.getESDBDetailsByOffice(off);
+			
+
+			if (cmp!=null) {
+				
+				cap = (List<Object>) civf.getFailedRulesByData(dto,off);
+				
+				
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", cap));
+
+	}
 
 }

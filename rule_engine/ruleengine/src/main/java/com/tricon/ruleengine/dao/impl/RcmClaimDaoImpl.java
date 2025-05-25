@@ -21,6 +21,7 @@ import com.tricon.ruleengine.utils.Constants;
 public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 
 	static Class<?> clazz = RcmClaimDaoImpl.class;
+	
 	@Override
 	public List<Object> getRcmClaimData(RcmClaimDto d, Office office) {
 		Session s=null;
@@ -37,7 +38,7 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN pinst.name ELSE sinst.name   END as insurancetype,"+
 		    			"CASE  WHEN rcsd.updated_date is null THEN  DATE_FORMAT( rcsd.created_date, '%m/%d/%Y') ELSE DATE_FORMAT( rcsd.updated_date, '%m/%d/%Y')   END as submissiodate,"+
 		    			"us.first_name,us.last_name,CASE  WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran'   END as runenginerun,"+
-		    			"CASE WHEN rcsd.clean_claim is true THEN 'Yes' ELSE 'No' END as cleanClaim,cl.submitted_total, rcc.comments "+
+		    			"CASE WHEN rcsd.clean_claim is true THEN 'Yes' ELSE 'No' END as cleanClaim,cl.submitted_total, rcc.comments,cl.rebilled_status,cl.provider_on_claim "+
 		    			" from rcm_claims cl inner join office off on off.uuid=cl.office_id "+
 		    			" inner join company cmp on cmp.uuid=off.company_id "+
 		    			" inner join rcm_claims_submission_details rcsd on rcsd.claim_id=cl.claim_uuid "+

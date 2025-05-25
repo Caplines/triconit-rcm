@@ -17,6 +17,10 @@ public class RcmClaimDto {
 	private String teamName1;
 	private String teamName2;
 	private String currentAction;
+	private String patientId;
+	private String claimOrTreatment;
+	private String claimOrTreatmentId;
+	private String ivId;
 	
 	public String getColumns() {
 		return columns;
@@ -107,6 +111,30 @@ public class RcmClaimDto {
 	}
 	public void setCurrentAction(String currentAction) {
 		this.currentAction = currentAction;
+	}
+	public String getPatientId() {
+		return patientId;
+	}
+	public void setPatientId(String patientId) {
+		this.patientId = patientId;
+	}
+	public String getClaimOrTreatment() {
+		return claimOrTreatment;
+	}
+	public void setClaimOrTreatment(String claimOrTreatment) {
+		this.claimOrTreatment = claimOrTreatment;
+	}
+	public String getClaimOrTreatmentId() {
+		return claimOrTreatmentId;
+	}
+	public void setClaimOrTreatmentId(String claimOrTreatmentId) {
+		this.claimOrTreatmentId = claimOrTreatmentId;
+	}
+	public String getIvId() {
+		return ivId;
+	}
+	public void setIvId(String ivId) {
+		this.ivId = ivId;
 	}
 	
 	

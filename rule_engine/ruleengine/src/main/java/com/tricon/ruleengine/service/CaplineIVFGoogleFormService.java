@@ -38,6 +38,8 @@ public interface CaplineIVFGoogleFormService {
 	public Object searchCaplineDataReplication(CaplineDataReplicationDto d,Office office)throws Exception;
 	
 	public Object searchRcmClaimData(RcmClaimDto d,Office office)throws Exception;
+	
+	public Object getFailedRulesByData(RcmClaimDto d,Office office)throws Exception;
 
 	
 }

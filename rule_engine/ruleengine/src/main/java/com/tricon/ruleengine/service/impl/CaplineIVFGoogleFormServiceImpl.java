@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.RcmClaimDao;
+import com.tricon.ruleengine.dao.ReportDao;
 import com.tricon.ruleengine.dao.UserDao;
 import com.tricon.ruleengine.dto.CaplineDataReplicationDto;
 import com.tricon.ruleengine.dto.CaplineIVFFormDto;
@@ -37,6 +38,9 @@ import com.tricon.ruleengine.dto.GoogleReportsRDDTO;
 import com.tricon.ruleengine.dto.RCMQuerySubData;
 import com.tricon.ruleengine.dto.RCMQuerySubData1;
 import com.tricon.ruleengine.dto.RcmClaimDto;
+import com.tricon.ruleengine.dto.ReportDto;
+import com.tricon.ruleengine.dto.RuleMessageDetailDto;
+import com.tricon.ruleengine.dto.RuleStatusDto;
 import com.tricon.ruleengine.dto.ToothHistoryDto;
 import com.tricon.ruleengine.exception.RuleEngineException;
 import com.tricon.ruleengine.logger.RuleEngineLogger;
@@ -99,6 +103,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 	
 	@Autowired
 	RcmClaimDao rcmClaimDao;
+	
+	@Autowired
+	ReportDao reportDao;
 	
 
 	@Override
@@ -1091,6 +1098,19 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		 }else{
 			 return data;
 		 }
+	}
+
+	@Override
+	public List<RuleStatusDto>  getFailedRulesByData(RcmClaimDto dto, Office office) throws Exception {
+		
+		
+		
+		//
+		// TODO Auto-generated method stub
+		int res =reportDao.getFailedRulesByDataMaxGroupRun(dto,office);
+		if (res==0) return null;
+		List<RuleStatusDto>  li=reportDao.getFailedRulesByData(dto,office,res);
+		return li;
 	}
 	
 	

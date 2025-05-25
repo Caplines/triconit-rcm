@@ -4436,7 +4436,7 @@ public class RuleBook {
 			// ivf.getImmediateDenturesD5130D5140FL() });// 32
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5213", "PartialDentures_D5213_D5214_FL",
-					ivf.getPartialDenturesD5213D5214FL(), 0, 0, "");
+					ivf.getD5213142625fr(), 0, 0, "");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			mapFlIVF.put("D5213", dL);
@@ -4444,7 +4444,7 @@ public class RuleBook {
 			// ivf.getPartialDenturesD5213D5214FL() });// 33
 
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5214", "PartialDentures_D5213_D5214_FL",
-					ivf.getPartialDenturesD5213D5214FL(), 0, 0, "");
+					ivf.getD5213142625fr(), 0, 0, "");
 			dL = new ArrayList<>();
 			dL.add(scivftff);
 			scivftff = new ServiceCodeIvfTimesFreqFieldDto("D5214", "InterimPartialDentures_D5214_FL",
@@ -4506,13 +4506,13 @@ public class RuleBook {
 			//addInMapForFrequencyLimiation("D5130", "D5130fr", ivf.getD5130fr(), mapFlIVF);-->Already There
 			//addInMapForFrequencyLimiation("D5120", "CompleteDenturesD5110D5120FL", ivf.getCompleteDenturesD5110D5120FL(), mapFlIVF);-->Already There
 			//addInMapForFrequencyLimiation("D5140", "ImmediateDenturesD5130D5140FL", ivf.getImmediateDenturesD5130D5140FL(), mapFlIVF);-->Already There
-			addInMapForFrequencyLimiation("D5225", "Denf5225FR", ivf.getDenf5225FR(), mapFlIVF);
-			addInMapForFrequencyLimiation("D5211", "PartialDenturesD5213D5214FL", ivf.getPartialDenturesD5213D5214FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D5225", "Denf5225FR", ivf.getD5213142625fr(), mapFlIVF);
+			addInMapForFrequencyLimiation("D5211", "PartialDenturesD5213D5214FL", ivf.getD5213142625fr(), mapFlIVF);
 			//addInMapForFrequencyLimiation("D5213", "PartialDenturesD5213D5214FL", ivf.getPartialDenturesD5213D5214FL(), mapFlIVF);
-			addInMapForFrequencyLimiation("D5226", "Denf5226Fr", ivf.getDenf5226Fr(), mapFlIVF);
-			addInMapForFrequencyLimiation("D5212", "PartialDenturesD5213D5214FL", ivf.getPartialDenturesD5213D5214FL(), mapFlIVF);
+			addInMapForFrequencyLimiation("D5226", "Denf5226Fr", ivf.getD5213142625fr(), mapFlIVF);
+			addInMapForFrequencyLimiation("D5212", "PartialDenturesD5213D5214FL", ivf.getD5213142625fr(), mapFlIVF);
 			//addInMapForFrequencyLimiation("D5214", "PartialDenturesD5213D5214FL", ivf.getPartialDenturesD5213D5214FL(), mapFlIVF);
-			
+			//getD5213142625fr
 			addInMapForFrequencyLimiation("D7111", "Extractions1FR", ivf.getExtractions1fr(), mapFlIVF);
 			addInMapForFrequencyLimiation("D7140", "Extractions1FR", ivf.getExtractions1fr(), mapFlIVF);
 			addInMapForFrequencyLimiation("D7210", "Extractions2FR", ivf.getExtractions2fr(), mapFlIVF);
@@ -18399,7 +18399,7 @@ public class RuleBook {
 										Constants.PASS, String.join(",", surfaces), String.join(",", teethC),
 										String.join(",", fcodes)));
 					}
-					else {
+					else if (D0145 && (!D9994 || !D1120 || !D1206)){
 						//FAIL
 						// pass
 						List<String> miss=new ArrayList<>();
@@ -18412,6 +18412,13 @@ public class RuleBook {
 										messageSource.getMessage("rule127.error.message", new Object[] {String.join(",", miss) },
 												locale),
 										Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+										String.join(",", fcodes)));
+					}else {
+						dList.add(
+								new TPValidationResponseDto(rule.getId(), rule.getName(),
+										messageSource.getMessage("rule127.pass.message", new Object[] { codes, TP_CL },
+												locale),
+										Constants.PASS, String.join(",", surfaces), String.join(",", teethC),
 										String.join(",", fcodes)));
 					}
 					
@@ -18720,6 +18727,7 @@ public class RuleBook {
 
 	private void addInMapForFrequencyLimiation(String code, String frequencyName, String frequency,
 			Map<String, List<ServiceCodeIvfTimesFreqFieldDto>> mapFlIVF) {
+		System.out.println("codecode:"+code+":frequency:"+frequency);
 		ServiceCodeIvfTimesFreqFieldDto scivftff = new ServiceCodeIvfTimesFreqFieldDto(code, frequencyName, frequency,
 				0, 0, "");
 		List<ServiceCodeIvfTimesFreqFieldDto> dL = new ArrayList<>();
