@@ -188,7 +188,7 @@ public class Constants {
     public static final int PENDENCY_FRESH = 1;
     public static final int RecreatedSection_ONE = 1;//First time recreated and assigned 
     public static final int RecreatedSection_REST = 2;//After submit from pending after After recreation
-    // Pendecny page /Claim Assignment only for PS TEAM 
+    // Pendency page /Claim Assignment only for PS TEAM 
     public static final String PENDENCY_REPEAT_FRESH_QUERY_ByTeamAndUserType=""
     		        + " SELECT  cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"
     				+ " cl.claim_id as claimId, Case When cl.is_primary Then 1 ELSE 0 End as primaryC,Case When cl.pending Then 1 ELSE 0 End as pending, "
@@ -205,7 +205,7 @@ public class Constants {
     				+ "  left join rcm_patient_statement_section rca on rca.claim_uuid=cl.claim_uuid  and rca.team_id=:teamId and rca.mark_as_deleted=0  and rca.button_type=2 "
     				+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId "
     				+ "  left join rcm_user us on us.uuid=assig.user_id "
-    				+ "  where off.company_id in (:companyIds) and off.active is true   ";
+    				+ "  where cl.claim_id is not null and off.company_id in (:companyIds) and off.active is true   ";
     public static final String PENDENCY_REPEAT_FRESH_QUERY_ByTeamType =""
     		        + " SELECT  cmp.name as companyName,off.name as officeName,off.uuid as  officeUuid,"
     				+ " cl.claim_id as claimId, Case When cl.is_primary Then 1 ELSE 0 End as primaryC,Case When cl.pending Then 1 ELSE 0 End as pending, "
@@ -223,6 +223,6 @@ public class Constants {
     				+ "  left join rcm_patient_statement_section rca on rca.claim_uuid=cl.claim_uuid  and rca.team_id=:teamId and rca.mark_as_deleted=0  and rca.button_type=2 "
     				+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId"
     				+ "  left join rcm_user us on us.uuid=assig.user_id "
-    				+ "  where off.company_id in (:companyIds) and off.active is true  ";
+    				+ "  where cl.claim_id is not null and  off.company_id in (:companyIds) and off.active is true  ";
     		
 }

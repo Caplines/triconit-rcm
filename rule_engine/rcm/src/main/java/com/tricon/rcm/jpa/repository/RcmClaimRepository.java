@@ -455,7 +455,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId and rca.assigned_to=:userId and pending=false "
+			+ "  where claims.current_team_id=:teamid and claims.claim_id is not null and off.active is true and off.company_id=:companyId and rca.assigned_to=:userId and pending=false "
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED +" order by ust-claimAge asc "
 			+ "") 
@@ -568,8 +568,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "  inner join company cmp on cmp.uuid=off.company_id  "
 			+ "  left join rcm_insurance_type inst on inst.id=cl.rcm_insurance_type  "
 			+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId"
-			+ "  left join rcm_user us on us.uuid=assig.user_id "
-			+ "  where off.company_id in (:companyIds) and off.active is true order by companyName")
+			+ "  left join rcm_user us on us.uuid=assig.user_id  "
+			+ "  where off.company_id in (:companyIds) and cl.claim_id is not null and off.active is true order by companyName")
 	List<AssignFreshClaimLogsDto> fetchClaimsForAssignmentsByTeamType(@Param("companyIds") List<String> companyIds,@Param("status") List<Integer> status,
 			@Param("inst") Set<Integer> inst,@Param("teamId") int teamId);
 	
