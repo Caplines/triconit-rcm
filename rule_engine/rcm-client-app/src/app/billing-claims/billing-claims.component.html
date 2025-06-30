@@ -5628,7 +5628,7 @@
                                             (click)="saveClaim('assigntl',false)">
                                             Assign to Team Lead
                                         </button>
-                                        <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && !claimRcm.assoicatedClaimStatus && claimRcm.pending) ||
+                                        <button *ngIf="claimRcm.allowEdit && ( (!claimRcm.primary && isPrimaryClaimClosed() && claimRcm.pending) ||
                                                                                                   (claimRcm.primary && claimRcm.pending)
                                                                                                ) && !isBilling "
                                             type="button" class="btn btn-success" [disabled]="inSave"
