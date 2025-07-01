@@ -4168,7 +4168,7 @@ export class BillingClaimsComponent {
     if (type == 'fullClaim') {
       this.serviceLevelSectionMultiSelectConfig.serviceCodesList = [];
       this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any) => {
-        if (e.serviceCode.toLowerCase() !== 'undistributed') {
+        if (e.serviceCode != null && e.serviceCode.toLowerCase() !== 'undistributed') {
           this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({ name: e.serviceCode, tooth: e.tooth });
         }
       })
@@ -4223,7 +4223,7 @@ export class BillingClaimsComponent {
 
   getAllServiceCodes() {
     this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.forEach((e: any, idx: any) => {
-      if (e.serviceCode.toLowerCase() !== 'undistributed') {
+      if (e.serviceCode != null && e.serviceCode.toLowerCase() !== 'undistributed') {
         this.serviceLevelSectionMultiSelectConfig.serviceCodesList.push({ name: e.serviceCode, checked: false, tooth: e.tooth });
       }
       // this.serviceLevelSectionMultiSelectConfig.rebillingRequirements.push({ name: `option${idx}`, checked: false });

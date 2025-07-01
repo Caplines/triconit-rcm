@@ -3651,7 +3651,7 @@
                                     <!-- Patient Communication START-->
 
                                     <ng-container
-                                        *ngIf="!sectionIds['PATIENT_COMMUNICATION']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['PATIENT_COMMUNICATION']['hideOnNoAccess'] && !checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['PATIENT_COMMUNICATION']}">
                                             <a data-toggle="collapse" aria-expanded="false" id="PATIENT_COMMUNICATION"
@@ -3668,7 +3668,7 @@
                                     </ng-container>
 
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
+                                        *ngIf="checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['PATIENT_COMMUNICATION']}">
                                             <div>
@@ -3789,7 +3789,7 @@
                                                             <button class="btn btn-success"
                                                                 (click)="savePatientCommunicationSection(false)"
                                                                 [disabled]="loader.patientCommunicationSection"
-                                                                *ngIf="claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                                *ngIf="claimRcm.allowEdit  && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                                                 Save
                                                             </button>
                                                             <div *ngIf="loader.patientCommunicationSection"
