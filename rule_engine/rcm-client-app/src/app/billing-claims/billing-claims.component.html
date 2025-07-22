@@ -1785,7 +1785,7 @@
                                     </div>
                                     <!-- NEW PHASE SECTION START HERE-->
                                     <ng-container
-                                        *ngIf="!sectionIds['SERVICE_LEVEL_INFORMATION']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
+                                        *ngIf="!sectionIds['SERVICE_LEVEL_INFORMATION']['hideOnNoAccess']  && !checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
                                             [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
                                             <a data-toggle="collapse" aria-expanded="false"
@@ -1800,7 +1800,7 @@
                                         </div>
                                     </ng-container>
                                     <ng-container
-                                        *ngIf="!claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
+                                        *ngIf="checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'view')">
                                         <div class="bold-b-text"
                                             [ngClass]="{'collapsed':toggleTab['SERVICE_LEVEL_INFORMATION']}">
                                             <div class="d-flex align-items-center">
@@ -2223,7 +2223,7 @@
                                                     </tbody>
                                                 </table>
                                             </div>
-                                            <div *ngIf="!claimRcm.pending" class="save-btn col-sm-12 mb-1 my-1">
+                                            <div class="save-btn col-sm-12 mb-1 my-1">
                                                 <span class="custom-control custom-switch custom-switch-lg">
                                                     <input type="checkbox" [checked]="isBtpFlagTrue"
                                                         (change)="updateBtpFlagValue($event)" value id="flag"
@@ -2237,7 +2237,7 @@
                                                     <button class="btn btn-success"
                                                         (click)="saveServiceLevelInfo(false)"
                                                         [disabled]="loader.serviceLevelInfo || !this.sectionLevelInfoTotalConfig.reconcile"
-                                                        *ngIf="activeServiceCodeCount >=1 && claimRcm.allowEdit && !claimRcm.pending && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                        *ngIf="activeServiceCodeCount >=1 && claimRcm.allowEdit && checkForSectionAccess(sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
                                                         Save
                                                     </button>
                                                     <div *ngIf="loader.serviceLevelInfo" class="mr-2">
@@ -2253,7 +2253,7 @@
                                             </div>
                                         </div>
                                     </ng-container>
-
+                                    <!--Service Level Information END -->
                                     <ng-container
                                         *ngIf="!sectionIds['EOB_INSURANCE_LETTER']['hideOnNoAccess'] && !claimRcm.pending && !checkForSectionAccess(sectionIds['EOB_INSURANCE_LETTER']['sectionId'],'view')">
                                         <div class="bold-b-text collapsed"
