@@ -164,14 +164,14 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   filterOptionAgeBracket(subType: string) {
-    if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist)) {
+    if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist) || (subType == 'MyClaims' && this.isFilterValueExist)) {
       this.filteredColumnData.ageBracket = [];
     }
     if (subType == 'Fresh') {
       this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' }, { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
       this.isFilterValueExist = true;
     }
-    if (subType == 'sendBack') {
+    if (subType == 'sendBack' || subType == 'MyClaims') {
       this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' }, { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
       this.isFilterValueExist = true;
     }
@@ -195,7 +195,7 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   filterOptionInsuranceName(subType: string) {
-    if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist)) {
+    if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist) || (subType == 'MyClaims' && this.isFilterValueExist)) {
       this.filteredColumnData.insuranceName = [];
     }
     if (subType == 'Fresh') {
@@ -215,7 +215,7 @@ export class ListOfClaimsComponent implements OnInit {
       }, {}));
       this.isFilterValueExist = true;
     }
-    if (subType == 'sendBack') {
+    if (subType == 'sendBack' || subType == 'MyClaims') {
       this.filteredItems.forEach((e: any) => {
         if (e.claimId.includes("_P")) {
           this.filteredColumnData.insuranceName.push({ 'checked': true, 'insuranceName': e.primaryInsurance });
@@ -237,7 +237,7 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   filterOptionInsuranceType(subType: string) {
-    if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist)) {
+    if ((subType == 'Fresh' && this.isFilterValueExist) || (subType == 'sendBack' && this.isFilterValueExist) || (subType == 'MyClaims' && this.isFilterValueExist)) {
       this.filteredColumnData.insuranceType = [];
     }
     if (subType == 'Fresh') {
@@ -255,7 +255,7 @@ export class ListOfClaimsComponent implements OnInit {
           return this.filteredColumnData.insuranceType.find((a: any) => a.insuranceType === insuranceType);
         });
     }
-    if (subType == 'sendBack') {
+    if (subType == 'sendBack' || subType == 'MyClaims') {
       this.filteredItems.forEach((e: any) => {
         if (e.claimId.includes("_P") && e.prName) {
           this.filteredColumnData.insuranceType.push({ 'checked': true, 'insuranceType': e.prName });
