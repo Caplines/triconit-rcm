@@ -1006,7 +1006,7 @@ public class ClaimSectionImpl {
 			// update rcm_claim table for reconciliation_pass value false
 			//claim.setReconciliationPass(false);
 			//rcmClaimRepository.save(claim);
-			return null;
+			//return null;
 		}
 
 		else {
@@ -1403,7 +1403,10 @@ public class ClaimSectionImpl {
 			
 			// set automated field nextFollowUpDate inside follow_up_section
 			if (nextActionRequiredInfoModel.getButtonType() != null
-					&& nextActionRequiredInfoModel.getButtonType().equals(Constants.BUTTON_TYPE_ASSIGN_TO_SAME_TEAM)) {
+					&& (nextActionRequiredInfoModel.getButtonType().equals(Constants.BUTTON_TYPE_ASSIGN_TO_SAME_TEAM)
+							||
+						nextActionRequiredInfoModel.getButtonType().equals(Constants.BUTTON_TYPE_ASSIGN_TO_OTHER_TEAM)	
+					)) {
 				RcmInsuranceType ins = claim.getRcmInsuranceType();
 				RcmInsuranceType inst = rcmInsuranceTypeRepo.findById(ins.getId());
 				if (inst != null) {
@@ -2163,14 +2166,27 @@ public class ClaimSectionImpl {
 				List<String> selectedServiceCodesForExistingClaim = recreateClaimRequestInfoModel
 						.getSelectedServiceCodes().stream().distinct()
 						.filter(str -> str!=null && !str.equalsIgnoreCase("Undistributed")).collect(Collectors.toList());
-
+///D5225-LA", "D5226-2,4,13,15 //28
+				//http://localhost:4200/billing-claims/5224c379-f18b-4dd9-aabb-c3218a69d283
+				//28581 new claim
+				//  			["D5225-LA", "D5226-UA"]
+				
 				if (existingServiceCodesForNewClaim.isEmpty() || selectedServiceCodesForExistingClaim.isEmpty()) {
 					logger.error("service codes are empty");
 					return null;
 				}
+				List<String> existingServiceCodesForNewClaimOnlyCode= new ArrayList<>();
+				List<String> selectedServiceCodesForExistingClaimOnlyCode= new ArrayList<>();
+				existingServiceCodesForNewClaim.forEach(x ->{
+					existingServiceCodesForNewClaimOnlyCode.add(x.split("-")[0]);
+				});
+				selectedServiceCodesForExistingClaim.forEach(x ->{
+					selectedServiceCodesForExistingClaimOnlyCode.add(x.split("-")[0]);
+				});
+                //Get only service codes from existingServiceCodesForNewClaim
+				
 
-
-				if (existingServiceCodesForNewClaim.containsAll(selectedServiceCodesForExistingClaim)) {
+				if (existingServiceCodesForNewClaimOnlyCode.containsAll(selectedServiceCodesForExistingClaimOnlyCode)) {
 
 					if (isPrimary) {
 						logger.info("Inside current claim primary->>>>>>>>>>>>>>>");
@@ -2463,7 +2479,7 @@ public class ClaimSectionImpl {
 					newPrimaryClaim = rcmClaimRepository.findByClaimIdAndOffice(
 							recreateClaimRequestInfoModel.getNewClaimId() + ClaimTypeEnum.P.getSuffix(), office);
 					newLinkedClaim = rcmClaimRepository.findByClaimIdAndOffice(
-							recreateClaimRequestInfoModel.getNewClaimId() + ClaimTypeEnum.S.getSuffix(), office);
+							recreateClaimRequestInfoModel.getNewClaimId() + ClaimTypeEnum.S.getSuffix(), office); 
 					secondaryClaim = currentClaim;
 					oldPrimary = rcmClaimRepository
 							.findByClaimIdAndOffice(currentClaimId[0] + ClaimTypeEnum.P.getSuffix(), office);

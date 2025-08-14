@@ -2247,6 +2247,9 @@ public class ClaimServiceImpl {
 				}
 			}
 			
+			if (ll!=null) {
+				logger.info("TOTAL CLAIMS PRIMARY +SEC. " + ll.size());
+			}
 			
 			if (ll!=null && ct1!=null && ct1.size()==1  && ct1.contains(ClaimStatusEnum.ReBilling.getId())) {
 				ll =ll.stream().filter(d->d.getRebilledStatus()==1).collect(Collectors.toList());
@@ -2258,7 +2261,7 @@ public class ClaimServiceImpl {
 			List<AssignFreshClaimLogsDto> secondaries=new ArrayList<>();
 			Set<String> offices = new HashSet<>();
 			if (ll!=null) {
-				Set<String> primaryClaims = new HashSet<>();
+				//Set<String> primaryClaims = new HashSet<>();
 				((List<AssignFreshClaimLogsDto>) ll).stream().map(AssignFreshClaimLogsDto::getOfficeUuid).forEach(offices::add);
 				for(String off:offices) {
 					List<AssignFreshClaimLogsDto> l2= ll.stream().filter(e -> e.getOfficeUuid().equals(off)
@@ -2272,7 +2275,7 @@ public class ClaimServiceImpl {
 				//Remove Primary claims from secondary
 				primaries.forEach( pr->{
 					if (pr.getClaimId().split("_P").length>0) {
-					primaryClaims.add(pr.getClaimId().split("_P")[0]+"_S");
+					//primaryClaims.add(pr.getClaimId().split("_P")[0]+"_S");
 					secondaries.removeIf(n -> (n.getOfficeUuid().equals(pr.getOfficeUuid()) && n.getClaimId().equals(pr.getClaimId().split("_P")[0]+"_S")));
 					}
 				});
@@ -2287,11 +2290,20 @@ public class ClaimServiceImpl {
 			Map<String, RcmCompany> companyCache = new HashMap<>();
 			Map<String, UserAssignOffice> userAssignCache = new HashMap<>();
 			Map<String, RcmUser> rcmUserCache = new HashMap<>();
+			
+			//added so that Missing Offices can be added to The List
+			List<RcmOfficeDto> existingOfficesList=officeRepo.findByCompanyUuidInAndActiveTrue(companies);
+			existingOfficesList.stream().map(RcmOfficeDto::getUuid).forEach(offices::add);
+			
+			
 			for(String off:offices) {
 				
 			List<AssignFreshClaimLogsDto> x =	primaries.stream().filter(e -> e.getOfficeUuid().equals(off))
 					.collect(Collectors.toList());
-			if (x.isEmpty()) continue;
+			if (x.isEmpty()) {
+				
+				//continue;
+			}
 			AssignFreshClaimLogsDto minValue1=null;
 			AssignFreshClaimLogsDto minValue2=null;
 			Optional<AssignFreshClaimLogsDto> minValue1Opt = x.stream().filter(e -> e.getOpdt()!=null).max(Comparator.comparing(v -> v.getOpdt()));
@@ -3116,6 +3128,7 @@ public class ClaimServiceImpl {
 		if (!validateClaimRight) {
 			return null;
 		}
+		
 		ServiceValidationDataDto dto = new ServiceValidationDataDto();
 		List<RcmClaimDetailViewDto> details=new ArrayList<>();
 		List<RcmClaimsServiceRuleValidationDto> list = new ArrayList<>();
@@ -3126,10 +3139,13 @@ public class ClaimServiceImpl {
 		RcmInsuranceType insurancetype=rcmInsuranceTypeRepo.findById(claim.getRcmInsuranceType().getId());
 		//RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(off.getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		Date claimDos=null;
+		String[] clT1 = claim.getClaimId().split("_");
+		//List<ClaimDetailDto> cdList1 = ruleEngineService.pullClaimDetailFromFromRE(clT1[0], off.getCompany().getUuid(),
+		//		off.getUuid());
 		if (claim!=null) claimDos= claim.getDos();
 		if (validateClaimRight) {
-			if (claim.isPending() ) {
-
+			//if (claim.isPending() ) {
+			if (true ) {
 			
 			String[] clT = claim.getClaimId().split("_");
 			
@@ -3156,6 +3172,10 @@ public class ClaimServiceImpl {
 						 cdt.setTooth("N/A");
 					}
 					BeanUtils.copyProperties(cdt, rcmClaimDetail, "id");
+					if (clT[1].equals("S") && cdt.getDetails()!=null) {
+						rcmClaimDetail.setEstPrimary(cdt.getDetails().getEstSecondary());
+						rcmClaimDetail.setPatientPortion(cdt.getPatientPortionSec());
+					}
 					rcmClaimDetail.setIdEs(cdt.getId()); 
 					rcmClaimDetail.setClaim(claim);
 					rcmClaimDetail.setActive(true);
@@ -7189,10 +7209,10 @@ public class ClaimServiceImpl {
 					ds.setClaimTypeStatus(true);
 					ds.setClaimId(secondaryClaimId[0]+"_"+"P");
 					if (primaryMissingForSecondary.get(secondary.getOfficeName())==null){
-			           List<FreshClaimDataViewDto> l1= new ArrayList<>();
-			           l1.add(ds);
+			           List<FreshClaimDataViewDto> l11= new ArrayList<>();
+			           l11.add(ds);
 			         //Prepair list of primary if its missing from  List
-			           primaryMissingForSecondary.put(secondary.getOfficeName(),l1);
+			           primaryMissingForSecondary.put(secondary.getOfficeName(),l11);
 		             }else {
 		            	//Prepair list of primary if its missing from  List
 		            	 List<FreshClaimDataViewDto> l1 = primaryMissingForSecondary.get(secondary.getOfficeName());

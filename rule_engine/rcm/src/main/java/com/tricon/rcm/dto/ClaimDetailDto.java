@@ -8,6 +8,7 @@ public class ClaimDetailDto {
 	String apptId;
 	String description;
 	String estInsurance;
+	String estSecondary;
 	String estPrimary;
 	String fee;
 	String id;

@@ -1,13 +1,18 @@
 package com.tricon.rcm.service.impl;
 
+import java.util.Calendar;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
+import com.tricon.rcm.db.entity.RcmInsuranceType;
+import com.tricon.rcm.db.entity.RcmInsuranceTypeDateMapping;
 import com.tricon.rcm.db.entity.RcmOffice;
 import com.tricon.rcm.db.entity.RcmTeam;
 import com.tricon.rcm.db.entity.RcmUser;
@@ -18,6 +23,8 @@ import com.tricon.rcm.jpa.repository.RcmClaimAssignmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimAttachmentRepo;
 import com.tricon.rcm.jpa.repository.RcmClaimRepository;
 import com.tricon.rcm.jpa.repository.RcmClaimStatusTypeRepo;
+import com.tricon.rcm.jpa.repository.RcmInsuranceTypeDateMappingRepo;
+import com.tricon.rcm.jpa.repository.RcmInsuranceTypeRepo;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.util.ClaimUtil;
@@ -26,8 +33,16 @@ import com.tricon.rcm.util.Constants;
 @Service
 public class RcmClaimLogServiceImpl {
 
+	private final Logger logger = LoggerFactory.getLogger(RcmClaimLogServiceImpl.class);
+	
 	@Autowired
 	RcmTeamRepo rcmTeamRepo;
+	
+	@Autowired
+	RcmInsuranceTypeRepo rcmInsuranceTypeRepo;
+	
+	@Autowired
+	RcmInsuranceTypeDateMappingRepo insuranceTypeDateMappingRepo;
 	
 	@Autowired
 	RcmClaimAssignmentRepo rcmClaimAssignmentRepo;
@@ -137,17 +152,35 @@ public class RcmClaimLogServiceImpl {
 				}
 				
 				rcmClaimAssignmentRepo.save(rcmAssigment);
-				
+				 
 				rcmAssigment= new RcmClaimAssignment();
 				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
 						assignedUser.getUser(), claimUuid, claim,
 						"", systemStatusBilling,assignedTeam,
 						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")", new Date());
                 if (rcmAssigment.isActive()) {
-                	if (claim.getNextFollowUpDate()!=null && rcmAssigment.getPendingSince()!=null
-    						&& rcmAssigment.getPendingSince().compareTo(claim.getNextFollowUpDate())<0) {
+                	RcmInsuranceType ins = claim.getRcmInsuranceType();
+					RcmInsuranceType inst = rcmInsuranceTypeRepo.findById(ins.getId());
+					if (inst != null) {
+						RcmInsuranceTypeDateMapping data = insuranceTypeDateMappingRepo
+								.findByTeamIdAndName(assignToTeam, inst.getCode());
+						if (data != null) {
+							Calendar calendarForNextFollowUpDate = Calendar.getInstance();
+							Date date = new Date();//always current Date claim.getNextFollowUpDate() != null ? claim.getNextFollowUpDate() : new Date();
+							calendarForNextFollowUpDate.setTime(date);
+							calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, data.getNextFollowUpGap());
+							claim.setNextFollowUpDate(calendarForNextFollowUpDate.getTime());
+							claim.setUpdatedDate(date);
+							logger.info("Next Follow Up Data in RcmTable:" + claim.getNextFollowUpDate());
+						}else {
+							if (claim.getNextFollowUpDate()!=null && rcmAssigment.getPendingSince()!=null
+                			//2025-05-23 07:15:53 com (2025-04-30 09:32:39)
+    						&& rcmAssigment.getPendingSince().compareTo(claim.getNextFollowUpDate())>0) {
     						claim.setNextFollowUpDate(rcmAssigment.getPendingSince());
-    				}
+    			         	}
+						}
+					}
+                	
                 	rcmAssigment.setActionName(assignmentStatus);
                 	
                 }
@@ -179,11 +212,28 @@ public class RcmClaimLogServiceImpl {
 						"", systemStatusBilling,assignedTeam,
 						Constants.SYSTEM_TRANSFER_TO_TEAM_COMMENT+"( From "+partialHeader.getTeamId()+" to "+assignToTeam +")", new Date());
 				if (rcmAssigment.isActive()) {
-					if (claim.getNextFollowUpDate()!=null && rcmAssigment.getPendingSince()!=null
-						&&  rcmAssigment.getPendingSince().compareTo(claim.getNextFollowUpDate())<0) {
-						claim.setNextFollowUpDate(rcmAssigment.getPendingSince());
-				    }
-						
+					
+					RcmInsuranceType ins = claim.getRcmInsuranceType();
+					RcmInsuranceType inst = rcmInsuranceTypeRepo.findById(ins.getId());
+					if (inst != null) {
+						RcmInsuranceTypeDateMapping data = insuranceTypeDateMappingRepo
+								.findByTeamIdAndName(assignToTeam, inst.getCode());
+						if (data != null) {
+							Calendar calendarForNextFollowUpDate = Calendar.getInstance();
+							Date date = new Date();//always current Date claim.getNextFollowUpDate() != null ? claim.getNextFollowUpDate() : new Date();
+							calendarForNextFollowUpDate.setTime(date);
+							calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, data.getNextFollowUpGap());
+							claim.setNextFollowUpDate(calendarForNextFollowUpDate.getTime());
+							claim.setUpdatedDate(date);
+							logger.info("Next Follow Up Data in RcmTable:" + claim.getNextFollowUpDate());
+						}else {
+							if (claim.getNextFollowUpDate()!=null && rcmAssigment.getPendingSince()!=null
+									&&  rcmAssigment.getPendingSince().compareTo(claim.getNextFollowUpDate())>0) {
+									claim.setNextFollowUpDate(rcmAssigment.getPendingSince());
+							    }
+						}
+					}
+					
 					rcmAssigment.setActionName(assignmentStatus);
 				}
 				rcmClaimAssignmentRepo.save(rcmAssigment);

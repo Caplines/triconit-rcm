@@ -1224,6 +1224,11 @@ public class RuleEngineService {
 					 cdt.setTooth("N/A");
 				}
 				BeanUtils.copyProperties(cdt, rcmClaimDetail, "id");
+				if (data.getClaimId().split("_")[1].equals("S") && cdt.getDetails()!=null) {
+					rcmClaimDetail.setEstPrimary(cdt.getDetails().getEstSecondary());
+					rcmClaimDetail.setPatientPortion(cdt.getPatientPortionSec());
+					//rcmClaimDetail.setPatientPortionSec(cdt.getPEstSecondary());
+				}
 				rcmClaimDetail.setIdEs(cdt.getId()); 
 				rcmClaimDetail.setClaim(claim);
 				rcmClaimDetail.setActive(true);
