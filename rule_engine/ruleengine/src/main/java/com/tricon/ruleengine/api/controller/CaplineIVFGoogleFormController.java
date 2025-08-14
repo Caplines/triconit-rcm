@@ -703,25 +703,27 @@ public class CaplineIVFGoogleFormController {
 	@GetMapping
 	@RequestMapping(value = "/queryrulesstatus")
 	public ResponseEntity<Object> queryrulesStatus(
-			@RequestParam(value = "password", required = false) String password,
-            @RequestParam(value = "patientId", required = false) String  patientId,
-            @RequestParam(value = "claimOrTreatment", required = true) String claimOrTreatment,// Claim or Treatement
+			@RequestParam(value = "password", required = true) String password,
+            @RequestParam(value = "patientId", required = true) String  patientId,
+            @RequestParam(value = "claimOrTreatment", required = false) String claimOrTreatment,// Claim or Treatement
             @RequestParam(value = "claimOrTreatmentId", required = true) String  claimOrTreatmentId,
-            @RequestParam(value = "ivId", required = true) String  ivId,
+            @RequestParam(value = "uniqueId", required = true) String  uniqueId,
             @RequestParam(value = "client", required = true) String client,
             @RequestParam(value = "office", required = true) String office) {
 		//Example
 		/*
-		 localhost:8080/queryrulesstatus?password=134568&patientId=12120&claimOrTreatment=Treatment&client=Smilepoint&claimOrTreatmentId=16344&ivId=505084&office=Riverwalk
+		 //localhost:8080/queryrulesstatus?password=134568&patientId=12120&claimOrTreatment=Treatment&client=Smilepoint&claimOrTreatmentId=16344&ivId=505084&office=Riverwalk
+		 localhost:8080/queryrulesstatus?password=134568&patientId=12120&client=Smilepoint&claimOrTreatmentId=16344&uniqueId=0525505084163444&office=Riverwalk
 		 */
 
 		List<Object> cap = null;
 		RcmClaimDto dto = new RcmClaimDto();
 		
 		dto.setClient(client);
-		dto.setIvId(ivId);
+		dto.setUniqueId(uniqueId);
 		dto.setPassword(password);
 		dto.setPatientId(patientId);
+		if (claimOrTreatment ==  null) claimOrTreatment="Treatment";
 		dto.setClaimOrTreatment(claimOrTreatment);
 		dto.setClaimOrTreatmentId(claimOrTreatmentId);
 		dto.setOffice(office);

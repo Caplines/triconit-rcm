@@ -509,7 +509,7 @@ public class IVFFormConversionUtil {
 			if (f.length>0) {
 			p.setFirstName(f[0]);
 			if (f.length > 1) {
-				p.setLastName(fname.replace(f[0] + " ", ""));
+				p.setLastName(fname.replaceFirst(f[0] + " ", ""));
 			}
 			}
 		}
@@ -1040,6 +1040,21 @@ public class IVFFormConversionUtil {
 	public static void main(String []a) {
 		//qwe======!!!!======11======!!!!======11======!!!!======2019-10-08
 		//List<IVFHistorySheet> phl = new ArrayList<IVFHistorySheet>();
+		
+		
+		String fname = "Qum M Qum M";
+		if (fname != null) {
+			String[] f = fname.split(" ");
+			if (f.length>0) {
+			System.out.println(f[0]);
+			if (f.length > 1) {
+				System.out.println(fname.replaceFirst(f[0] + " ", ""));
+			}
+			}
+		}
+		
+		
+		
 		IVFHistorySheet ph = null;
 		int x = 0;
 		List<String> hl = new ArrayList<>();
@@ -1519,7 +1534,7 @@ public class IVFFormConversionUtil {
 			String[] f = fname.split(" ");
 			p.setFirstName(f[0]);
 			if (f.length > 1) {
-				p.setLastName(fname.replace(f[0] + " ", ""));
+				p.setLastName(fname.replaceFirst(f[0] + " ", ""));
 			}
 		}
 		p.setPatientId(d.getPatientId());
@@ -1663,7 +1678,7 @@ public class IVFFormConversionUtil {
 				String[] f = fname.split(" ");
 				p.setFirstName(f[0]);
 				if (f.length > 1) {
-					p.setLastName(fname.replace(f[0] + " ", ""));
+					p.setLastName(fname.replaceFirst(f[0] + " ", ""));
 				}
 			}
 			p.setPatientId(d.getEsid());

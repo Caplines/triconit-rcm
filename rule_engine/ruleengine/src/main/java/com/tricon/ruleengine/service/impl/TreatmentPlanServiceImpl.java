@@ -83,6 +83,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
+import com.tricon.ruleengine.model.sheet.EagleSoftPolicyholdeDob;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceDetail;
 import com.tricon.ruleengine.model.sheet.InsuranceMappingDto;
@@ -91,6 +92,7 @@ import com.tricon.ruleengine.model.sheet.PatientDeductiblewithBenefits;
 import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
+import com.tricon.ruleengine.model.sheet.PreferredDentist;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanPatient;
@@ -246,6 +248,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
 		JwtUser user = (JwtUser) userDetails;
+		String userName= user.getUsername();
 		Office off = od.getOfficeByUuid(dtod.getOfficeId(),user.getCompany().getUuid());
 		try {
 			o = logFileToAppendData(off.getName().trim());
@@ -339,6 +342,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Map<String, List<PatientDeductiblewithBenefits>> patientDeductiblewithBenefitsSecondary=null;
 				Map<String, List<PatientPolicyHolder>> espatientsHolderPr=null;
 				Map<String, List<PatientPolicyHolder>> espatientsHolderSec=null;
+				Map<String, List<EagleSoftPolicyholdeDob>> espatientsHolderDob=null;
+				Map<String, List<PreferredDentist>> preferredDentists=null;
 				
 				Map<String, List<InsuranceDetail>> insuranceDetails=null;
 				Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules=null;
@@ -487,7 +492,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						}
 						try {
 							craData=ConnectAndReadSheets.readSheetCRAReqMapping(env.getProperty("mapping.sheet.insurance"), "CRA Requirement", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
-						     System.out.println(craData.size());	
+						    // System.out.println(craData.size());	
 						}catch(Exception exp) {
 								
 						}
@@ -589,7 +594,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							patientDeductiblewithBenefitsSecondary = (Map<String, List<PatientDeductiblewithBenefits>>) (Map<String, ?>) dbAccesService.getPatientDeductibelWithBenefits(Constants.INSURANCE_TYPE_SEC, ivfMap, esDB,bw);
 							espatientsHolderPr = (Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw,true);
 							espatientsHolderSec = espatientsHolderPr;//(Map<String, List<PatientPolicyHolder>>) (Map<String, ?>) dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB,bw,false);
-							
+							//espatientsHolderDob = (Map<String, List<EagleSoftPolicyholdeDob>>) (Map<String, ?>) dbAccesService.getPolicyHolderDobByPatientId(ivfMap, esDB,bw);
+							preferredDentists  = (Map<String, List<PreferredDentist>>) (Map<String, ?>) dbAccesService.getPreferredDentist(ivfMap, esDB,bw);
 							espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 									new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
 							perios=(Map<String, List<Perio>>) (Map<String, ?>) dbAccesService.getPerioDataForPatients(ivfMap, esDB, bw);
@@ -850,11 +856,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							validdateRulesTPOS(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
 									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,insuranceData,orthoData,adultMedicaidSheetData,craData,oSCodes,
-									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec,patientDeductiblewithBenefitsPrimary,patientDeductiblewithBenefitsSecondary);
+									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec,patientDeductiblewithBenefitsPrimary,patientDeductiblewithBenefitsSecondary,
+									  espatientsHolderDob,preferredDentists,userName);
 							}else validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
 									  ivfMap,esempmaster, empMasterKey, perios,mappings,rb,list,dtoR,dtod,
 									  ansL,qhList,mvpVapList,espatientsHis,tList,bw ,oldTp, type,exceptionData,insuranceData,orthoData,adultMedicaidSheetData,craData,
-									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec,patientDeductiblewithBenefitsPrimary,patientDeductiblewithBenefitsSecondary);
+									  insuranceDetails,preferanceFeeSchedules,espatientsHolderPr,espatientsHolderSec,patientDeductiblewithBenefitsPrimary,patientDeductiblewithBenefitsSecondary,
+									  espatientsHolderDob,preferredDentists,userName);
 							
 							/*
 							validdateRulesTPGeneral(espatients,rules,rule,dtoRL, patKey,ivx,esfeess, tListReduced,
@@ -981,7 +989,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<InsuranceMappingDto> insuranceData,List<OrthoOfficeMappingDto> orthoData,Map<String,List<Object>> adultMedicaidSheetData,List<CRAReqMappingDto> craData,Map<String,
 		  List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
 		  Map<String, List<PatientPolicyHolder>> espatientsHolderPr,Map<String, List<PatientPolicyHolder>> espatientsHolderSec,
-		  Map<String, List<PatientDeductiblewithBenefits>> patientDeductiblewithBenefitsPrimary, Map<String, List<PatientDeductiblewithBenefits>> patientDeductiblewithBenefitsSecondary) {
+		  Map<String, List<PatientDeductiblewithBenefits>> patientDeductiblewithBenefitsPrimary, Map<String, List<PatientDeductiblewithBenefits>> patientDeductiblewithBenefitsSecondary,
+		  Map<String, List<EagleSoftPolicyholdeDob>> espatientsHolderDob, 
+		  Map<String, List<PreferredDentist>> preferredDentists,String userName) {
 	  
 		rule = getRulesFromList(rules, Constants.RULE_ID_4);
 		String feeKey = "-1";
@@ -991,7 +1001,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		 if (feeKey ==null) feeKey="-1";
 		if (esfeess != null && espatients != null && espatients.get(patKey).size() > 0) {
 			dtoRL = rb.Rule4_B(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
-					esfeess.get(feeKey), espatients.get(patKey),preferanceFeeSchedules==null?null:preferanceFeeSchedules.get(patKey), bw,type);//preferanceFeeSchedules.get(patKey
+					esfeess.get(feeKey), espatients.get(patKey),preferanceFeeSchedules==null?null:preferanceFeeSchedules.get(patKey), bw,type, userName);//preferanceFeeSchedules.get(patKey
 		} else {
 			if (esfeess == null || feeKey== null) {
 				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -1062,7 +1072,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		dtoRL = new ArrayList<>();
 		if (espatients != null && esempmaster != null) {
 			dtoRL = rb.Rule6(ivfMap.get(ivx).get(0), messageSource, rule,
-					esempmaster.get(empMasterKey), espatients.get(patKey), bw, type);
+					esempmaster.get(empMasterKey), espatients.get(patKey), bw, type, userName);
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
 				for (TPValidationResponseDto t : dtoRL) {
@@ -1113,7 +1123,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		dtoRL = new ArrayList<>();
 		if (esfeess != null && espatients != null) {
 			dtoRL = rb.Rule19(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
-					esfeess.get(feeKey), espatients.get(patKey), bw,type);
+					esfeess.get(feeKey), espatients.get(patKey), bw,type, userName);
 
 			if (dtoRL != null) {
 				list.addAll(dtoRL);
@@ -1163,7 +1173,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		// RULE_ID_21 "// Frequency Limitations
 		rule = getRulesFromList(rules, Constants.RULE_ID_21);
-		dtoRL = rb.Rule21(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
+		dtoRL = rb.Rule21(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type, userName);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
@@ -1180,7 +1190,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 		// RULE_ID_57 "// Exam Frequency Limitation
 		rule = getRulesFromList(rules, Constants.RULE_ID_57);
-		dtoRL = rb.Rule57(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+		dtoRL = rb.Rule57(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, bw,type, userName);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
@@ -1391,6 +1401,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		// END "CRA
 
 		// RULE_ID_23 "Xray Bundling
+		/*
 		rule = getRulesFromList(rules, Constants.RULE_ID_23);
 		dtoRL = rb.Rule23(tListReduced, ivfMap.get(ivx).get(0),messageSource, rule, bw,type);
 
@@ -1404,7 +1415,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		}
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_23,
 				Constants.rule_log_debug, bw);
-
+        */
 		// END "Xray Bundling
 
 		//  Filling Bundling 
@@ -1464,6 +1475,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END  DQ Fillings (Provider Different)
       */
 		// DQ Fillings
+		/*
 		rule = getRulesFromList(rules, Constants.RULE_ID_53);
 		if (esfeess!=null)
 		dtoRL = rb.Rule53(tListReduced, ivfMap.get(ivx).get(0),esfeess.get(feeKey), messageSource, rule, bw,type);
@@ -1483,7 +1495,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_53,
 				Constants.rule_log_debug, bw);
-			
+		*/	
 		//END  DQ Fillings
        //
 		//  Crown Bundling with Fillings 
@@ -1757,6 +1769,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Age Limitation Prophylaxis
 		
 		//Space Maintainer-Billateral
+		/*
 		rule = getRulesFromList(rules, Constants.RULE_ID_40);
 		dtoRL = rb.Rule40(tListReduced ,messageSource, rule, bw, type);
 		if (dtoRL != null) {
@@ -1770,7 +1783,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_40,
 				Constants.rule_log_debug, bw);
-			
+		*/	
 		//END Space Maintainer-Billateral
 
 		//MVP VAP
@@ -1879,6 +1892,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		//END Pre-Authorization (User Input)
 		
 		//Provider Change (User Input)
+		/*
 		rule = getRulesFromList(rules, Constants.RULE_ID_47);
 		dtoRL = rb.Rule47(ivfMap.get(ivx).get(0),tListReduced,ansL ,messageSource,rule,mappings, bw,qhList,type,oldTp);
 		if (dtoRL != null) {
@@ -1892,12 +1906,12 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_47,
 				Constants.rule_log_debug, bw);
-			
+		*/	
 		//END Provider Change (User Input)
 		
 		//Exam limitation for CHIP
 		rule = getRulesFromList(rules, Constants.RULE_ID_48);
-		dtoRL = rb.Rule48(ivfMap.get(ivx).get(0),tListReduced ,messageSource, rule, bw,type);
+		dtoRL = rb.Rule48(ivfMap.get(ivx).get(0),tListReduced ,messageSource, rule, bw,type, userName);
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
 			for (TPValidationResponseDto t : dtoRL) {
@@ -2209,7 +2223,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		// RULE_ID_84 "//Provider Name" 
         rule = getRulesFromList(rules, Constants.RULE_ID_84);
-        dtoRL = rb.Rule84(tList,ivfMap.get(ivx).get(0), messageSource, rule, bw,type);
+        dtoRL = rb.Rule84(tList,ivfMap.get(ivx).get(0), preferredDentists, patKey, messageSource, rule, bw,type);
 		if (dtoRL != null) {
 			list.addAll(dtoRL);
 			for (TPValidationResponseDto t : dtoRL) {
@@ -2845,7 +2859,23 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
  	  	 
        RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_127,
            		 Constants.rule_log_debug, bw);
-       //End D0145 with D9994, D1120 and D1206	   
+     //End D0145 with D9994, D1120 and D1206
+    
+    //Preauth Required
+	rule = getRulesFromList(rules, Constants.RULE_ID_128);
+	dtoRL =  rb.Rule128(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+	if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+					t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+		}
+	 }
+	  	 
+      RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_128,
+          		 Constants.rule_log_debug, bw);
+      //End Preauth Required	      
 	
      // RULE_ID_79 "Insurance and Address"
 		/*
@@ -2881,7 +2911,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		  List<Object> tList,BufferedWriter bw ,String oldTp, int type,List<ExceptionDataDto> exceptionData,List<InsuranceMappingDto> insuranceData,List<OrthoOfficeMappingDto> orthoData,Map<String,List<Object>> adultMedicaidSheetData,List<CRAReqMappingDto> craData,List<OSIVFormCodes> oSCodes,
 		  Map<String, List<InsuranceDetail>> insuranceDetails,Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules,
 		  Map<String, List<PatientPolicyHolder>> espatientsHolderPr,Map<String, List<PatientPolicyHolder>> espatientsHolderSec,
-		  Map<String, List<PatientDeductiblewithBenefits>> patientDeductiblewithBenefitsPrimary, Map<String, List<PatientDeductiblewithBenefits>> patientDeductiblewithBenefitsSecondary) {
+		  Map<String, List<PatientDeductiblewithBenefits>> patientDeductiblewithBenefitsPrimary, Map<String, List<PatientDeductiblewithBenefits>> patientDeductiblewithBenefitsSecondary,
+		  Map<String, List<EagleSoftPolicyholdeDob>> espatientsHolderDob,
+		  Map<String, List<PreferredDentist>> preferredDentists, String userName) {
 	  
 		String feeKey = "-1";
 		if (espatients != null && espatients.get(patKey) != null
@@ -2924,7 +2956,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			feeKey = ((EagleSoftPatient) espatients.get(patKey).get(0)).getFeeScheduleId();
 		if (esfeess != null && espatients != null && espatients.get(patKey).size() > 0) {
 			dtoRL = rb.Rule4_B(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings,
-					esfeess.get(feeKey), espatients.get(patKey),preferanceFeeSchedules==null?null:preferanceFeeSchedules.get(patKey), bw,type);//
+					esfeess.get(feeKey), espatients.get(patKey),preferanceFeeSchedules==null?null:preferanceFeeSchedules.get(patKey), bw,type, userName);//
 		} else {
 			if (esfeess == null || feeKey== null) {
 				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -3014,7 +3046,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Constants.rule_log_debug, bw);
 		// END "Percentage Coverage Check"
 		
-		// RULE_ID_77 "Waiting Period Checks(OS)"
+		// RULE_ID_74 "Waiting Period Checks(OS)"
 		
 		rule = getRulesFromList(rules, Constants.RULE_ID_74);
 		dtoRL = rb.Rule74(tListReduced, ivfMap.get(ivx).get(0), messageSource, rule, mappings, bw,type);
@@ -4554,6 +4586,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		Object principal = authentication.getPrincipal();
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(((UserDetails)principal).getUsername());
 		JwtUser user = (JwtUser) userDetails;
+		String userName= user.getUsername();
 		List<TPValidationResponseDto> list = new ArrayList<TPValidationResponseDto>();
 		List<Rules> rules = tvd.getAllActiveRules();
 		// List<Mappings> mappings = tvd.getAllMappings();
@@ -4659,9 +4692,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 			// Read Patient Key is Unique Id from IVF sheet
 			//OneDriveFile espatient=null;
 			Map<String, List<EagleSoftPatient>> espatients=null;
+			Map<String, List<EagleSoftPolicyholdeDob>> espatientsHolderDob=null;
 			Map<String, List<PatientPolicyHolder>> espatientsHolderPr=null;
 			Map<String, List<PatientPolicyHolder>> espatientsHolderSec=null;
-			
 			Map<String, List<PreferanceFeeSchedule>> preferanceFeeSchedules=null;
 			
 			//Map<String, List<EagleSoftPatientWalkHistory>> espatientsHis=null;
@@ -4809,7 +4842,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 					//		new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);
 					espatientsHolderPr =(Map<String, List<PatientPolicyHolder>>) (Map<String, ?>)  dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB, null,true);
 					espatientsHolderSec =espatientsHolderPr;//(Map<String, List<PatientPolicyHolder>>) (Map<String, ?>)  dbAccesService.getPolicyHolderByPatientId(ivfMap, esDB, null,false);
-							
+					espatientsHolderDob = (Map<String, List<EagleSoftPolicyholdeDob>>) (Map<String, ?>) dbAccesService.getPolicyHolderDobByPatientId(iType,ivfMap, esDB,null);		
 					if (espatients != null && espatients.size() > 0) {
 						esempmaster = (Map<String, List<EagleSoftEmployerMaster>>) (Map<String, ?>) dbAccesService.getEmployeeMaster(espatients, esDB,null);
 						//esfeess = (Map<String, List<EagleSoftFeeShedule>>) (Map<String, ?>) dbAccesService.getFeeScheduleData(espatients, esDB,bw);
@@ -4886,7 +4919,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							rule = getRulesFromList(rules, Constants.RULE_ID_4);
 
 							dtoRL = rb.Rule4_A((IVFTableSheet) ivfMap.get(ivx).get(0), messageSource, rule,
-									espatients.get(patKey),preferanceFeeSchedules==null?null:preferanceFeeSchedules.get(patKey), null);
+									espatients.get(patKey),preferanceFeeSchedules==null?null:preferanceFeeSchedules.get(patKey), null, userName);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								
@@ -4913,6 +4946,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 								}
 							}
 							}
+							//Patient Name
 							rule = getRulesFromList(rules, Constants.RULE_ID_76);
 							dtoRL = rb.Rule76(ivfMap.get(ivx).get(0),espatients.get(patKey), messageSource, rule, null);
 							if (dtoRL != null) {
@@ -4923,8 +4957,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
-							rule = getRulesFromList(rules, Constants.RULE_ID_77);
-							dtoRL = rb.Rule77(ivfMap.get(ivx).get(0),espatients.get(patKey), messageSource, rule, null);
+							rule = getRulesFromList(rules, Constants.RULE_ID_77);//
+							dtoRL = rb.Rule77(ivfMap.get(ivx).get(0),espatients.get(patKey),messageSource, rule, null);
 							if (dtoRL != null) {
 								list.addAll(dtoRL);
 								for (TPValidationResponseDto t : dtoRL) {
@@ -4933,6 +4967,22 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
 								}
 							}
+							rule = getRulesFromList(rules, Constants.RULE_ID_129);//
+							if (espatientsHolderDob == null ) {
+								dtoRL = rb.Rule129(ivfMap.get(ivx).get(0),null ,messageSource, rule, null);
+							}else {
+								dtoRL = rb.Rule129(ivfMap.get(ivx).get(0),espatientsHolderDob.get(patKey) ,messageSource, rule, null);
+							}
+							
+							if (dtoRL != null) {
+								list.addAll(dtoRL);
+								for (TPValidationResponseDto t : dtoRL) {
+									dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+											t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+									// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+								}
+							}
+							
 							rule = getRulesFromList(rules, Constants.RULE_ID_78);
 							dtoRL = rb.Rule78(ivfMap.get(ivx).get(0),espatients.get(patKey), messageSource, rule, null);
 							if (dtoRL != null) {
@@ -4962,7 +5012,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 							if (esempmaster != null) {
 								rule = getRulesFromList(rules, Constants.RULE_ID_6);
 								dtoRL = rb.Rule6(ivfMap.get(ivx).get(0), messageSource, rule,
-										esempmaster.get(empMasterKey), espatients.get(patKey), null,type);
+										esempmaster.get(empMasterKey), espatients.get(patKey), null,type, userName);
 								if (dtoRL != null) {
 									list.addAll(dtoRL);
 									for (TPValidationResponseDto t : dtoRL) {
@@ -5203,6 +5253,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						cdc.setPatient(cdp);
 						cdc.setPatientPortion(a.getPatientPortion());
 						cdc.setProviderLastName(a.getProviderLastName());
+						cdc.setProviderFirstName(a.getProviderFirstName());
 						cdc.setServiceCode(a.getServiceCode());
 						if (a.getServiceCode()==null) cdc.setServiceCode("");
 						cdc.setStatus(a.getStatus());
@@ -5280,6 +5331,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 						cdc.setPatient(cdp);
 						cdc.setPatientPortion(a.getPatientPortion());
 						cdc.setProviderLastName(a.getProviderLastName());
+						cdc.setProviderFirstName(a.getProviderFirstName());
 						cdc.setServiceCode(a.getServiceCode());
 						if (a.getServiceCode()==null) cdc.setServiceCode("");
 						cdc.setStatus(a.getStatus());

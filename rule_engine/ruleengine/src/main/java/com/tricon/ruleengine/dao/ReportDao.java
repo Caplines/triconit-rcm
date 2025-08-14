@@ -23,7 +23,7 @@ public interface ReportDao {
 	
 	public List<ReportResponseDto> getReportsForSealant(ReportDto dto);
 	
-	public List<RuleStatusDto> getFailedRulesByData(RcmClaimDto dto,Office office,int groupRun);
+	public List<RuleStatusDto> getFailedRulesByData(RcmClaimDto dto,Office office);
 	
 	public int getFailedRulesByDataMaxGroupRun(RcmClaimDto dto,Office office);
 }

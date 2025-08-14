@@ -19,6 +19,7 @@ public class CommonDataCheck {
 	private String 	PatientPortion;
 	private String 	estPrimary;
 	private int userType;
+	private String providerFirstName;
 
 	
 	
@@ -153,6 +154,14 @@ public class CommonDataCheck {
 
 	public void setUserType(int userType) {
 		this.userType = userType;
+	}
+
+	public String getProviderFirstName() {
+		return providerFirstName;
+	}
+
+	public void setProviderFirstName(String providerFirstName) {
+		this.providerFirstName = providerFirstName;
 	}
 
 	

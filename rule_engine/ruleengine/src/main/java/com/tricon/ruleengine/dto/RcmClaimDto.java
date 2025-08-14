@@ -20,7 +20,7 @@ public class RcmClaimDto {
 	private String patientId;
 	private String claimOrTreatment;
 	private String claimOrTreatmentId;
-	private String ivId;
+	private String uniqueId;
 	
 	public String getColumns() {
 		return columns;
@@ -130,13 +130,14 @@ public class RcmClaimDto {
 	public void setClaimOrTreatmentId(String claimOrTreatmentId) {
 		this.claimOrTreatmentId = claimOrTreatmentId;
 	}
-	public String getIvId() {
-		return ivId;
+	public String getUniqueId() {
+		return uniqueId;
 	}
-	public void setIvId(String ivId) {
-		this.ivId = ivId;
+	public void setUniqueId(String uniqueId) {
+		this.uniqueId = uniqueId;
 	}
-	
+
+
 	
 	
 }

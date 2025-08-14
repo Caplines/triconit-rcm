@@ -543,26 +543,70 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 			}
 			Thread.sleep(20000);
 			found = true;
+			boolean multi=false;
 			List<WebElement> spans = driver.findElements(By.tagName("span"));
 			for (WebElement span : spans) {
 				if (span.getText().contains("No patient found with this search")) {
 					found = false;
 					break;
-                    /*
-					buts = driver.findElements(By.tagName("button"));
-					for (WebElement but : buts) {
-						if (but.getText().contains("Close")) {
-							but.click();
-							found = false;
-							break;
-						}
-					}
-					*/
+                    
+				}
+				if (span.getText().contains("We found multiple results matching your search. Please enter the patient's member ID so we can verify their identity.")) {
+					multi = true;
+					found = false;
+					break;
+                    
 				}
 				/*if (!found)
 					break;*/
 			}
-			
+			if (multi) {
+				// 
+				 WebElement mem = driver.findElement(By.xpath(
+							"/html/body/div[2]/form/div[1]/div[2]/div/div/div[2]/div/div/div[1]/div[2]/table/tbody/tr/td[2]/div/div/table/tbody/tr/td[2]/div/div[2]/div/div/div[1]/div/table/tbody/tr/td[2]/div/div/div[7]/span/div[3]/div[7]/div/div[3]/span/input"));
+				 mem.sendKeys(memberid.trim());	
+				 buts = driver.findElements(By.tagName("button"));
+				    for (WebElement but : buts) {
+					if (but.getText().contains("Find patient")) {
+						but.click();
+						break;
+					}
+				 
+			        }
+				    found = true;
+				    List<WebElement>  spans1 = driver.findElements(By.tagName("span"));
+					for (WebElement span : spans1) {
+						if (span.getText().contains("No patient found with this search")) {
+							found = false;
+							break;
+		                    
+						}
+						
+					}
+					
+					if (found) {
+						//Do  new Code ...
+						found = true;
+						/*
+						List<WebElement>  hrefs = driver.findElements(By.tagName("a"));
+						for (WebElement href : hrefs) {
+							if (href.getText().contains("Add to 'My patients' list")) {
+								found = true;
+								
+								href.click();
+								List<WebElement>  buts1 = driver.findElements(By.tagName("button"));
+								for (WebElement but : buts1) {
+									if (href.getText().contains("Ok")) {
+										found = true;
+								}
+			                    
+							}
+							
+						}
+					   }
+						*/
+					}
+			}
 			if (!found) {
 				if (memberid.trim().equals(""))
 					return false;
@@ -4001,6 +4045,7 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 	public static void main(String[] main)
 			throws InterruptedException, FailingHttpStatusCodeException, MalformedURLException, IOException {
 		System.out.println("taskkill /f /im chromedriver.exe");
+		
 		System.out.println(Integer.parseInt("09"));
 		String [] t="Accumulation period for this Program 23/sdsd/sd".split("Accumulation period for this Program");
 		System.out.println(t[1].split("/")[0]);
@@ -4020,16 +4065,16 @@ public class DeltaDentalServiceImpl extends BasefullScrapImpl implements Callabl
 		f.setProxyPort("9500");
 		// d.setGoogleSheetId("");
 		ScrappingFullDataDetailDto dto = new ScrappingFullDataDetailDto();
-		dto.setPassword("Smilepoint@00");
-		dto.setUserName("Aran2021");
+		dto.setPassword("Elgin%2019");
+		dto.setUserName("Elgin5478");
 
 		PatientScrapSearchDto psc = new PatientScrapSearchDto();
 		List<PatientScrapSearchDto> l = new ArrayList<>();
-		psc.setDob("09/04/1967");// 03/20/1992 12/26/1988
-		psc.setFirstName("Christopher");// Heather Griffith - Dean Dornak Ellen Keck
-		psc.setLastName("Cava");// Patient ID -8909
-		psc.setMemberId("121285356501");// 1125727908.. 632307605
-		psc.setSsnNumber("121285356501");
+		psc.setDob("06/30/1990");// 03/20/1992 12/26/1988
+		psc.setFirstName("Brett");// Heather Griffith - Dean Dornak Ellen Keck
+		psc.setLastName("Currier");// Patient ID -8909
+		psc.setMemberId("123493431201");// 1125727908.. 632307605
+		psc.setSsnNumber("123493431201");
 		psc.setSubscribersFirstName("");
 		psc.setSubscribersLastName("");
 		psc.setSubscribersDob("");

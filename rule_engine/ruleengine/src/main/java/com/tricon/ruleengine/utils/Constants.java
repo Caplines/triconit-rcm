@@ -169,6 +169,8 @@ public class Constants {
 	public static final String RULE_ID_125="Exams found without xrays";
 	public static final String RULE_ID_126="Filling on Primary Posterior tooths";
 	public static final String RULE_ID_127="D0145 with D9994, D1120 and D1206";
+	public static final String RULE_ID_128="Preauth Required";
+	public static final String RULE_ID_129="Subscriber DOB";
 	//public static final String RULE_ID_RuleXXX="Deductible Coverage Match";
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	

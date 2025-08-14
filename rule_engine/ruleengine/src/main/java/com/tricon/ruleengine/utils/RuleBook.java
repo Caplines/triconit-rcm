@@ -18,7 +18,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -47,6 +46,7 @@ import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
+import com.tricon.ruleengine.model.sheet.EagleSoftPolicyholdeDob;
 import com.tricon.ruleengine.model.sheet.IVFHistorySheet;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceMappingDto;
@@ -55,6 +55,7 @@ import com.tricon.ruleengine.model.sheet.PatientDeductiblewithBenefits;
 import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
+import com.tricon.ruleengine.model.sheet.PreferredDentist;
 import com.tricon.ruleengine.model.sheet.AdultMedicaidInsurance;
 import com.tricon.ruleengine.model.sheet.AdultMedicaidOffice;
 import com.tricon.ruleengine.model.sheet.CRAReqMappingDto;
@@ -185,6 +186,8 @@ public class RuleBook {
 				calendar.set(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
 						calendar.get(Calendar.DATE) + extraDays);
 				Date dInterval = calendar.getTime();
+				RuleEngineLogger.generateLogs(clazz, "dInterval --" + dInterval, Constants.rule_log_debug, bw);
+				RuleEngineLogger.generateLogs(clazz, "currentDate --" + currentDate, Constants.rule_log_debug, bw);
 				if (dInterval.compareTo(currentDate) >= 0) {
 					// Pass with Alert
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -271,10 +274,13 @@ public class RuleBook {
 	// Mode
 	public List<TPValidationResponseDto> Rule4_B(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
 			Rules rule, List<Mappings> mappings, List<EagleSoftFeeShedule> esfeess, List<EagleSoftPatient> espatients,
-			List<PreferanceFeeSchedule> preferanceFeeSchedules, BufferedWriter bw, int userType) {
+			List<PreferanceFeeSchedule> preferanceFeeSchedules, BufferedWriter bw, int userType, String userName) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_4,
 				Constants.rule_log_debug, bw);
+		if (!runRuleByUserNameAndRuleId(userName, rule, bw)) {
+			return null;
+		}
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		Set<String> fcodes = new HashSet<>();
 		Set<String> surfaces = new HashSet<>();
@@ -446,11 +452,11 @@ public class RuleBook {
 						
 						if (ruleGen != null) {
 							for (EagleSoftFeeShedule fs : ruleGen) {
-								RuleEngineLogger.generateLogs(clazz,
+								RuleEngineLogger.generateLogs(clazz, "For Code :"+tp+":"+
 										" FS FEE -" + fs.getFeesFee() + " :: Treatment Plan-(Claim) Fee-" + tp.getFee(),
 										Constants.rule_log_debug, bw);
-
-								if (Double.parseDouble(fs.getFeesFee()) != Double.parseDouble(tp.getFee())) {
+                                 //if fs fees is zero no need to check
+								if (Double.parseDouble(fs.getFeesFee()) >0 && Double.parseDouble(fs.getFeesFee()) != Double.parseDouble(tp.getFee())) {
 									f1=tp.getFee();
 									f2=fs.getFeesFee();
 									missing_code.add(tp.getServiceCode());
@@ -534,10 +540,13 @@ public class RuleBook {
 
 	// Compare Coverage Book, Fee Schedule and Fee in IV and Eaglesoft A- BATCH
 	public List<TPValidationResponseDto> Rule4_A(IVFTableSheet ivfSheet, MessageSource messageSource, Rules rule,
-			List<EagleSoftPatient> espatients, List<PreferanceFeeSchedule> preferanceFeeSchedules, BufferedWriter bw) {
+			List<EagleSoftPatient> espatients, List<PreferanceFeeSchedule> preferanceFeeSchedules, BufferedWriter bw, String userName) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_4,
 				Constants.rule_log_debug, bw);
+		if (!runRuleByUserNameAndRuleId(userName, rule, bw)) {
+			return null;
+		}
 
 		// String inv=Constants.invalidStr_TP;
 		String ER_MSG = Constants.TP;
@@ -849,10 +858,13 @@ public class RuleBook {
 	// -Sub-GingivalIrrigation_D4921_%,
 	public List<TPValidationResponseDto> Rule6(Object ivfSheet, MessageSource messageSource, Rules rule,
 			List<EagleSoftEmployerMaster> esempmaster, List<EagleSoftPatient> espatients, BufferedWriter bw,
-			int userType) {
+			int userType, String userName) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_6,
 				Constants.rule_log_debug, bw);
+		if (!runRuleByUserNameAndRuleId(userName, rule, bw)) {
+			return null;
+		}
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		boolean pass = true;
 		String TP_CL = Constants.TP;
@@ -1490,9 +1502,9 @@ public class RuleBook {
 		}
 
 		RuleEngineLogger.generateLogs(clazz, "sealantPresent-" + sealantPresent, Constants.rule_log_debug, bw);
-		List<String> primaryMolarT = new ArrayList<>();
-		List<String> permamentMolarT = new ArrayList<>();
-		List<String> preMolarT = new ArrayList<>();
+		//List<String> primaryMolarT = new ArrayList<>();
+		//List<String> permamentMolarT = new ArrayList<>();
+		//List<String> preMolarT = new ArrayList<>();
 
 		Set<String> fcodes = new HashSet<>();
 		Set<String> surfaces = new HashSet<>();
@@ -1610,9 +1622,15 @@ public class RuleBook {
 					if (tp.getServiceCode().equalsIgnoreCase("D1351")) {
 
 						String tooths[] = ToothUtil.getToothsFromTooth(tp.getTooth());
+						if (primaryMolarTCList.contains(Arrays.asList(tooths))) {
 						validToothsPrimaryMolar.addAll(Arrays.asList(tooths));//A B C //1,2,3
+						}
+						if (permanentMolarTCList.contains(Arrays.asList(tooths))) {
 						validToothsPermanentMolar.addAll(Arrays.asList(tooths));//A B C //1,2,3
+						}
+						if (preMolarCList.contains(Arrays.asList(tooths))) {
 						validToothsPreMolar.addAll(Arrays.asList(tooths));//A B C //1,2,3
+						}
 						
 					}
 				}	
@@ -2873,9 +2891,9 @@ public class RuleBook {
 			 * messageSource.getMessage("rule1.error.message.date", new Object[] { dob },
 			 * locale), Constants.FAIL)); return d; }
 			 */
-			List<String> combined1 = new ArrayList<>();
-			List<String> combined3 = new ArrayList<>();
-			List<String> combinedY = new ArrayList<>();
+			Set<String> combined1 = new HashSet<>();
+			Set<String> combined3 = new HashSet<>();
+			Set<String> combinedY = new HashSet<>();
 			boolean answerCheck = false;
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
@@ -3020,7 +3038,7 @@ public class RuleBook {
 				if (combined3.size() > 0)
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule10.error.message2",
-									new Object[] { String.join(" ", combined3) }, locale),
+									new Object[] { String.join(",", combined3) }, locale),
 							Constants.ALERT, String.join(",", surfaces), String.join(",", teethC),
 							String.join(",", fcodes)));
 				if (combinedY.size() > 0)
@@ -3569,14 +3587,16 @@ public class RuleBook {
 		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 		List<TPValidationResponseDto> d = new ArrayList<>();
 		try {
-			boolean pass = false;
+			boolean pass1 = false;
 			if (espatients != null && espatients.get(0) != null) {
 				EagleSoftPatient pat = espatients.get(0);
-				pass = true;
+				pass1 = true;
 				String esDate = Constants.SIMPLE_DATE_FORMAT_IVF
 						.format(Constants.SIMPLE_DATE_FORMAT.parse(pat.getBirthDate()));
+				
+				
 				if (!ivf.getPatientDOB().equals(esDate)) {
-					pass = false;
+					pass1 = false;
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule77.error.message",
 									new Object[] { ivf.getPatientDOB(), pat.getBirthDate() }, locale),
@@ -3590,7 +3610,61 @@ public class RuleBook {
 								+ ivf.getPatientName() + "-" + ivf.getPatientDOB() + Constants.errorMessClose + ")" },
 						locale), Constants.FAIL, "", "", ""));
 			}
-			if (pass)
+			
+			
+			if (pass1)
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS, "", "",
+						""));
+		} catch (Exception x) {
+
+			d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL, "", "", ""));
+
+		}
+		return d;
+
+	}
+	
+	// Subscriber DOB
+	public List<TPValidationResponseDto> Rule129(Object ivfSheet, List<EagleSoftPolicyholdeDob> espatientsHolderDob,
+			MessageSource messageSource, Rules rule, BufferedWriter bw) {
+
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_129,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> d = new ArrayList<>();
+		try {
+			boolean pass2 = false;
+			
+			
+			//Policy Holder Dob check
+			
+			if (espatientsHolderDob != null && espatientsHolderDob.get(0) != null) {
+				EagleSoftPolicyholdeDob pat = espatientsHolderDob.get(0);
+				pass2 = true;
+				String esDate = Constants.SIMPLE_DATE_FORMAT_IVF
+						.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse(pat.getPolicyHolderDob()));
+				
+				if (!ivf.getPolicyHolderDOB().equals(esDate)) {
+					pass2 = false;
+					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+							messageSource.getMessage("rule129.error.message",
+									new Object[] { ivf.getPolicyHolderDOB(), pat.getPolicyHolderDob() }, locale),
+							Constants.FAIL, "", "", ""));
+				}
+
+			} else {
+				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(), messageSource.getMessage(
+						"rule129.error.message_no_data",
+						new Object[] { "Subscriber DOB not found in ES (" + Constants.errorMessOPen
+								+ ivf.getPatientName() + "-" + ivf.getPolicyHolderDOB() + Constants.errorMessClose + ")" },
+						locale), Constants.FAIL, "", "", ""));
+			}//can  we create new Rule for this Policy holder DOB and check for  Null too.
+			
+			if (pass2)
 				d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS, "", "",
 						""));
@@ -3957,10 +4031,13 @@ public class RuleBook {
 	// Downgrading
 	public List<TPValidationResponseDto> Rule19(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
 			Rules rule, List<Mappings> mappings, List<EagleSoftFeeShedule> esfeess, List<EagleSoftPatient> espatients,
-			BufferedWriter bw, int userType) {
+			BufferedWriter bw, int userType, String userName) {
 
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_19,
 				Constants.rule_log_debug, bw);
+		if (!runRuleByUserNameAndRuleId(userName, rule, bw)) {
+			return null;
+		}
 
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		Set<String> fcodes = new HashSet<>();
@@ -4149,12 +4226,16 @@ public class RuleBook {
 	 * @return
 	 */
 	public List<TPValidationResponseDto> Rule21(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, List<Mappings> mappings, BufferedWriter bw, int userType) {
+			Rules rule, List<Mappings> mappings, BufferedWriter bw, int userType, String userName) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_21,
 				Constants.rule_log_debug, bw);
+		if (!runRuleByUserNameAndRuleId(userName, rule, bw)) {
+			return null;
+		}
 		Set<String> failedCodeSet = new HashSet<>();
 		String inv = Constants.invalidStr_TP;
 		boolean insZero = true;
+		
 		if (userType == Constants.userType_CL) {
 			insZero = false;
 			inv = Constants.invalidStr_Cl;
@@ -5530,9 +5611,12 @@ public class RuleBook {
 	 * @return
 	 */
 	public List<TPValidationResponseDto> Rule57(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
-			Rules rule, BufferedWriter bw, int userType) {
+			Rules rule, BufferedWriter bw, int userType, String userName) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_57,
 				Constants.rule_log_debug, bw);
+		if (!runRuleByUserNameAndRuleId(userName, rule, bw)) {
+			return null;
+		}
 		Set<String> failedCodeSet = new HashSet<>();
 		String inv = Constants.invalidStr_TP;
 		boolean insZero = true;
@@ -6818,7 +6902,7 @@ public class RuleBook {
 					"planType:-" + planType + " - insName:" + insName + " group:-" + group + " - empName:" + emp,
 					Constants.rule_log_debug, bw);
 
-			String codeFound1 = "";
+			Set<String> codeFound1 = new HashSet<>();
 			String codeFound2 = "";
 
 			if (cra != null && cra.trim().equalsIgnoreCase("yes")) {
@@ -6837,7 +6921,7 @@ public class RuleBook {
 						surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 						teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
 						fcodes.add(tp.getServiceCode());
-						codeFound1 = tp.getServiceCode();
+						codeFound1.add(tp.getServiceCode());
 						RuleEngineLogger.generateLogs(clazz, "Service Code IN TP-" + tp.getServiceCode(),
 								Constants.rule_log_debug, bw);
 
@@ -6853,10 +6937,10 @@ public class RuleBook {
 
 					}
 				} // For LOOP end
-				if (!codeFound1.equals("") && codeFound2.equals("")) {
+				if (codeFound1.size()>0 && codeFound2.equals("")) {
 					// pass = false;
 					d.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-							messageSource.getMessage("rule22.error.message", new Object[] { ivf.getInsName(), TP_CL },
+							messageSource.getMessage("rule22.error.message", new Object[] { ivf.getInsName(), TP_CL,String.join(",", codeFound1) },
 									locale),
 							Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
 							String.join(",", fcodes)));
@@ -6907,7 +6991,7 @@ public class RuleBook {
 	 * @param bw
 	 * @return
 	 */
-	public List<TPValidationResponseDto> Rule23(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
+	public List<TPValidationResponseDto> Rule23_XX(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
 			Rules rule, BufferedWriter bw, int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_23,
 				Constants.rule_log_debug, bw);
@@ -10073,7 +10157,7 @@ public class RuleBook {
 
 	// Space Maintainer-Billateral_D1515 Need to bill on Arch
 	// 40
-	public List<TPValidationResponseDto> Rule40(List<Object> tpList, MessageSource messageSource, Rules rule,
+	public List<TPValidationResponseDto> Rule40_XX(List<Object> tpList, MessageSource messageSource, Rules rule,
 			BufferedWriter bw, int userType) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_40,
 				Constants.rule_log_debug, bw);
@@ -10443,7 +10527,7 @@ public class RuleBook {
 							messageSource.getMessage("rule41.error.message",
 									new Object[] { String.join(",", sf), miss, String.join("</br>", sfeeMess) },
 									locale),
-							Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+							Constants.ALERT, String.join(",", surfaces), String.join(",", teethC),
 							String.join(",", fcodes)));
 				}
 			} else {
@@ -10905,7 +10989,7 @@ public class RuleBook {
 	}
 
 	// Provider Change (User Input)
-	public List<TPValidationResponseDto> Rule47(Object ivfSheet, List<Object> tpList, List<QuestionAnswerDto> ansL,
+	public List<TPValidationResponseDto> Rule47_XX(Object ivfSheet, List<Object> tpList, List<QuestionAnswerDto> ansL,
 			MessageSource messageSource, Rules rule, List<Mappings> mappings, BufferedWriter bw,
 			List<UserInputRuleQuestionHeader> qhList, int userType, String oldTpId) {
 
@@ -11019,9 +11103,12 @@ public class RuleBook {
 
 	// Exam limitation for CHIP
 	public List<TPValidationResponseDto> Rule48(Object ivfSheet, List<Object> tpList, MessageSource messageSource,
-			Rules rule, BufferedWriter bw, int userType) {
+			Rules rule, BufferedWriter bw, int userType, String userName) {
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_48,
 				Constants.rule_log_debug, bw);
+		if (!runRuleByUserNameAndRuleId(userName, rule, bw)) {
+			return null;
+		}
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		boolean pass = true;
 		boolean insZero = true;
@@ -11169,7 +11256,7 @@ public class RuleBook {
 	}
 
 	// DQ Fillings
-	public List<TPValidationResponseDto> Rule53(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess,
+	public List<TPValidationResponseDto> Rule53__XX(List<Object> tpList, Object ivfSheet, List<EagleSoftFeeShedule> esfeess,
 			MessageSource messageSource, Rules rule, BufferedWriter bw, int userType) {
 		// DQ_PLAN_NAME_CHECK
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_53,
@@ -13455,8 +13542,9 @@ public class RuleBook {
 				ToothUtil.sortTeeth(teethNotCoveredAge), ToothUtil.sortTeeth(teethNotCoveredFreq), dList };
 	}
 
-	// Provider Name
-	public List<TPValidationResponseDto> Rule84(List<Object> tpList, Object ivfSheet, MessageSource messageSource,
+	// Provider Name (complete provider name) for our reference
+	public List<TPValidationResponseDto> Rule84(List<Object> tpList, Object ivfSheet,Map<String, List<PreferredDentist>> preferredDentists, String patKey,
+			MessageSource messageSource,
 			Rules rule, BufferedWriter bw, int userType) {
 		boolean pass = false;
 		List<TPValidationResponseDto> dList = new ArrayList<>();
@@ -13465,43 +13553,55 @@ public class RuleBook {
 		try {
 			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
 			String ER_MSG = Constants.TP;
-
+            if (preferredDentists== null || preferredDentists.get(patKey)== null) {
+            	dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule84.error.message1",
+								new Object[] {ivf.getProviderName() }, locale),
+						Constants.FAIL, "", "", ""));
+            	return dList;
+            }
+            
+            String preferredDentistPrName =preferredDentists.get(patKey).get(0).getProviderName();
 			if (userType == Constants.userType_CL) {
 				ER_MSG = Constants.CL;
 			}
-			String pcName = "";
+			/*String pcName = "";
+			String pcFName = "";
 
 			for (Object obj : tpList) {
 				CommonDataCheck tp = (CommonDataCheck) obj;
 				pcName = tp.getProviderLastName();
+				pcFName = tp.getProviderFirstName();
 				break;
 
-			}
-			RuleEngineLogger.generateLogs(clazz, "Provider Last Name =" + pcName, Constants.rule_log_debug, bw);
+			}*/
+			RuleEngineLogger.generateLogs(clazz, "PreferredDentist provider name=" + preferredDentistPrName, Constants.rule_log_debug, bw);
 			RuleEngineLogger.generateLogs(clazz, "IV Provider  Name =" + ivf.getProviderName(),
 					Constants.rule_log_debug, bw);
 
-			if (ivf.getProviderName().equalsIgnoreCase(pcName.trim())) {
+			if (ivf.getProviderName().equalsIgnoreCase(preferredDentistPrName.trim())) {
 				pass = true;
-			} else {
+			}/* else {
 				String[] names = ivf.getProviderName().split(" ");
 				if (names.length > 1) {
-					String lastName = names[names.length - 1];
+					String lastName = names[names.length - 1];//3 -1 =2 Dr. Abdelkader, Hebaalla S --> Abdelkader  
+					RuleEngineLogger.generateLogs(clazz, "IV Provider LAST  Name =::" + lastName+"::",
+							Constants.rule_log_debug, bw);
 					if (lastName.equalsIgnoreCase(pcName.trim())) {
 						pass = true;
 					}
 				}
-			}
+			}*/
 
 			if (!pass) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule84.error.message",
-								new Object[] { ivf.getProviderName(), pcName, ER_MSG }, locale),
+								new Object[] { ivf.getProviderName(), preferredDentistPrName, ER_MSG }, locale),
 						Constants.FAIL, "", "", ""));
 
 			} else {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule84.pass.message", new Object[] { pcName }, locale),
+						messageSource.getMessage("rule84.pass.message", new Object[] { preferredDentistPrName }, locale),
 						Constants.PASS, "", "", ""));
 			}
 
@@ -13703,21 +13803,24 @@ public class RuleBook {
 						|| tp.getEstInsurance().equals("0.00") || tp.getEstInsurance().equals("0.0")))
 					continue;
 				String code = tp.getServiceCode();
-				String estIns = tp.getEstInsurance();
+				//String estIns = tp.getEstInsurance();
 				surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
 				teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
-				fcodes.add(code);
+				//fcodes.add(code);
 				
 				// only check if amount is Present
 				if (code.equalsIgnoreCase("D0145")) {
 					D0145 = true;
+					fcodes.add(code);
 					fcodesRules.add(code);
 				} else if (code.equalsIgnoreCase("D9230")) {
 					D9230 = true;
 					fcodesRules.add(code);
+					fcodes.add(code);
 				} else if (code.equalsIgnoreCase("D9248")) {
 					D9248 = true;
 					fcodesRules.add(code);
+					fcodes.add(code);
 				}
 
 			}
@@ -18440,6 +18543,66 @@ public class RuleBook {
 		return dList;
 }
     
+    // Preauth Required
+    public List<TPValidationResponseDto> Rule128( List<Object> tpList,Object ivfSheet,
+			 MessageSource messageSource, Rules rule, BufferedWriter bw,
+			int userType) {
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_enter + "-" + Constants.RULE_ID_128,
+				Constants.rule_log_debug, bw);
+
+		IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes = new HashSet<>();
+		Set<String> failedCode = new HashSet<>();
+		Set<String> surfaces = new HashSet<>();
+		Set<String> teethC = new HashSet<>();
+		String insurance = ivf.getInsName();
+		String insuranceUnited = "United Concordia- Active Duty Dental";
+		
+		try {
+			boolean pass = true;
+			RuleEngineLogger.generateLogs(clazz, "Plan.-" + insurance, Constants.rule_log_debug,
+					bw);
+      
+			if (insurance != null && (insurance.trim().toLowerCase().contains(insuranceUnited.toLowerCase()))) {
+				for (Object obj : tpList) {
+					CommonDataCheck tp = (CommonDataCheck) obj;
+					String code= tp.getServiceCode();
+					RuleEngineLogger.generateLogs(clazz, "Service Code.-" + code, Constants.rule_log_debug,
+							bw);
+					fcodes.add(code);
+					surfaces.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getSurface())));
+					teethC.addAll(Arrays.asList(ToothUtil.getToothsFromTooth(tp.getTooth())));
+					if (tp.getServiceCode()!=null && code.toUpperCase().startsWith("D")) {
+						failedCode.add(code);
+						pass =false;
+					}
+					
+				}	
+			 	
+			} 
+			
+			if (pass){
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule128.pass.message", new Object[] {  }, locale),
+						Constants.PASS, String.join(",", surfaces), String.join(",", teethC),
+						String.join(",", fcodes)));
+		    }else {
+				
+		    	dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule128.error.message", new Object[] {  }, locale),
+						Constants.FAIL, String.join(",", surfaces), String.join(",", teethC),
+						String.join(",", failedCode)));
+			}
+			///
+		} catch (Exception ex) {
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { ex.getMessage() }, locale),
+					Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+		}
+		return dList;
+}    
+    
 	
 	//Deductible Coverage Match
 	public List<TPValidationResponseDto> RuleXXX(Object ivfSheet, List<Object> tpList, MessageSource messageSource,
@@ -18734,5 +18897,27 @@ public class RuleBook {
 		dL.add(scivftff);
 		mapFlIVF.put(code, dL);
 
+	}
+	
+	private boolean runRuleByUserNameAndRuleId(String userName, Rules rule, BufferedWriter bw) {
+		/**
+		        * Frequency Limitations 21 (no need to run for iv_smilepoint_us_cl)
+				* Exam Frequency Limitation 57
+				* Coverage Book and Fee Schedule Names 4
+				* Exam Limitation 48
+				* Percent Coverage Match 6
+				* Downgrading 19
+		 */
+		if (userName.equals("iv_smilepoint_us_cl") && (
+				rule.getId() == 21 || rule.getId() == 57 || rule.getId() == 4 || rule.getId() == 48 ||
+				rule.getId() == 6  || rule.getId() == 19
+				) ) {
+			
+			RuleEngineLogger.generateLogs(clazz, rule.getName() + "- Rule not Run for "+userName,
+					Constants.rule_log_debug, bw);
+			return false;
+		}
+		return true;
+			
 	}
 }

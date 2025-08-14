@@ -22,6 +22,7 @@ public class ClaimData {
 	private String 	PatientPortion;
 	private String 	estPrimary;
 	private String 	PatientPortionSec;
+	private String  providerFirstName;
 	
 	
 	
@@ -154,6 +155,14 @@ public class ClaimData {
 
 	public void setPatientPortionSec(String patientPortionSec) {
 		PatientPortionSec = patientPortionSec;
+	}
+
+	public String getProviderFirstName() {
+		return providerFirstName;
+	}
+
+	public void setProviderFirstName(String providerFirstName) {
+		this.providerFirstName = providerFirstName;
 	}
 	
 	

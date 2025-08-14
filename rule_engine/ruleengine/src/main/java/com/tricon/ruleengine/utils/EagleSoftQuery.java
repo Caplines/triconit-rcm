@@ -18,6 +18,7 @@ public class EagleSoftQuery {
 			+ " pla.surface as surface,pla.tooth as tooth,pla.status as status2,pla.fee as fee,"
 			+ " pr.last_name as provider_last_name, tpi.est_primary as est_insurance,"
 			+ " (pla.fee- tpi.est_primary ) as patient_portion,tpi.est_primary as est_primary,(pla.fee- tpi.est_secondary ) as patient_portion_sec"
+			+ " ,pr.first_name provider_first_name "
 			+ " from  treatment_plan_items tpi, treatment_plans tp,"
 			+ " patient pat , planned_services pla,provider pr where "
 			+ " tpi.treatment_plan_id in ("+contstant_REP+") and tpi.treatment_plan_id=tp.treatment_plan_id"
@@ -25,7 +26,7 @@ public class EagleSoftQuery {
 
 
 	
-	public final static int  treatment_plan_query_CL_COUNT=22;
+	public final static int  treatment_plan_query_CL_COUNT=23;
 
 	public final static String  claim_query="select tp.sequence as app_id,tp.claim_id as id,"
 			+ "pat.patient_id as pat_id,pat.first_name as name, pat.last_name as last_name,pat.birth_date as dob,"
@@ -35,6 +36,7 @@ public class EagleSoftQuery {
 			+ " tp.surface as surface,tp.tooth as tooth,tp.status as status2,tp.fee as fee,"
 			+ " pr.last_name as provider_last_name, tp.est_primary as est_insurance,"
 			+ " (tp.fee- tp.est_primary ) as patient_portion,tp.est_primary as est_primary,(tp.fee- tp.est_secondary ) as patient_portion_sec"
+			+ " ,pr.first_name provider_first_name "
 			+ " from  transactions tp left outer join transactions_detail tpi on tpi.tran_num=tp.tran_num, insurance_claim cl, "
 			+ " patient pat ,provider pr "
 			+ " where "
@@ -43,7 +45,7 @@ public class EagleSoftQuery {
 
 
 	
-	public final static int  claim_query_CL_COUNT=22;
+	public final static int  claim_query_CL_COUNT=23;
 
 	private static String patient_query="select pat.patient_id as pat_id,pat.first_name as name,"
 			+ " pat.last_name as last_name,pat.birth_date as birth_date,"
@@ -192,5 +194,33 @@ public class EagleSoftQuery {
     		+ "              (Select top 1 i.sec_responsible_id  from insurance_claim i  where i.patient_id in ("+contstant_REP+"))";
     public final static int  policy_holder_schedule_query_CL_COUNT=4;
 
+    public final static String  policy_holder_dob_query_pr=" select "
+    		+" distinct p.patient_id,(SELECT (first_name +' '+ last_name) FROM patient WHERE patient_id=p.prim_responsible_id),"
+    		+" (SELECT birth_date FROM patient WHERE patient_id=p.prim_responsible_id),(p.first_name +' '+ p.last_name),"
+    		+" p.birth_date,pl.prim_insurance_company,pl.prim_employer_name,(select group_number FROM employer "
+    		+" 		WHERE employer_id = p.prim_employer_id  ),(select fs.name FROM employer WHERE employer_id = p.prim_employer_id  )"
+    		+" ,p.prim_remaining_deductible,p.prim_benefits_remaining,p.prim_member_id,pl.sec_insurance_company,pl.sec_employer_name,"
+    		+" (select group_number FROM employer WHERE employer_id = p.sec_employer_id ),(select fs.name FROM employer WHERE "
+    		+" employer_id = p.sec_employer_id ),p.sec_remaining_deductible,p.sec_benefits_remaining,p.sec_member_id,fs.name,"
+    		+" pl.preferred_dentist from patient p JOIN patient_letter pl ON p.patient_id = pl.patient_id JOIN "
+    		+" appointment a ON a.patient_id = pl.patient_id join fee_schedule fs on "    		
+    		+" fs.fee_id = p.fee_level_id  WHERE p.patient_id in ("+contstant_REP+")";
+    public final static String  policy_holder_dob_query_sec=" select "
+    		+" distinct p.patient_id,(SELECT (first_name +' '+ last_name) FROM patient WHERE patient_id=p.sec_responsible_id),"
+    		+" (SELECT birth_date FROM patient WHERE patient_id=p.sec_responsible_id),(p.first_name +' '+ p.last_name),"
+    		+" p.birth_date,pl.prim_insurance_company,pl.prim_employer_name,(select group_number FROM employer "
+    		+" 		WHERE employer_id = p.sec_employer_id  ),(select fs.name FROM employer WHERE employer_id = p.sec_employer_id  )"
+    		+" ,p.prim_remaining_deductible,p.prim_benefits_remaining,p.prim_member_id,pl.sec_insurance_company,pl.sec_employer_name,"
+    		+" (select group_number FROM employer WHERE employer_id = p.sec_employer_id ),(select fs.name FROM employer WHERE "
+    		+" employer_id = p.sec_employer_id ),p.sec_remaining_deductible,p.sec_benefits_remaining,p.sec_member_id,fs.name,"
+    		+" pl.preferred_dentist from patient p JOIN patient_letter pl ON p.patient_id = pl.patient_id JOIN "
+    		+" appointment a ON a.patient_id = pl.patient_id join fee_schedule fs on "    		
+    		+" fs.fee_id = p.fee_level_id  WHERE p.patient_id in ("+contstant_REP+")";
+    public final static int  policy_holder_dob_query_CL_COUNT=21;
+    
+    public final static String  preferred_dentist_query=" select "
+    		+" distinct p.patient_id,(p.first_name +' '+ p.last_name),p.preferred_dentist,(pr.first_name +' '+ pr.last_name)"
+    		+" from patient p join provider pr on p.preferred_dentist = pr.provider_id  WHERE p.patient_id in ("+contstant_REP+")";
+    public final static int  preferred_dentist_query_CL_COUNT=4;
 
 }

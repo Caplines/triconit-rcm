@@ -1107,9 +1107,9 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 		
 		//
 		// TODO Auto-generated method stub
-		int res =reportDao.getFailedRulesByDataMaxGroupRun(dto,office);
-		if (res==0) return null;
-		List<RuleStatusDto>  li=reportDao.getFailedRulesByData(dto,office,res);
+		//int res =reportDao.getFailedRulesByDataMaxGroupRun(dto,office);
+		//if (res==0) return null;
+		List<RuleStatusDto>  li=reportDao.getFailedRulesByData(dto,office);
 		return li;
 	}
 	

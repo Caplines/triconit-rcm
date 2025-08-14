@@ -35,12 +35,14 @@ import com.tricon.ruleengine.model.sheet.EagleSoftEmployerMaster;
 import com.tricon.ruleengine.model.sheet.EagleSoftFeeShedule;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatient;
 import com.tricon.ruleengine.model.sheet.EagleSoftPatientWalkHistory;
+import com.tricon.ruleengine.model.sheet.EagleSoftPolicyholdeDob;
 import com.tricon.ruleengine.model.sheet.IVFTableSheet;
 import com.tricon.ruleengine.model.sheet.InsuranceDetail;
 import com.tricon.ruleengine.model.sheet.PatientDeductiblewithBenefits;
 import com.tricon.ruleengine.model.sheet.PatientPolicyHolder;
 import com.tricon.ruleengine.model.sheet.Perio;
 import com.tricon.ruleengine.model.sheet.PreferanceFeeSchedule;
+import com.tricon.ruleengine.model.sheet.PreferredDentist;
 import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanDetails;
 import com.tricon.ruleengine.model.sheet.TreatmentPlanPatient;
@@ -352,6 +354,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 						tp.setPatientPortion(des.get(19));
 						tp.setEstPrimary(des.get(20));
                         tp.setPatientPortionSec(des.get(21));
+                        tp.setProviderFirstName(des.get(22));
 						tp.setTreatmentPlanDetails(treatmentPlanDetails);
 
 						if (returnMap == null)
@@ -443,6 +446,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 						tp.setPatientPortion(des.get(19));
 						tp.setEstPrimary(des.get(20));
 						tp.setPatientPortionSec(des.get(21));
+						tp.setProviderFirstName(des.get(22));
 						tp.setDetails(details);
 
 						if (returnMap == null)
@@ -1412,6 +1416,103 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	}
 	
 	@Override
+	public Map<String, List<?>> getPolicyHolderDobByPatientId(String insuranceType, Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,
+			BufferedWriter bw) {
+		// TODO Auto-generated method stub
+		EagleSoftFetchData d = new EagleSoftFetchData();
+		Map<String, List<?>> returnMap = null;
+		RuleEngineLogger.generateLogs(clazz, "PolicyHolderDobByPatientId Data Start ", Constants.rule_log_debug, bw);
+
+		if (ivfMap != null) {
+			List<String> ids = null;
+			for (Map.Entry<String, List<Object>> entry1 : ivfMap.entrySet()) {
+				ids = new ArrayList<>();
+				if (entry1.getValue() != null) {
+
+					IVFTableSheet ivfSheet = ((IVFTableSheet) entry1.getValue().get(0));
+					ids.add(ivfSheet.getPatientId());
+				}
+			}
+
+			String[] pids = ids.toArray(new String[ids.size()]);
+
+			/*EagleSoftQueryObject q = null;
+			q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_dob_query,
+					EagleSoftQuery.policy_holder_dob_query_CL_COUNT);
+			/*if (primary)q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_schedule_query_pr,
+					EagleSoftQuery.policy_holder_schedule_query_CL_COUNT);
+			
+			else q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_schedule_query_sec,
+					EagleSoftQuery.policy_holder_schedule_query_CL_COUNT);
+			*/	
+			EagleSoftQueryObject q = null;
+			if (insuranceType==null) q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_dob_query_pr,
+					EagleSoftQuery.policy_holder_dob_query_CL_COUNT);
+			else if (insuranceType!=null && insuranceType.equals(Constants.INSURANCE_TYPE_PRI) || insuranceType.equals(""))q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_dob_query_pr,
+					EagleSoftQuery.policy_holder_dob_query_CL_COUNT);
+			else q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.policy_holder_dob_query_sec,
+					EagleSoftQuery.policy_holder_dob_query_CL_COUNT);
+			String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
+			if (data != null) {
+				EagleSoftPolicyholdeDob pph = null;
+				try {
+					ObjectMapper map = new ObjectMapper();
+					// Patient patQ = map.readValue(r, Patient.class);
+					Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
+					});
+
+					RuleEngineLogger.generateLogs(clazz, "PolicyHolderDobByPatientId DATA-" + cMap.get("dataMap").toString(),
+							Constants.rule_log_debug, bw);
+					Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+					List<Object> list = null;
+					for (Map.Entry<String, List<String>> entryd: dataMap.entrySet()) {
+						if (entryd.getValue() != null) {
+							List<String> des = (List<String>) (entryd.getValue());
+							pph = new EagleSoftPolicyholdeDob();
+
+							pph.setPatientId(des.get(0));
+							pph.setPolicyHolderDob(des.get(2));
+							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
+								if (entryd.getValue() != null) {
+
+									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
+									if ((pph.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+										if (returnMap == null)
+											returnMap = new HashMap<>();
+										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
+											// if the key has already been used,
+											// we'll just grab the array list and add the value to it
+											list = (List<Object>) (List<?>) returnMap.get(ivfSheet.getUniqueID());
+											list.add(pph);
+										} else {
+											// if the key hasn't been used yet,
+											// we'll create a new ArrayList<String> object, add the value
+											// and put it in the array list with the new key
+											list = new ArrayList<>();
+											list.add(pph);
+											returnMap.put(ivfSheet.getUniqueID(), list);
+										}
+									}
+								}
+							}
+							}
+
+					}
+
+				} catch (Exception e) {
+					e.printStackTrace();
+					RuleEngineLogger.generateLogs(clazz, "PolicyHolderDobByPatientId --> DATA- ERROR- " + e.getMessage(),
+							Constants.rule_log_debug, bw);
+				}
+			}
+		  // }
+
+		}
+
+		return returnMap;
+	}
+	
+	@Override
 	public Map<String, List<?>> getPatientDeductibelWithBenefits(String insuranceType,Map<String, List<Object>> ivfMap, EagleSoftDBDetails esDB,
 			BufferedWriter bw) {
 		// TODO Auto-generated method stub
@@ -1498,6 +1599,97 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		}
 
 		return returnMap;
+	}
+	
+	
+	@Override
+	public Map<String, List<?>> getPreferredDentist(Map<String, List<Object>> ivfMap,EagleSoftDBDetails esDB,BufferedWriter bw){
+
+		// TODO Auto-generated method stub
+		EagleSoftFetchData d = new EagleSoftFetchData();
+		Map<String, List<?>> returnMap = null;
+		RuleEngineLogger.generateLogs(clazz, "PreferredDentist Start", Constants.rule_log_debug, bw);
+
+		if (ivfMap != null) {
+			List<String> ids = new ArrayList<>();
+			for (Map.Entry<String, List<Object>> entry : ivfMap.entrySet()) {
+				if (entry.getValue() != null) {
+
+					IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
+					ids.add(ivfSheet.getPatientId());
+				}
+			}
+
+			String[] pids = ids.toArray(new String[ids.size()]);
+
+			EagleSoftQueryObject q = prepairEagleSoftQueryObject(pids, EagleSoftQuery.preferred_dentist_query,
+					EagleSoftQuery.preferred_dentist_query_CL_COUNT);
+			String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
+			if (data != null) {
+				PreferredDentist preferredDentist = null;
+				try {
+					ObjectMapper map = new ObjectMapper();
+					// Patient patQ = map.readValue(r, Patient.class);
+					Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
+					});
+
+					RuleEngineLogger.generateLogs(clazz, "PreferredDentist DATA-" + cMap.get("dataMap").toString(),
+							Constants.rule_log_debug, bw);
+					Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+					List<Object> list = null;
+					for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+						if (entry.getValue() != null) {
+							List<String> des = (List<String>) (entry.getValue());
+							preferredDentist = new PreferredDentist();
+
+							preferredDentist.setPatientId(des.get(0));
+							preferredDentist.setPatientName(des.get(1));
+							preferredDentist.setPreferredDentist(des.get(2));
+							preferredDentist.setProviderName(des.get(3));
+							
+							
+							//
+							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
+								if (entry.getValue() != null) {
+
+									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
+									if ((preferredDentist.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+										if (returnMap == null)
+											returnMap = new HashMap<>();
+										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
+											// if the key has already been used,
+											// we'll just grab the array list and add the value to it
+											list = (List<Object>) (List<?>) returnMap.get(ivfSheet.getUniqueID());
+											list.add(preferredDentist);
+										} else {
+											// if the key hasn't been used yet,
+											// we'll create a new ArrayList<String> object, add the value
+											// and put it in the array list with the new key
+											list = new ArrayList<>();
+											list.add(preferredDentist);
+											returnMap.put(ivfSheet.getUniqueID(), list);
+										}
+									}
+								}
+							}
+
+							//
+
+						}
+					}
+
+				} catch (Exception e) {
+					RuleEngineLogger.generateLogs(clazz, "PreferredDentist  DATA- ERROR- " + e.getMessage(),
+							Constants.rule_log_debug, bw);
+
+				}
+			}
+
+		}
+
+		return returnMap;
+
+	
 	}
 	
 	private String decodeUnicode(String v) {

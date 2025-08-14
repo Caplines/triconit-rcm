@@ -92,7 +92,7 @@ public class AppConfig {
 		dataSource.setMinPoolSize(Integer.parseInt(CONN_POOL_MIN_SIZE));
 		dataSource.setMaxPoolSize(Integer.parseInt(CONN_POOL_MAX_SIZE));
 		dataSource.setMaxIdleTime(Integer.parseInt(CONN_POOL_IDLE_PERIOD));
-		
+		//dataSource.setUnreturnedConnectionTimeout(Integer.parseInt(CONN_POOL_TIMWEOUT)); 
 		dataSource.setAcquireIncrement(Integer.parseInt(CONN_POOL_ACQUIRE_INC));
 		dataSource.setMaxStatements(Integer.parseInt(CONN_POOL_MAX_STAT));
 		

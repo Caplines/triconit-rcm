@@ -675,7 +675,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 	}
 
 	@Override
-	public List<RuleStatusDto> getFailedRulesByData(RcmClaimDto dto,Office office,int groupRun) {
+	public List<RuleStatusDto> getFailedRulesByData(RcmClaimDto dto,Office office) {
 		Session session=null;
 		List<RuleStatusDto>  list=null;
 		
@@ -685,18 +685,19 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 
 			 String o= " rep.office_id='"+office.getUuid()+"' and ";
 			 
-			 String tp_cl= " rep.treatement_plan_id='"+dto.getClaimOrTreatmentId()+"' and ";
+			 //String tp_cl= " rep.treatement_plan_id='"+dto.getClaimOrTreatmentId()+"' and ";
 				
 			 if (dto.getClaimOrTreatment()!=null && dto.getClaimOrTreatment().equalsIgnoreCase("claim")) {
 				 t="reports_claim as rep, report_claim_detail as rd";
-				 tp_cl=" rep.claim_id='"+dto.getClaimOrTreatmentId()+"' and ";
+				// tp_cl=" rep.claim_id='"+dto.getClaimOrTreatmentId()+"' and ";
 			 }
 			 String queryString="SELECT message_type as messageType, "+
 					" DATE_FORMAT(rd.created_date,'%m/%d/%Y %T') as createdDate,"
 			 		+ "rd.error_message as message FROM " +  t  
-			 		+ ",office as offi where rd.message_type=1 and rep.ivf_form_id='"+dto.getIvId()+"' and "+o+ 
-			 		" rep.id=rd.report_id  " + 
-			 		" and offi.uuid=rep.office_id and "+tp_cl +" rep.patient_id='"+dto.getPatientId()+"' and rep.group_run="+groupRun;
+			 		+ ",office as offi where rd.message_type=1 and "+o
+			 		+" rep.id=rd.report_id  "  
+			 		+" and offi.uuid=rep.office_id and offi.uuid='"+office.getUuid()+"' and rep.patient_id='"+dto.getPatientId()+"'"
+			        +" and concat(DATE_FORMAT(rd.created_date, '%m%y'),ivf_form_id,treatement_plan_id,rd.group_run) ='"+dto.getUniqueId()+"'";
 				  
 				 
 				 
@@ -734,7 +735,7 @@ public class ReportDaoImpl extends BaseDaoImpl implements ReportDao{
 			 }
 			 String queryString="SELECT max(rep.group_run) FROM " + 
 		            t + 
-			 		"  ,office as offi where rep.ivf_form_id='"+dto.getIvId()+"' and "+o+ 
+			 		"  ,office as offi where rep.ivf_form_id='"+dto.getUniqueId()+"' and "+o+ 
 			 		" offi.uuid=rep.office_id and "+tp_cl +" rep.patient_id='"+dto.getPatientId()+"'";
 				 
 				 
