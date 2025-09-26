@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.Period;
 import java.time.YearMonth;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -653,6 +654,34 @@ public class DateUtils {
 		}
 		return myDate;
 	}
+	
+	 public static boolean hasOneYearPassed(Date startDate, Date endDate) {
+		 
+		    Instant instant = startDate.toInstant();
+	        // Convert Instant to ZonedDateTime using the system's default time zone
+	        ZoneId defaultZoneId = ZoneId.systemDefault();
+	        ZonedDateTime zonedDateTime = instant.atZone(defaultZoneId);
+	        // Extract LocalDate from ZonedDateTime
+	        LocalDate localDateSt = zonedDateTime.toLocalDate();
+	        // Ensure startDate is before or equal to endDate
+
+	        Instant instantEn = endDate.toInstant();
+	        // Convert Instant to ZonedDateTime using the system's default time zone
+	        ZoneId defaultZoneIdEn = ZoneId.systemDefault();
+	        ZonedDateTime zonedDateTimeEn = instantEn.atZone(defaultZoneIdEn);
+	        // Extract LocalDate from ZonedDateTime
+	        LocalDate localDateEn = zonedDateTimeEn.toLocalDate();
+	        // Ensure startDate is before or equal to endDate
+
+	        
+	        if (localDateSt.isAfter(localDateEn)) {
+	            // You might want to throw an IllegalArgumentException or handle this case differently
+	            return false; 
+	        }
+
+	        Period period = Period.between(localDateSt, localDateEn);
+	        return period.getYears() >= 1;
+	    }
 
 	public static void main(String[] a) {
 		  SimpleDateFormat sdf= new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a z");

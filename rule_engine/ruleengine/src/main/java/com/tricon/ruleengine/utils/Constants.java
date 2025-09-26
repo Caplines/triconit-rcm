@@ -171,6 +171,10 @@ public class Constants {
 	public static final String RULE_ID_127="D0145 with D9994, D1120 and D1206";
 	public static final String RULE_ID_128="Preauth Required";
 	public static final String RULE_ID_129="Subscriber DOB";
+	public static final String RULE_ID_130="D3220 with Permanant Teeth Limitation";
+	public static final String RULE_ID_131="Bitewing limitation in UHC Adult Medicaid";
+	public static final String RULE_ID_132="D9910 with D9630 on same DOS";
+	public static final String RULE_ID_133="D4921 with D43 Series Codes";
 	//public static final String RULE_ID_RuleXXX="Deductible Coverage Match";
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	

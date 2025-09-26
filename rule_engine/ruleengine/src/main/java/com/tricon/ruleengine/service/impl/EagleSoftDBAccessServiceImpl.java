@@ -1471,7 +1471,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 							pph = new EagleSoftPolicyholdeDob();
 
 							pph.setPatientId(des.get(0));
-							pph.setPolicyHolderDob(des.get(2));
+							pph.setPolicyHolderDob(des.get(6));
 							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
 								if (entryd.getValue() != null) {
 

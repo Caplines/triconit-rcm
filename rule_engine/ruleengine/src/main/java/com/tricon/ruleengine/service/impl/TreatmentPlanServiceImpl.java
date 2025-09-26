@@ -1726,7 +1726,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		// END  Extraction Limitation
 
 		// Medicaid Provider Limitation for D0150,D0210,D0330
-		rule = getRulesFromList(rules, Constants.RULE_ID_38);
+		/*rule = getRulesFromList(rules, Constants.RULE_ID_38);
 		if (espatientsHis != null && espatientsHis.get(patKey) != null
 				&& espatientsHis.get(patKey).size() > 0) {
 			dtoRL = rb.Rule38(ivfMap.get(ivx).get(0),tListReduced ,espatientsHis.get(patKey),messageSource, rule, bw,type);
@@ -1750,6 +1750,8 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Constants.rule_log_debug, bw);
 			
 		//END Medicaid Provider Limitation for D0150,D0210,D0330
+		 */
+		 
 		
 		//Age Limitation Prophylaxis
 		rule = getRulesFromList(rules, Constants.RULE_ID_39);
@@ -1908,7 +1910,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Constants.rule_log_debug, bw);
 		*/	
 		//END Provider Change (User Input)
-		
+		/*
 		//Exam limitation for CHIP
 		rule = getRulesFromList(rules, Constants.RULE_ID_48);
 		dtoRL = rb.Rule48(ivfMap.get(ivx).get(0),tListReduced ,messageSource, rule, bw,type, userName);
@@ -1925,7 +1927,7 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				Constants.rule_log_debug, bw);
 			
 		//END Exam limitation for CHIP
-		
+		*/
 		//Sealant limitation in CHIP
 		rule = getRulesFromList(rules, Constants.RULE_ID_49);
 		dtoRL = rb.Rule49(ivfMap.get(ivx).get(0),tList ,messageSource, rule, bw, type);
@@ -2875,7 +2877,71 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	  	 
       RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_128,
           		 Constants.rule_log_debug, bw);
-      //End Preauth Required	      
+      //End Preauth Required
+    
+    //D3220 with Permanant Teeth Limitation
+  	rule = getRulesFromList(rules, Constants.RULE_ID_130);
+  	dtoRL =  rb.Rule130(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+  	if (dtoRL != null) {
+  			list.addAll(dtoRL);
+  			for (TPValidationResponseDto t : dtoRL) {
+  				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+  					t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+  					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+  		}
+  	 }
+  	  	 
+    RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_130,
+            		 Constants.rule_log_debug, bw);
+    //D3220 with Permanant Teeth Limitation
+        
+    //Bitewing limitation in UHC Adult Medicaid
+	rule = getRulesFromList(rules, Constants.RULE_ID_131);
+	dtoRL =  rb.Rule131(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+	if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+					t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+		}
+	 }
+	  	 
+      RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_131,
+          		 Constants.rule_log_debug, bw);
+     //Bitewing limitation in UHC Adult Medicaid
+          
+    //D9910 with D9630 on same DOS
+  	rule = getRulesFromList(rules, Constants.RULE_ID_132);
+  	dtoRL =  rb.Rule132(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+  	if (dtoRL != null) {
+  			list.addAll(dtoRL);
+  			for (TPValidationResponseDto t : dtoRL) {
+  				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+  					t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+  					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+  		}
+  	 }
+  	  	 
+     RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_132,
+            		 Constants.rule_log_debug, bw);
+     //End D9910 with D9630 on same DOS
+            
+     //End D4921 with D43 Series Codes
+		rule = getRulesFromList(rules, Constants.RULE_ID_133);
+		dtoRL =  rb.Rule133(tList,ivfMap.get(ivx).get(0) ,messageSource, rule, bw,type);
+		if (dtoRL != null) {
+				list.addAll(dtoRL);
+				for (TPValidationResponseDto t : dtoRL) {
+					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+						// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
+		 }
+		  	 
+	 RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_133,
+	          		 Constants.rule_log_debug, bw);
+     //End D4921 with D43 Series Codes
 	
      // RULE_ID_79 "Insurance and Address"
 		/*
