@@ -1116,6 +1116,7 @@ public class ClaimSectionImpl {
 			RcmUser createdBy = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 			for (RcmClaimDetail rcmClaimDetail : claimDetailData) {
 				serviceLevelDto = new RcmServiceLevelInformation();
+				System.out.println("rcmClaimDetail,"+rcmClaimDetail.getClaim().getClaimUuid());
 				BeanUtils.copyProperties(rcmClaimDetail, serviceLevelDto);
 				serviceLevelDto.setGroupRun(1);
 				serviceLevelDto.setTooth((rcmClaimDetail.getTooth()==null || rcmClaimDetail.getTooth().isEmpty())?"N/A":rcmClaimDetail.getTooth());
@@ -1154,7 +1155,9 @@ public class ClaimSectionImpl {
 						serviceCodes.setTooth("N/A");
 					}
 					
-					if (serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())
+					System.out.println("1"+serviceCodes.getServiceCode());
+					System.out.println("12"+serviceNotes.getServiceCode());
+					if (serviceCodes.getServiceCode()!=null && serviceNotes.getServiceCode()!=null && serviceCodes.getServiceCode().equals(serviceNotes.getServiceCode())
 							&& serviceCodes.getTooth().equals(serviceNotes.getTooth())
 							&& serviceCodes.getSurface().equals(serviceNotes.getSurface())){
 						if (serviceNotes.getNotes()!=null && !serviceNotes.getNotes().isEmpty()) {
