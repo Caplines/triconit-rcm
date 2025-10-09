@@ -1096,6 +1096,10 @@
                 <td class="dullRed" colspan="2">Ortho Maximum</td>
                 <td class="dullRed align-right"><xsl:value-of select="ortho2"/></td> 
             </tr>
+			<xsl:call-template name="crosbyCheck">
+			     <xsl:with-param name="condition" select="basicInfo1"/>
+			     <xsl:with-param name="value1" select="d0367"/><xsl:with-param name="value2" select="exams5"/>
+			</xsl:call-template>
             <tr>
                 <xsl:choose>
                 <xsl:when test="contains(translate(basicInfo19, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'),'ghazal')">
@@ -1335,4 +1339,24 @@
             </tr>
 </xsl:if>			
 </xsl:template>
+<xsl:template name="crosbyCheck">
+<xsl:param name="condition"/>
+<xsl:param name="value1"/>
+<xsl:param name="value2"/>
+<xsl:if test="$condition = 'Crosby'">
+              <tr> 
+                <td class="dullBlue">D0367 (CBCT)</td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="$value1"/></xsl:call-template></td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="$value2"/></xsl:call-template></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow"> </td>
+                <td class="dullYellow align-right" colspan="2"></td>
+                <td class="borderNone"></td>
+                <td class="dullRed rowHeading"></td>
+                <td class="dullRed width-7">	</td>
+                <td class="dullRed"></td>
+            </tr>
+</xsl:if>			
+</xsl:template>
+
 </xsl:stylesheet>

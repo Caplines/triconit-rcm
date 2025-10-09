@@ -652,6 +652,12 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	
 	@Column(name = "policy20",length = 5)
 	private String policy20;
+	
+	@Column(name = "d0367", length = 20)
+	private String d0367;//d0367
+	
+	@Column(name = "exams5", length = 20)
+	private String exams5;//d0367
 
 	public String getD2954() {
 		return d2954;
@@ -2336,6 +2342,22 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setPolicy20(String policy20) {
 		this.policy20 = policy20;
+	}
+
+	public String getD0367() {
+		return d0367;
+	}
+
+	public void setD0367(String d0367) {
+		this.d0367 = d0367;
+	}
+
+	public String getExams5() {
+		return exams5;
+	}
+
+	public void setExams5(String exams5) {
+		this.exams5 = exams5;
 	}
 
 	

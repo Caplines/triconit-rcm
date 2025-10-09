@@ -5600,6 +5600,7 @@ public class RuleBook {
 
 	}
 
+	//End Frequency Limitations
 	// Exam Frequency Limitation
 	/**
 	 * @param tpList
@@ -18775,7 +18776,7 @@ public class RuleBook {
 									RuleEngineLogger.generateLogs(clazz,
 											"History DOS-" + hdto.getHistoryDos(), Constants.rule_log_debug,
 											bw);
-								if (DateUtils.hasOneYearPassed(dos,TP_DATE)){
+								if (!DateUtils.hasOneYearPassed(dos,TP_DATE)){
 									D0210His =true;
 									historyIssueDate.add(hdto.getHistoryDos());
 								}
@@ -18823,7 +18824,7 @@ public class RuleBook {
 								RuleEngineLogger.generateLogs(clazz,
 										"History DOS-" + hdto.getHistoryDos(), Constants.rule_log_debug,
 										bw);
-							if (DateUtils.hasOneYearPassed(dos,TP_DATE)){
+							if (!DateUtils.hasOneYearPassed(dos,TP_DATE)){
 								D0210His =true;
 								historyIssueDate.add(hdto.getHistoryDos());
 							}

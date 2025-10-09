@@ -1460,7 +1460,7 @@ public class FreqencyUtils {
 
 	public static boolean checkforAlikeCodes(String tpCodes, String historyCode, String shareFr) {
 		boolean alikecodepresent = false;
-		// 2 C D1206 and D1208
+		// 2 C D1206 and D1208  
 		if (tpCodes.equals("D1206") && historyCode.equals("D1208")) {
 			alikecodepresent = true;
 		}
@@ -1587,6 +1587,10 @@ public class FreqencyUtils {
 		if (compairSevenValues(tpCodes, historyCode, "D7111", "D7140", "D7210","D7220", "D7230","D7240", "D7250") != null) {
 			alikecodepresent = true;
 		}
+		
+		if (compairFourVlaues(tpCodes, historyCode, "D6245", "D6740", "D2740","D2750") != null) {
+			alikecodepresent = true;
+		}
 
 		return alikecodepresent;
 	}
@@ -1625,6 +1629,32 @@ public class FreqencyUtils {
 		if (tpCodes.equals(three) && historyCode.equals(one)) {
 			b = true;
 		}
+		return b;
+	}
+	
+	private static Boolean compairFourVlaues(String tpCodes, String historyCode, String one, String two,
+			String three, String four) {
+		Boolean b = null;
+		// boolean alikecodepresent=false;
+ 
+		if (tpCodes.equals(one) && (historyCode.equals(two) || historyCode.equals(three) ||
+				historyCode.equals(four) )) {
+			b = true;
+		}
+		if (tpCodes.equals(two) && (historyCode.equals(one) || historyCode.equals(three) ||
+				historyCode.equals(four) )) {
+			b = true;
+		}
+		if (tpCodes.equals(three) && (historyCode.equals(one) || historyCode.equals(two) ||
+				historyCode.equals(four))) {
+			b = true;
+		}
+		if (tpCodes.equals(four) && (historyCode.equals(one) || historyCode.equals(two) ||
+				historyCode.equals(three) )) {
+			b = true;
+		}
+		
+	
 		return b;
 	}
 

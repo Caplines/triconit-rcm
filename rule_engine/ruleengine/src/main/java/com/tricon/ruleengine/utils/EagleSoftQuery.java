@@ -28,7 +28,7 @@ public class EagleSoftQuery {
 	
 	public final static int  treatment_plan_query_CL_COUNT=23;
 
-	public final static String  claim_query="select tp.sequence as app_id,tp.claim_id as id,"
+	public final static String  claim_query="select distinct tp.sequence as app_id,tp.claim_id as id,"
 			+ "pat.patient_id as pat_id,pat.first_name as name, pat.last_name as last_name,pat.birth_date as dob,"
 			+ "tp.tran_date as date_of_service,tp.status as status ,tp.est_secondary as est_secondary,"
 			+ " tp.description as description, tp.tran_num as line_item,"//11

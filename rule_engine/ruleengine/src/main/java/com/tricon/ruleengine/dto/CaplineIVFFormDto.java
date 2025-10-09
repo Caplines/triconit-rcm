@@ -778,6 +778,8 @@ public class CaplineIVFFormDto {
 	private String d5213142625fr;
 	private String d2954;
 	private String d2954fr;
+    private String d0367;//d0367
+	private String exams5;//exams5
 	private String policy21;
 	
 	private boolean planTypeChipOrChildrenMedicaid;
@@ -4088,6 +4090,22 @@ public class CaplineIVFFormDto {
 
 	public void setShareFr2(String shareFr2) {
 		this.shareFr2 = shareFr2;
+	}
+
+	public String getD0367() {
+		return d0367;
+	}
+
+	public void setD0367(String d0367) {
+		this.d0367 = d0367;
+	}
+
+	public String getExams5() {
+		return exams5;
+	}
+
+	public void setExams5(String exams5) {
+		this.exams5 = exams5;
 	}
 
 	
