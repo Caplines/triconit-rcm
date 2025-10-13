@@ -1218,7 +1218,12 @@ public class RuleEngineService {
 			List<RcmClaimDetail> cddList= new ArrayList<>();
 			int tmp=0;
 			for(ClaimDetailDto cdt:cdList) {
-				
+				String code =cdt.getServiceCode();
+				if (code == null) code ="";
+				if (code.trim().equals("")) {
+					//Ignore if service code is blank..
+					continue;
+				}
 				rcmClaimDetail = new RcmClaimDetail();
 				if (cdt.getTooth()!=null && cdt.getTooth().equalsIgnoreCase("NA")) {
 					 cdt.setTooth("N/A");
