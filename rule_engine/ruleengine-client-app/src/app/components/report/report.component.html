@@ -1115,7 +1115,7 @@
 					</tr>
 					<tr>
 						<td class="rowHeading">Consultation</td>
-						<td class="rowHeading">Percentage</td>
+						<td class="rowHeading">Pct.</td>
 						<td class="rowHeading">Frequency</td>
 						<td class="borderNone"></td>
 						<td>D4266 (Tissue Regen)</td>
@@ -1137,6 +1137,18 @@
 						<td class="borderNone"></td>
 						<td colspan="2" class="rowHeading">Ortho Coverage</td>
 						<td class="rowHeading">Percentage</td>
+					</tr>
+					<tr *ngIf="reportDataInd.basicInfo1=='Crosby'">
+						<td>D0367 (CBCT) </td>
+						<td><span class="redText">{{reportDataInd.d0367}}</span></td>
+						<td><span class="redText">{{reportDataInd.exams5}}</span></td>
+						<td class="borderNone"></td>
+						<td class=""></td>
+						<td class=""></td>
+						<td class=""></td>
+						<td class="borderNone"></td>
+						<td colspan="2" class=""></td>
+						<td class=""></td>
 					</tr>
 		
 					<tr>
