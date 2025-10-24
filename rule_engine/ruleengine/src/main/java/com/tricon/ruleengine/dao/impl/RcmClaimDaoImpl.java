@@ -31,7 +31,7 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 		switch(queryFor)
 		{
 		    case Constants.QUERY_FOR_RCMCALIM_1:
-		    	finalQuery="select off.name,SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id,cl.patient_id,cl.dos,"+
+		    	finalQuery="select distinct off.name,SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id,cl.patient_id,cl.dos,"+
 		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN prime_sec_submitted_total ELSE sec_submitted_total  END  estimatedamount,"+
 		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN 'Primary' ELSE 'Secondary'   END as claimType,"+
 		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN pins.name ELSE sins.name   END as insurancename,"+
@@ -48,8 +48,12 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 		    			" rcm_insurance_type pinst on pins.insurance_type_id = pinst.id "+
 		    			" left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id "+
 		    			" left join reports_claim rc on rc.claim_id=SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) and rc.patient_id=cl.patient_id "+
-		    			" left join rcm_claim_comment rcc on rcc.claim_id=cl.claim_uuid "+
-		    			" where cl.pending =false and cl.current_state=0 and cmp.name='"+d.getClient()+"' "+(office==null?"":" and cl.office_id='"+office.getUuid()+"' ")+" and IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date)"+
+		    			" left join rcm_claim_comment rcc  on  rcc.claim_id = "+
+		    			" ( SELECT b.comments"+
+		    			" FROM rcm_claim_comment AS b "+
+		    			"  WHERE b.claim_id = cl.claim_uuid  "+
+		    			"  ORDER BY b.created_date  DESC LIMIT 1)"+
+		    			" where cl.pending =false  and cmp.name='"+d.getClient()+"' "+(office==null?"":" and cl.office_id='"+office.getUuid()+"' ")+" and IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date)"+
 		    			" between  STR_TO_DATE('"+d.getDate1()+" 00:00:00', '%m/%d/%Y %H:%i:%s') AND STR_TO_DATE('"+d.getDate2()+" 23:59:59', '%m/%d/%Y %H:%i:%s')" +
 		    			" "; 
 		    	break;

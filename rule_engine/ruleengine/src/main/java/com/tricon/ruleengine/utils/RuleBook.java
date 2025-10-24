@@ -13563,6 +13563,8 @@ public class RuleBook {
             }
             
             String preferredDentistPrName =preferredDentists.get(patKey).get(0).getProviderName();
+            
+            
 			if (userType == Constants.userType_CL) {
 				ER_MSG = Constants.CL;
 			}
@@ -13576,23 +13578,32 @@ public class RuleBook {
 				break;
 
 			}*/
+			
 			RuleEngineLogger.generateLogs(clazz, "PreferredDentist provider name=" + preferredDentistPrName, Constants.rule_log_debug, bw);
 			RuleEngineLogger.generateLogs(clazz, "IV Provider  Name =" + ivf.getProviderName(),
 					Constants.rule_log_debug, bw);
-
-			if (ivf.getProviderName().equalsIgnoreCase(preferredDentistPrName.trim())) {
+			
+			//String reversedPreferredDentistPrName = new StringBuilder(preferredDentistPrName).reverse().toString();
+			//RuleEngineLogger.generateLogs(clazz, "reversedPreferredDentistPrName provider name=" + reversedPreferredDentistPrName, Constants.rule_log_debug, bw);
+				if (ivf.getProviderName().replace("Dr.", "").equalsIgnoreCase(preferredDentistPrName.trim())) {
 				pass = true;
-			}/* else {
-				String[] names = ivf.getProviderName().split(" ");
-				if (names.length > 1) {
+			}
+			 else {
+				String[] names = ivf.getProviderName().replace("Dr. ", "").replace(",", "").split(" ");
+				RuleEngineLogger.generateLogs(clazz, "names.length =::" + names.length+"::",
+						Constants.rule_log_debug, bw);
+				if (names.length >1 ) {
 					String lastName = names[names.length - 1];//3 -1 =2 Dr. Abdelkader, Hebaalla S --> Abdelkader  
+					String firstName = names[names.length - 2];
 					RuleEngineLogger.generateLogs(clazz, "IV Provider LAST  Name =::" + lastName+"::",
 							Constants.rule_log_debug, bw);
-					if (lastName.equalsIgnoreCase(pcName.trim())) {
+					RuleEngineLogger.generateLogs(clazz, "IV Provider FIRST  Name =::" + firstName+"::",
+							Constants.rule_log_debug, bw);
+					if ((lastName +" "+ firstName).equalsIgnoreCase(preferredDentistPrName.replace("Dr. ", ""))) {
 						pass = true;
 					}
 				}
-			}*/
+			}
 
 			if (!pass) {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
@@ -16561,7 +16572,7 @@ public class RuleBook {
 								return d;
 							}
 
-							boolean pass = true;
+							boolean pass = false;
 							boolean dCodeFound=false;
 							boolean historyFound=false;
 							if (userType == Constants.userType_CL && tpList != null) {
@@ -16627,6 +16638,8 @@ public class RuleBook {
 		               					//	String[] th = ToothUtil.getToothsFromTooth((String) htm.invoke(hisSheet));
 	
 		               						if (codes.contains(code)) {// && th != null && th.length > 0) {
+		               							RuleEngineLogger.generateLogs(clazz, "history  Code-" + code,
+			               								Constants.rule_log_debug, bw);
 		               							historyFound =true;
 		               							Date hisDos = null;
 				               					if (((String) hdm.invoke(hisSheet)).equals(""))
@@ -16639,10 +16652,14 @@ public class RuleBook {
 				               						RuleEngineLogger.generateLogs(clazz, "currentDate-" + currentDate,
 				               								Constants.rule_log_debug, bw);
 				               						boolean  diff=monthLogic==0?false:DateUtils.checkforXm(currentDate,hisDos,monthLogic);
-				               						//boolean month12= DateUtils.checkforXm(currentDate, hisDos, 12);
+				               						boolean month12= DateUtils.checkforXm(currentDate,hisDos,monthLogic);
+				               						RuleEngineLogger.generateLogs(clazz, "month12-" + month12+":monthLogic:"+monthLogic,
+				               								Constants.rule_log_debug, bw);
 				               						if (!diff) {
 				               							if (dayslogic>0) {
 				               							int past =	DateUtils.daysBetweenDates(currentDate,hisDos).intValue();
+				               							RuleEngineLogger.generateLogs(clazz, "past-" + past,
+					               								Constants.rule_log_debug, bw);
 				               							if (past >dayslogic) {
 				               								continue;
 				               							  }
@@ -16662,6 +16679,8 @@ public class RuleBook {
 		               							historyTooths.add((String) htm.invoke(hisSheet));
 		               							historyDates.add((String) hdm.invoke(hisSheet));
 		               							historyIssue =true;
+		               							RuleEngineLogger.generateLogs(clazz, "historyIssue-" + historyIssue,
+			               								Constants.rule_log_debug, bw);
 		               						}
 		               						
 		               					}
@@ -16684,6 +16703,8 @@ public class RuleBook {
 		               					//String[] th = ToothUtil.getToothsFromTooth((String) htm.invoke(hisShee));
 	
 		               					if (codes.contains(code)) {// && th != null && th.length > 0) {
+		               						RuleEngineLogger.generateLogs(clazz, "history  Code-" + code,
+		               								Constants.rule_log_debug, bw);
 		               						historyFound =true;
 		               						Date hisDos = null;
 			               					if (((String) hdm.invoke(hisShee)).equals(""))
@@ -16696,10 +16717,14 @@ public class RuleBook {
 			               						RuleEngineLogger.generateLogs(clazz, "currentDate-" + currentDate,
 			               								Constants.rule_log_debug, bw);
 			               						boolean  diff=monthLogic==0?false:DateUtils.checkforXm(currentDate,hisDos,monthLogic);
-			               						//boolean month12= DateUtils.checkforXm(currentDate, hisDos, 12);
+			               						boolean month12= DateUtils.checkforXm(currentDate,hisDos,monthLogic);
+			               						RuleEngineLogger.generateLogs(clazz, "month12-" + month12+":monthLogic:"+monthLogic,
+			               								Constants.rule_log_debug, bw);
 			               						if (!diff) {
 			               							if (dayslogic>0) {
 			               							int past =	DateUtils.daysBetweenDates(currentDate,hisDos).intValue();
+			               							RuleEngineLogger.generateLogs(clazz, "past-" + past,
+				               								Constants.rule_log_debug, bw);
 			               							if (past >dayslogic) {
 			               								continue;
 			               							  }
@@ -16718,13 +16743,15 @@ public class RuleBook {
 		               						historyTooths.add((String) htm.invoke(hisShee));
 		               						historyDates.add((String) hdm.invoke(hisShee));
 		               						historyIssue =true;
+		               						RuleEngineLogger.generateLogs(clazz, "historyIssue-" + historyIssue,
+		               								Constants.rule_log_debug, bw);
 		               					}
 		               					
 		               				}
 							 }
 							
-							if(!historyIssue) pass=true;
-							if (!historyFound && dCodeFound) {
+							//if(!historyIssue) pass=true;
+							if (historyFound && dCodeFound) {
 								 pass=false;
 								 rule115="rule115.errornohis.message";
 							}else {
@@ -18629,10 +18656,12 @@ public class RuleBook {
 					"Plan Type=" + ivf.getPlanType() + ", Insurance type=" + ivf.getInsName(), Constants.rule_log_debug,
 					bw);
 
-			if (!ivf.getInsName().toLowerCase().contains("uhc") ||
-					!ivf.getInsName().toLowerCase().contains("mcna child") ||
-					!ivf.getInsName().toLowerCase().contains("chip medicaid")
-					) {
+			if (!ivf.getInsName().toLowerCase().contains("uhc") &&
+					!ivf.getInsName().toLowerCase().contains("mcna child") &&
+					!ivf.getInsName().toLowerCase().contains("chip medicaid")  &&
+					!ivf.getInsName().toLowerCase().contains("child medicaid")
+					)
+					 {
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule.message.pass", new Object[] {}, locale), Constants.PASS,
 						String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
