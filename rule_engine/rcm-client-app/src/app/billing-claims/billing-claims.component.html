@@ -3789,7 +3789,7 @@
                                                             <button class="btn btn-success"
                                                                 (click)="savePatientCommunicationSection(false)"
                                                                 [disabled]="loader.patientCommunicationSection"
-                                                                *ngIf="claimRcm.allowEdit  && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0 && !allowOtherSaveWhileReqRebilling() && isPrimaryClaimClosed()">
+                                                                *ngIf="claimRcm.allowEdit  && checkForSectionAccess(sectionIds['PATIENT_COMMUNICATION']['sectionId'],'edit') && claimRcm.currentState==0  && isPrimaryClaimClosed()">
                                                                 Save
                                                             </button>
                                                             <div *ngIf="loader.patientCommunicationSection"
