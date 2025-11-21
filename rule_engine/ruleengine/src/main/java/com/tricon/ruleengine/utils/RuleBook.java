@@ -13585,24 +13585,41 @@ public class RuleBook {
 			
 			//String reversedPreferredDentistPrName = new StringBuilder(preferredDentistPrName).reverse().toString();
 			//RuleEngineLogger.generateLogs(clazz, "reversedPreferredDentistPrName provider name=" + reversedPreferredDentistPrName, Constants.rule_log_debug, bw);
-				if (ivf.getProviderName().replace("Dr.", "").equalsIgnoreCase(preferredDentistPrName.trim())) {
+				if (ivf.getProviderName().replaceAll("(?i)Dr.", "").replace(",", "").equalsIgnoreCase(preferredDentistPrName.trim().replaceAll("(?i)Dr.", "").replace(",", ""))) {
 				pass = true;
 			}
 			 else {
-				String[] names = ivf.getProviderName().replace("Dr. ", "").replace(",", "").split(" ");
+				String[] names = ivf.getProviderName().replaceAll("(?i)Dr. ", "").replace(",", "").split(" ");
 				RuleEngineLogger.generateLogs(clazz, "names.length =::" + names.length+"::",
 						Constants.rule_log_debug, bw);
-				if (names.length >1 ) {
+				if (names.length >2 ) {
 					String lastName = names[names.length - 1];//3 -1 =2 Dr. Abdelkader, Hebaalla S --> Abdelkader  
-					String firstName = names[names.length - 2];
+					String mid = names[names.length - 2];
+					String firstName = names[names.length - 3];
 					RuleEngineLogger.generateLogs(clazz, "IV Provider LAST  Name =::" + lastName+"::",
+							Constants.rule_log_debug, bw);
+					RuleEngineLogger.generateLogs(clazz, "IV Provider MID  Name =::" + mid+"::",
 							Constants.rule_log_debug, bw);
 					RuleEngineLogger.generateLogs(clazz, "IV Provider FIRST  Name =::" + firstName+"::",
 							Constants.rule_log_debug, bw);
-					if ((lastName +" "+ firstName).equalsIgnoreCase(preferredDentistPrName.replace("Dr. ", ""))) {
+					if ( ((lastName +mid+ firstName).equalsIgnoreCase(preferredDentistPrName.replaceAll("(?i)Dr. ", "").replace(",", "").replaceAll(" ", "")))
+						|| 
+						((mid+lastName+ firstName).equalsIgnoreCase(preferredDentistPrName.replace("(?i)Dr. ", "").replace(",", "").replaceAll(" ", "")))
+							)  {
 						pass = true;
 					}
+				}else if (names.length >1 ) {
+						String lastName = names[names.length - 1];//3 -1 =2 Dr. Abdelkader, Hebaalla S --> Abdelkader  
+						String firstName = names[names.length - 2];
+						RuleEngineLogger.generateLogs(clazz, "IV Provider LAST  Name =::" + lastName+"::",
+								Constants.rule_log_debug, bw);
+						RuleEngineLogger.generateLogs(clazz, "IV Provider FIRST  Name =::" + firstName+"::",
+								Constants.rule_log_debug, bw);
+						if ((lastName +""+ firstName).equalsIgnoreCase(preferredDentistPrName.replaceAll("(?i)Dr. ", "").replace(",", "").replaceAll(" ", ""))) {
+							pass = true;
+						}
 				}
+				
 			}
 
 			if (!pass) {

@@ -444,6 +444,8 @@ public class IVFTableSheet {
     private String d0367;//d0367
 	private String exams5;//exams5
 	private String policy20;
+	private String exams6;
+	private String d0180;
 
     public String getsRemarks() {
 		return sRemarks;
@@ -3046,6 +3048,18 @@ public class IVFTableSheet {
 	}
 	public void setExams5(String exams5) {
 		this.exams5 = exams5;
+	}
+	public String getExams6() {
+		return exams6;
+	}
+	public void setExams6(String exams6) {
+		this.exams6 = exams6;
+	}
+	public String getD0180() {
+		return d0180;
+	}
+	public void setD0180(String d0180) {
+		this.d0180 = d0180;
 	}
 	
 	

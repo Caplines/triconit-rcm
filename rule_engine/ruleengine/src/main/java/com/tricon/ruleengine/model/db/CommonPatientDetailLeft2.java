@@ -657,7 +657,13 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	private String d0367;//d0367
 	
 	@Column(name = "exams5", length = 20)
-	private String exams5;//d0367
+	private String exams5;//exams5
+
+	@Column(name = "exams6", length = 20)
+	private String exams6;//exams6
+
+	@Column(name = "d0180", length = 20)
+	private String d0180;//d0180
 
 	public String getD2954() {
 		return d2954;
@@ -2358,6 +2364,22 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setExams5(String exams5) {
 		this.exams5 = exams5;
+	}
+
+	public String getExams6() {
+		return exams6;
+	}
+
+	public void setExams6(String exams6) {
+		this.exams6 = exams6;
+	}
+
+	public String getD0180() {
+		return d0180;
+	}
+
+	public void setD0180(String d0180) {
+		this.d0180 = d0180;
 	}
 
 	
