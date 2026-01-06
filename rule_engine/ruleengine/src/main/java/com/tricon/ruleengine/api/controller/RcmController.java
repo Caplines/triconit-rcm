@@ -126,7 +126,7 @@ public class RcmController {
 				env.getProperty("secondary.unbilled.count"), env.getProperty("secondary.unbilled.selectcolumns"),
 				env.getProperty("rmc.auth.token"));
 		
-		rcmReconCillationPrimaryOpen = new RcmEnv(env.getProperty("primary.open.query="),
+		rcmReconCillationPrimaryOpen = new RcmEnv(env.getProperty("primary.open.query"),
 				env.getProperty("primary.open.count"), env.getProperty("primary.open.selectcolumns"),
 				env.getProperty("rmc.auth.token"));
 		

@@ -1005,21 +1005,109 @@ public class RcmController extends BaseHeaderController{
 	
 	@PostMapping(value = "/api/reconciliation")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO','REPORTING','ADMIN')")
-	public ResponseEntity<?> reconcillationData(@RequestBody ReconciliationDto dto, Model model) {
-		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
-		if (partialHeader == null)
-			return ResponseEntity.badRequest()
-					.body(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
-		List<ReconciliationResponseDto> response = null;
-		try {
-			response = claimServiceImpl.fetchReconciliationData(dto,partialHeader);
-		} catch (Exception e) {
-			e.printStackTrace();
-			logger.error(e.getMessage());
-			return ResponseEntity.badRequest().body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "", null));
-		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", response));
-	}
+	public ResponseEntity<GenericResponse> reconcillationData(
+        @RequestBody ReconciliationDto dto,
+        Model model) {
+		   long startTime = System.currentTimeMillis();
+		   // 1. Fetch contextual header info
+			PartialHeader headerInfo = (PartialHeader) model.getAttribute("headerInfo");
+			if (headerInfo == null) {
+				logger.error("[RECON][CONTROLLER] Missing headerInfo in request. dto={}", dto);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new GenericResponse(
+							HttpStatus.INTERNAL_SERVER_ERROR,
+							"Request context missing. Please re-login.",
+							null
+					));
+			}
+		   // 2. Basic request validation
+			if (dto == null || dto.getOfficeUuid() == null) {
+				logger.warn("[RECON][CONTROLLER] Invalid request payload. dto={}", dto);
+				return ResponseEntity.badRequest()
+					.body(new GenericResponse(
+							HttpStatus.BAD_REQUEST,
+							"Office is required for reconciliation.",
+							null
+					));
+			}
+			// Date range validation (important per requirement)
+			if (dto.getStartDate() == null || dto.getEndDate() == null) {
+				logger.warn("[RECON][CONTROLLER] Date range missing. office={}, dto={}",
+						dto.getOfficeUuid(), dto);
+				return ResponseEntity.badRequest()
+					.body(new GenericResponse(
+							HttpStatus.BAD_REQUEST,
+							"Start date and end date are required.",
+							null
+					));
+			}else if (dto.getStartDate().after(dto.getEndDate())) {
+				logger.warn("[RECON][CONTROLLER] Invalid date range. startDate={}, endDate={}",
+						dto.getStartDate(), dto.getEndDate());
+				return ResponseEntity.badRequest()
+					.body(new GenericResponse(
+						HttpStatus.BAD_REQUEST,
+						"Start date cannot be after end date.",
+						null
+					));
+			}
+
+		    try {
+				logger.info(
+						"[RECON][START] office={}, startDate={}, endDate={}",
+						dto.getOfficeUuid(),
+						dto.getStartDate(),
+						dto.getEndDate()
+				);
+
+        		List<ReconciliationResponseDto> response =
+                claimServiceImpl.fetchReconciliationData(dto, headerInfo);
+
+				logger.info(
+						"[RECON][SUCCESS] office={}, records={}, timeTakenMs={}",
+						dto.getOfficeUuid(),
+						response != null ? response.size() : 0,
+						(System.currentTimeMillis() - startTime)
+				);
+
+				return ResponseEntity.ok(
+					new GenericResponse(
+							HttpStatus.OK,
+							"Reconciliation data fetched successfully",
+							response
+					)
+				);
+
+			} catch (IllegalArgumentException ex) {
+				// Known validation / business errors
+				logger.error(
+						"[RECON][VALIDATION_ERROR] office={}, message={}",
+						dto.getOfficeUuid(),
+						ex.getMessage(),
+						ex
+				);
+				 return ResponseEntity.badRequest()
+					.body(new GenericResponse(
+							HttpStatus.BAD_REQUEST,
+							ex.getMessage(),
+							null
+					));
+
+			} catch (Exception ex) {
+			// Unexpected failures
+				logger.error(
+						"[RECON][ERROR] office={}, dto={}",
+						dto.getOfficeUuid(),
+						dto,
+						ex
+				);
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new GenericResponse(
+							HttpStatus.INTERNAL_SERVER_ERROR,
+							"Unable to fetch reconciliation data. Please try again later.",
+							null
+					));
+			}
+		}	
 	
 	@PostMapping(value = "/api/claim-transfer-to-aging")
 	@PreAuthorize("hasAnyRole('SUPER_ADMIN','TL','ASSO')")

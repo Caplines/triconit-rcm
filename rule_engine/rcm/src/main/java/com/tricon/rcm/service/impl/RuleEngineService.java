@@ -50,6 +50,7 @@ import com.tricon.rcm.db.entity.RcmClaimLog;
 import com.tricon.rcm.db.entity.RcmClaimStatusType;
 import com.tricon.rcm.db.entity.RcmClaims;
 import com.tricon.rcm.db.entity.RcmCompany;
+import com.tricon.rcm.db.entity.RcmEagleSoftDBDetails;
 import com.tricon.rcm.db.entity.RcmInsurance;
 import com.tricon.rcm.db.entity.RcmInsuranceType;
 import com.tricon.rcm.db.entity.RcmInsuranceTypeDateMapping;
@@ -78,6 +79,8 @@ import com.tricon.rcm.dto.RcmClaimDetMainRootDto;
 import com.tricon.rcm.dto.RcmClaimDueBalDatas;
 import com.tricon.rcm.dto.RcmClaimDueBalMainRootDto;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -1385,35 +1388,71 @@ public class RuleEngineService {
 	 */
 	public List<ClaimReconcillationDto> fetchReconcillationDataFromES(RcmOffice off,String queryType,String date1, String date2) {
 
-		String officeUuid = off.getUuid();
-		List<ClaimReconcillationDto> li= new ArrayList<>();
+		List<ClaimReconcillationDto> resultList = new ArrayList<>();
+		if (off == null) {
+			logger.error("[RECON][RCM→RE] Office is null. queryType={}", queryType);
+			return resultList;
+    	}
 		try {
-			HttpEntity<String> entity = new HttpEntity<String>(headers);
-			String param = "?password=" + eagleSoftDBDetailsRepo.findByOffice(off).getPassword() + "&type="
-					+ queryType;
-			param = param + "&office=" + officeUuid+"&date1="+date1+"&date2="+date2;
 			
-			//TEST DATA
-			/*param = "?password=" + "134568" + "&patientId="
-					+ "24734" + "&startDate=8/31/2023";
-			param = param + "&office=" + "c04a2dbe-9bc5-11e8-9f0b-8c16451459cd";*/
+			RcmEagleSoftDBDetails esDetails = eagleSoftDBDetailsRepo.findByOffice(off);
 			
+			if (esDetails == null || esDetails.getPassword() == null) {
+				logger.error("[RECON][RCM→RE] EagleSoft config missing. office={}, queryType={}",off.getName(),queryType);
+				return resultList;
+        	}
 
-			ResponseEntity<RcmClaimReconcillationMainRootDto> result = restTemplate.exchange(
-					ev.getProperty("rcm.reconcillationquery") + param, HttpMethod.GET, entity,
-					RcmClaimReconcillationMainRootDto.class);
+			String baseUrl = ev.getProperty("rcm.reconcillationquery");
+			if (baseUrl == null) {
+				logger.error("[RECON][RCM→RE] Missing property rcm.reconcillationquery");
+				return resultList;
+			}
 
-			RcmClaimReconcillationMainRootDto rootDto = result.getBody();
+			String officeUuid = off.getUuid();
+
+        	String param = "?password=" + URLEncoder.encode(esDetails.getPassword(), "UTF-8")
+                + "&type=" + queryType
+                + "&office=" + officeUuid
+                + "&date1=" + date1
+                + "&date2=" + date2;
+
+        	logger.info("[RECON][RCM→RE][CALL] office={}, queryType={}, endpoint=/reconcillation-query",off.getName(),queryType);
+			
+			HttpEntity<String> entity = new HttpEntity<>(headers);
+            // Make a Rule Engine call which in turn will call the ES
+        	ResponseEntity<RcmClaimReconcillationMainRootDto> response =restTemplate.exchange(baseUrl + param,HttpMethod.GET,entity,RcmClaimReconcillationMainRootDto.class);
+
+			if (!response.getStatusCode().is2xxSuccessful() || response.getBody() == null) {
+				logger.warn("[RECON][RCM→RE] Empty response. office={}, queryType={}, status={}",off.getName(),queryType,response.getStatusCode());
+            	return resultList;
+        	}
+
+			RcmClaimReconcillationMainRootDto rootDto = response.getBody();
+
+			if (rootDto.getData() == null || rootDto.getData().getDatas() == null) {
+				logger.warn("[RECON][RCM→RE] No data section. office={}, queryType={}",off.getName(),queryType);
+				return resultList;
+			}
 
 			for (RcmReconcillationDatas datas : rootDto.getData().getDatas()) {
-				
-				li.addAll(datas.getData());
-				
+				if (datas.getData() != null) 
+					resultList.addAll(datas.getData());
 			}
-		} catch (Exception e) {
-			// TODO: handle exception
+			logger.info(
+				"[RECON][RCM→RE] ES response summary office={}, queryType={}, count={}",
+				off.getName(), queryType, resultList.size()
+			);
+
+			resultList.stream().limit(5).forEach(r ->
+			logger.info("[RECON][RCM→RE][SAMPLE] {}", r)
+			);
+
+			logger.info("[RECON][RCM→RE] ES response for office={}, queryType={}, response={}",off.getName(),queryType,resultList);
+		} catch (Exception ex) {
+			logger.error("[RECON][RCM→RE][ERROR] office={}, queryType={}, message={}",off.getName(),queryType,ex.getMessage(),ex);
 		}
-		return li;
+
+		return resultList;
 	}
 	
 }
