@@ -2363,10 +2363,15 @@ export class BillingClaimsComponent {
     if (this.checkForSectionAccess(this.sectionIds['SERVICE_LEVEL_INFORMATION']['sectionId'], 'view')) {
       this.appService.fetchServiceLevelInfoSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
-          this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data = res.data;
-
-
-          if (res.data != null && res.data.length > 0) {
+        // FILTER INVALID SERVICE CODE ROWS (BUSINESS REQUIREMENT)
+        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data =
+          res.data.filter((e: any) =>
+            e.serviceCode &&
+            typeof e.serviceCode === 'string' &&
+            e.serviceCode.trim().length === 5
+          );
+          const resData = this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;
+          if (resData != null && resData.length > 0) {
             this.isBtpFlagTrue = res.data[0].flag;
             this.sectionLevelInfoTotalConfig.balanceFromEsBeforePosting = res.data[0].balanceFromEsBeforePosting;
             this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting = Number(res.data[0].balanceFromEsAfterPosting);
