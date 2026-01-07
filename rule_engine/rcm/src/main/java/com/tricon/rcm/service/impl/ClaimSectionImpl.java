@@ -1145,7 +1145,6 @@ public class ClaimSectionImpl {
 			}
 			ServiceLevelNotes notes = null;
 			Set<ServiceLevelNotes> oldNotesList = new HashSet<ServiceLevelNotes>();
-			Set<ServiceLevelNotes> newNotesList = new HashSet<ServiceLevelNotes>();
 			for (RcmServiceLevelInformation serviceCodes : serviceLevelData) {
 				for (RcmServiceNotesDto serviceNotes : oldServiceNotes) {
 					if (serviceCodes.getSurface() == null) {
@@ -1185,13 +1184,12 @@ public class ClaimSectionImpl {
 					serviceData.setTooth("N/A");
 				}
 				responseData = new ServiceLevelRequestBodyDto();
-				newNotesList = new HashSet<ServiceLevelNotes>();
+				Set<ServiceLevelNotes> newNotesList = new HashSet<>();
 				for (ServiceLevelNotes notesData : oldNotesList) {
 					if (notesData.getServiceCode().equals(serviceData.getServiceCode())
 							&& notesData.getTooth().equals(serviceData.getTooth())
 							&& notesData.getSurface().equals(serviceData.getSurface())) {
 						newNotesList.add(notesData);
-						responseData.setServiceCodeNotes(newNotesList);
 					}		
 				}			
 				if (partialHeader.getJwtUser().getUuid().equals(serviceData.getCreatedBy().getUuid())) {
@@ -1200,9 +1198,14 @@ public class ClaimSectionImpl {
 				}
 				oldCreatedBy=serviceData.getCreatedBy().getUuid();
 				BeanUtils.copyProperties(serviceData, responseData);
+				responseData.setServiceCodeNotes(newNotesList);
 				responseData.setRebilledCodeStatus(serviceData.isRebilledStatus());
 				responseData.setAdjustmentReason(serviceData.getAdjustmentReason()==null?"":serviceData.getAdjustmentReason());
 				responseData.setBtpReason(serviceData.getBtpReason()==null?"":serviceData.getBtpReason());
+				// ✅ BUSINESS RULE: skip invalid service code rows
+				if (responseData.getServiceCode() == null || responseData.getServiceCode().trim().isEmpty()) {
+					continue;
+				}
 				data.add(responseData);
 			}
 		}
