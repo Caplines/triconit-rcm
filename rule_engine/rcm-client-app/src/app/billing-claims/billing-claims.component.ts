@@ -2371,10 +2371,10 @@ export class BillingClaimsComponent {
             e.serviceCode.trim().length === AppConstants.VALID_SERVICE_CODE_LENGTH
           );
           const resData = this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;
-          if (resData != null && res.data.length > 0) {
-            this.isBtpFlagTrue = res.data[0].flag;
-            this.sectionLevelInfoTotalConfig.balanceFromEsBeforePosting = res.data[0].balanceFromEsBeforePosting;
-            this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting = Number(res.data[0].balanceFromEsAfterPosting);
+          if (resData != null && resData.length > 0) {
+            this.isBtpFlagTrue = resData[0].flag;
+            this.sectionLevelInfoTotalConfig.balanceFromEsBeforePosting = resData[0].balanceFromEsBeforePosting;
+            this.sectionLevelInfoTotalConfig.balanceFromEsAfterPosting = Number(resData[0].balanceFromEsAfterPosting);
           }
           if (!this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data.some((e: any) => e.serviceCode == 'Undistributed')) {
             this.addUndistributedSectionLevelField();
