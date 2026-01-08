@@ -1223,7 +1223,7 @@ public class RuleEngineService {
 			for(ClaimDetailDto cdt:cdList) {
 				String code =cdt.getServiceCode();
 				if (code == null) code ="";
-				if (code.trim().equals("")) {
+				if (code.trim().equals("") || code.equalsIgnoreCase("NA")  || code.equalsIgnoreCase("-NO-DATA-") || code.length()!=Constants.VALID_SERVICE_LEVEL_CODE_LENGTH) {
 					//Ignore if service code is blank..
 					continue;
 				}
@@ -1231,8 +1231,10 @@ public class RuleEngineService {
 				if (cdt.getTooth()!=null && cdt.getTooth().equalsIgnoreCase("NA")) {
 					 cdt.setTooth("N/A");
 				}
+				String[] claimIdParts = data.getClaimId().split("_");
+				boolean isSecondary = claimIdParts.length > 1 && "S".equalsIgnoreCase(claimIdParts[1]);
 				BeanUtils.copyProperties(cdt, rcmClaimDetail, "id");
-				if (data.getClaimId().split("_")[1].equals("S") && cdt.getDetails()!=null) {
+				if (isSecondary && cdt.getDetails()!=null) {
 					rcmClaimDetail.setEstPrimary(cdt.getDetails().getEstSecondary());
 					rcmClaimDetail.setPatientPortion(cdt.getPatientPortionSec());
 					//rcmClaimDetail.setPatientPortionSec(cdt.getPEstSecondary());
@@ -1250,7 +1252,7 @@ public class RuleEngineService {
 					claim.setEstSecondaryES(cdd.getEstSecondary());
 					claim.setStatusES(cdd.getStatus());
 					//dto.setEsDate(cdd.getDateLastUpdated());
-					
+					//tmp++;
 				}
 				//dto.setClaimFound(true);
 			  }

@@ -1132,6 +1132,10 @@ public class ClaimSectionImpl {
 				BeanUtils.copyProperties(list, responseData);
 				responseData.setAdjustmentReason(list.getAdjustmentReason()==null?"":list.getAdjustmentReason());
 				responseData.setBtpReason(list.getBtpReason()==null?"":list.getBtpReason());
+				// ✅ BUSINESS RULE: skip invalid service code rows
+				if (responseData.getServiceCode() == null || responseData.getServiceCode().trim().isEmpty() || responseData.getServiceCode().trim().length()!=Constants.VALID_SERVICE_LEVEL_CODE_LENGTH) {
+					continue;
+				}
 				data.add(responseData);
 			}
 
@@ -1203,12 +1207,12 @@ public class ClaimSectionImpl {
 				responseData.setAdjustmentReason(serviceData.getAdjustmentReason()==null?"":serviceData.getAdjustmentReason());
 				responseData.setBtpReason(serviceData.getBtpReason()==null?"":serviceData.getBtpReason());
 				// ✅ BUSINESS RULE: skip invalid service code rows
-				if (responseData.getServiceCode() == null || responseData.getServiceCode().trim().isEmpty()) {
+				if (responseData.getServiceCode() == null || responseData.getServiceCode().trim().isEmpty() || responseData.getServiceCode().trim().length()!=Constants.VALID_SERVICE_LEVEL_CODE_LENGTH) {
 					continue;
 				}
 				data.add(responseData);
 			}
-		}
+		}	
 		return data;
 	}
 	

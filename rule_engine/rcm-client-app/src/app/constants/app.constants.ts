@@ -104,6 +104,8 @@ export class AppConstants {
     public RecreatedSection_ONE = 1;
     public RecreatedSection_REST = 2;
 
+    public static VALID_SERVICE_CODE_LENGTH=5;
+
     public TEAMS_ID_CONFIG = new Map<number, string>([
         [2, "ADMIN"],
         [3, "INTERNAL_AUDIT"],

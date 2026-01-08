@@ -184,6 +184,8 @@ public class Constants {
     public static final String BUTTON_TYPE_ARCHIVE="archive";
     public static final String BUTTON_TYPE_ASSIGN_TO_TL="assignToTeamLead";
     
+	public static final int VALID_SERVICE_LEVEL_CODE_LENGTH = 5;
+
     public static final int PENDENCY_REPEAT = 2;
     public static final int PENDENCY_FRESH = 1;
     public static final int RecreatedSection_ONE = 1;//First time recreated and assigned 
