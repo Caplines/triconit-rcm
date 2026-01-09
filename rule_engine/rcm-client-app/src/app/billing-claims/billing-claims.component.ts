@@ -2364,12 +2364,7 @@ export class BillingClaimsComponent {
       this.appService.fetchServiceLevelInfoSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
         // FILTER INVALID SERVICE CODE ROWS (BUSINESS REQUIREMENT)
-        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data =
-          res.data.filter((e: any) =>
-            e.serviceCode &&
-            typeof e.serviceCode === 'string' &&
-            e.serviceCode.trim().length === AppConstants.VALID_SERVICE_CODE_LENGTH
-          );
+        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data =res.data;
           const resData = this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;
           if (resData != null && resData.length > 0) {
             this.isBtpFlagTrue = resData[0].flag;
