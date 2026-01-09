@@ -311,9 +311,9 @@ public class Constants {
 	public static String FILLING_MM_SC="M2391,M2392,M2393M2394";
 
 	public static String SEALANT_SC="D1351";
-	public static String COMPLETE_DENTURE_SC=" D5110,D5120,D5130,D5140";
+	public static String COMPLETE_DENTURE_SC="D5110,D5120,D5130,D5140";
 	public static String PARTIAL_DENTURE_SC="D5211,D5212,D5213,D5214,D5225,D5226";
-	public static String DENTURE_SC="D5110,D5120,D5130,D5140";
+	public static String DENTURE_SC="D5110,D5120,D5130,D5140,D5213,D5214";
 	public static String STAIN_LESS_STEEL_CROWN_SC="D2930,D2931";
 	
 	public static String ORTHO_CODE_UI="D8080,D8070,D8090,D8010";
