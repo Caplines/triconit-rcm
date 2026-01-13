@@ -48,23 +48,23 @@ The system follows a **microservices-oriented architecture** with three main bac
 │   RCM Client App         │   Rule Engine Client App         │
 │   (Angular 15)           │   (Angular 6)                    │
 └──────────┬───────────────┴──────────────┬───────────────────┘
-           │                               │
-           │                               │
+           │                              │
+           │                              │
 ┌──────────▼───────────────┐  ┌───────────▼──────────────────┐
 │   RCM Backend Service    │  │  Rule Engine Backend Service │
 │   (Spring Boot 2.7.3)    │  │  (Spring Boot 2.0.2)         │
 └──────────┬───────────────┘  └───────────┬──────────────────┘
-           │                               │
-           │                               │
-           └───────────┬───────────────────┘
+           │                              │
+           │                              │
+           └───────────┬──────────────────┘
                        │
            ┌───────────▼───────────────────┐
            │  Data Replication Service     │
-           │  (Spring Boot 2.5.2)         │
+           │  (Spring Boot 2.5.2)          │
            └───────────┬───────────────────┘
                        │
-        ┌──────────────┴──────────────┐
-        │                             │
+        ┌──────────────┴─────────────┐
+        │                            │
 ┌───────▼────────┐          ┌────────▼────────┐
 │  MySQL (RCM)   │          │  EagleSoft DB   │
 │  Cloud DB      │          │  (Sybase)       │
