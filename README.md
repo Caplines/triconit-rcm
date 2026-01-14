@@ -1,4 +1,4 @@
-# Capline - Revenue Cycle Management System
+# Capline - Revenue Cycle Management System & LC3 Rule Engine
 
 ## Table of Contents
 
