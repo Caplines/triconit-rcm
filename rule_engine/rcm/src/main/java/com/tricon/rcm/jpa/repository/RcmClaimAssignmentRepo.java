@@ -60,11 +60,11 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	//assign.current_team_id!=:teamId and tm.id!=:teamId Removed Condition so that all remarks can come
 		//,@Param("teamId") int teamId
 	@Query(nativeQuery = true, value = " select distinct "
-			 +" comment_assigned_by comment,assign.created_date cd, tm.description teamName,us.first_name fName,us.last_name lName,assign.attachment_with_remarks attchmentsWithRemarks "
-			 +" from  rcm_claim_assignment assign inner join rcm_user us on us.uuid=assign.assigned_by "
+			 +" assign.comment_assigned_by comment,assign.created_date cd, tm.description teamName,us.first_name fName,us.last_name lName,assign.attachment_with_remarks attchmentsWithRemarks "
+			 +" from  rcm_claim_assignment assign left join rcm_user us on us.uuid=assign.assigned_by "
 			 //+" inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
 			 +" inner join rcm_team tm on tm.id=assign.current_team_id "
-			 +" where claim_id=:claim_id and comment_assigned_by<>'' order by assign.created_date asc "
+			 +" where claim_id=:claim_id and comment_assigned_by is not null and trim(comment_assigned_by) <> '' order by assign.created_date asc "
 	+ "")
     List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(@Param("claim_id") String claimId);
 	

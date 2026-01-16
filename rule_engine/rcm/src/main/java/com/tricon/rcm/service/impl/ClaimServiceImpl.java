@@ -3853,8 +3853,10 @@ public class ClaimServiceImpl {
 		if (list!=null){
 			
 		try {	
-		Collections.sort(list, 
-                (o1, o2) -> o1.getCd().compareTo(o2.getCd()));
+		list.sort(Comparator.comparing(
+   					 ClaimRemarksDto::getCd,
+   					 Comparator.nullsLast(Date::compareTo)
+		));
 		
 		}catch(Exception x) {
 			x.printStackTrace();
@@ -6736,11 +6738,11 @@ public class ClaimServiceImpl {
 					RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 					if (uaof != null) {
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, uaof.getUser(),
-							claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
+							claim.getClaimUuid(), claim, dto.getComment(), systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
 						rcmAssigment.setPendingSince(assignOld.getPendingSince());
 					}else {
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, null,
-								claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
+								claim.getClaimUuid(), claim,  dto.getComment(), systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
 							rcmAssigment.setPendingSince(assignOld.getPendingSince());
 					}
 					
@@ -6796,7 +6798,7 @@ public class ClaimServiceImpl {
 									.findByStatus(claim.getClaimStatusType().getStatus());
 							RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 							rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, null,
-									claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
+									claim.getClaimUuid(), claim,  dto.getComment(), systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
 							rcmAssigment.setPendingSince(claim.getCreatedDate());
 							rcmAssigment.setForceUnassigned(true);
 		                     rcmClaimAssignmentRepo.save(rcmAssigment);
