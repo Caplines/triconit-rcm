@@ -6249,13 +6249,13 @@ public class ClaimServiceImpl {
 		List<ClaimReconcillationDto> secondaryCloseClaims =fetchFromRuleEngineSafe(office,"SecondaryClose",date1,date2);//C26
 		
 		// 4. Prepare reconciliation response (order preserved exactly)
-		dataList.add(prepaireReconcillationData("Primary Unbilled",new ReconciliationResponseDto(),office,primaryUnbilledClaims,true));
-		dataList.add(prepaireReconcillationData("Secondary Unbilled (Primary Unbilled/Open)",new ReconciliationResponseDto(),office,secondaryUnbilledClaims,false));
-    	dataList.add(prepaireReconcillationData("Primary Open",new ReconciliationResponseDto(),office,primaryOpenClaims,true));
-    	dataList.add(prepaireReconcillationData("Secondary Open",new ReconciliationResponseDto(),office,secondaryOpenClaims,false));
-		dataList.add(prepaireReconcillationData("Primary Closed",new ReconciliationResponseDto(),office,primaryCloseClaims,true));
-		dataList.add(prepaireReconcillationData("Secondary Closed",new ReconciliationResponseDto(),office,secondaryCloseClaims,false));
-		dataList.add(prepaireReconcillationData("Secondary Unbilled (Primary Closed)",new ReconciliationResponseDto(),office,secondaryUnsubmittedClaims,false));
+		dataList.add(prepaireReconcillationData("Primary Unbilled",new ReconciliationResponseDto(),office,primaryUnbilledClaims,true,dto));
+		dataList.add(prepaireReconcillationData("Secondary Unbilled (Primary Unbilled/Open)",new ReconciliationResponseDto(),office,secondaryUnbilledClaims,false,dto));
+    	dataList.add(prepaireReconcillationData("Primary Open",new ReconciliationResponseDto(),office,primaryOpenClaims,true,dto));
+    	dataList.add(prepaireReconcillationData("Secondary Open",new ReconciliationResponseDto(),office,secondaryOpenClaims,false,dto));
+		dataList.add(prepaireReconcillationData("Primary Closed",new ReconciliationResponseDto(),office,primaryCloseClaims,true,dto));
+		dataList.add(prepaireReconcillationData("Secondary Closed",new ReconciliationResponseDto(),office,secondaryCloseClaims,false,dto));
+		dataList.add(prepaireReconcillationData("Secondary Unbilled (Primary Closed)",new ReconciliationResponseDto(),office,secondaryUnsubmittedClaims,false,dto));
 		
 		logger.info("[RECON][SERVICE][END] office={}, categories={}, timeTakenMs={}",office.getName(),dataList.size(),(System.currentTimeMillis() - startTime));
 
@@ -6346,7 +6346,7 @@ public class ClaimServiceImpl {
 	}
 
 	
-	private ReconciliationResponseDto prepaireReconcillationData(String title,ReconciliationResponseDto responseDto,RcmOffice office,List<ClaimReconcillationDto> esClaims,boolean primaryFlag) {
+	private ReconciliationResponseDto prepaireReconcillationData(String title,ReconciliationResponseDto responseDto,RcmOffice office,List<ClaimReconcillationDto> esClaims,boolean primaryFlag,ReconciliationDto dto) {
 
 		responseDto.setTitle(title);
 		responseDto.setOffice(office.getName());
@@ -6371,7 +6371,18 @@ public class ClaimServiceImpl {
 		/* ---------------- RCM side ---------------- */
 		List<ReconcillationClaimDto> rcmClaims;
 		logger.info("[RECON][RCM query for ] office id={},title={}, typePattern={}, billingPending={}, ctx.esStatus={}",office.getUuid(),title, ctx.typePattern,ctx.billingPending,ctx.esStatus);
-		if (ctx.esStatus != null) {
+		
+		if(ctx.esStatus != null && (title.equals("Primary Closed") || title.equals("Secondary Closed"))){
+			rcmClaims = rcmClaimRepository.getClosedClaimsByOfficeAndDos(
+						office.getUuid(),
+							ctx.typePattern,
+							ctx.billingPending,
+							ctx.esStatus,
+							dto.getStartDate(),
+							dto.getEndDate()
+    					);
+		}
+		else if (ctx.esStatus != null) {
 			rcmClaims = rcmClaimRepository
 					.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNotEsUpdatedStatus(
 							office.getUuid(),

@@ -1,5 +1,6 @@
 package com.tricon.rcm.jpa.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -1475,6 +1476,23 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdatedOPenUnbilled(@Param("officeId") String officeId,
 				@Param("claimsIds") List<String> claimsIds);
 		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_uuid as claimUuid, "
+ 				+"cl.claim_id as claimId,cl.current_status as currentStatus, "
+  				+"cl.current_state as currentState,cl.patient_id as patientId, "
+  				+"cl.patient_name as patientName FROM rcm_claims cl "
+				+"WHERE cl.office_id = :officeId AND cl.pending = :pend "
+  				+"AND cl.status_es_updated = :esUpdatedStatus "
+  				+"AND cl.current_state =" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED 
+				+" AND cl.claim_id LIKE :type AND DATE(cl.dos) BETWEEN :startDate AND :endDate")
+		List<ReconcillationClaimDto> getClosedClaimsByOfficeAndDos(
+				@Param("officeId") String officeId,
+				@Param("type") String type,
+				@Param("pend") boolean pend,
+				@Param("esUpdatedStatus") String esUpdatedStatus,
+				@Param("startDate") Date startDate,
+				@Param("endDate") Date endDate
+		);
+
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_id as claimUuid ,cl.resolved as currentState,"
