@@ -1498,10 +1498,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ "cl.claim_id as claimUuid ,cl.resolved as currentState,"
 				+ "cl.is_archive as currentStatus,cl.issue as patientId,cl.issue as patientName "
 				+ " from  rcm_issue_claims  cl where "
-				+ " cl.office_id=:officeId and cl.resolved=false and is_archive=false and cl.claim_id in :claimsIds "
+				+ " cl.office_id=:officeId and cl.resolved=false and is_archive=false"
 				+ " " )
-		List<ReconcillationClaimDto> getClaimInIssueClaimByClaimIdAndOfficeUnarchived(@Param("officeId") String officeId,
-				@Param("claimsIds") List<String> claimsIds);
+		List<ReconcillationClaimDto> getClaimInIssueClaimByAndOfficeUnarchived(@Param("officeId") String officeId);
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_id as claimUuid ,cl.resolved as currentState,"
