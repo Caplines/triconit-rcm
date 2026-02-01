@@ -6360,13 +6360,11 @@ public class ClaimServiceImpl {
 
 		/* ---------------- PMS (ES) side ---------------- */
 		Set<String> esClaimKeys = new HashSet<>();
-		Set<String> esClaimIds = new HashSet<>();
-
+		
 		for (ClaimReconcillationDto es : esClaims) {
 			String suffix = ctx.primarySide ? "P" : "S";
 			String key = es.getClaimId() + "_" + suffix;
 			esClaimKeys.add(key);
-			esClaimIds.add(es.getClaimId());
 		}
 
 		/* ---------------- RCM side ---------------- */
@@ -6383,7 +6381,70 @@ public class ClaimServiceImpl {
 							dto.getEndDate()
     					);
 		}
-		else if (ctx.esStatus != null) { // Secondary Unbilled (Primary Unbilled/Open) || primary open || secondary open || Secondary Unbilled (Primary Closed)
+		// Secondary Unbilled (Primary Unbilled/Open)
+		else if (ctx.esStatus != null && title.equals(Constants.SECONDARY_UNBILLED_PRIMARY_OPEN)) {
+
+			// Step 1: Get ALL secondary unbilled
+			rcmClaims = rcmClaimRepository
+				.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNot(
+					office.getUuid(),
+					ctx.typePattern,   // %_S
+					ctx.billingPending // true
+				);
+
+			// Step 2: Get all Primary claim ids of  Secondary claims by replacing _S to _P 
+			List<String> primaryIds = rcmClaims.stream()
+					.map(c -> c.getClaimId().replace("_S", "_P"))
+					.collect(Collectors.toList());
+
+			if (!primaryIds.isEmpty()) {
+				// Step 3: Get Primary Claim Status in PMS is "Open" for Primary claim or Billing Team has not submitted the primary claim yet
+				List<ReconcillationClaimDto> primaryMatches = rcmClaimRepository
+										.getClaimbyOfficeAndClaimIdsEsUpdatedStatusOrNotSubmittedByBilling(
+											office.getUuid(), primaryIds,
+											ClaimStatusSearchEnum.STATUS_OPEN.getStatus());
+
+				Set<String> validPrimary = primaryMatches.stream()
+						.map(ReconcillationClaimDto::getClaimId)
+						.collect(Collectors.toSet());
+
+				rcmClaims.removeIf(s ->
+						!validPrimary.contains(s.getClaimId().replace("_S", "_P")));
+			}
+		}
+		else if (ctx.esStatus != null && title.equals(Constants.SECONDARY_UNBILLED_PRIMARY_CLOSED)) {
+
+			// Step 1: Get ALL secondary unbilled
+			rcmClaims = rcmClaimRepository
+				.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNot(
+					office.getUuid(),
+					ctx.typePattern,   // %_S
+					ctx.billingPending // true
+				);
+
+			// Step 2: Get all Primary claim ids of  Secondary claims by replacing _S to _P 
+			List<String> primaryIds = rcmClaims.stream()
+					.map(c -> c.getClaimId().replace("_S", "_P"))
+					.collect(Collectors.toList());
+
+			if (!primaryIds.isEmpty()) {
+				// Step 3: Get Primary Claim Status in PMS is "Closed" for Primary claim
+				List<ReconcillationClaimDto> primaryMatches =rcmClaimRepository
+						.getClaimbyOfficeAndClaimIdsEsUpdatedStatus(
+							office.getUuid(),
+							primaryIds,
+							ClaimStatusSearchEnum.STATUS_CLOSED.getStatus()
+						);
+
+				Set<String> validPrimary = primaryMatches.stream()
+						.map(ReconcillationClaimDto::getClaimId)
+						.collect(Collectors.toSet());
+
+				rcmClaims.removeIf(s ->
+						!validPrimary.contains(s.getClaimId().replace("_S", "_P")));
+			}
+		}
+		else if (ctx.esStatus != null && (title.equals(Constants.PRIMARY_OPEN) || title.equals(Constants.SECONDARY_OPEN))) { // primary open || secondary open 
 			rcmClaims = rcmClaimRepository
 					.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNotEsUpdatedStatus(
 							office.getUuid(),
@@ -6400,52 +6461,10 @@ public class ClaimServiceImpl {
 								ctx.billingPending
 						);
 		}
-		 /* ---------------- Secondary special handling ---------------- */
-		if (title.startsWith(Constants.SECONDARY_UNBILLED_PRIMARY_OPEN)) {
-			Set<String> primaryKeys = rcmClaims.stream()
-					.map(c -> c.getClaimId().replace("_S", "_P"))
-					.collect(Collectors.toSet());
-
-			if (!primaryKeys.isEmpty()) {
-				List<ReconcillationClaimDto> primaryMatches =
-						ctx.esStatus == ClaimStatusSearchEnum.STATUS_CLOSED.getStatus()
-								? rcmClaimRepository.getClaimbyOfficeAndClaimIdsEsUpdatedStatus(
-										office.getUuid(), "%_P", ctx.esStatus)
-								: rcmClaimRepository.getClaimbyOfficeAndClaimIdsEsUpdatedStatusOrNotSubmittedByBilling(
-										office.getUuid(), "%_P",
-										ClaimStatusSearchEnum.STATUS_OPEN.getStatus());
-
-				Set<String> validPrimary = primaryMatches.stream()
-						.map(ReconcillationClaimDto::getClaimId)
-						.collect(Collectors.toSet());
-
-				rcmClaims.removeIf(s ->
-						!validPrimary.contains(s.getClaimId().replace("_S", "_P")));
-			}
+		if (rcmClaims == null) {
+    		rcmClaims = new ArrayList<>();
 		}
-		if (title.equals(Constants.SECONDARY_UNBILLED_PRIMARY_CLOSED)) {
-
-			Set<String> primaryKeys = rcmClaims.stream()
-				.map(c -> c.getClaimId().replace("_S", "_P"))
-				.collect(Collectors.toSet());
-
-			if (!primaryKeys.isEmpty()) {
-
-				List<ReconcillationClaimDto> primaryMatches =
-					rcmClaimRepository.getClaimbyOfficeAndClaimIdsEsUpdatedStatus(
-						office.getUuid(),
-						"%_P",
-						ClaimStatusSearchEnum.STATUS_CLOSED.getStatus()
-					);
-
-				Set<String> validPrimary = primaryMatches.stream()
-					.map(ReconcillationClaimDto::getClaimId)
-					.collect(Collectors.toSet());
-
-				rcmClaims.removeIf(s ->
-					!validPrimary.contains(s.getClaimId().replace("_S", "_P")));
-			}
-		}
+		
 		// Get upload error claims of the same category claims present in ES
 		List<ReconcillationClaimDto> uploadErrorClaims =allUploadErrors.stream()
 														.filter(u -> esClaimKeys.contains(u.getClaimId()))
@@ -6468,6 +6487,7 @@ public class ClaimServiceImpl {
 			category, but is not present in the "#of Claims in RCM Tool"
 		*/
 		for (ReconcillationClaimDto rcm : rcmClaims) {
+			String t1=rcm.getClaimId();
 			if (!esClaimKeys.contains(rcm.getClaimId())) {
 				com.tricon.rcm.dto.ReconcillationClaimDto d =
 						new com.tricon.rcm.dto.ReconcillationClaimDto();

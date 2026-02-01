@@ -1537,16 +1537,16 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				@Param("type") String type,@Param("pend") boolean pend,@Param("esUpdatedStatus") String esUpdatedStatus);
 	
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId from  rcm_claims  cl where "
-				+ " cl.office_id=:officeId and (pending is true or status_es_updated=:esUpdatedStatus) and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id  REGEXP :claimsId "
+				+ " cl.office_id=:officeId and (pending is true or status_es_updated=:esUpdatedStatus) and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in (:claimIds) "
 				+ " " )//select * from rcm_claims where claim_id  REGEXP '_arc_13767_P';
 		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsEsUpdatedStatusOrNotSubmittedByBilling(@Param("officeId") String officeId,
-				@Param("claimsId") String claimsId,@Param("esUpdatedStatus") String esUpdatedStatus);
+				@Param("claimIds") List<String> claimIds,@Param("esUpdatedStatus") String esUpdatedStatus);
 
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId from  rcm_claims  cl where "
-				+ " cl.office_id=:officeId and status_es_updated=:esUpdatedStatus and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id  REGEXP :claimsId "
+				+ " cl.office_id=:officeId and status_es_updated=:esUpdatedStatus and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in (:claimIds) "
 				+ " " )//select * from rcm_claims where claim_id  REGEXP '_arc_13767_P';
 		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsEsUpdatedStatus(@Param("officeId") String officeId,
-				@Param("claimsId") String claimsId,@Param("esUpdatedStatus") String esUpdatedStatus);
+				@Param("claimIds") List<String> claimIds,@Param("esUpdatedStatus") String esUpdatedStatus);
 
 		@Query(nativeQuery = true, value = " select  cl.claim_id  as claimId,cl.claim_uuid as claimUuid,off.name as officeName,cmp.name as clientName "
 				+ "  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "
