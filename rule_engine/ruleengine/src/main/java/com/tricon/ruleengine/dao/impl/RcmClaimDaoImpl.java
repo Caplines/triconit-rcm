@@ -83,8 +83,8 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" from rcm_claims cl " +
 				" inner join office off on off.uuid = cl.office_id " +
 				" inner join company cmp on cmp.uuid = off.company_id " +
-				" inner join rcm_claims_submission_details rcsd on rcsd.claim_id = cl.claim_uuid " +
-				" inner join rcm_user us on rcsd.submitted_by = us.uuid " +
+				" left join rcm_claims_submission_details rcsd on rcsd.claim_id = cl.claim_uuid " +
+				" left join rcm_user us on rcsd.submitted_by = us.uuid " +
 				" left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id " +
 				" left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id " +
 				" left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id " +
@@ -95,7 +95,7 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" ) " +
 				" where cl.pending = false and cmp.name = '" + d.getClient() + "' " +
 				(office==null ? "" : " and cl.office_id='" + office.getUuid() + "' ") +
-				" and IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date) " +
+				" and IFNULL(rcsd.created_date, IFNULL(rcsd.updated_date, cl.created_date)) " +
 				" between STR_TO_DATE('" + d.getDate1() + " 00:00:00', '%m/%d/%Y %H:%i:%s') " +
 				" AND STR_TO_DATE('" + d.getDate2() + " 23:59:59', '%m/%d/%Y %H:%i:%s') ) " +
 
@@ -129,7 +129,7 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" ) " +
 				" where cl.pending = false and cmp.name = '" + d.getClient() + "' " +
 				(office==null ? "" : " and cl.office_id='" + office.getUuid() + "' ") +
-				" and IF(rrs.updated_date is null, rrs.created_date, rrs.updated_date) " +
+				" and IFNULL(rrs.created_date, IFNULL(rrs.updated_date, cl.created_date)) " +
 				" between STR_TO_DATE('" + d.getDate1() + " 00:00:00', '%m/%d/%Y %H:%i:%s') " +
 				" AND STR_TO_DATE('" + d.getDate2() + " 23:59:59', '%m/%d/%Y %H:%i:%s') )";
 		    	break;
