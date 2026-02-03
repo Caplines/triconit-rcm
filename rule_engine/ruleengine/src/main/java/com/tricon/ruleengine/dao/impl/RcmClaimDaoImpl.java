@@ -76,7 +76,8 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" CASE WHEN cl.claim_id LIKE '%_P' THEN pinst.name ELSE sinst.name END as insurancetype, " +
 				" CASE WHEN rcsd.updated_date is null THEN DATE_FORMAT(rcsd.created_date, '%m/%d/%Y') " +
 				" ELSE DATE_FORMAT(rcsd.updated_date, '%m/%d/%Y') END as submissiodate, " +
-				" us.first_name, us.last_name, " +
+				" COALESCE(us.first_name, us_creator.first_name) as first_name, "+
+				" COALESCE(us.last_name, us_creator.last_name) as last_name, "+
 				" CASE WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran' END as runenginerun, " +
 				" CASE WHEN rcsd.clean_claim is true THEN 'Yes' ELSE 'No' END as cleanClaim, " +
 				" cl.submitted_total, rcc.comments, cl.rebilled_status, cl.provider_on_claim " +
@@ -85,6 +86,7 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" inner join company cmp on cmp.uuid = off.company_id " +
 				" left join rcm_claims_submission_details rcsd on rcsd.claim_id = cl.claim_uuid " +
 				" left join rcm_user us on rcsd.submitted_by = us.uuid " +
+				" left join rcm_user us_creator on cl.created_by = us_creator.uuid "+
 				" left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id " +
 				" left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id " +
 				" left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id " +
@@ -111,7 +113,8 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" CASE WHEN cl.claim_id LIKE '%_P' THEN pinst.name ELSE sinst.name END as insurancetype, " +
 				" CASE WHEN rrs.updated_date is null THEN DATE_FORMAT(rrs.created_date, '%m/%d/%Y') " +
 				" ELSE DATE_FORMAT(rrs.updated_date, '%m/%d/%Y') END as submissiodate, " +
-				" '' as first_name, '' as last_name, " +
+				" COALESCE(us_rebill.first_name, us_creator.first_name) as first_name, "+
+				" COALESCE(us_rebill.last_name, us_creator.last_name) as last_name, "+
 				" CASE WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran' END as runenginerun, " +
 				" 'Yes' as cleanClaim, " +
 				" cl.submitted_total, rcc.comments, cl.rebilled_status, cl.provider_on_claim " +
@@ -123,6 +126,8 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id " +
 				" left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id " +
 				" left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id " +
+				" left join rcm_user us_rebill on rrs.created_by = us_rebill.uuid "+
+				" left join rcm_user us_creator on cl.created_by = us_creator.uuid "+
 				" left join reports_claim rc on rc.claim_id = SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) and rc.patient_id = cl.patient_id " +
 				" left join rcm_claim_comment rcc on rcc.uuid = ( " +
 				"   SELECT b.uuid FROM rcm_claim_comment b WHERE b.claim_id = cl.claim_uuid ORDER BY b.created_date DESC LIMIT 1 " +
