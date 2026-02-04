@@ -6470,53 +6470,13 @@ public class ClaimServiceImpl {
 														.filter(u -> esClaimKeys.contains(u.getClaimId()))
 														.collect(Collectors.toList());
 
-		Set<String> uploadErrorIds = uploadErrorClaims.stream()
-    				.map(ReconcillationClaimDto::getClaimId)
-    				.collect(Collectors.toSet());
-
+		// Upload error ids
+		Set<String> uploadErrorSet = uploadErrorClaims.stream().map(ReconcillationClaimDto::getClaimId).collect(Collectors.toSet());
+		
 		// Exclude upload error claims in case of Primary Unbilled or Secondary Unbilled (Primary Closed) or Secondary Unbilled (Primary Unbilled/Open)
 		if(rcmClaims!=null && excludeErrorClaims){
-			rcmClaims.removeIf(rc -> uploadErrorIds.contains(rc.getClaimId()));
+			rcmClaims.removeIf(rc -> uploadErrorSet.contains(rc.getClaimId()));
 		}
-		
-		/* ---------------- Mismatch calculations ---------------- */
-		Set<com.tricon.rcm.dto.ReconcillationClaimDto> notInPms = new HashSet<>();
-		Set<com.tricon.rcm.dto.ReconcillationClaimDto> notInRcm = new HashSet<>();
-        /*
-			Claims that are there in the "# of Claims in PMS" of the same 
-			category, but is not present in the "#of Claims in RCM Tool"
-		*/
-		for (ReconcillationClaimDto rcm : rcmClaims) {
-			String t1=rcm.getClaimId();
-			if (!esClaimKeys.contains(rcm.getClaimId())) {
-				com.tricon.rcm.dto.ReconcillationClaimDto d =
-						new com.tricon.rcm.dto.ReconcillationClaimDto();
-				d.setClaimId(rcm.getClaimId());
-				d.setClaimUuid(rcm.getClaimUuid());
-				d.setPatientId(rcm.getPatientId());
-				d.setPatientName(rcm.getPatientName());
-				notInPms.add(d);
-			}
-		}
-		/*
-			Claims that are there in the "#of Claims in RCM Tool" of the
-			same category, but is not present in the "# of Claims in PMS
-		*/
-		for (ClaimReconcillationDto es : esClaims) {
-			String key = es.getClaimId() + "_" + (primaryFlag ? "P" : "S");
-			boolean exists = rcmClaims.stream()
-					.anyMatch(r -> r.getClaimId().equals(key));
-
-			if (!exists) {
-				com.tricon.rcm.dto.ReconcillationClaimDto d =
-						new com.tricon.rcm.dto.ReconcillationClaimDto();
-				d.setClaimId(key);
-				d.setPatientId(es.getPatientId());
-				d.setStatusEsUpdated(es.getStatus());
-				notInRcm.add(d);
-			}
-		}
-		
 
 		/* ----------------Caculate Archived Claims ---------------
 			Claims that are	there in the "#	of Claims in PMS" of 
@@ -6525,10 +6485,11 @@ public class ClaimServiceImpl {
 
 		responseDto.setClaimArchived(new HashSet<>());
 		if (!esClaimKeys.isEmpty()) {
-			String pass = "'" + String.join("|", esClaimKeys) + "'";
+			List<String> esClaimKeyList = esClaimKeys.stream()
+                                       .collect(Collectors.toList());
 			List<ReconcillationClaimDto> archived =
 					rcmClaimRepository.getClaimbyOfficeAndClaimIdsArchived(
-							office.getUuid(), pass);
+							office.getUuid(), esClaimKeyList);
 
 			Set<Discrepancy> archivedSet = archived.stream().map(a -> {
 				Discrepancy d = new Discrepancy();
@@ -6555,6 +6516,50 @@ public class ClaimServiceImpl {
 			d.setPatientName(u.getPatientName());
 			return d;
 		}).collect(Collectors.toSet());
+		
+		/* ---------------- Mismatch calculations ---------------- */
+		Set<com.tricon.rcm.dto.ReconcillationClaimDto> notInPms = new HashSet<>();
+		Set<com.tricon.rcm.dto.ReconcillationClaimDto> notInRcm = new HashSet<>();
+		// Archived ids
+		Set<String> archivedClaimsSet = responseDto.getClaimArchived().stream().map(Discrepancy::getClaimId).collect(Collectors.toSet());
+		// RCM active ids
+		Set<String> rcmSet = rcmClaims.stream().map(ReconcillationClaimDto::getClaimId).collect(Collectors.toSet());
+        /*
+			Claims that are there in the "# of Claims in PMS" of the same 
+			category, but is not present in the "#of Claims in RCM Tool"
+		*/
+		for (ReconcillationClaimDto rcm : rcmClaims) {
+			String t1=rcm.getClaimId();
+			if (!esClaimKeys.contains(rcm.getClaimId())) {
+				com.tricon.rcm.dto.ReconcillationClaimDto d =
+						new com.tricon.rcm.dto.ReconcillationClaimDto();
+				d.setClaimId(rcm.getClaimId());
+				d.setClaimUuid(rcm.getClaimUuid());
+				d.setPatientId(rcm.getPatientId());
+				d.setPatientName(rcm.getPatientName());
+				notInPms.add(d);
+			}
+		}
+		/*
+			Claims that are there in the "#of Claims in RCM Tool" of the
+			same category, but is not present in the "# of Claims in PMS
+		*/
+		for (ClaimReconcillationDto es : esClaims) {
+			String key = es.getClaimId() + "_" + (primaryFlag ? "P" : "S");
+			boolean inActive = rcmSet.contains(key);
+			boolean inUpload = uploadErrorSet.contains(key);
+			boolean inArchive = archivedClaimsSet.contains(key);
+
+			// Only if NOT found anywhere → real mismatch
+   			 if (!inActive && !inUpload && !inArchive) {
+				com.tricon.rcm.dto.ReconcillationClaimDto d =
+						new com.tricon.rcm.dto.ReconcillationClaimDto();
+				d.setClaimId(key);
+				d.setPatientId(es.getPatientId());
+				d.setStatusEsUpdated(es.getStatus());
+				notInRcm.add(d);
+			}
+		}
 		
 		// Set Office name
 		responseDto.setOffice(office.getName());

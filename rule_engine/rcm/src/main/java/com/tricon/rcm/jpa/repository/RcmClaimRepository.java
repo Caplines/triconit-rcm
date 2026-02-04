@@ -1444,10 +1444,10 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
 				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated,cl.patient_id as patientId,cl.patient_name as patientName "
 				+ " from  rcm_claims  cl where "
-				+ " cl.office_id=:officeId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED+" and cl.claim_id  REGEXP :claimsIds "
-				+ " " )//select * from rcm_claims where claim_id  REGEXP '_13767_P|P';
+				+ " cl.office_id=:officeId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED+" and cl.claim_id  in :claimsIds "
+				+ " " )
 		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsArchived(@Param("officeId") String officeId,
-				@Param("claimsIds") String claimsIds);
+				@Param("claimsIds") List<String> claimsIds);
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_uuid as claimUuid ,cl.current_state as currentState,"
