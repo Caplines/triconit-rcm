@@ -97,7 +97,7 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" ) " +
 				" where cl.pending = false and cmp.name = '" + d.getClient() + "' " +
 				(office==null ? "" : " and cl.office_id='" + office.getUuid() + "' ") +
-				" and IFNULL(rcsd.created_date, IFNULL(rcsd.updated_date, cl.created_date)) " +
+				" and COALESCE(rcsd.updated_date, rcsd.created_date, cl.created_date) " +
 				" between STR_TO_DATE('" + d.getDate1() + " 00:00:00', '%m/%d/%Y %H:%i:%s') " +
 				" AND STR_TO_DATE('" + d.getDate2() + " 23:59:59', '%m/%d/%Y %H:%i:%s') ) " +
 
@@ -134,7 +134,7 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" ) " +
 				" where cl.pending = false and cmp.name = '" + d.getClient() + "' " +
 				(office==null ? "" : " and cl.office_id='" + office.getUuid() + "' ") +
-				" and IFNULL(rrs.created_date, IFNULL(rrs.updated_date, cl.created_date)) " +
+				" and COALESCE(rrs.updated_date, rrs.created_date, cl.created_date) " +
 				" between STR_TO_DATE('" + d.getDate1() + " 00:00:00', '%m/%d/%Y %H:%i:%s') " +
 				" AND STR_TO_DATE('" + d.getDate2() + " 23:59:59', '%m/%d/%Y %H:%i:%s') )";
 		    	break;
