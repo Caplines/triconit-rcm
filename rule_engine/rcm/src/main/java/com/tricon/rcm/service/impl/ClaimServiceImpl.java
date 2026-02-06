@@ -6360,11 +6360,12 @@ public class ClaimServiceImpl {
 
 		/* ---------------- PMS (ES) side ---------------- */
 		Set<String> esClaimKeys = new HashSet<>();
-		
+		//logger.info("PMS claim for title "+title);
 		for (ClaimReconcillationDto es : esClaims) {
 			String suffix = ctx.primarySide ? "P" : "S";
 			String key = es.getClaimId() + "_" + suffix;
 			esClaimKeys.add(key);
+			//logger.info("PMS claim= "+key);
 		}
 
 		/* ---------------- RCM side ---------------- */
@@ -6485,11 +6486,11 @@ public class ClaimServiceImpl {
 
 		responseDto.setClaimArchived(new HashSet<>());
 		if (!esClaimKeys.isEmpty()) {
-			List<String> esClaimKeyList = esClaimKeys.stream()
-                                       .collect(Collectors.toList());
+			String regex = esClaimKeys.stream().map(k -> "_arc_" + k + "$").collect(Collectors.joining("|"));
+
 			List<ReconcillationClaimDto> archived =
 					rcmClaimRepository.getClaimbyOfficeAndClaimIdsArchived(
-							office.getUuid(), esClaimKeyList);
+							office.getUuid(), regex);
 
 			Set<Discrepancy> archivedSet = archived.stream().map(a -> {
 				Discrepancy d = new Discrepancy();
@@ -6548,7 +6549,7 @@ public class ClaimServiceImpl {
 			String key = es.getClaimId() + "_" + (primaryFlag ? "P" : "S");
 			boolean inActive = rcmSet.contains(key);
 			boolean inUpload = uploadErrorSet.contains(key);
-			boolean inArchive = archivedClaimsSet.contains(key);
+			boolean inArchive = archivedClaimsSet.stream().anyMatch(id -> id.endsWith("_arc_"+key));
 
 			// Only if NOT found anywhere → real mismatch
    			 if (!inActive && !inUpload && !inArchive) {
