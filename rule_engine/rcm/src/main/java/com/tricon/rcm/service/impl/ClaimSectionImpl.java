@@ -1612,8 +1612,9 @@ public class ClaimSectionImpl {
 
 			// update rebilled status true in rcm_claims table
 			claim.setRebilledStatus(true);
-			// As per Gagan on rebilled make claim status Open
+			// As per Gagan on rebilled make claim status Open and pending should be false as its rebilled
 			claim.setStatusESUpdated(ClaimStatusSearchEnum.STATUS_OPEN.getStatus());
+			claim.setPending(false);
 			rcmClaimRepository.save(claim);
 
 			//String newCycleStatus = requestRebillingInfoModel.getCurrentAction();
