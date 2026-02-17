@@ -41,14 +41,19 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  HibernateJpaAutoConfiguration.class})
 public class RuleengineApplication extends SpringBootServletInitializer{
 
-	 
+	/**
+	 * This method is still needed for backward compatibility with WAR deployment
+	 * but is optional for standalone JAR execution
+	 */
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
 		return application.sources(RuleengineApplication.class);
 	}
 
+	/**
+	 * Main entry point for standalone JAR execution
+	 */
 	public static void main(String[] args) throws Exception {
-		
 		SpringApplication.run(RuleengineApplication.class, args);
 	}
 	

@@ -1,0 +1,18 @@
+# Environment files with sensitive data
+.env
+
+# Docker volumes
+docker-volumes/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

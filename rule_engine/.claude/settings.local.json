@@ -1,0 +1,15 @@
+{
+    "permissions": {
+      "allow": [
+        "Bash(chmod:*)",
+        "Bash(docker logout:*)",
+        "Bash(docker login:*)",
+        "Bash(docker compose build:*)",
+        "Bash(./build.sh:*)",
+        "Bash(docker compose:*)",
+        "Bash(lsof:*)",
+        "Bash(curl:*)"
+      ]
+    }
+  }
+  

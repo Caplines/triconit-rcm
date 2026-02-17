@@ -1,0 +1,64 @@
+services:
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ./ruleengine
+      dockerfile: Dockerfile
+    container_name: ruleengine-backend
+    restart: unless-stopped
+    ports:
+      - "8081:8080"  # Map to 8081 to avoid conflict with other services
+    expose:
+      - "8080"  # Internal port for nginx to access
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      # Override database settings if needed
+      # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_URL=jdbc:mysql://your-db:3306/rule_engine
+      # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_USERNAME=your_user
+      # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_PASSWORD=your_password
+    volumes:
+      # Persist application data
+      - backend-files:/opt/project/tricon/files
+      - backend-logs:/opt/project/tricon/log
+      - backend-client:/opt/project/tricon/client
+      - backend-xml:/opt/project/tricon/xml
+      - backend-chrome:/opt/project/tricon/chrome
+    networks:
+      - ruleengine-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8081/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  # Angular Frontend (Nginx)
+  frontend:
+    build:
+      context: ./ruleengine-client-app
+      dockerfile: Dockerfile
+    container_name: ruleengine-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"      # HTTP
+      - "443:443"    # HTTPS (if you add SSL)
+    depends_on:
+      - backend
+    networks:
+      - ruleengine-network
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  ruleengine-network:
+    driver: bridge
+
+volumes:
+  backend-files:
+  backend-logs:
+  backend-client:
+  backend-xml:
+  backend-chrome:
