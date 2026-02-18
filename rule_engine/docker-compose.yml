@@ -23,7 +23,6 @@ services:
       - backend-client:/opt/project/tricon/client
       - backend-xml:/opt/project/tricon/xml
       - backend-chrome:/opt/project/tricon/chrome
-      - /etc/letsencrypt:/etc/letsencrypt:ro
       
     networks:
       - ruleengine-network
@@ -44,6 +43,8 @@ services:
     ports:
       - "80:80"      # HTTP
       - "443:443"    # HTTPS (if you add SSL)
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
     depends_on:
       - backend
     networks:
