@@ -31,5 +31,7 @@ COPY --from=build /app/dist/ruleengine-client-app /usr/share/nginx/html
 # Expose port 80
 EXPOSE 80
 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Start Nginx
 CMD ["nginx", "-g", "daemon off;"]
