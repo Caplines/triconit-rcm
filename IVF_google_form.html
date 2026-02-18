@@ -151,7 +151,7 @@
 	 json['employerNameDB'] = $('#employerNameDB').val()
 	 json['generalDateIVFDoneDB'] = $('#generalDateIVFDoneDB').val()
 	 
-	 $.ajax('http://localhost:8080/queryivdatafromdb', {
+	 $.ajax('https://testing.ruleengine.caplineservices.in/queryivdatafromdb', {
 			method: 'POST',
 		  data: JSON.stringify(json),
 		  contentType: "application/json; charset=utf-8",
@@ -219,7 +219,7 @@ function postDataToRuleEngine(event){
 				buttons: {
 					confirm: function () {
 					
-					$.ajax('http://localhost:8080/savedatatore', {
+					$.ajax('https://testing.ruleengine.caplineservices.in/savedatatore', {
 	method: 'POST',
   //data: {$('#myIVForm').serialize()},
   data: JSON.stringify(ConvertFormToJSON('form#myIVForm')),

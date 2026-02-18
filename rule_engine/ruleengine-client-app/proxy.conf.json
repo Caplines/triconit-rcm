@@ -1,6 +1,6 @@
 {
 "/api" :{
-"target" : "http://localhost:8080",
+"target" : "https://testing.ruleengine.caplineservices.in",
 "secure" : false
 }
 }
