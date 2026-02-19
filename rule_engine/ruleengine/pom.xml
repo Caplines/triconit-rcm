@@ -233,6 +233,11 @@
 			<artifactId>guava</artifactId>
 			<version>29.0-jre</version>
 		</dependency>
+		<!-- Spring Boot Actuator for health and monitoring -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 	</dependencies>
 
 	<!-- Profile for local dev: use embedded Tomcat so mvn spring-boot:run works (no WAR deploy) -->
