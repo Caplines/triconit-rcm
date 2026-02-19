@@ -11,11 +11,7 @@ services:
     expose:
       - "8080"  # Internal port for nginx to access
     environment:
-      - SPRING_PROFILES_ACTIVE=prod
-      # Override database settings if needed
-      # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_URL=jdbc:mysql://your-db:3306/rule_engine
-      # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_USERNAME=your_user
-      # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_PASSWORD=your_password
+      - SPRING_PROFILES_ACTIVE=dev
     volumes:
       # Persist application data
       - backend-files:/opt/project/tricon/files
@@ -23,7 +19,7 @@ services:
       - backend-client:/opt/project/tricon/client
       - backend-xml:/opt/project/tricon/xml
       - backend-chrome:/opt/project/tricon/chrome
-      
+
     networks:
       - ruleengine-network
     healthcheck:
@@ -39,14 +35,11 @@ services:
       context: ./ruleengine-client-app
       dockerfile: Dockerfile
       args:
-        ENV: prod  # Use 'local' for development, 'prod' for production
+        ENV: local  # Local development (HTTP only)
     container_name: ruleengine-frontend
     restart: unless-stopped
     ports:
-      - "80:80"      # HTTP
-      - "443:443"    # HTTPS (if you add SSL)
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - "80:80"      # HTTP only for local dev
     depends_on:
       - backend
     networks:
