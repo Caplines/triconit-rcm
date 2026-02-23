@@ -167,6 +167,9 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 	@Column(name = "sedations3fr", length = 30)
     private String sedations3fr;
 
+	@Column(name = "sedations4fr", length = 30)
+    private String sedations4fr;
+
 	@Column(name = "d9239fr", length = 30)
     private String d9239fr;
 
@@ -1095,6 +1098,14 @@ public class CommonPatientDetailLeft2 extends BaseAudit {
 
 	public void setSedations3fr(String sedations3fr) {
 		this.sedations3fr = sedations3fr;
+	}
+
+	public String getSedations4fr() {
+		return sedations4fr;
+	}
+
+	public void setSedations4fr(String sedations4fr) {
+		this.sedations4fr = sedations4fr;
 	}
 
 	public String getD9239fr() {

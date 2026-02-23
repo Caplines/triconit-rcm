@@ -349,6 +349,9 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	@Column(name = "iv_sedation_d9243_percentage", length = 50)
 	private String iVSedationD9243Percentage;// CL
 
+	@Column(name = "iv_sededation_d9245_percentage", length = 50)
+	private String iVSedationD9245Percentage;// CM
+
 	@Column(name = "iv_sededation_d9248_percentage", length = 50)
 	private String iVSedationD9248Percentage;// CM
 
@@ -1362,6 +1365,15 @@ public class PatientDetailTemp extends BaseAudit implements Serializable {
 	public void setiVSedationD9248Percentage(String iVSedationD9248Percentage) {
 		this.iVSedationD9248Percentage = iVSedationD9248Percentage;
 	}
+
+	public String getiVSedationD9245Percentage() {
+		return iVSedationD9245Percentage;
+	}
+
+	public void setiVSedationD9245Percentage(String iVSedationD9245Percentage) {
+		this.iVSedationD9245Percentage = iVSedationD9245Percentage;
+	}
+
 
 	public String getExtractionsMinorPercentage() {
 		return extractionsMinorPercentage;

@@ -466,7 +466,7 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				 dto.setBasicInfo6(s[2]+"-"+(s[0].length()==2?s[0]:"0"+s[0])+"-"+(s[1].length()==2?s[1]:"0"+s[1]));
 				}catch(Exception e) {
 					
-				}
+				    }
 				}
 			if (patientIds == null) {
 				patientIds = new HashSet<>();

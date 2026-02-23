@@ -1,0 +1,12 @@
+Add IV Sedation D9245 (sedations4) to IVF form and report
+
+- Add sedations4/sedations4fr to CaplineIVFFormDto, IVFTableSheet,
+  PatientDetail, PatientDetailTemp, CommonPatientDetailLeft2
+- Map D9245 in IVFFormConversionUtil and PatientDaoImpl (DB column
+  iv_sededation_d9245_percentage)
+- Report: show D9245 (sedations4/sedations4fr) in sedation row instead
+  of D9248/sedations3
+- IVFTableSheet: add iVSedationD9245Percentage and extend constructor
+- ReportController: minor whitespace cleanup
+- docker-compose.local: frontend uses built image + nginx (port 80)
+  instead of node dev server

@@ -106,6 +106,7 @@ public class IVFTableSheet {
 	private String NitrousD9230Percentage;// CK
 	private String iVSedationD9243Percentage;// CL
 	private String iVSedationD9248Percentage;// CM
+	private String iVSedationD9245Percentage;// CM
 	private String extractionsMinorPercentage;// CN
 	private String extractionsMajorPercentage;// CO
 	private String crownLengthD4249Percentage;// CP
@@ -275,6 +276,7 @@ public class IVFTableSheet {
     private String d7473fr;
     private String sedations1fr;
     private String sedations3fr;
+    private String sedations4fr;
     private String d9239fr;
     private String sedations2fr;
     private String d4263fr;
@@ -488,9 +490,6 @@ public class IVFTableSheet {
 		this.crownsInYear = crownsInYear;
 	}
 	
-
-	
-
 	
 	public IVFTableSheet() {
 		
@@ -626,6 +625,183 @@ public class IVFTableSheet {
 		NitrousD9230Percentage = nitrousD9230Percentage;
 		this.iVSedationD9243Percentage = iVSedationD9243Percentage;
 		this.iVSedationD9248Percentage = iVSedationD9248Percentage;
+		this.iVSedationD9245Percentage = iVSedationD9245Percentage;
+		this.extractionsMinorPercentage = extractionsMinorPercentage;
+		this.extractionsMajorPercentage = extractionsMajorPercentage;
+		this.crownLengthD4249Percentage = crownLengthD4249Percentage;
+		this.crownLengthD4249FL = crownLengthD4249FL;
+		this.alveoD7311CoveredWithEXT = alveoD7311CoveredWithEXT;
+		this.alveoD7311FL = alveoD7311FL;
+		this.alveoD7310CoveredWithEXT = alveoD7310CoveredWithEXT;
+		this.alveoD7310FL = alveoD7310FL;
+		this.completeDenturesD5110D5120FL = completeDenturesD5110D5120FL;
+		this.immediateDenturesD5130D5140FL = immediateDenturesD5130D5140FL;
+		this.partialDenturesD5213D5214FL = partialDenturesD5213D5214FL;
+		this.interimPartialDenturesD5214FL = interimPartialDenturesD5214FL;
+		this.boneGraftsD7953CoveredWithEXT = boneGraftsD7953CoveredWithEXT;
+		this.boneGraftsD7953FL = boneGraftsD7953FL;
+		this.implantCoverageD6010Percentage = implantCoverageD6010Percentage;
+		this.implantCoverageD6057Percentage = implantCoverageD6057Percentage;
+		this.implantCoverageD6190Percentage = implantCoverageD6190Percentage;
+		this.implantSupportedPorcCeramicD6065Percentage = implantSupportedPorcCeramicD6065Percentage;
+		this.postCompositesD2391Percentage = postCompositesD2391Percentage;
+		this.postCompositesD2391FL = postCompositesD2391FL;
+		this.posteriorCompositesD2391Downgrade = posteriorCompositesD2391Downgrade;
+		this.crownsD2750D2740Percentage = crownsD2750D2740Percentage;
+		this.crownsD2750D2740FL = crownsD2750D2740FL;
+		this.crownsD2750D2740Downgrade = crownsD2750D2740Downgrade;
+		this.nightGuardsD9940Percentage = nightGuardsD9940Percentage;
+		this.d9310Percentage = d9310Percentage;
+		this.d9310FL = d9310fl;
+		this.buildUpsD2950Covered = buildUpsD2950Covered;
+		this.buildUpsD2950FL = buildUpsD2950FL;
+		this.buildUpsD2950SameDayCrown = buildUpsD2950SameDayCrown;
+		this.orthoPercentage = orthoPercentage;
+		this.orthoMax = orthoMax;
+		this.orthoAgeLimit = orthoAgeLimit;
+		this.orthoSubjectDeductible = orthoSubjectDeductible;
+		FillingsBundling = fillingsBundling;
+		this.comments = comments;
+		this.generalBenefitsVerifiedBy = generalBenefitsVerifiedBy;
+		this.generalDateIVwasDone = generalDateIVwasDone;
+		this.patientId = patientId;
+		this.hs = hs;
+		this.craRequired=craRequired;
+		this.claimFillingLimit=claimFillingLimit;
+		this.uniqueID = uniqueID;
+	}
+	public IVFTableSheet(String officeName, String patientName, String insName, String taxId, String policyHolder,
+			String patientDOB, String insContact, String cSRName, String policyHolderDOB, String employerName,
+			String contTxRecallNP, String ref, String memberSSN, String group, String cOBStatus, String memberId,
+			String aptDate, String payerId, String providerName, String insAddress, String planType,
+			String planTermedDate, String planNetwork, String planFeeScheduleName, String planEffectiveDate,
+			String planCalendarFiscalYear, String planAnnualMax, String planAnnualMaxRemaining,
+			String planIndividualDeductible, String planIndividualDeductibleRemaining,
+			String planDependentsCoveredtoAge, String planPreDMandatory, String planNonDuplicateClause,
+			String planFullTimeStudentStatus, String planAssignmentofBenefits, String planCoverageBook,
+			String basicPercentage, String basicSubjectDeductible, String majorPercentage,
+			String majorSubjectDeductible, String endodonticsPercentage, String endoSubjectDeductible,
+			String perioSurgeryPercentage, String perioSurgerySubjectDeductible, String preventivePercentage,
+			String diagnosticPercentage, String pAXRaysPercentage, String missingToothClause, String replacementClause,
+			String crownsD2750D2740PaysPrepSeatDate, String nightGuardsD9940FL, String basicWaitingPeriod,
+			String majorWaitingPeriod, String sSCD2930FL, String sSCD2931FL, String examsD0120FL, String examsD0140FL,
+			String eExamsD0145FL, String examsD0150FL, String xRaysBWSFL, String xRaysPAD0220FL, String xRaysPAD0230FL,
+			String xRaysFMXFL, String xRaysBundling, String flourideD1208FL, String flourideAgeLimit,
+			String varnishD1206FL, String varnishD1206AgeLimit, String sealantsD1351Percentage, String sealantsD1351FL,
+			String sealantsD1351AgeLimit, String sealantsD1351PrimaryMolarsCovered,
+			String sealantsD1351PreMolarsCovered, String sealantsD1351PermanentMolarsCovered, String prophyD1110FL,
+			String prophyD1120FL, String name1201110RollOverAgYe, String sRPD4341Percentage, String sRPD4341FL,
+			String sRPD4341QuadsPerDay, String sRPD4341DaysBwTreatment, String perioMaintenanceD4910Percentage,
+			String perioMaintenanceD4910FL, String perioMaintenanceD4910AltWProphyD0110, String fMDD4355Percentage,
+			String fMDD4355FL, String gingivitisD4346Percentage, String gingivitisD4346FL,
+			String nitrousD9230Percentage, String iVSedationD9243Percentage, String iVSedationD9248Percentage,String iVSedationD9245Percentage,
+			String extractionsMinorPercentage, String extractionsMajorPercentage, String crownLengthD4249Percentage,
+			String crownLengthD4249FL, String alveoD7311CoveredWithEXT, String alveoD7311FL,
+			String alveoD7310CoveredWithEXT, String alveoD7310FL, String completeDenturesD5110D5120FL,
+			String immediateDenturesD5130D5140FL, String partialDenturesD5213D5214FL,
+			String interimPartialDenturesD5214FL, String boneGraftsD7953CoveredWithEXT, String boneGraftsD7953FL,
+			String implantCoverageD6010Percentage, String implantCoverageD6057Percentage,
+			String implantCoverageD6190Percentage, String implantSupportedPorcCeramicD6065Percentage,
+			String postCompositesD2391Percentage, String postCompositesD2391FL,
+			String posteriorCompositesD2391Downgrade, String crownsD2750D2740Percentage, String crownsD2750D2740FL,
+			String crownsD2750D2740Downgrade, String nightGuardsD9940Percentage, String d9310Percentage, String d9310fl,
+			String buildUpsD2950Covered, String buildUpsD2950FL, String buildUpsD2950SameDayCrown,
+			String orthoPercentage, String orthoMax, String orthoAgeLimit, String orthoSubjectDeductible,
+			String fillingsBundling, String comments, String generalBenefitsVerifiedBy, String generalDateIVwasDone,
+			String patientId,  IVFHistorySheet hs,String craRequired, String claimFillingLimit, String uniqueID) {
+		super();
+		this.officeName = officeName;
+		this.patientName = patientName;
+		this.insName = insName;
+		this.taxId = taxId;
+		this.policyHolder = policyHolder;
+		this.patientDOB = patientDOB;
+		InsContact = insContact;
+		this.cSRName = cSRName;
+		this.policyHolderDOB = policyHolderDOB;
+		this.employerName = employerName;
+		this.contTxRecallNP = contTxRecallNP;
+		this.ref = ref;
+		this.memberSSN = memberSSN;
+		this.group = group;
+		this.cOBStatus = cOBStatus;
+		this.memberId = memberId;
+		this.aptDate = aptDate;
+		this.payerId = payerId;
+		this.providerName = providerName;
+		this.insAddress = insAddress;
+		this.planType = planType;
+		this.planTermedDate = planTermedDate;
+		this.planNetwork = planNetwork;
+		this.planFeeScheduleName = planFeeScheduleName;
+		this.planEffectiveDate = planEffectiveDate;
+		this.planCalendarFiscalYear = planCalendarFiscalYear;
+		this.planAnnualMax = planAnnualMax;
+		this.planAnnualMaxRemaining = planAnnualMaxRemaining;
+		this.planIndividualDeductible = planIndividualDeductible;
+		this.planIndividualDeductibleRemaining = planIndividualDeductibleRemaining;
+		this.planDependentsCoveredtoAge = planDependentsCoveredtoAge;
+		this.planPreDMandatory = planPreDMandatory;
+		this.planNonDuplicateClause = planNonDuplicateClause;
+		this.planFullTimeStudentStatus = planFullTimeStudentStatus;
+		this.planAssignmentofBenefits = planAssignmentofBenefits;
+		this.planCoverageBook = planCoverageBook;
+		this.basicPercentage = basicPercentage;
+		this.basicSubjectDeductible = basicSubjectDeductible;
+		this.majorPercentage = majorPercentage;
+		this.majorSubjectDeductible = majorSubjectDeductible;
+		this.endodonticsPercentage = endodonticsPercentage;
+		this.endoSubjectDeductible = endoSubjectDeductible;
+		this.perioSurgeryPercentage = perioSurgeryPercentage;
+		this.perioSurgerySubjectDeductible = perioSurgerySubjectDeductible;
+		this.preventivePercentage = preventivePercentage;
+		this.diagnosticPercentage = diagnosticPercentage;
+		this.pAXRaysPercentage = pAXRaysPercentage;
+		this.missingToothClause = missingToothClause;
+		this.replacementClause = replacementClause;
+		this.crownsD2750D2740PaysPrepSeatDate = crownsD2750D2740PaysPrepSeatDate;
+		this.nightGuardsD9940FL = nightGuardsD9940FL;
+		this.basicWaitingPeriod = basicWaitingPeriod;
+		this.majorWaitingPeriod = majorWaitingPeriod;
+		this.sSCD2930FL = sSCD2930FL;
+		this.sSCD2931FL = sSCD2931FL;
+		this.examsD0120FL = examsD0120FL;
+		this.examsD0140FL = examsD0140FL;
+		this.eExamsD0145FL = eExamsD0145FL;
+		this.examsD0150FL = examsD0150FL;
+		this.xRaysBWSFL = xRaysBWSFL;
+		this.xRaysPAD0220FL = xRaysPAD0220FL;
+		this.xRaysPAD0230FL = xRaysPAD0230FL;
+		this.xRaysFMXFL = xRaysFMXFL;
+		this.xRaysBundling = xRaysBundling;
+		this.flourideD1208FL = flourideD1208FL;
+		this.flourideAgeLimit = flourideAgeLimit;
+		this.varnishD1206FL = varnishD1206FL;
+		this.varnishD1206AgeLimit = varnishD1206AgeLimit;
+		this.sealantsD1351Percentage = sealantsD1351Percentage;
+		this.sealantsD1351FL = sealantsD1351FL;
+		this.sealantsD1351AgeLimit = sealantsD1351AgeLimit;
+		this.sealantsD1351PrimaryMolarsCovered = sealantsD1351PrimaryMolarsCovered;
+		this.sealantsD1351PreMolarsCovered = sealantsD1351PreMolarsCovered;
+		this.sealantsD1351PermanentMolarsCovered = sealantsD1351PermanentMolarsCovered;
+		this.prophyD1110FL = prophyD1110FL;
+		this.prophyD1120FL = prophyD1120FL;
+		this.name1201110RollOverAgYe = name1201110RollOverAgYe;
+		this.sRPD4341Percentage = sRPD4341Percentage;
+		this.sRPD4341FL = sRPD4341FL;
+		this.sRPD4341QuadsPerDay = sRPD4341QuadsPerDay;
+		this.sRPD4341DaysBwTreatment = sRPD4341DaysBwTreatment;
+		this.perioMaintenanceD4910Percentage = perioMaintenanceD4910Percentage;
+		this.perioMaintenanceD4910FL = perioMaintenanceD4910FL;
+		this.perioMaintenanceD4910AltWProphyD0110 = perioMaintenanceD4910AltWProphyD0110;
+		FMDD4355Percentage = fMDD4355Percentage;
+		this.fMDD4355FL = fMDD4355FL;
+		this.gingivitisD4346Percentage = gingivitisD4346Percentage;
+		this.gingivitisD4346FL = gingivitisD4346FL;
+		NitrousD9230Percentage = nitrousD9230Percentage;
+		this.iVSedationD9243Percentage = iVSedationD9243Percentage;
+		this.iVSedationD9248Percentage = iVSedationD9248Percentage;
+		this.iVSedationD9245Percentage = iVSedationD9245Percentage;
 		this.extractionsMinorPercentage = extractionsMinorPercentage;
 		this.extractionsMajorPercentage = extractionsMajorPercentage;
 		this.crownLengthD4249Percentage = crownLengthD4249Percentage;
@@ -1215,6 +1391,12 @@ public class IVFTableSheet {
 	}
 	public void setiVSedationD9248Percentage(String iVSedationD9248Percentage) {
 		this.iVSedationD9248Percentage = iVSedationD9248Percentage;
+	}
+	public String getiVSedationD9245Percentage() {
+		return iVSedationD9245Percentage;
+	}
+	public void setiVSedationD9245Percentage(String iVSedationD9245Percentage) {
+		this.iVSedationD9245Percentage = iVSedationD9245Percentage;
 	}
 	public String getExtractionsMinorPercentage() {
 		return extractionsMinorPercentage;
@@ -2086,6 +2268,12 @@ public class IVFTableSheet {
 	}
 	public void setSedations3fr(String sedations3fr) {
 		this.sedations3fr = sedations3fr;
+	}
+	public String getSedations4fr() {
+		return sedations4fr;
+	}
+	public void setSedations4fr(String sedations4fr) {
+		this.sedations4fr = sedations4fr;
 	}
 	public String getD9239fr() {
 		return d9239fr;

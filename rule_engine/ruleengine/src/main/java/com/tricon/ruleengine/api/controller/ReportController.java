@@ -100,11 +100,8 @@ public class ReportController {
 			// List<CaplineIVFFormDto> cap=null;
 			try {
 				
-				
-				
 				CaplineIVFQueryFormDto d = new CaplineIVFQueryFormDto();
-				
-				
+
 				d.setPatientIdDB(dto.getReportField1());
 				//d.setOfficeNameDB(officeNameDB);
 				d.setEmployerNameDB(dto.getEmployerName());

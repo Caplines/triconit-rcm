@@ -377,6 +377,9 @@ public class CaplineIVFFormDto {
     //IV Sedation (D9248)
     private String sedations3;
     
+    //IV Sedation (D9245)
+    private String sedations4;
+    
     //Extractions(%)
     
     //Minor(D7111,D7140)       -- Extractions_Minor_%
@@ -611,6 +614,7 @@ public class CaplineIVFFormDto {
     private String d7473fr;
     private String sedations1fr;
     private String sedations3fr;
+    private String sedations4fr;
     private String d9239fr;
     private String sedations2fr;
     private String d4263fr;
@@ -1671,6 +1675,14 @@ public class CaplineIVFFormDto {
 
 	public void setSedations3(String sedations3) {
 		this.sedations3 = commonReplaceMent(sedations3);
+	}
+
+	public String getSedations4() {
+		return commonReplaceMent(sedations4);
+	}
+
+	public void setSedations4(String sedations4) {
+		this.sedations4 = commonReplaceMent(sedations4);
 	}
 
 	public String getExtractions1() {
@@ -2782,6 +2794,14 @@ public class CaplineIVFFormDto {
 
 	public void setSedations3fr(String sedations3fr) {
 		this.sedations3fr = commonReplaceMent(sedations3fr);
+	}
+
+	public String getSedations4fr() {
+		return commonReplaceMent(sedations4fr);
+	}
+
+	public void setSedations4fr(String sedations4fr) {
+		this.sedations4fr = commonReplaceMent(sedations4fr);
 	}
 
 	public String getD9239fr() {

@@ -107,6 +107,7 @@ public class IVFFormConversionUtil {
 
 		pd.setiVSedationD9243Percentage(d.getSedations2());
 		pd.setiVSedationD9248Percentage(d.getSedations3());
+		pd.setiVSedationD9245Percentage(d.getSedations4());
 		pd.setMajorPercentage(d.getPercentages3());
 		pd.setMajorSubjectDeductible(d.getPercentages4());
 		pd.setMajorWaitingPeriod(d.getWaitingPeriod2());
@@ -281,6 +282,7 @@ public class IVFFormConversionUtil {
 		pd2.setD7473fr(d.getD7473fr());
 		pd2.setSedations1fr(d.getSedations1fr());
 		pd2.setSedations3fr(d.getSedations3fr());
+		pd2.setSedations4fr(d.getSedations4fr());
 		pd2.setD9239fr(d.getD9239fr());
 		pd2.setSedations2fr(d.getSedations2fr());
 		pd2.setD4263fr(d.getD4263fr());
@@ -313,6 +315,7 @@ public class IVFFormConversionUtil {
 		pd2.setD7473fr(d.getD7473fr());
 		pd2.setSedations1fr(d.getSedations1fr());
 		pd2.setSedations3fr(d.getSedations3fr());
+		pd2.setSedations4fr(d.getSedations4fr());
 		pd2.setD9239fr(d.getD9239fr());
 		pd2.setSedations2fr(d.getSedations2fr());
 		pd2.setD4263fr(d.getD4263fr());
@@ -636,6 +639,7 @@ public class IVFFormConversionUtil {
 
 		pd.setiVSedationD9243Percentage(d.getSedations2());
 		pd.setiVSedationD9248Percentage(d.getSedations3());
+		pd.setiVSedationD9245Percentage(d.getSedations4());
 		pd.setMajorPercentage(d.getPercentages3());
 		pd.setMajorSubjectDeductible(d.getPercentages4());
 		pd.setMajorWaitingPeriod(d.getWaitingPeriod2());
@@ -1355,6 +1359,7 @@ public class IVFFormConversionUtil {
 		pd2.setD7473fr(d.getD7473fr());
 		pd2.setSedations1fr(d.getSedations1fr());
 		pd2.setSedations3fr(d.getSedations3fr());
+		pd2.setSedations4fr(d.getSedations4fr());
 		pd2.setD9239fr(d.getD9239fr());
 		pd2.setSedations2fr(d.getSedations2fr());
 		pd2.setD4263fr(d.getD4263fr());

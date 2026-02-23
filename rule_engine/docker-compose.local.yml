@@ -33,22 +33,19 @@ services:
 
 
   # =========================
-  # Angular Frontend (DEV)
+  # Angular Frontend (DEV) – built image + nginx (same as prod path, ENV=local)
+  # Uses nginx.local.conf so /api/v1 proxies to local backend; no proxy.conf.json.
+  # After changing frontend code, run: docker compose -f docker-compose.local.yml up --build
   # =========================
   frontend:
-    image: node:10.24.1
+    build:
+      context: ./ruleengine-client-app
+      dockerfile: Dockerfile
+      args:
+        ENV: local
     container_name: ruleengine-frontend
-    working_dir: /app
     ports:
-      - "4200:4200"
-    volumes:
-      - ./ruleengine-client-app:/app
-      - /app/node_modules
-    command: >
-      bash -c "
-      npm install --unsafe-perm &&
-      npm start -- --host 0.0.0.0
-      "
+      - "4200:80"
     depends_on:
       - backend
     networks:
