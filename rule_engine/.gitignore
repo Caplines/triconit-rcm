@@ -3,6 +3,8 @@
 
 # Docker volumes
 docker-volumes/
+target/
+
 
 # IDE
 .idea/

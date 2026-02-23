@@ -554,8 +554,18 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 					(dto!=null && dto.getPatientDobDB()!=null && !dto.getPatientDobDB().equals("")? " and p.dob = '"+dto.getPatientDobDB()+"' ":" ")+
 					(dto!=null && dto.getPatientName()!=null && !dto.getPatientName().equals("")? " and (concat(coalesce(first_name,''),' ',coalesce(last_name,'')) like '%"+dto.getPatientName()+"%')"+" ":" ")+
 					(dto!=null && dto.getGeneralDateIVFDoneDB()!=null && !dto.getGeneralDateIVFDoneDB().equals("")? " and pd.general_date_iv_wasdone ='"+dto.getGeneralDateIVFDoneDB()+"' ":" ")+
-					(dto!=null && dto.getIvformTypeId()!=null && !dto.getIvformTypeId().equals("")? " and pd.iv_form_type_id ='"+dto.getIvformTypeId()+"' ":" ")
-					+ orderBy;
+					(dto!=null && dto.getIvformTypeId()!=null && !dto.getIvformTypeId().equals("")? " and pd.iv_form_type_id ='"+dto.getIvformTypeId()+"' ":" ") + 
+
+                     (dto!=null && dto.getGroupName()!=null && !dto.getGroupName().equals("") ? " and pd.employer_name like '%"+dto.getGroupName()+"%' " : " ") + 
+                     (dto!=null && dto.getGroupNumber()!=null && !dto.getGroupNumber().equals("") ? " and pd.group_p like '%"+dto.getGroupNumber()+"%' " : " ") +
+                     (dto!=null && dto.getPreventiveServicesPct()!=null && !dto.getPreventiveServicesPct().equals("") ? " and pd.preventive_percentage = '"+dto.getPreventiveServicesPct()+"' " : " ") +
+					 (dto!=null && dto.getBasicServicesPct()!=null && !dto.getBasicServicesPct().equals("") ? " and pd.basic_percentage = '"+dto.getBasicServicesPct()+"' " : " ") +
+					 (dto!=null && dto.getMajorServicesPct()!=null && !dto.getMajorServicesPct().equals("") ? " and pd.major_percentage = '"+dto.getMajorServicesPct()+"' "  : " ") +
+					 (dto!=null && dto.getInsuranceName()!=null && !dto.getInsuranceName().equals("") ? " and pd.ins_name like '%"+dto.getInsuranceName()+"%' " : " ") +
+					 (dto!=null && dto.getAnnualMax()!=null && !dto.getAnnualMax().equals("") ? " and pd.plan_annual_max = '"+dto.getAnnualMax()+"' " : " ") + 
+					 (dto!=null && dto.getIndividualDeductible()!=null && !dto.getIndividualDeductible().equals("")  ? " and pd.plan_individual_dedudtible = '"+dto.getIndividualDeductible()+"' " : " ") +
+
+					orderBy;
 					//patientDobDB
 					;
           cL=session.createSQLQuery(query).setResultTransformer(Transformers.aliasToBean(CaplineIVFFormDto.class)). list();
@@ -922,3 +932,4 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	    }
 	
 }
+

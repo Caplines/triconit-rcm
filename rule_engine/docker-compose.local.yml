@@ -1,54 +1,59 @@
+version: "3.9"
+
 services:
-  # Spring Boot Backend
+
+  # =========================
+  # Spring Boot Backend (DEV)
+  # =========================
   backend:
-    build:
-      context: ./ruleengine
-      dockerfile: Dockerfile
+    image: eclipse-temurin:8-jdk
     container_name: ruleengine-backend
-    restart: unless-stopped
+    working_dir: /app
     ports:
-      - "8081:8080"  # Map to 8081 to avoid conflict with other services
-    expose:
-      - "8080"  # Internal port for nginx to access
+      - "8081:8080"
     environment:
       - SPRING_PROFILES_ACTIVE=dev
     volumes:
-      # Persist application data
+      - ./ruleengine:/app
+      - ~/.m2:/root/.m2
       - backend-files:/opt/project/tricon/files
       - backend-logs:/opt/project/tricon/log
       - backend-client:/opt/project/tricon/client
       - backend-xml:/opt/project/tricon/xml
       - backend-chrome:/opt/project/tricon/chrome
-
+    command: >
+      bash -c "
+      apt-get update &&
+      apt-get install -y maven &&
+      mvn initialize &&
+      mvn spring-boot:run
+      "
     networks:
       - ruleengine-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health > /dev/null 2>&1 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 60s
 
-  # Angular Frontend (Nginx)
+
+  # =========================
+  # Angular Frontend (DEV)
+  # =========================
   frontend:
-    build:
-      context: ./ruleengine-client-app
-      dockerfile: Dockerfile
-      args:
-        ENV: local  # Local development (HTTP only)
+    image: node:10.24.1
     container_name: ruleengine-frontend
-    restart: unless-stopped
+    working_dir: /app
     ports:
-      - "80:80"      # HTTP only for local dev
+      - "4200:4200"
+    volumes:
+      - ./ruleengine-client-app:/app
+      - /app/node_modules
+    command: >
+      bash -c "
+      npm install --unsafe-perm &&
+      npm start -- --host 0.0.0.0
+      "
     depends_on:
       - backend
     networks:
       - ruleengine-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost > /dev/null 2>&1 || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+
 
 networks:
   ruleengine-network:

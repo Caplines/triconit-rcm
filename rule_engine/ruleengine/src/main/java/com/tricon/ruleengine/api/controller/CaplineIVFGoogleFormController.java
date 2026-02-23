@@ -9,7 +9,6 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -214,7 +213,6 @@ public class CaplineIVFGoogleFormController {
 	public ResponseEntity<Object> queryDataFromDB(@RequestBody CaplineIVFQueryFormDto dto, HttpServletRequest request) throws Exception {
 		//
 		IVFormType v=iVformTypeDao.getIVFormTypeByName(Constants.IV_GENERAL_FORM_NAME);
-		
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", getPatientdataFromDB(dto,v)));
 	}
 
