@@ -1,5 +1,6 @@
 # Multi-stage build for Spring Boot backend
 # Using Eclipse Temurin (supports ARM64/Apple Silicon)
+# Build context: repo root (rule-engine/), set via docker-compose.yml context: ..
 FROM eclipse-temurin:8-jdk AS build
 
 WORKDIR /app
@@ -10,14 +11,14 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy pom.xml and lib folder (needed for custom htmlunit dependency)
-COPY pom.xml .
-COPY lib ./lib
+COPY rule_engine/ruleengine/pom.xml .
+COPY rule_engine/ruleengine/lib     ./lib
 
 # First, run initialize phase to install custom htmlunit JAR from lib folder
 RUN mvn initialize -B
 
 # Copy source code
-COPY src ./src
+COPY rule_engine/ruleengine/src ./src
 
 # Build the application
 RUN mvn package -DskipTests
@@ -33,12 +34,15 @@ RUN apt-get update && apt-get install -y wget && rm -rf /var/lib/apt/lists/*
 # Copy the JAR from build stage
 COPY --from=build /app/target/ruleengine.jar /app/ruleengine.jar
 
-# Create directories that the app expects (based on application-prod.properties)
+# Bake XSLT templates into the image at /opt/xslt (not overridden by any Docker volume)
+COPY ["ivf Form", "/opt/xslt"]
+
+# Create directories for other persistent app data
 RUN mkdir -p /opt/project/tricon/files \
     /opt/project/tricon/log \
     /opt/project/tricon/client \
-    /opt/project/tricon/xml \
-    /opt/project/tricon/chrome
+    /opt/project/tricon/chrome \
+    /tmp/ruleengine/xml
 
 # Expose the port (will be 8080 in the container)
 EXPOSE 8080

@@ -2,8 +2,8 @@ services:
   # Spring Boot Backend
   backend:
     build:
-      context: ./ruleengine
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: rule_engine/ruleengine/Dockerfile
     container_name: ruleengine-backend
     restart: unless-stopped
     ports:
@@ -21,8 +21,9 @@ services:
       - backend-files:/opt/project/tricon/files
       - backend-logs:/opt/project/tricon/log
       - backend-client:/opt/project/tricon/client
-      - backend-xml:/opt/project/tricon/xml
       - backend-chrome:/opt/project/tricon/chrome
+      # backend-xml volume removed: XSLT templates are baked into the image at /opt/xslt,
+      # and temp XML output uses /tmp/ruleengine/xml/ (no volume needed)
       
     networks:
       - ruleengine-network
@@ -65,5 +66,4 @@ volumes:
   backend-files:
   backend-logs:
   backend-client:
-  backend-xml:
   backend-chrome:
