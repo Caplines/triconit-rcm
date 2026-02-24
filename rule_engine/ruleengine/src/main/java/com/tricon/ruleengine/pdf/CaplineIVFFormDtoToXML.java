@@ -24,11 +24,16 @@ public class CaplineIVFFormDtoToXML {
 	
 	public  String convertToXML(CaplineIVFFormDto dto, String dir ) throws Exception{
 		String filePath=dir+dto.getBasicInfo21()+"_"+dto.getDate().replaceAll("/", "_")+".xml";
+		File outputFile = new File(filePath);
+		File parentDir = outputFile.getParentFile();
+		if (parentDir != null && !parentDir.exists()) {
+			parentDir.mkdirs();
+		}
 		JAXBContext contextObj = JAXBContext.newInstance(CaplineIVFFormDto.class);
 
 		Marshaller marshallerObj = contextObj.createMarshaller();
 		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		marshallerObj.marshal(dto, new FileOutputStream(outputFile));
 		return 	filePath;
 
 		
@@ -36,11 +41,16 @@ public class CaplineIVFFormDtoToXML {
 	
 	public  String convertToXML(SelantPdfMainDto dto, String dir ) throws Exception{
 		String filePath=dir+new Date().getTime()+".xml";
+		File outputFile = new File(filePath);
+		File parentDir = outputFile.getParentFile();
+		if (parentDir != null && !parentDir.exists()) {
+			parentDir.mkdirs();
+		}
 		JAXBContext contextObj = JAXBContext.newInstance(SelantPdfMainDto.class);
 
 		Marshaller marshallerObj = contextObj.createMarshaller();
 		marshallerObj.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-		marshallerObj.marshal(dto, new FileOutputStream(filePath));
+		marshallerObj.marshal(dto, new FileOutputStream(outputFile));
 		return 	filePath;
 
 		

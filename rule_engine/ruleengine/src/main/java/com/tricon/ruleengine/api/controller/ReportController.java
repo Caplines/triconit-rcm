@@ -343,10 +343,11 @@ public class ReportController {
       obj = civf.generatePDF(dto, office,iVformTypeService.getIVFormTypeById(Integer.parseInt(rdto.getIvformTypeId())));
 		if (obj != null && obj[1]!=null) {
 			ByteArrayOutputStream o =(ByteArrayOutputStream)  obj[1];
-			response.setContentType("application/octet-stream");
+			byte[] pdfBytes = o.toByteArray();
+			response.setContentType("application/pdf");
+			response.setContentLength(pdfBytes.length);
 			response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0].toString().replaceAll(",", "")+ ".pdf"));
-			//response.setHeader("Content-Disposition", String.format("attachment; filename="+obj[0] +".html"));
-			InputStream in = new ByteArrayInputStream(o.toByteArray());
+			InputStream in = new ByteArrayInputStream(pdfBytes);
 			org.apache.commons.io.IOUtils.copy(in, response.getOutputStream());
 			response.flushBuffer();
 			o.close();

@@ -1154,9 +1154,9 @@
                 </xsl:otherwise>
                </xsl:choose>
                 <td class="borderNone"></td>
-                <td class="dullYellow">D9248 (Sedation)</td>
-                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations3"/></xsl:call-template></td>
-                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations3fr"/></xsl:call-template></td>
+                <td class="dullYellow">D9245 (Sedation)</td>
+                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations4"/></xsl:call-template></td>
+                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations4fr"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td colspan="3" class="borderNone"></td> 
             </tr>

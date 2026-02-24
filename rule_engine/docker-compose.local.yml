@@ -21,6 +21,7 @@ services:
       - backend-client:/opt/project/tricon/client
       - backend-xml:/opt/project/tricon/xml
       - backend-chrome:/opt/project/tricon/chrome
+      - "../ivf Form:/opt/xslt"
     command: >
       bash -c "
       apt-get update &&

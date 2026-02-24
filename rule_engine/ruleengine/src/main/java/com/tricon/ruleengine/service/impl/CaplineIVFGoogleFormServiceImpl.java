@@ -762,10 +762,12 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				}
 				
 				//replace \n to <br/> inside the comments
-				form.setComments(form.getComments().replaceAll("\\n", "<br/>"));								
+				String comments = form.getComments();
+				form.setComments(comments != null ? comments.replaceAll("\\n", "<br/>") : "");
 				CaplineIVFFormDtoToXML xml = new CaplineIVFFormDtoToXML();
 				String filePath = xml.convertToXML(form, XSLT_PATH);
 				File file = new File(filePath);
+				boolean useNewFormat = "1".equals(dto.getNewFormat());
 				if (dto.getPdf()==null) {
 				String xslt=XSLT_FILE;
 				if (iVFormType.getName().equals(Constants.IV_ORAL_SURGERY_FORM_NAME)) {
@@ -777,32 +779,31 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 				if (iVFormType.getName().equals(Constants.IV_GENERAL_FORM_NAME)) {
 					xslt=XSLT_FILE_NEW ;
 				}
-				if (dto.getNewFormat().equals(""))o = xml.createPdfStream(
-
-						xml.createHtml(filePath, xslt), "");
-				else  o= xml.createPdfStream(
-
-						xml.createHtml(filePath, XSLT_FILE_NEW), "");
+				if (!useNewFormat) {
+					o = xml.createPdfStream(xml.createHtml(filePath, xslt), "");
+				} else {
+					o = xml.createPdfStream(xml.createHtml(filePath, XSLT_FILE_NEW), "");
+				}
 			    }
-				if (file!=null) file.delete(); 
+				if (file!=null) file.delete();
 				//To test html for issues
 				if (dto.getPdf()!=null) {
-					if (dto.getNewFormat().equals(""))o=xml.createHtmlOut(filePath, XSLT_FILE);
-					else  o=xml.createHtmlOut(filePath, XSLT_FILE_NEW);
+					if (!useNewFormat) {
+						o = xml.createHtmlOut(filePath, XSLT_FILE);
+					} else {
+						o = xml.createHtmlOut(filePath, XSLT_FILE_NEW);
+					}
+				}
+				if (o != null && o.size() == 0) {
+					RuleEngineLogger.generateLogs(clazz, "generatePDF produced empty PDF - check XML path and XSLT path. XML dir: " + XSLT_PATH + ", XSLT_NEW: " + XSLT_FILE_NEW, Constants.rule_log_debug, null);
 				}
 				obj[1]=o;
 
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-		}finally {
-			try {
-				o.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		}
+		// Do not close 'o' here - it is returned in obj[1] for the controller to write to the response and close
 
 		return obj;
 	}
