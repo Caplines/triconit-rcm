@@ -55,15 +55,15 @@ services:
         BUILD_CONFIG: production
     container_name: rcm-frontend
     restart: unless-stopped
-    ports:
-      - "80:80"      # HTTP
-      - "443:443"    # HTTPS
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+    # No host port binding – nginx-proxy (docker-compose.proxy.yml) owns 80/443
+    # and routes traffic here via the shared-proxy network.
+    expose:
+      - "80"
     depends_on:
       - rcm-backend
     networks:
       - rcm-network
+      - shared-proxy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost > /dev/null 2>&1 || exit 1"]
       interval: 30s
@@ -73,6 +73,8 @@ services:
 networks:
   rcm-network:
     driver: bridge
+  shared-proxy:
+    external: true
 
 volumes:
   rcm-backend-files:

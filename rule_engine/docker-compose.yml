@@ -43,15 +43,15 @@ services:
         ENV: prod  # Use 'local' for development, 'prod' for production
     container_name: ruleengine-frontend
     restart: unless-stopped
-    ports:
-      - "80:80"      # HTTP
-      - "443:443"    # HTTPS (if you add SSL)
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+    # No host port binding – nginx-proxy (docker-compose.proxy.yml) owns 80/443
+    # and routes traffic here via the shared-proxy network.
+    expose:
+      - "80"
     depends_on:
       - backend
     networks:
       - ruleengine-network
+      - shared-proxy
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost > /dev/null 2>&1 || exit 1"]
       interval: 30s
@@ -61,6 +61,8 @@ services:
 networks:
   ruleengine-network:
     driver: bridge
+  shared-proxy:
+    external: true
 
 volumes:
   backend-files:
