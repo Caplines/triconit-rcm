@@ -25,8 +25,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      # Switch to nginx-ssl.conf after getting certs with certbot
-      - ./nginx-proxy/nginx-nossl.conf:/etc/nginx/conf.d/default.conf:ro
+      # Switch back to nginx-nossl.conf if you need to renew certs (certbot --standalone needs port 80 free)
+      - ./nginx-proxy/nginx-ssl.conf:/etc/nginx/conf.d/default.conf:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro
     networks:
       - shared-proxy
