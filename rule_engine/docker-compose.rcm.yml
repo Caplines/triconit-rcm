@@ -24,10 +24,10 @@ services:
       - "8081"  # Internal port for nginx to access via Docker network
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      # Override database / JWT / Google settings via a .env file or here:
-      # - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://your-db:3306/rcm_db
-      # - SPRING_DATASOURCE_USERNAME=your_user
-      # - SPRING_DATASOURCE_PASSWORD=your_password
+      # Override placeholders in application-prod.properties (use .env or secrets on server for real values)
+      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://capline-rcm-db-new.cs2m1j2gr4iq.us-east-2.rds.amazonaws.com:3306/rule_engine?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=capline_user
+      - SPRING_DATASOURCE_PASSWORD=04chXZr00if3cyaN13u6Rd6fG6OsmhOcOV
     volumes:
       # Persist application data
       - rcm-backend-files:/opt/project/tricon/files
