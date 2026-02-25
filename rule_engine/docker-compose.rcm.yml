@@ -1,0 +1,79 @@
+# Production Docker Compose for RCM application
+#
+# NOTE on ports: If running alongside the RuleEngine app on the same host,
+#   adjust frontend ports to avoid conflicts with ruleengine (which uses 80/443).
+#   Example: change "80:80" → "3000:80" and "443:443" → "3443:443"
+#
+# Usage:
+#   docker compose -f docker-compose.rcm.yml up --build -d
+#   docker compose -f docker-compose.rcm.yml down
+
+services:
+  # Spring Boot Backend (RCM)
+  rcm-backend:
+    build:
+      context: .
+      dockerfile: rcm/Dockerfile
+    container_name: rcm-backend
+    restart: unless-stopped
+    ports:
+      - "8082:8081"  # Host 8082 → container 8081 (avoids conflict with ruleengine on 8081)
+    expose:
+      - "8081"  # Internal port for nginx to access via Docker network
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      # Override database / JWT / Google settings via a .env file or here:
+      # - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://your-db:3306/rcm_db
+      # - SPRING_DATASOURCE_USERNAME=your_user
+      # - SPRING_DATASOURCE_PASSWORD=your_password
+    volumes:
+      # Persist application data
+      - rcm-backend-files:/opt/project/tricon/files
+      - rcm-backend-logs:/opt/project/tricon/log
+      - rcm-backend-attachments:/opt/project/attachments
+      - rcm-backend-pdf:/opt/project/pdf
+      # Mount XSLT templates (add your .xslt files to a local directory and update path)
+      - rcm-backend-xml:/opt/project/xml
+    networks:
+      - rcm-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8081/account/login > /dev/null 2>&1 || curl -sf http://localhost:8081/ > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+  # Angular Frontend (Nginx)
+  rcm-frontend:
+    build:
+      context: ./rcm-client-app
+      dockerfile: Dockerfile
+      args:
+        ENV: prod  # Use 'local' for development, 'prod' for production
+    container_name: rcm-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"      # HTTP
+      - "443:443"    # HTTPS
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - rcm-backend
+    networks:
+      - rcm-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  rcm-network:
+    driver: bridge
+
+volumes:
+  rcm-backend-files:
+  rcm-backend-logs:
+  rcm-backend-attachments:
+  rcm-backend-pdf:
+  rcm-backend-xml:

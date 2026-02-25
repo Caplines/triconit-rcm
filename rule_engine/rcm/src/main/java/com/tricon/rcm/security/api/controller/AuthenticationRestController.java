@@ -131,6 +131,7 @@ public class AuthenticationRestController {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "User Logged in Failed", null));
 
 		}
+        
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
 		// Reload password post-security so we can generate the token
