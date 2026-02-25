@@ -1,12 +1,14 @@
 # Production Docker Compose for RCM application
 #
-# NOTE on ports: If running alongside the RuleEngine app on the same host,
-#   adjust frontend ports to avoid conflicts with ruleengine (which uses 80/443).
-#   Example: change "80:80" → "3000:80" and "443:443" → "3443:443"
+# Domain: testing.rcm.caplineservices.in (same pattern as RuleEngine).
+# SSL: Obtain cert first so nginx can start, e.g.:
+#   certbot certonly --standalone -d testing.rcm.caplineservices.in
+#   (stop anything on 80/443 first). Then start compose.
+# Optional: use ENV=prod-nossl and no letsencrypt volume to run without SSL (e.g. behind another proxy).
+# If running alongside RuleEngine on same host, change frontend ports (e.g. 8080:80, 8443:443).
 #
-# Usage:
-#   docker compose -f docker-compose.rcm.yml up --build -d
-#   docker compose -f docker-compose.rcm.yml down
+# Run:   docker compose -f docker-compose.rcm.yml up --build -d
+# Stop:  docker compose -f docker-compose.rcm.yml down
 
 services:
   # Spring Boot Backend (RCM)
@@ -49,7 +51,8 @@ services:
       context: ./rcm-client-app
       dockerfile: Dockerfile
       args:
-        ENV: prod  # Use 'local' for development, 'prod' for production
+        ENV: prod
+        BUILD_CONFIG: production
     container_name: rcm-frontend
     restart: unless-stopped
     ports:
