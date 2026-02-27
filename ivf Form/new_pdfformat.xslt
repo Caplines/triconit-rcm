@@ -307,7 +307,14 @@
                 <td>Individual Deductible</td>
                 <td><xsl:value-of select="policy9"/></td>
                 <td>Fee Schedule</td>
-                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy4"/></xsl:call-template></td>
+                <xsl:choose>
+                    <xsl:when test="translate(normalize-space(policy4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'na' or translate(normalize-space(policy4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'n/a' or normalize-space(policy4) = '-' or normalize-space(policy4) = '_' or translate(normalize-space(policy4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = '#na' or translate(normalize-space(policy4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = '#n/a'">
+                    <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy4"/></xsl:call-template></td>
+                    </xsl:when>
+                    <xsl:otherwise>
+                    <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy4"/></xsl:call-template></td>
+                    </xsl:otherwise>
+                </xsl:choose>
                 <td>Fee of D0120</td>
                 <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy18"/></xsl:call-template></td>
                 <td>Benefit Period Year</td>
@@ -331,7 +338,14 @@
                 <td>Ind Ded Remaining</td>
                 <td><xsl:value-of select="policy10"/></td>
                 <td>Coverage Book</td>
-                <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy16"/></xsl:call-template></td>
+                <xsl:choose>
+                    <xsl:when test="translate(normalize-space(policy16), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'na' or translate(normalize-space(policy16), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'n/a' or normalize-space(policy16) = '-' or normalize-space(policy16) = '_' or translate(normalize-space(policy16), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = '#na' or translate(normalize-space(policy16), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = '#n/a'">
+                    <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy16"/></xsl:call-template></td>
+                    </xsl:when>
+                    <xsl:otherwise>
+                    <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy16"/></xsl:call-template></td>
+                    </xsl:otherwise>
+                </xsl:choose>
                 <td>Fee of D2391</td>
                 <td><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy19"/></xsl:call-template></td>
                 <td>COB Status</td>

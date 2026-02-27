@@ -7,20 +7,24 @@ public class InsuranceMappingDto {
 	private String providerStatus;
 	private String d9230;
 	private String d9248;
+	private String d9245;
 	private String empty;
 	private String d0145;
 	
-	public InsuranceMappingDto(String sno, String providers, String providerStatus, String d9230, String d9248,
+	public InsuranceMappingDto(String sno, String providers, String providerStatus, String d9230, String d9245,String d9248,
 			String empty, String d0145) {
 		super();
 		this.sno = sno;
 		this.providers = providers;
 		this.providerStatus = providerStatus;
 		this.d9230 = d9230;
+		this.d9245 = d9245;
 		this.d9248 = d9248;
 		this.empty = empty;
 		this.d0145 = d0145;
 	}
+
+
 	public String getSno() {
 		return sno;
 	}
@@ -50,6 +54,12 @@ public class InsuranceMappingDto {
 	}
 	public void setD9248(String d9248) {
 		this.d9248 = d9248;
+	}
+	public String getD9245() {
+		return d9245;
+	}
+	public void setD9245(String d9245) {
+		this.d9245 = d9245;
 	}
 	public String getEmpty() {
 		return empty;

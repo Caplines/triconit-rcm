@@ -149,7 +149,76 @@ RuleEngine backend uses **Spring profile** `prod` (`application-prod.properties`
 
 ---
 
-## 5. Deploy / Run Order
+## 5. Local Development
+
+Use the `*.local.yml` compose files to run either app locally. No proxy or SSL needed — services are accessible directly on localhost.
+
+### 5.1 RuleEngine (local)
+
+| URL | Purpose |
+|-----|---------|
+| `http://localhost:4200` | Angular frontend |
+| `http://localhost:8081` | Backend API (Postman, etc.) |
+
+```bash
+# From rule_engine/
+docker compose -f docker-compose.local.yml up --build
+```
+
+- Backend runs with `SPRING_PROFILES_ACTIVE=dev` (`application-dev.properties`).
+- Frontend built with `ENV=local`; nginx proxies `/api/v1/*` to the local backend.
+- Maven source is mounted from `./ruleengine` and `~/.m2` is reused so no re-download on restart.
+- XSLT files are mounted from `../ivf Form/` into the container at `/opt/xslt`.
+
+To rebuild after code changes:
+```bash
+docker compose -f docker-compose.local.yml up --build
+```
+
+To stop:
+```bash
+docker compose -f docker-compose.local.yml down
+```
+
+---
+
+### 5.2 RCM (local)
+
+| URL | Purpose |
+|-----|---------|
+| `http://localhost:4201` | Angular frontend (port 4201 avoids conflict with RuleEngine) |
+| `http://localhost:8082` | Backend API (Postman, etc.) |
+
+```bash
+# From rule_engine/
+docker compose -f docker-compose.rcm.local.yml up --build
+```
+
+- Backend runs with `SPRING_PROFILES_ACTIVE=docker` (`application-docker.properties`), connecting to the same RDS as RuleEngine.
+- Frontend built with `ENV=local` / `BUILD_CONFIG=docker`; nginx proxies `/api/v1/*` to the local backend.
+
+To stop:
+```bash
+docker compose -f docker-compose.rcm.local.yml down
+```
+
+---
+
+### 5.3 Running both apps locally at the same time
+
+```bash
+# Terminal 1 – RuleEngine
+docker compose -f docker-compose.local.yml up --build
+
+# Terminal 2 – RCM
+docker compose -f docker-compose.rcm.local.yml up --build
+```
+
+The two stacks use separate Docker networks (`ruleengine-network` and `rcm-network`) so they won't conflict.
+
+---
+
+## 6. Deploy / Run Order
 
 From **rule_engine/** (e.g. `~/triconit-rcm/rule_engine`):
 
@@ -174,6 +243,32 @@ docker compose -f docker-compose.yml up --build -d
 docker compose -f docker-compose.rcm.yml up --build -d
 ```
 
+**Building FE and BE separately (reduces server load)**
+
+Build one service at a time, then start the stack without `--build`:
+
+**RCM:**
+```bash
+# Build backend first (Maven + bundled Angular), then frontend
+docker compose -f docker-compose.rcm.yml build rcm-backend
+docker compose -f docker-compose.rcm.yml build rcm-frontend
+docker compose -f docker-compose.rcm.yml up -d
+```
+
+**RuleEngine:**
+```bash
+docker compose -f docker-compose.yml build backend
+docker compose -f docker-compose.yml build frontend
+docker compose -f docker-compose.yml up -d
+```
+
+To rebuild only one service (e.g. after changing only the frontend):
+
+```bash
+docker compose -f docker-compose.rcm.yml build rcm-frontend
+docker compose -f docker-compose.rcm.yml up -d --force-recreate rcm-frontend
+```
+
 Proxy only needs restart when you change its config or certs:
 
 ```bash
@@ -182,7 +277,7 @@ docker compose -f docker-compose.proxy.yml up -d --force-recreate
 
 ---
 
-## 6. Request Flow (Summary)
+## 7. Request Flow (Summary)
 
 - **User** → `https://testing.rcm.caplineservices.in/login`  
   → **nginx-proxy** (SSL, domain match)  
@@ -199,7 +294,7 @@ Same pattern for RuleEngine with `testing.ruleengine.caplineservices.in` and `ru
 
 ---
 
-## 7. Optional: Secrets and Overrides
+## 8. Optional: Secrets and Overrides
 
 - **RCM DB:** Production credentials are set in `docker-compose.rcm.yml` as env vars. To avoid storing them in the file, use a `.env` in `rule_engine/` (add `.env` to `.gitignore`) and reference variables in the compose file, or use Docker secrets.
 - **RuleEngine:** DB can be overridden with `SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_*` in `docker-compose.yml` if needed.
@@ -207,7 +302,7 @@ Same pattern for RuleEngine with `testing.ruleengine.caplineservices.in` and `ru
 
 ---
 
-## 8. Quick Reference – Ports & URLs
+## 9. Quick Reference – Ports & URLs
 
 | Service            | Host port | Container port | URL (HTTPS)                          |
 |--------------------|-----------|----------------|--------------------------------------|

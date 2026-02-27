@@ -1908,8 +1908,9 @@ public class ConnectAndReadSheets {
 				continue;
 				int x = -1;
 				try {
-				dto = new InsuranceMappingDto(obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x));
-					
+
+				dto = new InsuranceMappingDto(obj.get(++x),obj.get(++x),obj.get(++x),obj.get(++x), obj.get(++x), obj.get(++x), obj.get(++x),obj.get(++x));
+
 				list.add(dto);
 				}catch(Exception p) {
 					p.printStackTrace();

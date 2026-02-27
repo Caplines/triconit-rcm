@@ -939,9 +939,11 @@ public class RuleBook {
 			druleList.add(new Rule6Dto("D5110_20_Complete_%", ivf.getD511020Percentage(), "PROSTHODONTICS"));
 			druleList.add(new Rule6Dto("D5213_14_26_25_Partial_%", ivf.getD5213142625(), "PROSTHODONTICS, FIXED"));
 			druleList.add(new Rule6Dto("D5213_14_26_25_Partial_1%", ivf.getD5213142625(), "PROSTHODONTICS, REMOVABLE"));
-			druleList.add(new Rule6Dto("D9248_Sedation_%", ivf.getiVSedationD9248Percentage(), "SEDATION 9248"));
+
+			// druleList.add(new Rule6Dto("D9248_Sedation_%", ivf.getiVSedationD9248Percentage(), "SEDATION 9248"));
+			druleList.add(new Rule6Dto("D9245_Sedation_%", ivf.getiVSedationD9245Percentage(), "SEDATION 9245"));
+
 			druleList.add(new Rule6Dto("D2930_34_Primary_SSC_%", ivf.getD2930(), "SSC Crown"));
-			
 			
 			//druleList.add(new Rule6Dto("D4381_%", ivf.getD4381(), "D4381"));
 			List<String> mess = new ArrayList<>();
@@ -3401,7 +3403,8 @@ public class RuleBook {
 				addCodeinSet(ivf.getD7285(), "D7285", issueCodes);
 				addCodeinSet(ivf.getD7952(), "D7952", issueCodes);
 				addCodeinSet(ivf.getNitrousD9230Percentage(), "D9230", issueCodes);
-				addCodeinSet(ivf.getiVSedationD9248Percentage(), "D9248", issueCodes);
+				// addCodeinSet(ivf.getiVSedationD9248Percentage(), "D9248", issueCodes);
+				addCodeinSet(ivf.getiVSedationD9245Percentage(), "D9245", issueCodes);
 				addCodeinSet(ivf.getD9239(), "D9239", issueCodes);
 				addCodeinSet(ivf.getiVSedationD9243Percentage(), "D9243", issueCodes);
 				addCodeinSet(ivf.getD4263(), "D4263", issueCodes);
@@ -13823,7 +13826,8 @@ public class RuleBook {
 					Constants.rule_log_debug, bw);
 			boolean D0145 = false;
 			boolean D9230 = false;
-			boolean D9248 = false;
+			// boolean D9248 = false;
+			boolean D9245 = false;
 			String errorCode = "";
 
 			for (Object obj : tpList) {
@@ -13846,14 +13850,19 @@ public class RuleBook {
 					D9230 = true;
 					fcodesRules.add(code);
 					fcodes.add(code);
-				} else if (code.equalsIgnoreCase("D9248")) {
-					D9248 = true;
+				// } else if (code.equalsIgnoreCase("D9248")) {
+				// 	D9248 = true;
+				// 	fcodesRules.add(code);
+				// 	fcodes.add(code);
+				} else if (code.equalsIgnoreCase("D9245")) {
+					D9245 = true;
 					fcodesRules.add(code);
 					fcodes.add(code);
 				}
 
 			}
-			if (D0145 || D9230 || D9248) {
+			// if (D0145 || D9230 || D9248 || D9245) {
+			if (D0145 || D9230 || D9245) {
 				InsuranceMappingDto mapping = getMappingFromInsurance(mappingData, ivf.getProviderName());
 				if (mapping == null) {
 					// Provider not found in sheet.
@@ -13871,8 +13880,12 @@ public class RuleBook {
 							fcodesRulesInd.add("D0145");
 							pass = false;
 						}
-						if (D9248 && mapping.getD9248().trim().equalsIgnoreCase("no")) {
-							fcodesRulesInd.add("D9248");
+						// if (D9248 && mapping.getD9248().trim().equalsIgnoreCase("no")) {
+						// 	fcodesRulesInd.add("D9248");
+						// 	pass = false;
+						// }
+						if (D9245 && mapping.getD9245().trim().equalsIgnoreCase("no")) {
+							fcodesRulesInd.add("D9245");
 							pass = false;
 						}
 						if (!pass)
