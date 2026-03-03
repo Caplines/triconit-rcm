@@ -25,9 +25,9 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
       # Override placeholders in application-prod.properties (use .env or secrets on server for real values)
-      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://capline-rcm-db-new.cs2m1j2gr4iq.us-east-2.rds.amazonaws.com:3306/rule_engine?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://13.126.198.104:3306/rule_engine?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=capline_user
-      - SPRING_DATASOURCE_PASSWORD=04chXZr00if3cyaN13u6Rd6fG6OsmhOcOV
+      - SPRING_DATASOURCE_PASSWORD=v71Dw0EBUBbiDAd4
     volumes:
       # Persist application data
       - rcm-backend-files:/opt/project/tricon/files

@@ -60,7 +60,7 @@ services:
 
 networks:
   ruleengine-network:
-    driver: bridge
+    driver: bridge  
   shared-proxy:
     external: true
 

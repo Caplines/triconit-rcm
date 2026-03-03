@@ -18,6 +18,9 @@ services:
       - "8082:8081"
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://13.126.198.104:3306/rule_engine?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=capline_user
+      - SPRING_DATASOURCE_PASSWORD=v71Dw0EBUBbiDAd4
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:

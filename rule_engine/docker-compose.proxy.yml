@@ -25,9 +25,8 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      # Switch to nginx-ssl.conf after getting certs with certbot
       - ./nginx-proxy/nginx-ssl.conf:/etc/nginx/conf.d/default.conf:ro
-      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro  
     networks:
       - shared-proxy
     healthcheck:
@@ -38,4 +37,4 @@ services:
 
 networks:
   shared-proxy:
-    external: true
+    external: true  
