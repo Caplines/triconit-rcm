@@ -21,8 +21,9 @@ services:
       # Persist application data
       - backend-files:/opt/project/tricon/files
       - backend-logs:/opt/project/tricon/log
-      # EagleSoft SSL: certs/ must contain cacerts.jks and keystore.jks (see DEPLOYMENT.md)
-      - ./certs:/opt/project/tricon/client
+      # EagleSoft SSL: certs/ must contain cacerts.jks and keystore.jks (see DEPLOYMENT.md).
+      # Path is relative to this compose file so it works when run from repo root or rule_engine/.
+      - ${CERTS_PATH:-./certs}:/opt/project/tricon/client:ro
       - backend-chrome:/opt/project/tricon/chrome
       # backend-xml volume removed: XSLT templates are baked into the image at /opt/xslt,
       # and temp XML output uses /tmp/ruleengine/xml/ (no volume needed)

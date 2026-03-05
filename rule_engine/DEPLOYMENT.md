@@ -250,6 +250,12 @@ docker compose -f docker-compose.yml up --build -d
 docker compose -f docker-compose.rcm.yml up --build -d
 ```
 
+**If you run docker compose from the parent directory** (e.g. `~/triconit-rcm`) with `-f rule_engine/docker-compose.yml`, the certs directory must still point at `rule_engine/certs`. Create a `.env` in that parent directory with:
+```bash
+CERTS_PATH=rule_engine/certs
+```
+so the backend container sees your `cacerts.jks` and `keystore.jks`. Otherwise the container will log "ES SSL certs missing or unreadable (exists=false)" and ES connections will fail with PKIX errors.
+
 To **rebuild** after code/config changes:
 
 ```bash
