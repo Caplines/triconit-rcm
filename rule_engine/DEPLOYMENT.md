@@ -61,6 +61,7 @@ rule_engine/
 ├── docker-compose.yml           # RuleEngine (backend + frontend)
 ├── docker-compose.rcm.yml        # RCM (backend + frontend)
 ├── docker-compose.proxy.yml      # Shared nginx reverse proxy
+├── certs/                        # EagleSoft SSL: cacerts.jks, keystore.jks (create per env – see §4)
 ├── nginx-proxy/
 │   ├── nginx-nossl.conf         # Proxy config: HTTP only (before SSL)
 │   └── nginx-ssl.conf           # Proxy config: HTTPS + redirect
@@ -136,7 +137,23 @@ RuleEngine backend uses **Spring profile** `prod` (`application-prod.properties`
    docker network create shared-proxy
    ```
 
-2. **SSL (when ready)**  
+2. **EagleSoft SSL (required for Rule Engine ↔ EagleSoft)**  
+   The Rule Engine backend connects to EagleSoft over TLS. Each environment (test, prod) must have a **certs** directory with the **EagleSoft server’s certificate** in the truststore. **See [docs/eaglesoft-ssl-certs.md](docs/eaglesoft-ssl-certs.md) for where to get cacerts.jks and keystore.jks and when they’re required.**
+
+   - Create `rule_engine/certs/` on the server (same directory you run `docker compose` from).
+   - **Option A – You have the EagleSoft server’s certificate (e.g. `es-server.cer`):**
+     ```bash
+     cd rule_engine/certs
+     # Create truststore with ES server cert (password e.g. p@ssw0rd – must match application-prod.properties)
+     keytool -importcert -alias eaglesoft -file es-server.cer -keystore cacerts.jks -storepass p@ssw0rd -noprompt
+     # Create keystore (can copy from local or create minimal one)
+     keytool -genkeypair -alias client -keyalg RSA -keysize 2048 -validity 365 -keystore keystore.jks -storepass p@ssw0rd -keypass p@ssw0rd -dname "CN=RuleEngine"
+     ```
+   - **Option B – Export cert from the EagleSoft server:** On the machine where EagleSoft runs, export its TLS certificate (e.g. from its keystore or from a browser connecting to ES and saving the cert). Then use Option A.
+   - **Test (local) only:** From repo root, run `./rule_engine/scripts/generate-es-ssl-certs.sh` and use the generated `rule_engine/certs/` (self-signed; for local ES only).
+   - Ensure `cacerts.jks` and `keystore.jks` exist in `rule_engine/certs/` before starting the stack. Passwords must match `es.ssl.client.password` in `application-prod.properties` (default `p@ssw0rd`).
+
+3. **SSL (when ready)**  
    - Stop proxy: `docker compose -f docker-compose.proxy.yml down`  
    - Get certs:  
      `sudo certbot certonly --standalone -d testing.ruleengine.caplineservices.in`  
@@ -144,7 +161,7 @@ RuleEngine backend uses **Spring profile** `prod` (`application-prod.properties`
    - In **docker-compose.proxy.yml**, set the volume to mount `nginx-proxy/nginx-ssl.conf` (it may already be set).  
    - Start proxy: `docker compose -f docker-compose.proxy.yml up -d`
 
-3. **DNS**  
+4. **DNS**  
    Point `testing.ruleengine.caplineservices.in` and `testing.rcm.caplineservices.in` to the server’s public IP.
 
 ---

@@ -1,5 +1,6 @@
 services:
   # Spring Boot Backend
+  # EagleSoft SSL: mount ./certs (cacerts.jks + keystore.jks with ES server cert) – see DEPLOYMENT.md.
   backend:
     build:
       context: ..
@@ -20,7 +21,8 @@ services:
       # Persist application data
       - backend-files:/opt/project/tricon/files
       - backend-logs:/opt/project/tricon/log
-      - backend-client:/opt/project/tricon/client
+      # EagleSoft SSL: certs/ must contain cacerts.jks and keystore.jks (see DEPLOYMENT.md)
+      - ./certs:/opt/project/tricon/client
       - backend-chrome:/opt/project/tricon/chrome
       # backend-xml volume removed: XSLT templates are baked into the image at /opt/xslt,
       # and temp XML output uses /tmp/ruleengine/xml/ (no volume needed)
@@ -67,5 +69,4 @@ networks:
 volumes:
   backend-files:
   backend-logs:
-  backend-client:
   backend-chrome:
