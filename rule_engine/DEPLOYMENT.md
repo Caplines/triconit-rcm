@@ -153,6 +153,12 @@ RuleEngine backend uses **Spring profile** `prod` (`application-prod.properties`
    - **Test (local) only:** From repo root, run `./rule_engine/scripts/generate-es-ssl-certs.sh` and use the generated `rule_engine/certs/` (self-signed; for local ES only).
    - Ensure `cacerts.jks` and `keystore.jks` exist in `rule_engine/certs/` before starting the stack. Passwords must match `es.ssl.client.password` in `application-prod.properties` (default **changeit**).
 
+   **Temporary / test only (same as local – no cert setup):** If you only need Rule Engine for a short time and will move to a new tool soon, you can run it like local by accepting any EagleSoft server certificate. In the directory where you run `docker compose` (e.g. `rule_engine/` or repo root), create or edit `.env` and set:
+   ```bash
+   ES_SSL_CLIENT_TRUSTALL=true
+   ```
+   Then start the stack as usual. The backend will use the `prod` profile but trust any ES server cert (no need for `cacerts.jks`). **Do not set this in production.**
+
 3. **SSL (when ready)**  
    - Stop proxy: `docker compose -f docker-compose.proxy.yml down`  
    - Get certs:  

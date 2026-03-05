@@ -26,6 +26,16 @@ So: **cacerts.jks** = “only connect to the real EagleSoft.” **trustAll=true*
 
 **Password:** The app uses `es.ssl.client.password` (default: `p@ssw0rd` for docker/dev, **`changeit`** for prod). The value must match the password used when creating both `cacerts.jks` and `keystore.jks`. If you see "Keystore was tampered with, or password was incorrect", set `ES_SSL_CLIENT_PASSWORD` to the JKS password or re-create the JKS files with the expected password.
 
+**"PKIX path validation failed: signature check failed" / "Signature does not match":** The certificate in your `cacerts.jks` is not the one the EagleSoft server is presenting. You must export the **server’s** certificate from the keystore used by the ES server (on the ES host) and import it into the Rule Engine’s `cacerts.jks`. See “Where do I get cacerts.jks” below — use the cert from the ES server’s actual keystore (e.g. from the same machine that runs ES on `listenport`), not a different or old cert.
+
+**To use the exact cert the server sends**, capture it with openssl (run from a host that can reach the ES server):
+```bash
+openssl s_client -connect <es-host>:<es-port> -showcerts </dev/null 2>/dev/null | openssl x509 -outform PEM -out es-live.cer
+```
+Then import `es-live.cer` into a new `cacerts.jks` (see steps in “Where do I get cacerts.jks”). Replace `<es-host>` and `<es-port>` with the ES server IP and port (e.g. 4444).
+
+**Temporary test-only workaround:** To unblock test while fixing the cert, set on the **test** server only (e.g. in `.env` or backend env): `ES_SSL_CLIENT_TRUSTALL=true`. The Rule Engine will then accept any ES server certificate. Do **not** set this in production.
+
 - **With `es.ssl.client.trustAll=true` (e.g. docker profile):** No. The app accepts any EagleSoft server certificate. You can connect without `cacerts.jks` or `keystore.jks`. Use only for local/dev.
 - **With `es.ssl.client.trustAll=false` (prod profile):** Yes. The app requires both files to be present and readable. If either is missing, it will not establish the SSL connection to EagleSoft. So for test and prod, you must provide the certs.
 

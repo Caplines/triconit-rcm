@@ -13,7 +13,8 @@ services:
       - "8080"  # Internal port for nginx to access
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      # Override database settings if needed
+      # Temporary/test only: set ES_SSL_CLIENT_TRUSTALL=true in .env to accept any EagleSoft cert (same as local). Do not use in production.
+      - ES_SSL_CLIENT_TRUSTALL=${ES_SSL_CLIENT_TRUSTALL:-false}
       # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_URL=jdbc:mysql://your-db:3306/rule_engine
       # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_USERNAME=your_user
       # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_PASSWORD=your_password
