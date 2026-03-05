@@ -20,7 +20,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_DATASOURCE_JDBC_URL=jdbc:mysql://capline-rcm-db-new.cs2m1j2gr4iq.us-east-2.rds.amazonaws.com:3306/rule_engine?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=capline_user
-      - SPRING_DATASOURCE_PASSWORD=capline_user_all_115!!%^
+      - SPRING_DATASOURCE_PASSWORD=04chXZr00if3cyaN13u6Rd6fG6OsmhOcOV
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
