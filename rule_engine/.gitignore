@@ -1,5 +1,5 @@
-# Environment files with sensitive data
-.env
+# Generated SSL certs for local ES (run scripts/generate-es-ssl-certs.sh)
+certs/
 
 # Docker volumes
 docker-volumes/

@@ -1,3 +1,8 @@
+# Run from rule_engine/ directory so ./certs and ./ruleengine resolve correctly:
+#   cd rule_engine
+#   ./scripts/generate-es-ssl-certs.sh   # creates certs/cacerts.jks and certs/keystore.jks
+#   docker compose -f docker-compose.local.yml up --build
+#
 version: "3.9"
 
 services:
@@ -12,13 +17,15 @@ services:
     ports:
       - "8081:8080"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      # Use 'docker' so SSL paths point to /opt/project/tricon/client (mounted below)
+      - SPRING_PROFILES_ACTIVE=docker
     volumes:
       - ./ruleengine:/app
       - ~/.m2:/root/.m2
       - backend-files:/opt/project/tricon/files
       - backend-logs:/opt/project/tricon/log
-      - backend-client:/opt/project/tricon/client
+      # Mount local SSL certs (run scripts/generate-es-ssl-certs.sh first)
+      - ./certs:/opt/project/tricon/client
       - backend-xml:/opt/project/tricon/xml
       - backend-chrome:/opt/project/tricon/chrome
       - "../ivf Form:/opt/xslt"
@@ -60,6 +67,5 @@ networks:
 volumes:
   backend-files:
   backend-logs:
-  backend-client:
   backend-xml:
   backend-chrome:

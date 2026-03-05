@@ -1,8 +1,11 @@
 package com.tricon.ruleengine.service.impl;
 
 import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -10,6 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509TrustManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -69,7 +78,23 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	@Value("${es.ssl.client.password}")
 	private String password;
 
+	/** If true, accept any ES server certificate (local dev only). Default false. */
+	@Value("${es.ssl.client.trustAll:false}")
+	private boolean trustAll;
+
 	static Class<?> clazz = EagleSoftDBAccessServiceImpl.class;
+
+	/** TrustManager that accepts any server certificate. For local dev only when ES server cert is not in truststore. */
+	private static final TrustManager[] TRUST_ALL_MANAGERS = new TrustManager[] {
+		new X509TrustManager() {
+			@Override
+			public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+			@Override
+			public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) {}
+			@Override
+			public java.security.cert.X509Certificate[] getAcceptedIssuers() { return new java.security.cert.X509Certificate[0]; }
+		}
+	};
 
 	@Autowired
 	TreatmentValidationDao tvd;
@@ -92,10 +117,16 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
 					IVFTableSheet ivfSheet = ((IVFTableSheet) entry.getValue().get(0));
 					ids.add(ivfSheet.getPatientId());
+					RuleEngineLogger.generateLogs(clazz,
+							"IVF -> PatientId: " + ivfSheet.getPatientId() + ", UniqueID: " + ivfSheet.getUniqueID()
+									+ ", Name: " + ivfSheet.getPatientName() + ", DOB: " + ivfSheet.getPatientDOB(),
+							Constants.rule_log_debug, bw);
 				}
 			}
 
 			String[] pids = ids.toArray(new String[ids.size()]);
+			RuleEngineLogger.generateLogs(clazz, "PatientIds to query ES: " + String.join(",", pids),
+					Constants.rule_log_debug, bw);
 
 			EagleSoftQueryObject q = null;
 			if (insuranceType==null) q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_pri,
@@ -113,7 +144,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 					Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
 					});
 
-					RuleEngineLogger.generateLogs(clazz, "Patient DATA-" + cMap.get("dataMap").toString(),
+					RuleEngineLogger.generateLogs(clazz, "Patient RAW DATA-" + cMap.get("dataMap").toString(),
 							Constants.rule_log_debug, bw);
 					Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
 					List<Object> list = null;
@@ -156,6 +187,14 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 								if (entry.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
+									RuleEngineLogger.generateLogs(clazz,
+											"Matching ES patientId=" + pat.getPatientId().trim() + ", Name="
+													+ pat.getFirstName() + " " + pat.getLastName() + ", DOB="
+													+ pat.getBirthDate() + " WITH IVF patientId="
+													+ ivfSheet.getPatientId() + ", UniqueID=" + ivfSheet.getUniqueID()
+													+ ", Name=" + ivfSheet.getPatientName() + ", DOB="
+													+ ivfSheet.getPatientDOB(),
+											Constants.rule_log_debug, bw);
 									if ((pat.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
 										if (returnMap == null)
 											returnMap = new HashMap<>();
@@ -932,10 +971,74 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
 	@Override
 	public void setUpSSLCertificates() {
+		if (trustAll) {
+			// Local dev: accept any ES server certificate (e.g. server uses different cert than client truststore).
+			try {
+				javax.net.ssl.KeyManager[] kms = null;
+				File keyStoreFile = new File(keyStore);
+				if (keyStoreFile.canRead() && password != null) {
+					char[] pass = password.toCharArray();
+					KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+					try (FileInputStream fis = new FileInputStream(keyStoreFile)) {
+						ks.load(fis, pass);
+					}
+					KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+					kmf.init(ks, pass);
+					kms = kmf.getKeyManagers();
+				}
+				SSLContext ctx = SSLContext.getInstance("TLS");
+				ctx.init(kms, TRUST_ALL_MANAGERS, null);
+				EagleSoftFetchData.setESSSLSocketFactory(ctx.getSocketFactory());
+				RuleEngineLogger.generateLogs(clazz, "ES SSL using trust-all (es.ssl.client.trustAll=true). Do not use in production.", Constants.rule_log_debug, null);
+			} catch (Exception e) {
+				RuleEngineLogger.generateLogs(clazz, "ES SSL trust-all context failed: " + e.getMessage(), Constants.rule_log_debug, null);
+				EagleSoftFetchData.setESSSLSocketFactory(null);
+			}
+			return;
+		}
+
+		File trustStoreFile = new File(trustStore);
+		File keyStoreFile = new File(keyStore);
+		if (!trustStoreFile.canRead() || !keyStoreFile.canRead()) {
+			RuleEngineLogger.generateLogs(clazz,
+					"ES SSL certs missing or unreadable. trustStore=" + trustStore + " (exists=" + trustStoreFile.exists() + "), keyStore=" + keyStore
+							+ " (exists=" + keyStoreFile.exists() + "). Run rule_engine/scripts/generate-es-ssl-certs.sh and mount certs/ into the container at /opt/project/tricon/client.",
+					Constants.rule_log_debug, null);
+			EagleSoftFetchData.setESSSLSocketFactory(null);
+			return;
+		}
 		System.setProperty("javax.net.ssl.trustStore", trustStore);
 		System.setProperty("javax.net.ssl.keyStore", keyStore);
 		System.setProperty("javax.net.ssl.keyStorePassword", password);
 
+		// Build an explicit SSLContext from our truststore/keystore so ES connections use it.
+		// The JVM default SSLContext is created once and may have an empty truststore if it was
+		// initialized before these properties were set, causing "trustAnchors parameter must be non-empty".
+		try {
+			char[] pass = password != null ? password.toCharArray() : null;
+			KeyStore ts = KeyStore.getInstance(KeyStore.getDefaultType());
+			try (FileInputStream fis = new FileInputStream(trustStoreFile)) {
+				ts.load(fis, pass);
+			}
+			TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			tmf.init(ts);
+
+			KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
+			try (FileInputStream fis = new FileInputStream(keyStoreFile)) {
+				ks.load(fis, pass);
+			}
+			KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			kmf.init(ks, pass);
+
+			SSLContext ctx = SSLContext.getInstance("TLS");
+			ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
+			EagleSoftFetchData.setESSSLSocketFactory(ctx.getSocketFactory());
+		} catch (Exception e) {
+			RuleEngineLogger.generateLogs(clazz,
+					"ES SSL context creation failed: " + e.getClass().getSimpleName() + " - " + e.getMessage() + ". ES connections may fail.",
+					Constants.rule_log_debug, null);
+			EagleSoftFetchData.setESSSLSocketFactory(null);
+		}
 	}
 
 	@Override

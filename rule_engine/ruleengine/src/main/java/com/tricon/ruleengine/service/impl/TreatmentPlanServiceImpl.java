@@ -4903,6 +4903,16 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 
 					//
 					espatients = (Map<String, List<EagleSoftPatient>>) (Map<String, ?>) dbAccesService.getPatientData(iType,ivfMap, esDB,null);
+					if (espatients == null || espatients.isEmpty()) {
+						RuleEngineLogger.generateLogs(clazz,
+								"ES Patients map is EMPTY after getPatientData. IVF keys: " + ivfMap.keySet(),
+								Constants.rule_log_debug, null);
+					} else {
+						RuleEngineLogger.generateLogs(clazz,
+								"ES Patients map size after getPatientData: " + espatients.size()
+										+ ", keys: " + espatients.keySet(),
+								Constants.rule_log_debug, null);
+					}
 					preferanceFeeSchedules=(Map<String, List<PreferanceFeeSchedule>>) (Map<String, ?>)dbAccesService.getPreferanceFeeScheduleByPatientId(ivfMap, esDB, null);
 					//espatientsHis= (Map<String, List<EagleSoftPatientWalkHistory>>) (Map<String, ?>) dbAccesService.getPatientHistoryES(ivfMap, esDB,
 					//		new SimpleDateFormat(Constants.dateFormatStringESHis).format(new Date()),Constants.Medicaid_Provider_Limitation_MONTH,bw);

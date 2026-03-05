@@ -7,8 +7,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.security.Security;
-import java.util.Properties;
 
 import javax.net.SocketFactory;
 import javax.net.ssl.SSLSocketFactory;
@@ -20,10 +18,21 @@ import com.tricon.ruleengine.model.db.EagleSoftDBDetails;
 
 
 public class EagleSoftFetchData {
-	
+
 	static Class<?> clazz = EagleSoftFetchData.class;
-	
-	private static  SocketFactory socketFactory=  SSLSocketFactory.getDefault();
+
+	/** Explicit factory set by EagleSoftDBAccessServiceImpl when certs are configured; avoids using JVM default context which may have empty truststore. */
+	private static volatile SSLSocketFactory esSocketFactory;
+
+	public static void setESSSLSocketFactory(SSLSocketFactory factory) {
+		esSocketFactory = factory;
+	}
+
+	/** Returns the factory to use for ES connections: explicit one if set, otherwise default (may fail if default context has no trust anchors). */
+	private static SocketFactory getSocketFactory() {
+		SSLSocketFactory f = esSocketFactory;
+		return f != null ? f : SSLSocketFactory.getDefault();
+	}
 	
 	
 	public String getDataUsingSockets(EagleSoftDBDetails esDB,EagleSoftQueryObject q,
@@ -62,8 +71,9 @@ public class EagleSoftFetchData {
 		    
 			}else {
 				RuleEngineLogger.generateLogs(clazz,
-						"No route to host .."+esDB.getIpAddress(),Constants.rule_log_debug, bw);
-				data=null;	
+						"ES connection failed (getConnectionToES returned null). Host: " + esDB.getIpAddress() + ":" + esDB.geteSport(),
+						Constants.rule_log_debug, bw);
+				data=null;
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -93,16 +103,17 @@ public class EagleSoftFetchData {
 		Socket socket=null;
 		try {
 			
-			socket =socketFactory.createSocket();
+		socket = getSocketFactory().createSocket();
 			socket.connect(new InetSocketAddress(esDB.getIpAddress(), esDB.geteSport()), 5000);
 			
 			//return ((SSLSocketFactory) SSLSocketFactory.getDefault()).createSocket(esDB.getIpAddress(), esDB.geteSport());
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			//e.printStackTrace();
-			if (bw!=null)RuleEngineLogger.generateLogs(clazz,
-					"No route to host .."+esDB.getIpAddress(),Constants.rule_log_debug, bw);
-			
+			RuleEngineLogger.generateLogs(clazz,
+					"ES connection failed: " + e.getClass().getSimpleName() + " - " + e.getMessage() + " (host: " + esDB.getIpAddress() + ":" + esDB.geteSport() + ")",
+					Constants.rule_log_debug, bw);
+
 			return null;
 		}
 		return socket;
