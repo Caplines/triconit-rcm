@@ -24,6 +24,8 @@ So: **cacerts.jks** = “only connect to the real EagleSoft.” **trustAll=true*
 
 ## Do I need these files to connect?
 
+**Password:** The app uses `es.ssl.client.password` (default: `p@ssw0rd` for docker/dev, **`changeit`** for prod). The value must match the password used when creating both `cacerts.jks` and `keystore.jks`. If you see "Keystore was tampered with, or password was incorrect", set `ES_SSL_CLIENT_PASSWORD` to the JKS password or re-create the JKS files with the expected password.
+
 - **With `es.ssl.client.trustAll=true` (e.g. docker profile):** No. The app accepts any EagleSoft server certificate. You can connect without `cacerts.jks` or `keystore.jks`. Use only for local/dev.
 - **With `es.ssl.client.trustAll=false` (prod profile):** Yes. The app requires both files to be present and readable. If either is missing, it will not establish the SSL connection to EagleSoft. So for test and prod, you must provide the certs.
 
@@ -60,11 +62,11 @@ The Rule Engine backend must **trust the EagleSoft server’s TLS certificate**.
 
 **Step 2 – Create cacerts.jks (truststore)**
 
-Import the server cert into a new truststore (password must match `es.ssl.client.password` in `application-prod.properties`, default `p@ssw0rd`):
+Import the server cert into a new truststore (password must match `es.ssl.client.password` in `application-prod.properties`, default **`changeit`**):
 
 ```bash
 cd rule_engine/certs
-keytool -importcert -alias eaglesoft -file es-server.cer -keystore cacerts.jks -storepass p@ssw0rd -noprompt
+keytool -importcert -alias eaglesoft -file es-server.cer -keystore cacerts.jks -storepass changeit -noprompt
 ```
 
 **Step 3 – Create keystore.jks (client keystore)**
@@ -73,7 +75,7 @@ The app expects a keystore at the path in config. You can create a minimal one:
 
 ```bash
 keytool -genkeypair -alias client -keyalg RSA -keysize 2048 -validity 365 \
-  -keystore keystore.jks -storepass p@ssw0rd -keypass p@ssw0rd \
+  -keystore keystore.jks -storepass changeit -keypass changeit \
   -dname "CN=RuleEngine, OU=App, O=Capline, L=City, ST=State, C=US"
 ```
 

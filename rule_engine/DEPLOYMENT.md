@@ -144,14 +144,14 @@ RuleEngine backend uses **Spring profile** `prod` (`application-prod.properties`
    - **Option A – You have the EagleSoft server’s certificate (e.g. `es-server.cer`):**
      ```bash
      cd rule_engine/certs
-     # Create truststore with ES server cert (password e.g. p@ssw0rd – must match application-prod.properties)
-     keytool -importcert -alias eaglesoft -file es-server.cer -keystore cacerts.jks -storepass p@ssw0rd -noprompt
+     # Create truststore with ES server cert (password must match application-prod.properties: changeit)
+     keytool -importcert -alias eaglesoft -file es-server.cer -keystore cacerts.jks -storepass changeit -noprompt
      # Create keystore (can copy from local or create minimal one)
-     keytool -genkeypair -alias client -keyalg RSA -keysize 2048 -validity 365 -keystore keystore.jks -storepass p@ssw0rd -keypass p@ssw0rd -dname "CN=RuleEngine"
+     keytool -genkeypair -alias client -keyalg RSA -keysize 2048 -validity 365 -keystore keystore.jks -storepass changeit -keypass changeit -dname "CN=RuleEngine"
      ```
    - **Option B – Export cert from the EagleSoft server:** On the machine where EagleSoft runs, export its TLS certificate (e.g. from its keystore or from a browser connecting to ES and saving the cert). Then use Option A.
    - **Test (local) only:** From repo root, run `./rule_engine/scripts/generate-es-ssl-certs.sh` and use the generated `rule_engine/certs/` (self-signed; for local ES only).
-   - Ensure `cacerts.jks` and `keystore.jks` exist in `rule_engine/certs/` before starting the stack. Passwords must match `es.ssl.client.password` in `application-prod.properties` (default `p@ssw0rd`).
+   - Ensure `cacerts.jks` and `keystore.jks` exist in `rule_engine/certs/` before starting the stack. Passwords must match `es.ssl.client.password` in `application-prod.properties` (default **changeit**).
 
 3. **SSL (when ready)**  
    - Stop proxy: `docker compose -f docker-compose.proxy.yml down`  
