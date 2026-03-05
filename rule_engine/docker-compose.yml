@@ -1,6 +1,6 @@
 services:
   # Spring Boot Backend
-  # EagleSoft SSL: mount ./certs (cacerts.jks + keystore.jks with ES server cert) – see DEPLOYMENT.md.
+  # EagleSoft SSL: with ES_SSL_CLIENT_TRUSTALL=true (below) no certs needed. For production set trustAll=false and mount certs/ – see DEPLOYMENT.md.
   backend:
     build:
       context: ..
@@ -13,8 +13,8 @@ services:
       - "8080"  # Internal port for nginx to access
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-      # Temporary/test only: set ES_SSL_CLIENT_TRUSTALL=true in .env to accept any EagleSoft cert (same as local). Do not use in production.
-      - ES_SSL_CLIENT_TRUSTALL=${ES_SSL_CLIENT_TRUSTALL:-false}
+      # Temporary/test: accept any EagleSoft cert (same as local). Set to false and add certs for production.
+      - ES_SSL_CLIENT_TRUSTALL=true
       # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_URL=jdbc:mysql://your-db:3306/rule_engine
       # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_USERNAME=your_user
       # - SPRING_JPA1_PROPERTIES_HIBERNATE_CONNECTION_PASSWORD=your_password
@@ -22,8 +22,7 @@ services:
       # Persist application data
       - backend-files:/opt/project/tricon/files
       - backend-logs:/opt/project/tricon/log
-      # EagleSoft SSL: certs/ must contain cacerts.jks and keystore.jks (see DEPLOYMENT.md).
-      # Path is relative to this compose file so it works when run from repo root or rule_engine/.
+      # EagleSoft SSL: when ES_SSL_CLIENT_TRUSTALL=true certs are not used. For prod (trustAll=false) mount certs/ here.
       - ${CERTS_PATH:-./certs}:/opt/project/tricon/client:ro
       - backend-chrome:/opt/project/tricon/chrome
       # backend-xml volume removed: XSLT templates are baked into the image at /opt/xslt,
