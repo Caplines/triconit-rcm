@@ -16,6 +16,7 @@ services:
     working_dir: /app
     ports:
       - "8081:8080"
+    env_file: .env
     environment:
       # Use 'docker' so SSL paths point to /opt/project/tricon/client (mounted below)
       - SPRING_PROFILES_ACTIVE=docker

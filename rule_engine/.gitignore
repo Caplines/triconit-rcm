@@ -1,3 +1,6 @@
+# Environment variables (contains secrets - NEVER commit)
+.env
+
 # Generated SSL certs for local ES (run scripts/generate-es-ssl-certs.sh)
 certs/
 
