@@ -46,7 +46,7 @@ This document describes how RuleEngine and RCM are deployed together on one serv
 ```
 
 - **Single entry point:** Only `nginx-proxy` binds host ports 80 and 443.
-- **Domain-based routing:** `testing.ruleengine.caplineservices.in` → RuleEngine; `testing.rcm.caplineservices.in` → RCM.
+- **Domain-based routing:** `production.ruleengine.caplineservices.in` → RuleEngine; `testing.rcm.caplineservices.in` → RCM.
 - **App frontends** serve Angular over HTTP on port 80 inside Docker; they do not do SSL.
 - **Backends** are only reached via their frontend’s nginx (e.g. `/api/v1/*` → backend). Host ports 8081 (RuleEngine) and 8082 (RCM) are for direct access (e.g. Postman) and healthchecks.
 
@@ -158,13 +158,13 @@ RuleEngine backend uses **Spring profile** `prod` (`application-prod.properties`
 3. **SSL (when ready)**  
    - Stop proxy: `docker compose -f docker-compose.proxy.yml down`  
    - Get certs:  
-     `sudo certbot certonly --standalone -d testing.ruleengine.caplineservices.in`  
+     `sudo certbot certonly --standalone -d production.ruleengine.caplineservices.in`  
      `sudo certbot certonly --standalone -d testing.rcm.caplineservices.in`  
    - In **docker-compose.proxy.yml**, set the volume to mount `nginx-proxy/nginx-ssl.conf` (it may already be set).  
    - Start proxy: `docker compose -f docker-compose.proxy.yml up -d`
 
 4. **DNS**  
-   Point `testing.ruleengine.caplineservices.in` and `testing.rcm.caplineservices.in` to the server’s public IP.
+   Point `production.ruleengine.caplineservices.in` and `testing.rcm.caplineservices.in` to the server’s public IP.
 
 ---
 
@@ -315,7 +315,7 @@ docker compose -f docker-compose.proxy.yml up -d --force-recreate
   → **rcm-client-app/nginx.prod.conf** `location ^~ /api/v1/`  
   → **rcm-backend:8081** (path rewritten to `/account/login`).
 
-Same pattern for RuleEngine with `testing.ruleengine.caplineservices.in` and `ruleengine-frontend` → `backend:8080`.
+Same pattern for RuleEngine with `production.ruleengine.caplineservices.in` and `ruleengine-frontend` → `backend:8080`.
 
 ---
 
@@ -333,6 +333,6 @@ Same pattern for RuleEngine with `testing.ruleengine.caplineservices.in` and `ru
 |--------------------|-----------|----------------|--------------------------------------|
 | nginx-proxy        | 80, 443   | 80, 443        | Entry for both domains               |
 | ruleengine-backend | 8081      | 8080           | Direct API access                    |
-| ruleengine-frontend| —         | 80             | testing.ruleengine.caplineservices.in|
+| ruleengine-frontend| —         | 80             | production.ruleengine.caplineservices.in|
 | rcm-backend        | 8082      | 8081           | Direct API access                    |
 | rcm-frontend       | —         | 80             | testing.rcm.caplineservices.in       |
