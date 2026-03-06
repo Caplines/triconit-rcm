@@ -16,6 +16,9 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     
      <script>
+	 // Rule Engine server URL – update this when changing domains
+	 var RE_API_BASE = "https://testing.ruleengine.caplineservices.in";
+
 	 function showPat(d){
 	 $('#closePOP').click();
 	 loadDatatoForm(d);	 
@@ -151,7 +154,7 @@
 	 json['employerNameDB'] = $('#employerNameDB').val()
 	 json['generalDateIVFDoneDB'] = $('#generalDateIVFDoneDB').val()
 	 
-	 $.ajax('https://testing.ruleengine.caplineservices.in/queryivdatafromdb', {
+	 $.ajax(RE_API_BASE + '/queryivdatafromdb', {
 			method: 'POST',
 		  data: JSON.stringify(json),
 		  contentType: "application/json; charset=utf-8",
@@ -219,7 +222,7 @@ function postDataToRuleEngine(event){
 				buttons: {
 					confirm: function () {
 					
-					$.ajax('https://testing.ruleengine.caplineservices.in/savedatatore', {
+					$.ajax(RE_API_BASE + '/savedatatore', {
 	method: 'POST',
   //data: {$('#myIVForm').serialize()},
   data: JSON.stringify(ConvertFormToJSON('form#myIVForm')),

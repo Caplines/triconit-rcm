@@ -25,8 +25,11 @@ ARG ENV=local
 # Remove default config
 RUN rm /etc/nginx/conf.d/default.conf
 
-# Copy environment-specific nginx config
-COPY nginx.${ENV}.conf /etc/nginx/conf.d/default.conf
+# Copy environment-specific nginx config as a template.
+# nginx:1.21-alpine processes /etc/nginx/templates/*.template through envsubst
+# at startup, substituting env vars (e.g. ${RE_DOMAIN}) while leaving nginx
+# variables ($uri, $host, etc.) untouched.
+COPY nginx.${ENV}.conf /etc/nginx/templates/default.conf.template
 
 # Copy built Angular app
 COPY --from=build /app/dist/ruleengine-client-app /usr/share/nginx/html

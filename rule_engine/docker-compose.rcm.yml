@@ -1,8 +1,8 @@
 # Production Docker Compose for RCM application
 #
-# Domain: testing.rcm.caplineservices.in (same pattern as RuleEngine).
+# Domain: set RCM_DOMAIN in .env (e.g. testing.rcm.caplineservices.in).
 # SSL: Obtain cert first so nginx can start, e.g.:
-#   certbot certonly --standalone -d testing.rcm.caplineservices.in
+#   certbot certonly --standalone -d $RCM_DOMAIN
 #   (stop anything on 80/443 first). Then start compose.
 # Optional: use ENV=prod-nossl and no letsencrypt volume to run without SSL (e.g. behind another proxy).
 # If running alongside RuleEngine on same host, change frontend ports (e.g. 8080:80, 8443:443).
@@ -52,6 +52,8 @@ services:
         BUILD_CONFIG: production
     container_name: rcm-frontend
     restart: unless-stopped
+    environment:
+      - RCM_DOMAIN=${RCM_DOMAIN}
     # No host port binding – nginx-proxy (docker-compose.proxy.yml) owns 80/443
     # and routes traffic here via the shared-proxy network.
     expose:

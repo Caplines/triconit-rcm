@@ -43,6 +43,8 @@ services:
         ENV: prod  # Use 'local' for development, 'prod' for production
     container_name: ruleengine-frontend
     restart: unless-stopped
+    environment:
+      - RE_DOMAIN=${RE_DOMAIN}
     # No host port binding – nginx-proxy (docker-compose.proxy.yml) owns 80/443
     # and routes traffic here via the shared-proxy network.
     expose:

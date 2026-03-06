@@ -6,10 +6,10 @@
 # RUN (before SSL):
 #   docker compose -f docker-compose.proxy.yml up -d
 #
-# GET SSL (certbot):
+# GET SSL (certbot) – use the domain values from .env:
 #   docker compose -f docker-compose.proxy.yml down          # free port 80
-#   certbot certonly --standalone -d testing.ruleengine.caplineservices.in
-#   certbot certonly --standalone -d testing.rcm.caplineservices.in
+#   certbot certonly --standalone -d $RE_DOMAIN
+#   certbot certonly --standalone -d $RCM_DOMAIN
 #   # then edit volume below: nginx-nossl.conf  →  nginx-ssl.conf
 #   docker compose -f docker-compose.proxy.yml up -d
 #
@@ -24,8 +24,12 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      - RE_DOMAIN=${RE_DOMAIN}
+      - RCM_DOMAIN=${RCM_DOMAIN}
     volumes:
-      - ./nginx-proxy/nginx-ssl.conf:/etc/nginx/conf.d/default.conf:ro
+      # Mount as template so envsubst replaces ${RE_DOMAIN} / ${RCM_DOMAIN} at startup
+      - ./nginx-proxy/nginx-ssl.conf:/etc/nginx/templates/default.conf.template:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro  
     networks:
       - shared-proxy
