@@ -3,14 +3,13 @@
 # SETUP (one-time, on the server):
 #   docker network create shared-proxy
 #
-# RUN (before SSL):
-#   docker compose -f docker-compose.proxy.yml up -d
+# CONFIG SELECTION (set NGINX_CONF in .env):
+#   nginx-ssl.conf           → Both apps, SSL (default – needs certs for both domains)
+#   nginx-ssl-re-only.conf   → RuleEngine only, SSL (needs cert for RE domain only)
+#   nginx-ssl-rcm-only.conf  → RCM only, SSL (needs cert for RCM domain only)
+#   nginx-nossl.conf          → Both apps, HTTP only (before certbot)
 #
-# GET SSL (certbot) – use the domain values from .env:
-#   docker compose -f docker-compose.proxy.yml down          # free port 80
-#   certbot certonly --standalone -d $RE_DOMAIN
-#   certbot certonly --standalone -d $RCM_DOMAIN
-#   # then edit volume below: nginx-nossl.conf  →  nginx-ssl.conf
+# RUN:
 #   docker compose -f docker-compose.proxy.yml up -d
 #
 # STOP:
@@ -28,8 +27,7 @@ services:
       - RE_DOMAIN=${RE_DOMAIN}
       - RCM_DOMAIN=${RCM_DOMAIN}
     volumes:
-      # Mount as template so envsubst replaces ${RE_DOMAIN} / ${RCM_DOMAIN} at startup
-      - ./nginx-proxy/nginx-ssl.conf:/etc/nginx/templates/default.conf.template:ro
+      - ./nginx-proxy/${NGINX_CONF:-nginx-ssl.conf}:/etc/nginx/templates/default.conf.template:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro  
     networks:
       - shared-proxy

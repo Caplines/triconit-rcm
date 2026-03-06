@@ -64,7 +64,9 @@ rule_engine/
 ├── certs/                        # EagleSoft SSL: cacerts.jks, keystore.jks (create per env – see §4)
 ├── nginx-proxy/
 │   ├── nginx-nossl.conf         # Proxy config: HTTP only (before SSL)
-│   └── nginx-ssl.conf           # Proxy config: HTTPS + redirect
+│   ├── nginx-ssl.conf           # Proxy config: HTTPS (both apps)
+│   ├── nginx-ssl-re-only.conf   # Proxy config: HTTPS (RuleEngine only)
+│   └── nginx-ssl-rcm-only.conf  # Proxy config: HTTPS (RCM only)
 ├── ruleengine/
 │   └── Dockerfile               # RuleEngine backend image
 ├── ruleengine-client-app/
@@ -97,16 +99,20 @@ rule_engine/
 |------|--------|----------------|
 | **docker-compose.yml** | RuleEngine stack | `ruleengine-backend` (host 8081→8080), `ruleengine-frontend` (no host ports; joins `shared-proxy`). Uses `ruleengine-network` + `shared-proxy`. |
 | **docker-compose.rcm.yml** | RCM stack | `rcm-backend` (host 8082→8081), `rcm-frontend` (no host ports; joins `shared-proxy`). Uses `rcm-network` + `shared-proxy`. Sets `SPRING_DATASOURCE_*` env for prod DB. |
-| **docker-compose.proxy.yml** | Reverse proxy | `nginx-proxy`: binds 80 and 443, mounts `nginx-proxy/nginx-ssl.conf` (or `nginx-nossl.conf`) and `/etc/letsencrypt`. Joins `shared-proxy` only. |
+| **docker-compose.proxy.yml** | Reverse proxy | `nginx-proxy`: binds 80 and 443, mounts the nginx config selected by `NGINX_CONF` env var (default `nginx-ssl.conf`) and `/etc/letsencrypt`. Joins `shared-proxy` only. |
 
 ### 3.2 Reverse proxy (nginx-proxy)
 
-| File | When to use | Role |
-|------|-------------|------|
-| **nginx-proxy/nginx-nossl.conf** | Before SSL certs | Listens on 80 only; routes by `server_name` to `ruleengine-frontend:80` and `rcm-frontend:80`. |
-| **nginx-proxy/nginx-ssl.conf** | After certbot | Listens 80 (redirect to HTTPS) and 443; TLS for both domains; proxies to same frontend containers. |
+Controlled by the `NGINX_CONF` variable in `.env` — no need to edit compose files.
 
-Proxy resolves `ruleengine-frontend` and `rcm-frontend` by container name on the **shared-proxy** network.
+| File | `NGINX_CONF` value | When to use |
+|------|--------------------|-------------|
+| **nginx-proxy/nginx-ssl.conf** | `nginx-ssl.conf` (default) | Both apps, HTTPS. Needs SSL certs for both domains. Uses lazy resolution — if one app is temporarily down, nginx still runs (returns 502 for that domain). |
+| **nginx-proxy/nginx-ssl-re-only.conf** | `nginx-ssl-re-only.conf` | RuleEngine only, HTTPS. Needs SSL cert for RE domain only. |
+| **nginx-proxy/nginx-ssl-rcm-only.conf** | `nginx-ssl-rcm-only.conf` | RCM only, HTTPS. Needs SSL cert for RCM domain only. |
+| **nginx-proxy/nginx-nossl.conf** | `nginx-nossl.conf` | Both apps, HTTP only (before certbot). Uses lazy resolution. |
+
+Proxy resolves `ruleengine-frontend` and `rcm-frontend` by container name on the **shared-proxy** network via Docker's internal DNS (`127.0.0.11`).
 
 ### 3.3 RuleEngine
 
@@ -239,10 +245,14 @@ The two stacks use separate Docker networks (`ruleengine-network` and `rcm-netwo
 
 ## 6. Deploy / Run Order
 
-From **rule_engine/** (e.g. `~/triconit-rcm/rule_engine`):
+The proxy config is selected by the `NGINX_CONF` variable in `.env`. Set it **before** starting the proxy.
+
+### 6.1 Deploy both apps
 
 ```bash
-# 1. Shared proxy (must be up so frontends can be reached by domain)
+# .env should have: NGINX_CONF=nginx-ssl.conf  (or omit it — that's the default)
+
+# 1. Shared proxy
 docker compose -f docker-compose.proxy.yml up -d
 
 # 2. RuleEngine
@@ -250,6 +260,42 @@ docker compose -f docker-compose.yml up --build -d
 
 # 3. RCM
 docker compose -f docker-compose.rcm.yml up --build -d
+```
+
+With the default `nginx-ssl.conf`, upstreams are resolved lazily (Docker DNS).
+If one app is temporarily down, nginx still runs — requests to that domain return 502
+until the app comes back.  SSL certs for **both** domains must exist.
+
+### 6.2 Deploy RuleEngine only
+
+```bash
+# .env should have: NGINX_CONF=nginx-ssl-re-only.conf
+
+# 1. Proxy (only needs RE cert)
+docker compose -f docker-compose.proxy.yml up -d
+
+# 2. RuleEngine
+docker compose -f docker-compose.yml up --build -d
+```
+
+### 6.3 Deploy RCM only
+
+```bash
+# .env should have: NGINX_CONF=nginx-ssl-rcm-only.conf
+
+# 1. Proxy (only needs RCM cert)
+docker compose -f docker-compose.proxy.yml up -d
+
+# 2. RCM
+docker compose -f docker-compose.rcm.yml up --build -d
+```
+
+### 6.4 Switching between modes
+
+Change `NGINX_CONF` in `.env`, then recreate the proxy:
+
+```bash
+docker compose -f docker-compose.proxy.yml up -d --force-recreate
 ```
 
 **If you run docker compose from the parent directory** (e.g. `~/triconit-rcm`) with `-f rule_engine/docker-compose.yml`, the certs directory must still point at `rule_engine/certs`. Create a `.env` in that parent directory with:
