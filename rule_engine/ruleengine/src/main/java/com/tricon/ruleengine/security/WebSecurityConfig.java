@@ -1,6 +1,8 @@
 package com.tricon.ruleengine.security;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -218,11 +220,16 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins.split("\\s*,\\s*")));
+        List<String> origins = Arrays.stream(allowedOrigins.split("\\s*,\\s*"))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+        configuration.setAllowedOrigins(origins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token","_csrf",CrossDomainCsrfTokenRepository.XSRF_HEADER_NAME));
         configuration.setExposedHeaders(Arrays.asList("x-auth-token",CrossDomainCsrfTokenRepository.XSRF_HEADER_NAME,"_csrf"));
-        configuration.setAllowCredentials(true);
+        // When using "*" as single origin, credentials must be false; with specific origins we can allow credentials
+        configuration.setAllowCredentials(origins.size() != 1 || !"*".equals(origins.get(0)));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
