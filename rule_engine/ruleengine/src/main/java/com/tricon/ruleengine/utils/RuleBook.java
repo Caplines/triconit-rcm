@@ -129,7 +129,9 @@ public class RuleBook {
 				if (userType == Constants.userType_CL && tpList != null) {
 					for (Object obj : tpList) {
 						CommonDataCheck tp = (CommonDataCheck) obj;
-						if (!ivf.getPatientId().equals(tp.getPatient().getId())) {
+						String ivfPatId = ivf.getPatientId() == null ? "" : ivf.getPatientId().trim();
+						String tpPatId = tp.getPatient() == null || tp.getPatient().getId() == null ? "" : tp.getPatient().getId().trim();
+						if (!ivfPatId.equals(tpPatId)) {
 							dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 									messageSource.getMessage("rule1.error.message.patientId",
 											new Object[] { ivf.getPatientId(), str, tp.getPatient().getId() }, locale),
@@ -177,7 +179,8 @@ public class RuleBook {
 			}
 
 			// Added Logic
-
+			// Only show "policy going to be terminated" alert when term date is within a reasonable window.
+			// Far-future dates (e.g. 2199-12-31) are often placeholders for "no termination" and should not trigger the alert.
 			if (proceed && td != null && (!td.trim().equals("") && !td.trim().equalsIgnoreCase("NA"))) {
 				int extraDays = 60;
 				Calendar calendar = new GregorianCalendar();
@@ -188,7 +191,12 @@ public class RuleBook {
 				Date dInterval = calendar.getTime();
 				RuleEngineLogger.generateLogs(clazz, "dInterval --" + dInterval, Constants.rule_log_debug, bw);
 				RuleEngineLogger.generateLogs(clazz, "currentDate --" + currentDate, Constants.rule_log_debug, bw);
-				if (dInterval.compareTo(currentDate) >= 0) {
+				// Skip alert if term date is more than 2 years in the future (placeholder / no real termination)
+				Calendar maxTermForAlert = new GregorianCalendar();
+				maxTermForAlert.setTime(currentDate);
+				maxTermForAlert.add(Calendar.YEAR, 2);
+				boolean termDateWithinReasonableWindow = ivfPlanTermDate.before(maxTermForAlert.getTime()) || ivfPlanTermDate.equals(maxTermForAlert.getTime());
+				if (dInterval.compareTo(currentDate) >= 0 && termDateWithinReasonableWindow) {
 					// Pass with Alert
 					dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 							messageSource.getMessage("rule1.error.message.termPlusExtra", new Object[] { td }, locale),
@@ -220,7 +228,9 @@ public class RuleBook {
 					if (tpList != null) {
 						for (Object obj : tpList) {
 							CommonDataCheck tp = (CommonDataCheck) obj;
-							if (!ivf.getPatientId().equals(tp.getPatient().getId())) {
+							String ivfPatId = ivf.getPatientId() == null ? "" : ivf.getPatientId().trim();
+							String tpPatId = tp.getPatient() == null || tp.getPatient().getId() == null ? "" : tp.getPatient().getId().trim();
+							if (!ivfPatId.equals(tpPatId)) {
 								dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 										messageSource.getMessage("rule1.error.message.patientId",
 												new Object[] { ivf.getPatientId(), str, tp.getPatient().getId() },
