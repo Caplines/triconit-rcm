@@ -50,5 +50,8 @@ EXPOSE 8080
 # Set active profile via environment variable (can be overridden)
 ENV SPRING_PROFILES_ACTIVE=prod
 
+# JVM heap: set via JAVA_OPTS in .env or docker-compose (not hardcoded in image)
+ENV JAVA_OPTS=""
+
 # Run the application
-ENTRYPOINT ["java", "-jar", "/app/ruleengine.jar"]
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/ruleengine.jar"]

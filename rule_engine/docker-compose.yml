@@ -15,6 +15,11 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
       - ES_SSL_CLIENT_TRUSTALL=${ES_SSL_CLIENT_TRUSTALL:-false}
+      - JAVA_OPTS=${JAVA_OPTS:--Xms512m -Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/project/tricon/log/heapdump.hprof}
+    deploy:
+      resources:
+        limits:
+          memory: 3072m
     volumes:
       # Persist application data
       - backend-files:/opt/project/tricon/files
