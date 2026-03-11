@@ -67,6 +67,26 @@ public class EagleSoftQuery {
 	public final static String  patient_query_sec=patient_query
 			+" pat.patient_id  in ("+contstant_REP+") and pat.sec_employer_id=emp.employer_id  ";
 
+	// Fallback: patient table only, same 23-column structure with empty employer columns.
+	// Used when the primary query returns null because the patient has no prim/sec employer
+	// set in EagleSoft (prim_employer_id IS NULL). This returns the patient row so rules
+	// can proceed; employer-dependent rules will then fail with "employer not found" rather
+	// than the misleading "patient not found".
+	public final static String patient_query_fallback =
+			"select pat.patient_id, pat.first_name, pat.last_name, pat.birth_date,"
+			+ " pat.social_security, pat.prim_member_id, pat.status,"
+			+ " pat.responsible_party_status, pat.responsible_party,"
+			+ " '' as maximum_coverage, pat.prim_benefits_remaining,"
+			+ " pat.prim_remaining_deductible, pat.sec_benefits_remaining,"
+			+ " pat.sec_remaining_deductible,"
+			+ " '' as employer_id, '' as employer_name,"
+			+ " '' as feescheduleid, '' as feeschedulename,"
+			+ " '' as covbookheaderid, '' as covbookheadername,"
+			+ " '' as insurancename, '' as employergroupnumber,"
+			+ " pat.sec_member_id"
+			+ " from patient pat"
+			+ " where pat.patient_id in (" + contstant_REP + ")";
+
 	public final static int  patient_query_CL_COUNT=23;
 
 	public final static String  employeemaster_query="select emp.employer_id as employerid,emp.name as employername,"

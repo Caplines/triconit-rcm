@@ -1149,22 +1149,20 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 				t.add(s);
 				esfeess.put("-1",t);
 			}
-			if (espatients == null)
-				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.patient.notfound",
-								new Object[] { new Object[] {
-										"Patient ID-" + ((IVFTableSheet) (ivfMap.get(ivx).get(0)))
-												.getPatientId() } },
-								locale),
-						Constants.FAIL,"","",""));
+		if (espatients == null)
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.patient.notfound",
+							new Object[] { "Patient ID-" + ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getPatientId() },
+							locale),
+					Constants.FAIL,"","",""));
 
-			if (dtoRL != null) {
-				list.addAll(dtoRL);
-				for (TPValidationResponseDto t : dtoRL) {
-					dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
-							t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
-					// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
-				}
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+						t.getResultType(),t.getSurface(),t.getTooth(),t.getServiceCode());
+				// saveReports(authentication, rule, t, dto, (IVFTableSheet) (ivfList.get(0)));
+			}
 			}
 		}
 		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_19,
@@ -2200,15 +2198,13 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		
 		rule = getRulesFromList(rules, Constants.RULE_ID_83);
 		
-		if (espatients == null)
-				dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-						messageSource.getMessage("rule.patient.notfound",
-								new Object[] { new Object[] {
-										"Patient ID-" + ((IVFTableSheet) (ivfMap.get(ivx).get(0)))
-												.getPatientId() } },
-								locale),
-						Constants.FAIL,"","",""));
-		else dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatients.get(patKey),patKey,espatientsHolderPr,espatientsHolderSec, messageSource, rule, bw);
+	if (espatients == null)
+			dtoRL.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.patient.notfound",
+							new Object[] { "Patient ID-" + ((IVFTableSheet) (ivfMap.get(ivx).get(0))).getPatientId() },
+							locale),
+					Constants.FAIL,"","",""));
+	else dtoRL = rb.Rule83(ivfMap.get(ivx).get(0),espatients.get(patKey),patKey,espatientsHolderPr,espatientsHolderSec, messageSource, rule, bw);
 
 		if (dtoRL != null) {
 			list.addAll(dtoRL);

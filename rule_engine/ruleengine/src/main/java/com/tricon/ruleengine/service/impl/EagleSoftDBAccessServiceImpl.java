@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.security.KeyStore;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -124,107 +125,204 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 				}
 			}
 
-			String[] pids = ids.toArray(new String[ids.size()]);
-			RuleEngineLogger.generateLogs(clazz, "PatientIds to query ES: " + String.join(",", pids),
+		String[] pids = ids.toArray(new String[ids.size()]);
+		RuleEngineLogger.generateLogs(clazz, "PatientIds to query ES: " + String.join(",", pids),
+				Constants.rule_log_debug, bw);
+
+		EagleSoftQueryObject q = null;
+		String queryType;
+		if (insuranceType==null) { q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_pri,
+				EagleSoftQuery.patient_query_CL_COUNT); queryType="pri(null)"; }
+		else if (insuranceType!=null && insuranceType.equals(Constants.INSURANCE_TYPE_PRI) || insuranceType.equals("")) { q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_pri,
+				EagleSoftQuery.patient_query_CL_COUNT); queryType="pri"; }
+		else { q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_sec,
+				EagleSoftQuery.patient_query_CL_COUNT); queryType="sec"; }
+
+		org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).info(
+				"[DIAG getPatientData] patientIds=" + String.join(",", pids)
+				+ " insuranceType=" + insuranceType + " queryType=" + queryType
+				+ " esDB=" + (esDB != null ? esDB.getIpAddress() : "NULL"));
+
+		String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
+
+		org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).info(
+				"[DIAG getPatientData] socket result: "
+				+ (data == null ? "NULL (no data returned from ES)"
+					: "data.length=" + data.length() + " | raw=" + (data.length() <= 50 ? data : data.substring(0, 50) + "...")));
+
+		// When the INNER JOIN patient query returns "null" the patient has no employer
+		// set in EagleSoft (prim/sec_employer_id IS NULL). Fall back to a patient-only
+		// query so we still get the patient row; employer-dependent rules will then fail
+		// with "employer not found" rather than the misleading "patient not found".
+		if ("null".equals(data)) {
+			org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).info(
+					"[DIAG getPatientData] Primary query returned null for patientIds=" + String.join(",", pids)
+					+ " - patient likely has no employer in ES. Trying fallback patient-only query.");
+			EagleSoftQueryObject qFallback = prepairEagleSoftQueryObject(
+					pids, EagleSoftQuery.patient_query_fallback, EagleSoftQuery.patient_query_CL_COUNT);
+			data = d.getDataUsingSockets(esDB, qFallback, trustStore, keyStore, password, bw);
+			org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).info(
+					"[DIAG getPatientData] fallback result: "
+					+ (data == null ? "NULL"
+						: "data.length=" + data.length() + " | raw=" + (data.length() <= 100 ? data : data.substring(0, 100) + "...")));
+		}
+
+	if (data != null) {
+		// Use thread-local formatters to avoid the shared static SimpleDateFormat
+		// concurrency bug (SimpleDateFormat is NOT thread-safe).
+		SimpleDateFormat fmtOut = new SimpleDateFormat("MM/dd/yyyy");
+		SimpleDateFormat fmtIn  = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat fmtInTs = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		try {
+			ObjectMapper map = new ObjectMapper();
+			Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
+			});
+
+			// cMap is null when EagleSoft returns "null" (zero-row result from socket server).
+			if (cMap == null) {
+				org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).warn(
+						"[DIAG getPatientData] cMap is NULL after JSON parse - ES returned empty/null response for patientIds="
+						+ String.join(",", pids) + ". Raw data was: [" + data + "]");
+				return returnMap;
+			}
+
+			Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
+
+			// dataMap is null when the JSON has no "dataMap" key (unexpected response format).
+			if (dataMap == null) {
+				org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).warn(
+						"[DIAG getPatientData] dataMap is NULL in cMap keys=" + cMap.keySet()
+						+ " for patientIds=" + String.join(",", pids));
+				return returnMap;
+			}
+
+			org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).info(
+					"[DIAG getPatientData] dataMap row count=" + dataMap.size()
+					+ " | raw snippet=" + (data.length() > 300 ? data.substring(0, 300) : data));
+
+			RuleEngineLogger.generateLogs(clazz, "Patient RAW DATA-" + dataMap.toString(),
 					Constants.rule_log_debug, bw);
-
-			EagleSoftQueryObject q = null;
-			if (insuranceType==null) q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_pri,
-					EagleSoftQuery.patient_query_CL_COUNT);
-			else if (insuranceType!=null && insuranceType.equals(Constants.INSURANCE_TYPE_PRI) || insuranceType.equals(""))q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_pri,
-					EagleSoftQuery.patient_query_CL_COUNT);
-			else q= prepairEagleSoftQueryObject(pids, EagleSoftQuery.patient_query_sec,
-					EagleSoftQuery.patient_query_CL_COUNT);
-			String data = d.getDataUsingSockets(esDB, q, trustStore, keyStore, password, bw);
-			if (data != null) {
-				EagleSoftPatient pat = null;
-				try {
-					ObjectMapper map = new ObjectMapper();
-					// Patient patQ = map.readValue(r, Patient.class);
-					Map<String, Object> cMap = map.readValue(data, new TypeReference<Map<String, Object>>() {
-					});
-
-					RuleEngineLogger.generateLogs(clazz, "Patient RAW DATA-" + cMap.get("dataMap").toString(),
-							Constants.rule_log_debug, bw);
-					Map<String, List<String>> dataMap = (Map<String, List<String>>) cMap.get("dataMap");
-					List<Object> list = null;
-					for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
-						if (entry.getValue() != null) {
-							List<String> des = (List<String>) (entry.getValue());
-							pat = new EagleSoftPatient();
-
+			List<Object> list = null;
+			for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+					if (entry.getValue() != null) {
+						List<String> des = (List<String>) (entry.getValue());
+						EagleSoftPatient pat = new EagleSoftPatient();
+						try {
 							pat.setPatientId(des.get(0));
 							pat.setFirstName(des.get(1));
 							pat.setLastName(des.get(2));
-							pat.setBirthDate(Constants.SIMPLE_DATE_FORMAT
-									.format(Constants.SIMPLE_DATE_FORMAT_IVF.parse((des.get(3)))));
-							pat.setSocialSecurity(des.get(4));
-							pat.setPrimMemberId(des.get(5));
-							pat.setStatus(des.get(6));
-							pat.setResponsiblePartyStatus(des.get(7));
-							pat.setResponsibleParty(des.get(8));
-							pat.setMaximumCoverage(des.get(9));
-							pat.setPrimBenefitsRemaining(des.get(10));
-							pat.setPrimRemainingDeductible(des.get(11));
-							pat.setSecBenefitsRemaining(des.get(12));
-							pat.setSecRemainingDeductible(des.get(13));
-							pat.setEmployerId(des.get(14));
-							pat.setEmployerName(des.get(15));
-							pat.setFeeScheduleId(des.get(16));
-							pat.setFeeScheduleName(des.get(17));
-							pat.setCovBookHeaderId(des.get(18));
-							pat.setCovBookHeaderName(des.get(19));
-							pat.setInsuranceName(des.get(20));
-							pat.setGroupNumber(des.get(21));
-							pat.setSecMemberId(des.get(22));
-							
-							if (pat.getSecMemberId()==null) pat.setSecMemberId("");
-							if (pat.getPrimMemberId()==null) pat.setPrimMemberId("");
-							
-							
-							//
+
+							// Parse birth_date with fallback: try yyyy-MM-dd first,
+							// then yyyy-MM-dd HH:mm:ss (some ES versions return a timestamp).
+							String rawDob = des.get(3);
+							String parsedDob = null;
+							try {
+								parsedDob = fmtOut.format(fmtIn.parse(rawDob));
+							} catch (Exception dobEx) {
+								try {
+									parsedDob = fmtOut.format(fmtInTs.parse(rawDob));
+									RuleEngineLogger.generateLogs(clazz,
+											"Patient DOB parsed with timestamp format for patientId=" + des.get(0) + ", rawDob=" + rawDob,
+											Constants.rule_log_debug, bw);
+								} catch (Exception dobEx2) {
+									parsedDob = rawDob;
+									RuleEngineLogger.generateLogs(clazz,
+											"Patient DOB parse failed for patientId=" + des.get(0) + ", rawDob=" + rawDob + " - using raw value. Error: " + dobEx2.getMessage(),
+											Constants.rule_log_debug, bw);
+								}
+							}
+							pat.setBirthDate(parsedDob);
+
+						pat.setSocialSecurity(des.get(4));
+						pat.setPrimMemberId(des.get(5));
+						pat.setStatus(des.get(6));
+						pat.setResponsiblePartyStatus(des.get(7));
+						pat.setResponsibleParty(des.get(8));
+						// Employer columns (9-21) may be null when patient has no employer
+						// in EagleSoft (LEFT OUTER JOIN returns null for those columns).
+						pat.setMaximumCoverage(safeGet(des, 9));
+						pat.setPrimBenefitsRemaining(des.get(10));
+						pat.setPrimRemainingDeductible(des.get(11));
+						pat.setSecBenefitsRemaining(des.get(12));
+						pat.setSecRemainingDeductible(des.get(13));
+						pat.setEmployerId(safeGet(des, 14));
+						pat.setEmployerName(safeGet(des, 15));
+						pat.setFeeScheduleId(safeGet(des, 16));
+						pat.setFeeScheduleName(safeGet(des, 17));
+						pat.setCovBookHeaderId(safeGet(des, 18));
+						pat.setCovBookHeaderName(safeGet(des, 19));
+						pat.setInsuranceName(safeGet(des, 20));
+						pat.setGroupNumber(safeGet(des, 21));
+						pat.setSecMemberId(des.get(22));
+
+						if (pat.getSecMemberId() == null) pat.setSecMemberId("");
+						if (pat.getPrimMemberId() == null) pat.setPrimMemberId("");
+						if (pat.getEmployerId() == null) pat.setEmployerId("");
+
+							RuleEngineLogger.generateLogs(clazz,
+									"[ES Patient Loaded] patientId=" + pat.getPatientId()
+											+ ", name=" + pat.getFirstName() + " " + pat.getLastName()
+											+ ", dob=" + pat.getBirthDate()
+											+ ", employerId=" + pat.getEmployerId()
+											+ ", feeScheduleId=" + pat.getFeeScheduleId()
+											+ ", primMemberId=" + pat.getPrimMemberId()
+											+ ", secMemberId=" + pat.getSecMemberId(),
+									Constants.rule_log_debug, bw);
+
 							for (Map.Entry<String, List<Object>> entry2 : ivfMap.entrySet()) {
 								if (entry.getValue() != null) {
-
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
 									RuleEngineLogger.generateLogs(clazz,
-											"Matching ES patientId=" + pat.getPatientId().trim() + ", Name="
-													+ pat.getFirstName() + " " + pat.getLastName() + ", DOB="
-													+ pat.getBirthDate() + " WITH IVF patientId="
-													+ ivfSheet.getPatientId() + ", UniqueID=" + ivfSheet.getUniqueID()
-													+ ", Name=" + ivfSheet.getPatientName() + ", DOB="
-													+ ivfSheet.getPatientDOB(),
+											"[Key Match Attempt] ES patientId=" + pat.getPatientId().trim()
+													+ " vs IVF patientId=" + ivfSheet.getPatientId()
+													+ " | IVF UniqueID=" + ivfSheet.getUniqueID()
+													+ " | IVF Name=" + ivfSheet.getPatientName()
+													+ " | IVF DOB=" + ivfSheet.getPatientDOB(),
 											Constants.rule_log_debug, bw);
-									if ((pat.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
-										if (returnMap == null)
-											returnMap = new HashMap<>();
+									if (pat.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId().trim())) {
+										if (returnMap == null) returnMap = new HashMap<>();
 										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
-											// if the key has already been used,
-											// we'll just grab the array list and add the value to it
 											list = (List<Object>) (List<?>) returnMap.get(ivfSheet.getUniqueID());
 											list.add(pat);
 										} else {
-											// if the key hasn't been used yet,
-											// we'll create a new ArrayList<String> object, add the value
-											// and put it in the array list with the new key
 											list = new ArrayList<>();
 											list.add(pat);
 											returnMap.put(ivfSheet.getUniqueID(), list);
 										}
+										RuleEngineLogger.generateLogs(clazz,
+												"[Key Match SUCCESS] ES patientId=" + pat.getPatientId().trim()
+														+ " stored under key=" + ivfSheet.getUniqueID(),
+												Constants.rule_log_debug, bw);
 									}
 								}
 							}
-
-							//
-
+						} catch (Exception rowEx) {
+							RuleEngineLogger.generateLogs(clazz,
+									"[Patient Row Parse ERROR] row=" + des + " error=" + rowEx.getMessage(),
+									Constants.rule_log_debug, bw);
 						}
 					}
-
-				} catch (Exception e) {
-					RuleEngineLogger.generateLogs(clazz, "FEE Schedule DATA- ERROR- " + e.getMessage(),
-							Constants.rule_log_debug, bw);
 				}
+
+			if (returnMap == null) {
+				String msg = "[DIAG getPatientData] returnMap is NULL - no ES patient matched any IVF patient. "
+						+ "IVF patient IDs queried: " + String.join(",", ids);
+				RuleEngineLogger.generateLogs(clazz, msg, Constants.rule_log_debug, bw);
+				org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).warn(msg);
+			} else {
+				String msg = "[DIAG getPatientData] returnMap keys=" + returnMap.keySet().toString();
+				RuleEngineLogger.generateLogs(clazz, msg, Constants.rule_log_debug, bw);
+				org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).info(msg);
 			}
+
+		} catch (Exception e) {
+			RuleEngineLogger.generateLogs(clazz, "[Patient Data FATAL ERROR] " + e.getMessage(),
+					Constants.rule_log_debug, bw);
+			org.apache.logging.log4j.LogManager.getLogger(clazz.getName()).warn(
+					"[DIAG getPatientData] FATAL ERROR parsing response for patientIds="
+					+ String.join(",", pids) + ": " + e.getClass().getSimpleName() + " - " + e.getMessage());
+		}
+	}
 
 		}
 
@@ -860,7 +958,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 								if (entry.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
-									if ((pat.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+									if ((pat.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId().trim()))) {
 										if (returnMap == null)
 											returnMap = new HashMap<>();
 										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
@@ -914,8 +1012,10 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
 		if (ids != null) {
 			for (String trid : ids) {
+				// Trim whitespace so IDs like "11873 " don't silently miss rows in ES.
+				String trimmed = trid != null ? trid.trim() : "";
 				rep = rep + comma + "?";
-				id = id + comma + trid;
+				id = id + comma + trimmed;
 				comma = ",";
 			}
 		}
@@ -948,8 +1048,9 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 
 		if (ids != null) {
 			for (String trid : ids) {
+				String trimmed = trid != null ? trid.trim() : "";
 				rep = rep + comma + "?";
-				id = id + comma + trid;
+				id = id + comma + trimmed;
 				comma = ",";
 			}
 		}
@@ -974,20 +1075,8 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		if (trustAll) {
 			// Local dev: accept any ES server certificate (e.g. server uses different cert than client truststore).
 			try {
-				javax.net.ssl.KeyManager[] kms = null;
-				File keyStoreFile = new File(keyStore);
-				if (keyStoreFile.canRead() && password != null) {
-					char[] pass = password.toCharArray();
-					KeyStore ks = KeyStore.getInstance(KeyStore.getDefaultType());
-					try (FileInputStream fis = new FileInputStream(keyStoreFile)) {
-						ks.load(fis, pass);
-					}
-					KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-					kmf.init(ks, pass);
-					kms = kmf.getKeyManagers();
-				}
 				SSLContext ctx = SSLContext.getInstance("TLS");
-				ctx.init(kms, TRUST_ALL_MANAGERS, null);
+				ctx.init(null, TRUST_ALL_MANAGERS, null);
 				EagleSoftFetchData.setESSSLSocketFactory(ctx.getSocketFactory());
 				RuleEngineLogger.generateLogs(clazz, "ES SSL using trust-all (es.ssl.client.trustAll=true). Do not use in production.", Constants.rule_log_debug, null);
 			} catch (Exception e) {
@@ -1203,7 +1292,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 								if (entry.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
-									if ((perio.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+									if ((perio.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId().trim()))) {
 										if (returnMap == null)
 											returnMap = new HashMap<>();
 										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
@@ -1301,7 +1390,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 								if (entry.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
-									if ((ins.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+									if ((ins.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId().trim()))) {
 										if (returnMap == null)
 											returnMap = new HashMap<>();
 										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
@@ -1388,7 +1477,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 								if (entry.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
-									if ((pref.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+									if ((pref.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId().trim()))) {
 										if (returnMap == null)
 											returnMap = new HashMap<>();
 										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
@@ -1433,11 +1522,11 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		RuleEngineLogger.generateLogs(clazz, "PolicyHolderByPatientId Data Start ", Constants.rule_log_debug, bw);
 
 		if (ivfMap != null) {
-			List<String> ids = null;
+			// ids must be built outside the loop - previously was re-created on each
+			// iteration, leaving only the last patient ID in the list.
+			List<String> ids = new ArrayList<>();
 			for (Map.Entry<String, List<Object>> entry1 : ivfMap.entrySet()) {
-				ids = new ArrayList<>();
 				if (entry1.getValue() != null) {
-
 					IVFTableSheet ivfSheet = ((IVFTableSheet) entry1.getValue().get(0));
 					ids.add(ivfSheet.getPatientId());
 				}
@@ -1481,7 +1570,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 								if (entryd.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
-									if ((pph.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+									if ((pph.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId().trim()))) {
 										if (returnMap == null)
 											returnMap = new HashMap<>();
 										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
@@ -1527,11 +1616,9 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 		RuleEngineLogger.generateLogs(clazz, "PolicyHolderDobByPatientId Data Start ", Constants.rule_log_debug, bw);
 
 		if (ivfMap != null) {
-			List<String> ids = null;
+			List<String> ids = new ArrayList<>();
 			for (Map.Entry<String, List<Object>> entry1 : ivfMap.entrySet()) {
-				ids = new ArrayList<>();
 				if (entry1.getValue() != null) {
-
 					IVFTableSheet ivfSheet = ((IVFTableSheet) entry1.getValue().get(0));
 					ids.add(ivfSheet.getPatientId());
 				}
@@ -1579,7 +1666,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 								if (entryd.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
-									if ((pph.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+									if ((pph.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId().trim()))) {
 										if (returnMap == null)
 											returnMap = new HashMap<>();
 										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
@@ -1668,7 +1755,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 								if (entry.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
-									if ((pat.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+									if ((pat.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId().trim()))) {
 										if (returnMap == null)
 											returnMap = new HashMap<>();
 										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
@@ -1756,7 +1843,7 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 								if (entry.getValue() != null) {
 
 									IVFTableSheet ivfSheet = ((IVFTableSheet) entry2.getValue().get(0));
-									if ((preferredDentist.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId()))) {
+									if ((preferredDentist.getPatientId().trim().equalsIgnoreCase(ivfSheet.getPatientId().trim()))) {
 										if (returnMap == null)
 											returnMap = new HashMap<>();
 										if (returnMap.containsKey(ivfSheet.getUniqueID())) {
@@ -1795,6 +1882,13 @@ public class EagleSoftDBAccessServiceImpl implements EagleSoftDBAccessService {
 	
 	}
 	
+	/** Returns des.get(index) or null if the list is too short or the value is null/empty. */
+	private String safeGet(List<String> des, int index) {
+		if (des == null || index >= des.size()) return null;
+		String v = des.get(index);
+		return (v != null && !v.isEmpty()) ? v : null;
+	}
+
 	private String decodeUnicode(String v) {
 		v=v.replaceAll("\n", "");
 		//System.out.println(v);
