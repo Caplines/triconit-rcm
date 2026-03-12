@@ -31,12 +31,7 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 		switch(queryFor)
 		{
 		    case Constants.QUERY_FOR_RCMCALIM_1:
-		    	finalQuery="select distinct off.name,"
-		    			+ ""
-		    			//+ "SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id"
-		    			+" CASE WHEN  cl.claim_id LIKE '%_arc_%' THEN  SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_',-2), '_', 1) "
-		    			+ " ELSE  SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) END claim_id "
-		    			+ ",cl.patient_id,cl.dos,"+
+		    	finalQuery="select distinct off.name,SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id,cl.patient_id,cl.dos,"+
 		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN prime_sec_submitted_total ELSE sec_submitted_total  END  estimatedamount,"+
 		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN 'Primary' ELSE 'Secondary'   END as claimType,"+
 		    			"CASE  WHEN cl.claim_id LIKE '%_P' THEN pins.name ELSE sins.name   END as insurancename,"+
