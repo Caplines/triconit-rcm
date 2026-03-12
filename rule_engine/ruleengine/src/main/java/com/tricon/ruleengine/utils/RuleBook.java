@@ -9688,7 +9688,7 @@ public class RuleBook {
 								.collect(Collectors.toList());
 						// allDentureToothHisCopy.removeAll(allDentureToothC);
 						// means Already history for same teeth
-						Set<String> docodesforDisplay = new HashSet<>();
+						List<String> docodesforDisplay = new ArrayList<>();
 						RuleEngineLogger.generateLogs(clazz,
 								" extraction  tooth for current TP- " + String.join(",", allExtractionTooth),
 								Constants.rule_log_debug, bw);

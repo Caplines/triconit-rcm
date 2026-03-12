@@ -525,7 +525,7 @@ export class BillingClaimsComponent {
           const result28 = res.data[0].teamsWithSections[0].sectionData.filter((obj: any) => obj.sectionId === 28);
           const result6 = res.data[0].teamsWithSections[0].sectionData.filter((obj: any) => obj.sectionId === 6);
           //debugger;
-          /*if (result28 && result28.length == 0 && result6 && result6.length == 1) {
+          if (result28 && result28.length == 0 && result6 && result6.length == 1) {
             let x: SectonRightDataModel = {
               editAccess: result6[0].editAccess,
               sectionCategory: result6[0].sectionCategory,
@@ -535,7 +535,7 @@ export class BillingClaimsComponent {
               sectionDisplayName: 'Notes Level Validations'
             }
             res.data[0].teamsWithSections[0].sectionData.push(x);
-          }*/
+          }
           console.log(res.data);
           this.sectionLevelData = res.data;
           ths.setClaimSectionRights(res);
@@ -2364,7 +2364,12 @@ export class BillingClaimsComponent {
       this.appService.fetchServiceLevelInfoSection(this.claimUUid, (res: any) => {
         if (res && res.data) {
         // FILTER INVALID SERVICE CODE ROWS (BUSINESS REQUIREMENT)
-        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data =res.data;
+        this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data =
+          res.data.filter((e: any) =>
+            e.serviceCode &&
+            typeof e.serviceCode === 'string' &&
+            e.serviceCode.trim().length === AppConstants.VALID_SERVICE_CODE_LENGTH
+          );
           const resData = this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data;
           if (resData != null && resData.length > 0) {
             this.isBtpFlagTrue = resData[0].flag;
@@ -2416,8 +2421,6 @@ export class BillingClaimsComponent {
 
           this.getTotalServiceLevelInfo(false);
           this.getAllServiceCodes();
-        }else{
-          this.claimSectionModal['SERVICE_LEVEL_INFORMATION'].data = [];
         }
       })
     }
