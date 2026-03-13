@@ -773,8 +773,9 @@
                 <td class="dullRed"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="posterior11"/></xsl:call-template></td>
             </tr>
             <tr>
-                <td class="dullBlue">Does D0120/D0150 Share Freq?</td>
-                <td class="dullBlue" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="shareFr"/></xsl:call-template></td>
+                <td class="dullBlue">D0180 (CPE)</td>
+                <td class="dullBlue align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="d0180"/></xsl:call-template></td>
+                <td class="dullBlue"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="exams6"/></xsl:call-template></td>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D4346(Gingivitis)</td>
                 <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="perioMnt6"/></xsl:call-template></td>
@@ -782,6 +783,17 @@
                 <td class="borderNone"></td>
                 <td class="dullRed">Crown Paid on Date</td>
                 <td class="dullRed" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="prosthetics3"/></xsl:call-template></td>
+            </tr>
+            <tr>
+                <td class="dullBlue">Does D0120/D0150 Share Freq?</td>
+                <td class="dullBlue" colspan="2"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="shareFr"/></xsl:call-template></td>
+                <td class="borderNone"></td>
+                <td class="dullYellow"></td>
+                <td class="dullYellow align-right"></td>
+                <td class="dullYellow"></td>
+                <td class="borderNone"></td>
+                <td class="dullRed"></td>
+                <td class="dullRed" colspan="2"></td>
             </tr>
 			<tr>
                 <td class="dullBlue">Does D0140 Share Frequency with D0120 and D0150?</td>
@@ -1169,8 +1181,25 @@
                </xsl:choose>
                 <td class="borderNone"></td>
                 <td class="dullYellow">D9245 (Sedation)</td>
-                <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations4"/></xsl:call-template></td>
-                <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations4fr"/></xsl:call-template></td>
+                <!-- Red when value is empty, None, na, #N/A, NA, N/A, or - -->
+                <xsl:variable name="sed4Norm" select="translate(normalize-space(sedations4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+                <xsl:choose>
+                    <xsl:when test="normalize-space(sedations4) = '' or $sed4Norm = 'none' or $sed4Norm = 'na' or $sed4Norm = '#n/a' or $sed4Norm = 'n/a' or normalize-space(sedations4) = '-'">
+                        <td class="red align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations4"/></xsl:call-template></td>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <td class="dullYellow align-right"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations4"/></xsl:call-template></td>
+                    </xsl:otherwise>
+                </xsl:choose>
+                <xsl:variable name="sed4frNorm" select="translate(normalize-space(sedations4fr), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
+                <xsl:choose>
+                    <xsl:when test="normalize-space(sedations4fr) = '' or $sed4frNorm = 'none' or $sed4frNorm = 'na' or $sed4frNorm = '#n/a' or $sed4frNorm = 'n/a' or normalize-space(sedations4fr) = '-'">
+                        <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations4fr"/></xsl:call-template></td>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <td class="dullYellow"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="sedations4fr"/></xsl:call-template></td>
+                    </xsl:otherwise>
+                </xsl:choose>
                 <td class="borderNone"></td>
                 <td colspan="3" class="borderNone"></td> 
             </tr>
