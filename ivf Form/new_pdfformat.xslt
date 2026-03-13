@@ -307,12 +307,14 @@
                 <td>Individual Deductible</td>
                 <td><xsl:value-of select="policy9"/></td>
                 <td>Fee Schedule</td>
+                <!-- Highlight red when Fee Schedule is empty, None, na, #N/A, NA, N/A, or - -->
+                <xsl:variable name="feeSchedNorm" select="translate(normalize-space(policy4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
                 <xsl:choose>
-                    <xsl:when test="translate(normalize-space(policy4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'na' or translate(normalize-space(policy4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'n/a' or normalize-space(policy4) = '-' or normalize-space(policy4) = '_' or translate(normalize-space(policy4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = '#na' or translate(normalize-space(policy4), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = '#n/a'">
-                    <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy4"/></xsl:call-template></td>
+                    <xsl:when test="normalize-space(policy4) = '' or $feeSchedNorm = 'none' or $feeSchedNorm = 'na' or $feeSchedNorm = 'n/a' or $feeSchedNorm = '#n/a' or $feeSchedNorm = '#na' or normalize-space(policy4) = '-' or normalize-space(policy4) = '_'">
+                        <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy4"/></xsl:call-template></td>
                     </xsl:when>
                     <xsl:otherwise>
-                    <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy4"/></xsl:call-template></td>
+                        <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy4"/></xsl:call-template></td>
                     </xsl:otherwise>
                 </xsl:choose>
                 <td>Fee of D0120</td>
@@ -338,12 +340,14 @@
                 <td>Ind Ded Remaining</td>
                 <td><xsl:value-of select="policy10"/></td>
                 <td>Coverage Book</td>
+                <!-- Highlight red when Coverage Book is empty, None, na, #N/A, NA, N/A, or - -->
+                <xsl:variable name="covBookNorm" select="translate(normalize-space(policy16), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"/>
                 <xsl:choose>
-                    <xsl:when test="translate(normalize-space(policy16), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'na' or translate(normalize-space(policy16), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = 'n/a' or normalize-space(policy16) = '-' or normalize-space(policy16) = '_' or translate(normalize-space(policy16), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = '#na' or translate(normalize-space(policy16), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz') = '#n/a'">
-                    <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy16"/></xsl:call-template></td>
+                    <xsl:when test="normalize-space(policy16) = '' or $covBookNorm = 'none' or $covBookNorm = 'na' or $covBookNorm = 'n/a' or $covBookNorm = '#n/a' or $covBookNorm = '#na' or normalize-space(policy16) = '-' or normalize-space(policy16) = '_'">
+                        <td class="red"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy16"/></xsl:call-template></td>
                     </xsl:when>
                     <xsl:otherwise>
-                    <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy16"/></xsl:call-template></td>
+                        <td class="blackClr"><xsl:call-template name="replaceZero"><xsl:with-param name="value" select="policy16"/></xsl:call-template></td>
                     </xsl:otherwise>
                 </xsl:choose>
                 <td>Fee of D2391</td>
