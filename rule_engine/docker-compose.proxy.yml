@@ -25,7 +25,9 @@ services:
       - "443:443"
     environment:
       - RE_DOMAIN=${RE_DOMAIN}
+      - RE_SERVER_NAME=${RE_SERVER_NAME}
       - RCM_DOMAIN=${RCM_DOMAIN}
+      - RCM_SERVER_NAME=${RCM_SERVER_NAME}
     volumes:
       - ./nginx-proxy/${NGINX_CONF:-nginx-ssl.conf}:/etc/nginx/templates/default.conf.template:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro  

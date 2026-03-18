@@ -54,6 +54,7 @@ services:
     restart: unless-stopped
     environment:
       - RCM_DOMAIN=${RCM_DOMAIN}
+      - RCM_SERVER_NAME=${RCM_SERVER_NAME}
     # No host port binding – nginx-proxy (docker-compose.proxy.yml) owns 80/443
     # and routes traffic here via the shared-proxy network.
     expose:
