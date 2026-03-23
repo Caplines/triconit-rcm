@@ -2579,12 +2579,24 @@
                                                     *ngIf="(claimRcm.claimType|lowercase) == 'ortho' ">
                                                     <label for="paymentFrequency">Payment Frequency &nbsp;<span
                                                             class="text-danger">*</span></label>
-                                                    <input type="text" id="paymentFrequency"
+                                                    <!-- <input type="text" id="paymentFrequency"
                                                         *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
                                                         [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['paymentFrequency']"
                                                         class="form-control"
+                                                        [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['paymentFrequency']}"> -->
+                                                    <select id="paymentFrequency" class="form-control"
+                                                        *ngIf="claimSectionModal?.CLAIM_LEVEL_INFORMATION"
+                                                        [disabled]="!(checkForSectionAccess(sectionIds['CLAIM_LEVEL_INFORMATION']['sectionId'],'edit') && this.claimRcm.allowEdit  && claimRcm.currentState==0)"
+                                                        [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['paymentFrequency']"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['paymentFrequency']}">
+                                                        <option value="">Select</option>
+                                                        <option value="Monthly">Monthly</option>
+                                                        <option value="Quarterly">Quarterly</option>
+                                                        <option value="Half - yearly">Half - yearly</option>
+                                                        <option value="Yearly">Yearly</option>
+                                                        <option value="Other">Other</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                             <div class="col-md-4 mb-2">
@@ -2997,8 +3009,8 @@
                                                                 [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus']"
                                                                 [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus']}">
                                                                 <option value="">Select</option>
-                                                                <option value="Need Additional Information">Need
-                                                                    Additional Information</option>
+                                                                <option value="Additional Information Required">
+                                                                    Additional Information Required</option>
                                                                 <option value="Denied">Denied</option>
                                                                 <option value="Paid">Paid</option>
                                                                 <option value="Partial Paid">Partial Paid</option>
@@ -3739,6 +3751,9 @@
                                                                 <option value="Call">Call</option>
                                                                 <option value="Text">Text</option>
                                                                 <option value="Email">Email</option>
+                                                                <option value="Chat">Chat</option>
+                                                                <option value="IVR/Fax">IVR/Fax</option>
+                                                                <option value="Office">Office</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -3995,6 +4010,15 @@
                                                                         Received Payment Before Collection Efforts
                                                                     </option>
                                                                     <option value="Other">Other</option>
+                                                                    <option value="Chargeback">Chargeback</option>
+                                                                    <option
+                                                                        value="Pending with the RCM Operation teams">
+                                                                        Pending with the RCM Operation teams
+                                                                    </option>
+                                                                    <option
+                                                                        value="Preparation/Impression Done - Service Not Delivered">
+                                                                        Preparation/Impression Done - Service Not
+                                                                        Delivered</option>
                                                                 </select>
                                                             </div>
                                                         </div>
@@ -4349,6 +4373,10 @@
                                                         <option value="Incorrect Billing">Incorrect Billing</option>
                                                         <option value="Incorrect patient/Insurance">Incorrect
                                                             patient/Insurance</option>
+                                                        <option value="Incorrect Billing">Incorrect Billing</option>
+                                                        <option value="Incorrect Patient or Insurance Information">
+                                                            Incorrect Patient or Insurance Information
+                                                        </option>
                                                     </select>
                                                     <!-- <select id="reasonForRebilling" class="form-control"
                                                     *ngIf="claimSectionModal?.REQUEST_REBILLING"
