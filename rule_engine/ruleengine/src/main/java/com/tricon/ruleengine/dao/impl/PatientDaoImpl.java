@@ -537,7 +537,7 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			
 			String orderBy=" order by p.created_date desc ";
 			if (dto.getForSelantData()==null) dto.setForSelantData("");
-			if (dto.getForSelantData().equals("sealant")) orderBy= " group by pd.id order by STR_TO_DATE( pd.general_date_iv_wasdone, '%Y-%m-%d') desc limit 1 ";
+			if (dto.getForSelantData().equals("sealant")) orderBy= " group by pd.id, pd2.id order by STR_TO_DATE( pd.general_date_iv_wasdone, '%Y-%m-%d') desc limit 1 ";
 			
 			String query = "select p.id as pidDB "+status +","+queryPatAll
 					//+ " as  " //add new Columns here

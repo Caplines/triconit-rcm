@@ -432,7 +432,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 		List<CaplineIVFFormDto> allO=new ArrayList<>();
 		for (ScrappingUserDataInputDto pt:pts) {
 			//map.put(pt.getPatientId(),null);
-			patIds.add(pt.getPatientId());
+			patIds.add(pt.getPatientId() != null ? pt.getPatientId().trim() : pt.getPatientId());
 			d.setPatientIdDB(pt.getPatientId());
 			d.setForSelantData("sealant");
 			try {
@@ -595,7 +595,7 @@ public class ScrappingServiceImpl implements ScrappingService {
 				  //treatmentPlanService.saveReportsListBatch(authentication, rules, ivfSheet, sv, off, iVFormType,mode);
 				
 			}
-			map.put(cap.getBasicInfo21(), list);
+			map.put(cap.getBasicInfo21() != null ? cap.getBasicInfo21().trim() : cap.getBasicInfo21(), list);
 			if (list.size()>0) {
 				  treatmentPlanService.saveReportsListBatch(authentication, rules, ivfSheet, list, off, iVFormType,mode);
 			  }
