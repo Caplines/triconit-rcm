@@ -5,7 +5,10 @@ import java.util.Optional;
 
 public enum AgeBracketEnum {
 
-	AGE_BRACKET_0_30("0-30", 1,30,0), AGE_BRACKET_31_60("31-60", 2,31,60), AGE_BRACKET_61_90("61-90", 3,61,90), AGE_BRACKET_90("90+", 4,90,0);
+	AGE_BRACKET_0_30("0-30", 1,30,0),
+    AGE_BRACKET_31_60("31-60", 2,31,60),
+    AGE_BRACKET_61_90("61-90", 3,61,90),
+    AGE_BRACKET_90("90+", 4,90,0);
 
 	final private String ageCategory;
 	final private int value;

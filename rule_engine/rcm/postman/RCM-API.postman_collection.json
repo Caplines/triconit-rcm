@@ -1,0 +1,282 @@
+{
+	"info": {
+		"_postman_id": "rcm-api-collection-001",
+		"name": "RCM API",
+		"description": "Rule Engine RCM Spring Boot Application - API Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{ "key": "base_url", "value": "http://localhost:8081" },
+		{ "key": "token", "value": "" },
+		{ "key": "c", "value": "" },
+		{ "key": "r", "value": "" },
+		{ "key": "t", "value": "1" }
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [ { "key": "token", "value": "{{token}}", "type": "string" } ]
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"auth": { "type": "noauth" },
+			"item": [
+				{
+					"name": "Login (with captcha)",
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"\",\n  \"password\": \"\",\n  \"token\": \"\"\n}"
+						},
+						"url": "{{base_url}}/account/login"
+					}
+				},
+				{
+					"name": "Login (no captcha - testing)",
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"\",\n  \"password\": \"\"\n}"
+						},
+						"url": "{{base_url}}/account/l_abc",
+						"event": [
+							{
+								"listen": "test",
+								"script": {
+									"exec": [
+										"if (pm.response.code === 200) {",
+										"    var json = pm.response.json();",
+										"    if (json.data && json.data.token) {",
+										"        pm.collectionVariables.set('token', json.data.token);",
+										"    }",
+										"}"
+									],
+									"type": "text/javascript"
+								}
+							}
+						]
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"request": {
+						"method": "GET",
+						"header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+						"url": "{{base_url}}/refresh"
+					}
+				},
+				{
+					"name": "Forgot Password",
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"\"\n}"
+						},
+						"url": "{{base_url}}/forgotPassword"
+					}
+				},
+				{
+					"name": "Bootstrap Super Admin (no token)",
+					"request": {
+						"method": "POST",
+						"header": [ { "key": "Content-Type", "value": "application/json" } ],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"firstName\": \"\",\n  \"lastName\": \"\",\n  \"email\": \"\",\n  \"password\": \"\"\n}"
+						},
+						"url": "{{base_url}}/auth/bootstrap-super-admin"
+					}
+				}
+			]
+		},
+		{
+			"name": "RCM - Claims",
+			"item": [
+				{ "name": "Fetch claims from source", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/fetch-claims-from-source" } },
+				{ "name": "Fetch fresh claims logs", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-fresh-claims-logs/{{uuid}}" } },
+				{ "name": "Fetch remote lite rejections", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-remote-lite-rej" } },
+				{ "name": "Fetch billing claims", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-billing-claims/{{billType}}" } },
+				{ "name": "Fetch fresh claims detail", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-fresh-claims-det/{{type}}/{{subType}}" } },
+				{ "name": "Unbilled claims", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/unbilled-claims" } },
+				{ "name": "Fetch fresh claims detail lead", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-fresh-claims-det-lead/{{type}}/{{subType}}" } },
+				{ "name": "Assign claim with remark", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/assign-claim-with-remark" } },
+				{ "name": "Fetch claims log assign", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/fetch-claims-log-assign" } },
+				{ "name": "Claim production", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/bill/claim-production" } },
+				{ "name": "Fetch individual claim", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetchindclaim/{{uuid}}" } },
+				{ "name": "Fetch service code validation", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetchservicecodeval/{{uuid}}" } },
+				{ "name": "Get all clients", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/allclients" } },
+				{ "name": "Issue claims", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/issueClaims/{{uuid}}" } },
+				{ "name": "Rules data", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/rules-data" } },
+				{ "name": "IVF data", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/ivfdata/{{claimuuid}}" } },
+				{ "name": "Remarks other team", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/remarks-other/{{claimuuid}}" } },
+				{ "name": "Claim steps", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/claimstep/{{claimuuid}}" } },
+				{ "name": "Save remarks", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/save-remarks" } },
+				{ "name": "Fetch claim rule remarks", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-claim-rule-remarks/{{claimuuid}}" } },
+				{ "name": "Save claim rule remarks", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/save-claim-rule-remarks" } },
+				{ "name": "Fetch claim rule val data", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-claim-rule-val-data/{{claimuuid}}" } },
+				{ "name": "Save claim rule val datas", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/save-claim-rule-val-datas" } },
+				{ "name": "Fetch claim sub det", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-claim-sub-det/{{claimuuid}}" } },
+				{ "name": "Save claim sub det", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/save-claim-sub-det" } },
+				{ "name": "Fetch claim notes", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-claim-notes/{{claimuuid}}" } },
+				{ "name": "Save claim notes", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/save-claim-notes" } },
+				{ "name": "Fetch claim remark", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetch-claim-remark/{{claimuuid}}" } },
+				{ "name": "Save full claim", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/save-full-claim" } },
+				{ "name": "Assign other team", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/assign-other-team" } },
+				{ "name": "Assign to TL", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/assign_to_tl" } },
+				{ "name": "Run auto rules", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/run-auto-rules/{{claimuuid}}/{{reRun}}" } },
+				{ "name": "All pendency", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/allpendency/{{companyUuid}}" } },
+				{ "name": "Update IVF id", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/updateivfid" } },
+				{ "name": "Update IVF id delete", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/updateivfid/delete" } },
+				{ "name": "Save archive claims", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/save-archive-claims" } },
+				{ "name": "Archive claims", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/archiveClaims/{{uuid}}/{{pageNumber}}" } },
+				{ "name": "All user clients", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/alluserclients" } },
+				{ "name": "Archive unsub", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/archiveunsub" } },
+				{ "name": "Unarchive sub", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/unarchivesub" } },
+				{ "name": "Save unarchive claims", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/save-unarchive-claims" } },
+				{ "name": "Search params", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/searchparams" } },
+				{ "name": "Unarchive claims", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/unarchive-claims" } },
+				{ "name": "Others teams TL exist", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/others-teams-tl-exit" } },
+				{ "name": "Claim pendency", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/claim/pendency" } },
+				{ "name": "User section permission", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/claim/user-section-permission" } },
+				{ "name": "Save section info", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/save-section-info" } },
+				{ "name": "Save EOB link", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/saveeoblink" } },
+				{ "name": "Validate secondary claim creation", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/validate-secondary-claim-creation/{{claimUuid}}" } },
+				{ "name": "Reconciliation", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/reconciliation" } },
+				{ "name": "Claim transfer to aging", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/claim-transfer-to-aging" } },
+				{ "name": "TL exist by claims", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/tl-exist-by-claims" } },
+				{ "name": "Assign unassign reassign claim by TL", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/assign_unassign_reassign_claimbytl" } },
+				{ "name": "Assign unbilled claim admin", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/assign_unbilled_claim_admin" } },
+				{ "name": "Users by team", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/usersbyTeam" } },
+				{ "name": "Fetch due balance resp party", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/fetchdueBalresponpar/{{uuid}}" } }
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{ "name": "Update password", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/updatepassword" } },
+				{ "name": "Users by role TL", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/user/users_by_role/tl" } },
+				{ "name": "Get offices", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/getOffices" } },
+				{ "name": "Get offices by client", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/getOffices/{{cid}}" } },
+				{ "name": "Other teams", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/user/other_teams" } },
+				{ "name": "TP link data", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/tp-link-data/{{claimUuid}}" } },
+				{ "name": "Issue claim counts", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/issue-claim-counts" } },
+				{ "name": "Gsheet link", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/gsheet-link" } },
+				{ "name": "Archive claim counts", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/archive-claim-counts" } }
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{ "name": "Register", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"\",\n  \"lastName\": \"\",\n  \"email\": \"\",\n  \"password\": \"\",\n  \"userRole\": \"SUPER_ADMIN\",\n  \"teamId\": [8],\n  \"companyUuid\": []\n}" }, "url": "{{base_url}}/register" } },
+				{ "name": "Reset password", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/resetpassword" } },
+				{ "name": "Find user", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/finduser" } },
+				{ "name": "Get all users", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/getAllUsers/{{companyUuid}}/{{pageNumber}}" } },
+				{ "name": "Reset status", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/resetstatus" } },
+				{ "name": "Find user by detail", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/finduserbydetail/{{query}}" } },
+				{ "name": "Get organization", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/getOrganization" } },
+				{ "name": "Get client details", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/getClientDetails" } },
+				{ "name": "Add office", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/addOffice" } },
+				{ "name": "Office by company", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/officeByCompany/{{uuid}}" } },
+				{ "name": "Edit office", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/editOffice" } },
+				{ "name": "Add client", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/addClient" } },
+				{ "name": "Edit client", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/editClient" } },
+				{ "name": "Edit user info", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/edit-user-info" } },
+				{ "name": "Edit user role", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/edit-user-role" } },
+				{ "name": "Edit user client", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/edit-user-client" } },
+				{ "name": "Edit user team", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/edit-user-team" } },
+				{ "name": "Find TL by client", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/find-tl-by-client" } },
+				{ "name": "User clients", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/user-clients/{{uuid}}" } },
+				{ "name": "Unopened claim", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/unopenedclaim/{{uuid}}" } },
+				{ "name": "Update unopened claim status", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/update-unopenedclaim-status" } }
+			]
+		},
+		{
+			"name": "Master",
+			"item": [
+				{ "name": "Get offices", "request": { "method": "GET", "url": "{{base_url}}/master/getoffices" } },
+				{ "name": "Get teams", "request": { "method": "GET", "url": "{{base_url}}/master/getteams" } },
+				{ "name": "Get roles", "request": { "method": "GET", "url": "{{base_url}}/master/getroles" } },
+				{ "name": "Get clients", "request": { "method": "GET", "url": "{{base_url}}/master/getClients" } },
+				{ "name": "Get sections", "request": { "method": "GET", "url": "{{base_url}}/master/get-sections" } }
+			]
+		},
+		{
+			"name": "Manage Office",
+			"item": [
+				{ "name": "Assign office", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/assignOffice" } },
+				{ "name": "Users team", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/users/team" } }
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{ "name": "Get clients with offices", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/get-clients-with-offices" } },
+				{ "name": "Search claims", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/search-claims" } },
+				{ "name": "Search claims PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/search-claims/pdf" } }
+			]
+		},
+		{
+			"name": "Claim Sections",
+			"item": [
+				{ "name": "Manage claim client section", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/manage-claim-client-section" } },
+				{ "name": "Claim client with section", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/claim-client-with-section" } },
+				{ "name": "Claim user with section", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/claim-user-with-section/{{uuid}}" } },
+				{ "name": "Manage claim user section", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/manage-claim-user-section" } },
+				{ "name": "Get claim level info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-claim-level-info/{{claimUuid}}/{{withTeam}}" } },
+				{ "name": "Get appeal level info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-appeal-level-info/{{claimUuid}}/{{withTeam}}" } },
+				{ "name": "Get patient payment info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-patient-payment-info/{{claimUuid}}/{{withTeam}}" } },
+				{ "name": "Get EOB info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-eob-info/{{claimUuid}}" } },
+				{ "name": "Remove EOB data", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/remove-eob-data" } },
+				{ "name": "Get insurance payment info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-insurance-payment-info/{{claimUuid}}/{{withTeam}}" } },
+				{ "name": "Get service level info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-service-level-info/{{claimUuid}}" } },
+				{ "name": "Get follow-up info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-follow-up-info/{{claimUuid}}" } },
+				{ "name": "Get patient statement info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-patient-statement-info/{{claimUuid}}/{{withTeam}}" } },
+				{ "name": "Get next action required info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-next_action-required-info/{{claimUuid}}/{{withTeam}}" } },
+				{ "name": "Get patient communication info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-patient-communication-info/{{claimUuid}}" } },
+				{ "name": "Get collection agency info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-collection-agency-info/{{claimUuid}}/{{withTeam}}" } },
+				{ "name": "Request rebilling info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/request-rebilling-info/{{claimUuid}}" } },
+				{ "name": "Rebilling info", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/rebiiling-info/{{claimUuid}}" } },
+				{ "name": "Validate recreate claim", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/validate-recreate-claim" } }
+			]
+		},
+		{
+			"name": "Attachments",
+			"item": [
+				{ "name": "Upload claim attachment", "request": { "method": "POST", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "formdata", "formdata": [ { "key": "claimUuid", "value": "" }, { "key": "attachmentTypeId", "value": "1" }, { "key": "file", "type": "file", "src": "" } ] }, "url": "{{base_url}}/api/claim-attachment" } },
+				{ "name": "Get attachments", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-attachments/{{claimUuid}}" } },
+				{ "name": "Remove claim attachment", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{\"claimUuid\": \"\", \"claimAttachmentId\": null}" }, "url": "{{base_url}}/api/remove-claim-attachment" } },
+				{ "name": "Get attachments count", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/get-attachments-count/{{claimUuid}}" } }
+			]
+		},
+		{
+			"name": "Download",
+			"item": [
+				{ "name": "List of claim PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/list-of-claim/d/pdf" } },
+				{ "name": "Claim PDF", "request": { "method": "GET", "header": [ { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "url": "{{base_url}}/api/claim/d/pdf/{{uuid}}" } },
+				{ "name": "Issue claim PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/issue-claim/d/pdf" } },
+				{ "name": "Pendancy PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/pendancy/d/pdf" } },
+				{ "name": "Claim details PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/claim-details/d/pdf" } },
+				{ "name": "Production PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/production/d/pdf" } },
+				{ "name": "All pendancy PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/allPendancy/d/pdf" } },
+				{ "name": "TP link PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/tp-link/d/pdf" } },
+				{ "name": "IVF PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/ivf/d/pdf" } },
+				{ "name": "Download attachment file", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/download-attachment-file" } },
+				{ "name": "Other teams work PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/other-teams-work/d/pdf" } },
+				{ "name": "Search claim PDF", "request": { "method": "POST", "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "c", "value": "{{c}}" }, { "key": "r", "value": "{{r}}" }, { "key": "t", "value": "{{t}}" } ], "body": { "mode": "raw", "raw": "{}" }, "url": "{{base_url}}/api/search-claim/d/pdf" } }
+			]
+		},
+		{
+			"name": "Other",
+			"item": [
+				{ "name": "View EOB link", "request": { "method": "GET", "url": "{{base_url}}/api/vieweoblink/{{name}}" } },
+				{ "name": "Test SV Sheet", "request": { "method": "GET", "url": "{{base_url}}/api/testSVSheet" } }
+			]
+		}
+	]
+}
