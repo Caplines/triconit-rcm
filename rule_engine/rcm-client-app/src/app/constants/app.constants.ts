@@ -162,7 +162,9 @@ export class AppConstants {
         { "id": 23, "value": "X-ray: Pano" },
         { "id": 24, "value": "X-ray: Periapical" },
         { "id": 25, "value": "X-ray: Post-Op" },
-        { "id": 26, "value": "X-ray: Pre-Op" }]
+        { "id": 26, "value": "X-ray: Pre-Op" },
+        { "id": 27, "value": "COB Form" },
+        { "id": 28, "value": "Refferal form" }]
 
 
     public ARCHIVE_PREFIX: string = "arc_";
@@ -242,7 +244,16 @@ export class AppConstants {
         { reasonName: "Other" },
         { reasonName: "Pre-auth Denied" },
         { reasonName: "Payment issued to patient" },
-        { reasonName: "N/A" }
+        { reasonName: "N/A" },
+        { reasonName: "Pre Auth Missing" },
+        { reasonName: "Additional information required" },
+        { reasonName: "Dependent Not Covered" },
+        { reasonName: "Plan Limitation" },
+        { reasonName: "Untimely filing" },
+        { reasonName: "Need Primary EOB" },
+        { reasonName: "Policy Termed" },
+        { reasonName: "Member Not Found" },
+        { reasonName: "Invalid or Missing Claim Details" }
 
     ];
 
@@ -269,6 +280,15 @@ export class AppConstants {
         { name: "Payment Issued to Patient" },
         { name: "EOB Requested" },
         { name: "Appeal Upheld" },
+        { name: "Appeal Upheld" },
+        { name: "Remotelite Rejection" },
+        { name: "Claim not received by insurance" },
+        { name: "Appeal Approved" },
+        { name: "Appeal not on file" },
+        { name: "Appeal Partially Paid" },
+        { name: "Information required from Patient" },
+        { name: "Prosthetic code not delivered" },
+        { name: "Additional information required" },
 
     ];
 
@@ -296,12 +316,18 @@ export class AppConstants {
         { name: "Need to Check Payment Status" },
         { name: "Need to Check Claim Status on Web" },
         { name: "Need to Bill Secondary Insurance" },
-        { name: "Need Additional Information For Claim" },
         { name: "Need to follow up for Void Request" },
         { name: "Need to get Provider Credentialed" },
         { name: "Need to call Insurance for reprocessing" },
         { name: "Need to Bill" },
         { name: "Need to followup on void" },
+        { name: "Need to Bill" },
+        { name: "Need to follow up on void" },
+        { name: "Need to call patient for Information" },
+        { name: "Need to Fix the Walkout" },
+        { name: "Awaiting prosthetic code delivery" },
+        { name: "Need to Bill to Patient" },
+        { name: "Need to Adjust Off" },
 
     ]
 
@@ -337,6 +363,14 @@ export class AppConstants {
     };
 
     public requestRebillingRequirement: any = [
+        {
+            name: 'Pre-Auth',
+            checked: false
+        },
+        {
+            name: 'Clinical / Insurance Documents',
+            checked: false
+        },
         {
             name: 'Perio Chart',
             checked: false
@@ -413,6 +447,8 @@ export class AppConstants {
         { reasonName: "Other" },
         { reasonName: "Pre-auth Denied" },
         { reasonName: "Payment issued to patient" },
+        { reasonName: "Age Limitation" },
+        {reasonName: "Dependent Not Covered" },
     ];
 
     public adjustmentReason: any = [
@@ -439,6 +475,8 @@ export class AppConstants {
         { reasonName: "Interest Receivced" },
         { reasonName: "Pre-auth Missing" },
         { reasonName: "Exam & Xray Denial" },
+        { reasonName: "INSADJ - 25" },
+        { reasonName: "INSADJ - 26" },
 
     ];
 

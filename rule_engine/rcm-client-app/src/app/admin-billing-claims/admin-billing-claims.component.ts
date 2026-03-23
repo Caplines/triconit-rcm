@@ -145,7 +145,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     if (this.isFilterValueExist) {
       this.filteredColumnData.ageBracket = [];
     }
-    this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' }, { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '90+' });
+    this.filteredColumnData.ageBracket.push({ 'checked': true, 'ageBracket': '0-30' }, { 'checked': true, 'ageBracket': '31-60' }, { 'checked': true, 'ageBracket': '61-90' }, { 'checked': true, 'ageBracket': '91-180' },{ 'checked': true, 'ageBracket': '181-365' },{ 'checked': true, 'ageBracket': '365+' });
     this.isFilterValueExist = true;
     this.isFilterAllSelected.ageBracket = true;
   }
@@ -1033,7 +1033,12 @@ export class AdminBillingClaimsComponent implements OnInit {
         let dos: any = new Date(e.dos);
         const diffTime = Math.abs(currentDate - dos);
         let diffDays: any = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        e.ageBracket = (diffDays <= 30) ? `0-30` : (diffDays > 30 && diffDays <= 60) ? `31-60` : (diffDays > 60 && diffDays <= 90) ? `61-90` : (diffDays > 90) ? `90+` : '';
+        e.ageBracket = (diffDays <= 30) ? `0-30` : 
+        (diffDays > 30 && diffDays <= 60) ? `31-60` : 
+        (diffDays > 60 && diffDays <= 90) ? `61-90` : 
+        (diffDays > 90 && diffDays <= 180) ? '91-180' :
+        (diffDays > 180 && diffDays <= 365) ? '181-365' :
+        (diffDays > 365) ? '365+' : '';
       }
       if (e.claimId) {
         e.newClaimId = e.claimId.replace('_P', "").replace('_S', "")
