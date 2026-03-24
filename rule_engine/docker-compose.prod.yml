@@ -1,0 +1,85 @@
+# ============================================================
+# RuleEngine — PRODUCTION
+# Images pulled from Docker Hub. No builds happen here.
+#
+# Usage:
+#   docker compose -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# To update a single service:
+#   docker compose -f docker-compose.prod.yml pull backend
+#   docker compose -f docker-compose.prod.yml up -d --no-deps backend
+# ============================================================
+
+services:
+  backend:
+    image: ${DOCKER_HUB_REPO}:re-backend-${RE_VERSION:-latest}
+    container_name: ruleengine-backend
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
+    ports:
+      - "8081:8080"
+    expose:
+      - "8080"
+    env_file: .env
+    environment:
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - ES_SSL_CLIENT_TRUSTALL=${ES_SSL_CLIENT_TRUSTALL:-false}
+      - JAVA_OPTS=${JAVA_OPTS:--Xms512m -Xmx2048m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/project/tricon/log/heapdump.hprof}
+    deploy:
+      resources:
+        limits:
+          memory: 3072m
+    volumes:
+      - backend-files:/opt/project/tricon/files
+      - backend-logs:/opt/project/tricon/log
+      - ${CERTS_PATH:-./certs}:/opt/project/tricon/client:ro
+      - backend-chrome:/opt/project/tricon/chrome
+    networks:
+      - ruleengine-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+  frontend:
+    image: ${DOCKER_HUB_REPO}:re-frontend-${RE_VERSION:-latest}
+    container_name: ruleengine-frontend
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
+    environment:
+      - RE_DOMAIN=${RE_DOMAIN}
+      - RE_SERVER_NAME=${RE_SERVER_NAME}
+    expose:
+      - "80"
+    depends_on:
+      - backend
+    networks:
+      - ruleengine-network
+      - shared-proxy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost > /dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  ruleengine-network:
+    driver: bridge
+  shared-proxy:
+    external: true
+
+volumes:
+  backend-files:
+  backend-logs:
+  backend-chrome:
