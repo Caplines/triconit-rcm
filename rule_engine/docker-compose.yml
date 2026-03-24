@@ -7,6 +7,11 @@ services:
       dockerfile: rule_engine/ruleengine/Dockerfile
     container_name: ruleengine-backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
     ports:
       - "8081:8080"  # Map to 8081 to avoid conflict with other services
     expose:
@@ -48,6 +53,11 @@ services:
         ENV: prod  # Use 'local' for development, 'prod' for production
     container_name: ruleengine-frontend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
     environment:
       - RE_DOMAIN=${RE_DOMAIN}
       - RE_SERVER_NAME=${RE_SERVER_NAME}

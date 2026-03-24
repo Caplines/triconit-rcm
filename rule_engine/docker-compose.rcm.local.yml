@@ -14,6 +14,11 @@ services:
     image: eclipse-temurin:8-jdk
     container_name: rcm-backend
     working_dir: /app
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
     ports:
       - "8082:8081"
     env_file: .env
@@ -47,6 +52,11 @@ services:
         ENV: local
         BUILD_CONFIG: docker
     container_name: rcm-frontend
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
     ports:
       - "4201:80"  # Port 4201 to avoid conflict with ruleengine-frontend on 4200
     depends_on:

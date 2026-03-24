@@ -18,6 +18,11 @@ services:
       dockerfile: rcm/Dockerfile
     container_name: rcm-backend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "5"
     ports:
       - "8082:8081"  # Host 8082 → container 8081 (avoids conflict with ruleengine on 8081)
     expose:
@@ -52,6 +57,11 @@ services:
         BUILD_CONFIG: production
     container_name: rcm-frontend
     restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "3"
     environment:
       - RCM_DOMAIN=${RCM_DOMAIN}
       - RCM_SERVER_NAME=${RCM_SERVER_NAME}
