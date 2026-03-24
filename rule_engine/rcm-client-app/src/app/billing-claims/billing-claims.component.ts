@@ -562,6 +562,18 @@ export class BillingClaimsComponent {
     return false;
   }
 
+  get initialDenialReasons() {
+    return this.smilePoint 
+        ? this.appConstants.claimInitialDenialReason 
+        : this.appConstants.extClaimInitialDenialReason;
+  }
+
+  get nextActionRequired() { 
+    return this.smilePoint
+    ? this.appConstants.nextActionStatusRcm
+    : this.appConstants.extNextActionStatusRcm;
+  }
+
   fetchClaimsByUuid(uuid: string) {
     let ths = this;
     this.needToBillSecondaryInsuranceinStep = false;
