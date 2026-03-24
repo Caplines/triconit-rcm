@@ -2528,10 +2528,8 @@
                                                         [(ngModel)]="this.claimSectionModal.CLAIM_LEVEL_INFORMATION['initialDenial']"
                                                         [ngClass]="{'is-invalid':emptyFields['CLAIM_LEVEL_INFORMATION'] && emptyFields['CLAIM_LEVEL_INFORMATION']['initialDenial']}">
                                                         <option value="">Select</option>
-                                                        <ng-container
-                                                            *ngFor="let item of appConstants.claimInitialDenialReason">
-                                                            <option [value]="item.reasonName">{{item.reasonName}}
-                                                            </option>
+                                                        <ng-container *ngFor="let item of initialDenialReasons">
+                                                            <option [value]="item.reasonName">{{item.reasonName}}</option>
                                                         </ng-container>
                                                     </select>
                                                 </div>
@@ -2974,6 +2972,10 @@
                                                                 <option value="Call">Call</option>
                                                                 <option value="Web">Web</option>
                                                                 <option value="Email">Email</option>
+                                                                <option value="Chat">Chat</option>
+                                                                <option value="IVR/Fax">IVR/Fax</option>
+                                                                <option *ngIf="!smilePoint" value="Clearing House">Clearing House</option>
+                                                                <option *ngIf="!smilePoint" value="Provider Office">Provider Office</option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -3026,6 +3028,9 @@
                                                                 <option value="Claim not on file">Claim not on file
                                                                 </option>
                                                                 <option value="Reprocessed">Reprocessed</option>
+                                                                <option *ngiIf="!smilePoint" value="Claim received but no claim number generated">
+                                                                    Claim received but no claim number generated
+                                                                </option>
                                                             </select>
                                                         </div>
                                                     </div>
@@ -3237,6 +3242,12 @@
                                                                     </option>
                                                                     <option value="Chargeback">
                                                                         Chargeback
+                                                                    </option>
+                                                                    <option value="Pending with the RCM Operation teams">
+                                                                        Pending with the RCM Operation teams
+                                                                    </option>
+                                                                    <option value="Preparation/Impression Done - Service Not Delivered">
+                                                                        Preparation/Impression Done - Service Not Delivered
                                                                     </option>
                                                                 </select>
                                                             </div>
@@ -3751,8 +3762,6 @@
                                                                 <option value="Call">Call</option>
                                                                 <option value="Text">Text</option>
                                                                 <option value="Email">Email</option>
-                                                                <option value="Chat">Chat</option>
-                                                                <option value="IVR/Fax">IVR/Fax</option>
                                                                 <option value="Office">Office</option>
                                                             </select>
                                                         </div>
@@ -5278,7 +5287,7 @@
                                                                     [ngClass]="{'is-invalid':emptyFields['CURRENT_STATUS_AND_NEXT_ACTION'] && emptyFields['CURRENT_STATUS_AND_NEXT_ACTION']['nextAction']}">
                                                                     <option value="">Select</option>
                                                                     <ng-container
-                                                                        *ngFor="let item of appConstants.nextActionStatusRcm">
+                                                                        *ngFor="let item of nextActionRequired">
                                                                         <option [value]="item.name">{{item.name}}
                                                                         </option>
                                                                     </ng-container>
