@@ -154,7 +154,7 @@ export class AppConstants {
         { "id": 15, "value": "Others" },
         { "id": 16, "value": "Perio Chart" },
         { "id": 17, "value": "Pre-Auth" },
-        { "id": 18, "value": "Sedation Certification (D9248)" },
+        { "id": 18, "value": "Sedation Certification (D9245)" },
         { "id": 19, "value": "Sedation Record" },
         { "id": 20, "value": "X-ray: Bitewings" },
         { "id": 21, "value": "X-ray: Cephlo" },
