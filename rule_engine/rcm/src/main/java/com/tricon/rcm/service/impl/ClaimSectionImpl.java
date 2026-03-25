@@ -96,6 +96,7 @@ import com.tricon.rcm.dto.customquery.ClientCustomDto;
 
 import com.tricon.rcm.dto.customquery.RcmServiceNotesDto;
 import com.tricon.rcm.enums.ClaimStatusEnum;
+import com.tricon.rcm.enums.ClaimStatusSearchEnum;
 import com.tricon.rcm.enums.ClaimTypeEnum;
 import com.tricon.rcm.enums.PatientStatementTypeEnum;
 import com.tricon.rcm.enums.RcmTeamEnum;
@@ -1610,8 +1611,10 @@ public class ClaimSectionImpl {
 			requestRebillingSection = requestRebillingSectionRepo.save(requestRebillingSection);
 
 			// update rebilled status true in rcm_claims table
-
 			claim.setRebilledStatus(true);
+			// As per Gagan on rebilled make claim status Open and pending should be false as its rebilled
+			claim.setStatusESUpdated(ClaimStatusSearchEnum.STATUS_OPEN.getStatus());
+			claim.setPending(false);
 			rcmClaimRepository.save(claim);
 
 			//String newCycleStatus = requestRebillingInfoModel.getCurrentAction();
