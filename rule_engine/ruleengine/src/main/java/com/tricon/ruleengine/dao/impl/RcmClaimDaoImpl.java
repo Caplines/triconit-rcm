@@ -30,7 +30,8 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 		queryFor=d.getQueryName();
 		switch(queryFor)
 		{
-		    case Constants.QUERY_FOR_RCMCALIM_1:
+			// old query without rebilled case 
+		    case Constants.QUERY_FOR_RCMCALIM_11:
 		    	finalQuery="select distinct off.name,"
 		    			+ ""
 		    			//+ "SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id"
@@ -62,6 +63,141 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 		    			" between  STR_TO_DATE('"+d.getDate1()+" 00:00:00', '%m/%d/%Y %H:%i:%s') AND STR_TO_DATE('"+d.getDate2()+" 23:59:59', '%m/%d/%Y %H:%i:%s')" +
 		    			" "; 
 		    	break;
+			// New query with rebilled case using union
+			case Constants.QUERY_FOR_RCMCALIM_1:
+				finalQuery =
+				"(select distinct off.name, " +
+				" CASE WHEN cl.claim_id LIKE '%_arc_%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_',-2), '_', 1) " +
+				" ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) END as claim_id, " +
+				" cl.patient_id, cl.dos, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN prime_sec_submitted_total ELSE sec_submitted_total END as estimatedamount, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN 'Primary' ELSE 'Secondary' END as claimType, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN pins.name ELSE sins.name END as insurancename, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN pinst.name ELSE sinst.name END as insurancetype, " +
+				" CASE WHEN rcsd.updated_date is null THEN DATE_FORMAT(rcsd.created_date, '%m/%d/%Y') " +
+				" ELSE DATE_FORMAT(rcsd.updated_date, '%m/%d/%Y') END as submissiodate, " +
+				" COALESCE(us.first_name, us_creator.first_name) as first_name, "+
+				" COALESCE(us.last_name, us_creator.last_name) as last_name, "+
+				" CASE WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran' END as runenginerun, " +
+				" CASE WHEN rcsd.clean_claim is true THEN 'Yes' ELSE 'No' END as cleanClaim, " +
+				" cl.submitted_total, rcc.comments, cl.rebilled_status, cl.provider_on_claim " +
+				" from rcm_claims cl " +
+				" inner join office off on off.uuid = cl.office_id " +
+				" inner join company cmp on cmp.uuid = off.company_id " +
+				" left join rcm_claims_submission_details rcsd on rcsd.claim_id = cl.claim_uuid " +
+				" left join rcm_user us on rcsd.submitted_by = us.uuid " +
+				" left join rcm_user us_creator on cl.created_by = us_creator.uuid "+
+				" left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id " +
+				" left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id " +
+				" left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id " +
+				" left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id " +
+				" left join reports_claim rc on rc.claim_id = SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) and rc.patient_id = cl.patient_id " +
+				" left join rcm_claim_comment rcc on rcc.uuid = ( " +
+				"   SELECT b.uuid FROM rcm_claim_comment b WHERE b.claim_id = cl.claim_uuid ORDER BY b.created_date DESC LIMIT 1 " +
+				" ) " +
+				" where cl.pending = false and cmp.name = '" + d.getClient() + "' " +
+				(office==null ? "" : " and cl.office_id='" + office.getUuid() + "' ") +
+				" and COALESCE(rcsd.updated_date, rcsd.created_date, cl.created_date) " +
+				" between STR_TO_DATE('" + d.getDate1() + " 00:00:00', '%m/%d/%Y %H:%i:%s') " +
+				" AND STR_TO_DATE('" + d.getDate2() + " 23:59:59', '%m/%d/%Y %H:%i:%s') ) " +
+
+				" UNION " +
+
+				"(select distinct off.name, " +
+				" CASE WHEN cl.claim_id LIKE '%_arc_%' THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_',-2), '_', 1) " +
+				" ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) END as claim_id, " +
+				" cl.patient_id, cl.dos, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN prime_sec_submitted_total ELSE sec_submitted_total END as estimatedamount, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN 'Primary' ELSE 'Secondary' END as claimType, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN pins.name ELSE sins.name END as insurancename, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN pinst.name ELSE sinst.name END as insurancetype, " +
+				" CASE WHEN rrs.updated_date is null THEN DATE_FORMAT(rrs.created_date, '%m/%d/%Y') " +
+				" ELSE DATE_FORMAT(rrs.updated_date, '%m/%d/%Y') END as submissiodate, " +
+				" COALESCE(us_rebill.first_name, us_creator.first_name) as first_name, "+
+				" COALESCE(us_rebill.last_name, us_creator.last_name) as last_name, "+
+				" CASE WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran' END as runenginerun, " +
+				" 'Yes' as cleanClaim, " +
+				" cl.submitted_total, rcc.comments, cl.rebilled_status, cl.provider_on_claim " +
+				" from rcm_rebilling_section rrs " +
+				" inner join rcm_claims cl on cl.claim_uuid = rrs.claim_uuid " +
+				" inner join office off on off.uuid = cl.office_id " +
+				" inner join company cmp on cmp.uuid = off.company_id " +
+				" left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id " +
+				" left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id " +
+				" left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id " +
+				" left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id " +
+				" left join rcm_user us_rebill on rrs.created_by = us_rebill.uuid "+
+				" left join rcm_user us_creator on cl.created_by = us_creator.uuid "+
+				" left join reports_claim rc on rc.claim_id = SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) and rc.patient_id = cl.patient_id " +
+				" left join rcm_claim_comment rcc on rcc.uuid = ( " +
+				"   SELECT b.uuid FROM rcm_claim_comment b WHERE b.claim_id = cl.claim_uuid ORDER BY b.created_date DESC LIMIT 1 " +
+				" ) " +
+				" where cl.pending = false and cmp.name = '" + d.getClient() + "' " +
+				(office==null ? "" : " and cl.office_id='" + office.getUuid() + "' ") +
+				" and COALESCE(rrs.updated_date, rrs.created_date, cl.created_date) " +
+				" between STR_TO_DATE('" + d.getDate1() + " 00:00:00', '%m/%d/%Y %H:%i:%s') " +
+				" AND STR_TO_DATE('" + d.getDate2() + " 23:59:59', '%m/%d/%Y %H:%i:%s') )";
+		    	break;
+			// New query with rebilled case without union
+			case Constants.QUERY_FOR_RCMCALIM_111:
+				finalQuery=
+				"select distinct off.name, " +
+				" CASE WHEN cl.claim_id LIKE '%_arc_%' " +
+				"      THEN SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', -2), '_', 1) " +
+				"      ELSE SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) " +
+				" END claim_id, " +
+				" cl.patient_id, cl.dos, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN prime_sec_submitted_total ELSE sec_submitted_total END estimatedamount, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN 'Primary' ELSE 'Secondary' END as claimType, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN pins.name ELSE sins.name END as insurancename, " +
+				" CASE WHEN cl.claim_id LIKE '%_P' THEN pinst.name ELSE sinst.name END as insurancetype, " +
+				" CASE WHEN rcsd.updated_date is null " +
+				"      THEN DATE_FORMAT(rcsd.created_date, '%m/%d/%Y') " +
+				"      ELSE DATE_FORMAT(rcsd.updated_date, '%m/%d/%Y') " +
+				" END as submissiodate, " +
+				" us.first_name, us.last_name, " +
+				" CASE WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran' END as runenginerun, " +
+				" CASE WHEN rcsd.clean_claim is true THEN 'Yes' ELSE 'No' END as cleanClaim, " +
+				" cl.submitted_total, rcc.comments, cl.rebilled_status, cl.provider_on_claim " +
+				" from rcm_claims cl " +
+				" inner join office off on off.uuid = cl.office_id " +
+				" inner join company cmp on cmp.uuid = off.company_id " +
+				// latest rebill row join (safe)
+				" left join rcm_rebilling_section rrs on rrs.id = ( " +
+				"     select rrs2.id from rcm_rebilling_section rrs2 " +
+				"     where rrs2.claim_uuid = cl.claim_uuid " +
+				"     order by rrs2.created_date desc limit 1 " +
+				" ) " +
+				" left join rcm_claims_submission_details rcsd on rcsd.claim_id = cl.claim_uuid " +
+    			" left join rcm_user us on rcsd.submitted_by = us.uuid " +
+				" left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id " +
+				" left join rcm_insurance sins on sins.id = cl.sec_insurance_company_id " +
+				" left join rcm_insurance_type pinst on pins.insurance_type_id = pinst.id " +
+				" left join rcm_insurance_type sinst on sins.insurance_type_id = sinst.id " +
+				" left join reports_claim rc on rc.claim_id = SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) " +
+				"  and rc.patient_id = cl.patient_id " +
+			    " left join rcm_claim_comment rcc on rcc.claim_id = ( " +
+				"   SELECT b.claim_id " +
+				"   FROM rcm_claim_comment b " +
+				"   WHERE b.claim_id = cl.claim_uuid " +
+				"   ORDER BY b.created_date DESC LIMIT 1 " +
+				" ) " +
+				" where cl.pending = false " +
+				" and cmp.name = '" + d.getClient() + "' " +
+				(office == null ? "" : " and cl.office_id = '" + office.getUuid() + "' ") +
+				// submission OR rebill date range
+				" and ( " +
+				"   (IF(rcsd.updated_date is null, rcsd.created_date, rcsd.updated_date) " +
+				"     between STR_TO_DATE('" + d.getDate1() + " 00:00:00', '%m/%d/%Y %H:%i:%s') " +
+				"     AND STR_TO_DATE('" + d.getDate2() + " 23:59:59', '%m/%d/%Y %H:%i:%s') " +
+				"   ) " +
+				"   OR " +
+				"   (rrs.created_date is not null AND rrs.created_date " +
+				"     between STR_TO_DATE('" + d.getDate1() + " 00:00:00', '%m/%d/%Y %H:%i:%s') " +
+				"     AND STR_TO_DATE('" + d.getDate2() + " 23:59:59', '%m/%d/%Y %H:%i:%s') " +
+				"   ) " +
+				" ) ";
+				break;
 		    case Constants.QUERY_FOR_RCMCALIM_AUDITED:
 		    	finalQuery="select distinct off.name,SUBSTRING_INDEX(SUBSTRING_INDEX(cl.claim_id, '_', 1), ' ', -1) AS claim_id,cl.patient_id,cl.dos,"+
 		    			"DATE_FORMAT( rca.created_date, '%Y-%m-%d') as reviewDate,cl.claim_uuid as uuid,us.first_name,us.last_name,ins.name nm, '' as e1,'' as e2,'' as e3,'' as e4,'' as e5,'' as e6,'' as e7,'' as e8,'' as e9,'' as e10 "+//added e's to Populate Empty Array  

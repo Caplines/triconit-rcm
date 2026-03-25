@@ -1905,7 +1905,6 @@ export class OtherTeamsWorkComponent implements OnInit {
     let teamId = -1;
     let userId = "";
     let claimIds: Array<string> = [];
-
     if (ths.assignmentType.assignSameTeam === type) {
       let e: any = document.getElementById("selectUserAs");
       if (e.value.trim() === 'Select User') return;
@@ -1922,8 +1921,7 @@ export class OtherTeamsWorkComponent implements OnInit {
       claimIds.push(element.uuid);
     });
     ths.loader.assignLoader = true;
-    debugger;
-    let obj: any = { "claimIds": claimIds, "teamId": teamId, "userId": userId, "type": type };
+    let obj: any = { "claimIds": claimIds, "teamId": teamId, "userId": userId, "type": type , "comment": ths.assignreason.nativeElement.value };
     ths.appService.reAssignClaimFromList(obj, (res: any) => {
       if (res.status === 200) {
         ths.closeModalAs();

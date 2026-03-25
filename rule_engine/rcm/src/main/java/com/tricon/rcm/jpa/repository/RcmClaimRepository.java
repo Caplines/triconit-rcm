@@ -1,5 +1,6 @@
 package com.tricon.rcm.jpa.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -1444,7 +1445,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				+ "cl.current_status as currentStatus,status_es_updated as statusEsUpdated,cl.patient_id as patientId,cl.patient_name as patientName "
 				+ " from  rcm_claims  cl where "
 				+ " cl.office_id=:officeId and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED+" and cl.claim_id  REGEXP :claimsIds "
-				+ " " )//select * from rcm_claims where claim_id  REGEXP '_13767_P|P';
+				+ " " )
 		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsArchived(@Param("officeId") String officeId,
 				@Param("claimsIds") String claimsIds);
 		
@@ -1475,15 +1476,31 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsUnarchivedAndWithStatusEsUpdatedOPenUnbilled(@Param("officeId") String officeId,
 				@Param("claimsIds") List<String> claimsIds);
 		
+		@Query(nativeQuery = true, value = "SELECT cl.claim_uuid as claimUuid, "
+ 				+"cl.claim_id as claimId,cl.current_status as currentStatus, "
+  				+"cl.current_state as currentState,cl.patient_id as patientId, "
+  				+"cl.patient_name as patientName FROM rcm_claims cl "
+				+"WHERE cl.office_id = :officeId AND cl.pending = :pend "
+  				+"AND cl.status_es_updated = :esUpdatedStatus "
+  				+"AND cl.current_state =" + Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED 
+				+" AND cl.claim_id LIKE :type AND DATE(cl.dos) BETWEEN :startDate AND :endDate")
+		List<ReconcillationClaimDto> getClosedClaimsByOfficeAndDos(
+				@Param("officeId") String officeId,
+				@Param("type") String type,
+				@Param("pend") boolean pend,
+				@Param("esUpdatedStatus") String esUpdatedStatus,
+				@Param("startDate") Date startDate,
+				@Param("endDate") Date endDate
+		);
+
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_id as claimUuid ,cl.resolved as currentState,"
 				+ "cl.is_archive as currentStatus,cl.issue as patientId,cl.issue as patientName "
 				+ " from  rcm_issue_claims  cl where "
-				+ " cl.office_id=:officeId and cl.resolved=false and is_archive=false and cl.claim_id in :claimsIds "
+				+ " cl.office_id=:officeId and cl.resolved=false and is_archive=false"
 				+ " " )
-		List<ReconcillationClaimDto> getClaimInIssueClaimByClaimIdAndOfficeUnarchived(@Param("officeId") String officeId,
-				@Param("claimsIds") List<String> claimsIds);
+		List<ReconcillationClaimDto> getClaimInIssueClaimByAndOfficeUnarchived(@Param("officeId") String officeId);
 		
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId, "
 				+ "cl.claim_id as claimUuid ,cl.resolved as currentState,"
@@ -1520,16 +1537,16 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 				@Param("type") String type,@Param("pend") boolean pend,@Param("esUpdatedStatus") String esUpdatedStatus);
 	
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId from  rcm_claims  cl where "
-				+ " cl.office_id=:officeId and (pending is true or status_es_updated=:esUpdatedStatus) and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id  REGEXP :claimsId "
+				+ " cl.office_id=:officeId and (pending is true or status_es_updated=:esUpdatedStatus) and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in (:claimIds) "
 				+ " " )//select * from rcm_claims where claim_id  REGEXP '_arc_13767_P';
 		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsEsUpdatedStatusOrNotSubmittedByBilling(@Param("officeId") String officeId,
-				@Param("claimsId") String claimsId,@Param("esUpdatedStatus") String esUpdatedStatus);
+				@Param("claimIds") List<String> claimIds,@Param("esUpdatedStatus") String esUpdatedStatus);
 
 		@Query(nativeQuery = true, value = "SELECT cl.claim_id as claimId from  rcm_claims  cl where "
-				+ " cl.office_id=:officeId and status_es_updated=:esUpdatedStatus and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id  REGEXP :claimsId "
+				+ " cl.office_id=:officeId and status_es_updated=:esUpdatedStatus and cl.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" and cl.claim_id in (:claimIds) "
 				+ " " )//select * from rcm_claims where claim_id  REGEXP '_arc_13767_P';
 		List<ReconcillationClaimDto> getClaimbyOfficeAndClaimIdsEsUpdatedStatus(@Param("officeId") String officeId,
-				@Param("claimsId") String claimsId,@Param("esUpdatedStatus") String esUpdatedStatus);
+				@Param("claimIds") List<String> claimIds,@Param("esUpdatedStatus") String esUpdatedStatus);
 
 		@Query(nativeQuery = true, value = " select  cl.claim_id  as claimId,cl.claim_uuid as claimUuid,off.name as officeName,cmp.name as clientName "
 				+ "  from  rcm_claims cl inner join office off on  off.uuid=cl.office_id "

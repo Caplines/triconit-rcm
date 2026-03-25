@@ -2009,6 +2009,31 @@ public class ClaimServiceImpl {
 			return null;
 	}
 
+	private void populateLastRemarks(List<FreshClaimDataViewDto> listView, int teamId) {
+    if (listView == null || listView.isEmpty()) return;
+    
+    List<String> claimUuids = listView.stream()
+        .map(FreshClaimDataViewDto::getUuid)
+        .collect(Collectors.toList());
+    
+    // ONE query instead of N queries
+    List<Object[]> remarks = rcmClaimAssignmentRepo
+        .findLatestClaimCommentsByOtherTeam(claimUuids, teamId);
+    
+    // Convert result to Map<claimId, comment_assigned_by>
+    Map<String, String> remarksMap = remarks.stream()
+        .collect(Collectors.toMap(
+            row -> (String) row[0],  // claim_id
+            row -> (String) row[1],  // comment_assigned_by
+            (existing, replacement) -> existing
+        ));
+    
+    // Set remarks with no DB call
+    listView.forEach(data ->
+        data.setLastTeamRemark(remarksMap.get(data.getUuid()))
+    );
+}
+
 	public List<FreshClaimDataViewDto> fetchFreshClaimDetails(int teamId, int billingORRebill, String sub,
 			PartialHeader partialHeader) {
         ///Add more logic
@@ -2056,11 +2081,12 @@ public class ClaimServiceImpl {
 ////			  commentsList.addAll(this.fetchLatestCommentsByClaimUuid(claimUuidChunk, teamId));
 ////					}
 	
-			 listView.forEach(data->{
+			//  listView.forEach(data->{
 					 
 					 
-					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-				 });
+			// 		 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+			// 	 });
+			populateLastRemarks(listView, teamId);
 			 
 			
 		   }
@@ -2092,9 +2118,10 @@ public class ClaimServiceImpl {
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				 //Need to get Claim remark in of non billing and internal audit
 				
-				 listView.forEach(data->{
-					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-				 });
+				//  listView.forEach(data->{
+				// 	 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+				//  });
+				populateLastRemarks(listView, teamId);
 				 
 				// this.populateClaimListWithComments(listView, teamId);
 			 }
@@ -2123,10 +2150,11 @@ public class ClaimServiceImpl {
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				 //Need to get Claim remark in of non billing and internal audit
 				
-				 listView.forEach(data->{
-					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-				 });
+				//  listView.forEach(data->{
+				// 	 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+				//  });
 				/// this.populateClaimListWithComments(listView, teamId);
+				populateLastRemarks(listView, teamId);
 			 }
 		}
 		else {
@@ -3853,8 +3881,10 @@ public class ClaimServiceImpl {
 		if (list!=null){
 			
 		try {	
-		Collections.sort(list, 
-                (o1, o2) -> o1.getCd().compareTo(o2.getCd()));
+		list.sort(Comparator.comparing(
+   					 ClaimRemarksDto::getCd,
+   					 Comparator.nullsLast(Date::compareTo)
+		));
 		
 		}catch(Exception x) {
 			x.printStackTrace();
@@ -6285,14 +6315,21 @@ public class ClaimServiceImpl {
 		List<ClaimReconcillationDto> primaryCloseClaims =fetchFromRuleEngineSafe(office,"PrimaryClose",date1,date2);//B26
 		List<ClaimReconcillationDto> secondaryCloseClaims =fetchFromRuleEngineSafe(office,"SecondaryClose",date1,date2);//C26
 		
-		// 4. Prepare reconciliation response (order preserved exactly)
-		dataList.add(prepaireReconcillationData("Primary Unbilled",new ReconciliationResponseDto(),office,primaryUnbilledClaims,true));
-		dataList.add(prepaireReconcillationData("Secondary Unbilled (Primary Unbilled/Open)",new ReconciliationResponseDto(),office,secondaryUnbilledClaims,false));
-    	dataList.add(prepaireReconcillationData("Primary Open",new ReconciliationResponseDto(),office,primaryOpenClaims,true));
-    	dataList.add(prepaireReconcillationData("Secondary Open",new ReconciliationResponseDto(),office,secondaryOpenClaims,false));
-		dataList.add(prepaireReconcillationData("Primary Closed",new ReconciliationResponseDto(),office,primaryCloseClaims,true));
-		dataList.add(prepaireReconcillationData("Secondary Closed",new ReconciliationResponseDto(),office,secondaryCloseClaims,false));
-		dataList.add(prepaireReconcillationData("Secondary Unbilled (Primary Closed)",new ReconciliationResponseDto(),office,secondaryUnsubmittedClaims,false));
+		// 4. Get all upload claims error for that office
+		List<ReconcillationClaimDto> allUploadErrors = rcmClaimRepository
+															.getClaimInIssueClaimByAndOfficeUnarchived(
+															office.getUuid());
+
+		logger.info("[RECON][PRIMARY_UNBILLED] ES={}, UploadErrors={}",primaryUnbilledClaims.size(),allUploadErrors.size());
+
+		// 5. Prepare reconciliation response (order preserved exactly)
+		dataList.add(prepaireReconcillationData(allUploadErrors,true,Constants.PRIMARY_UNBILLED,new ReconciliationResponseDto(),office,primaryUnbilledClaims,true,dto));
+		dataList.add(prepaireReconcillationData(allUploadErrors,true,Constants.SECONDARY_UNBILLED_PRIMARY_OPEN,new ReconciliationResponseDto(),office,secondaryUnbilledClaims,false,dto));
+    	dataList.add(prepaireReconcillationData(allUploadErrors,false,Constants.PRIMARY_OPEN,new ReconciliationResponseDto(),office,primaryOpenClaims,true,dto));
+    	dataList.add(prepaireReconcillationData(allUploadErrors,false,Constants.SECONDARY_OPEN,new ReconciliationResponseDto(),office,secondaryOpenClaims,false,dto));
+		dataList.add(prepaireReconcillationData(allUploadErrors,false,Constants.PRIMARY_CLOSED,new ReconciliationResponseDto(),office,primaryCloseClaims,true,dto));
+		dataList.add(prepaireReconcillationData(allUploadErrors,false,Constants.SECONDARY_CLOSED,new ReconciliationResponseDto(),office,secondaryCloseClaims,false,dto));
+		dataList.add(prepaireReconcillationData(allUploadErrors,true,Constants.SECONDARY_UNBILLED_PRIMARY_CLOSED,new ReconciliationResponseDto(),office,secondaryUnsubmittedClaims,false,dto));
 		
 		logger.info("[RECON][SERVICE][END] office={}, categories={}, timeTakenMs={}",office.getName(),dataList.size(),(System.currentTimeMillis() - startTime));
 
@@ -6327,48 +6364,48 @@ public class ClaimServiceImpl {
 		ReconCategoryContext ctx = new ReconCategoryContext();
 
 		switch (title) {
-			case "Primary Unbilled":
+			case Constants.PRIMARY_UNBILLED:
 				ctx.typePattern = "%_P";
 				ctx.billingPending = true;
 				ctx.primarySide = true;
 				break;
 
-			case "Secondary Unbilled (Primary Closed)":
+			case Constants.SECONDARY_UNBILLED_PRIMARY_CLOSED:
 				ctx.typePattern = "%_S";
 				ctx.billingPending = true;
 				ctx.primarySide = false;
 				ctx.esStatus = ClaimStatusSearchEnum.STATUS_CLOSED.getStatus();
 				break;
 
-			case "Secondary Unbilled (Primary Unbilled/Open)":
+			case Constants.SECONDARY_UNBILLED_PRIMARY_OPEN:
 				ctx.typePattern = "%_S";
 				ctx.billingPending = true;
 				ctx.primarySide = false;
 				ctx.esStatus = ClaimStatusSearchEnum.STATUS_OPEN.getStatus();
 				break;
 
-			case "Primary Open":
+			case Constants.PRIMARY_OPEN:
 				ctx.typePattern = "%_P";
 				ctx.billingPending = false;
 				ctx.primarySide = true;
 				ctx.esStatus = ClaimStatusSearchEnum.STATUS_OPEN.getStatus();
 				break;
 
-			case "Primary Closed":
+			case Constants.PRIMARY_CLOSED:
 				ctx.typePattern = "%_P";
 				ctx.billingPending = false;
 				ctx.primarySide = true;
 				ctx.esStatus = ClaimStatusSearchEnum.STATUS_CLOSED.getStatus();
 				break;
 
-			case "Secondary Open":
+			case Constants.SECONDARY_OPEN:
 				ctx.typePattern = "%_S";
 				ctx.billingPending = false;
 				ctx.primarySide = false;
 				ctx.esStatus = ClaimStatusSearchEnum.STATUS_OPEN.getStatus();
 				break;
 
-			case "Secondary Closed":
+			case Constants.SECONDARY_CLOSED:
 				ctx.typePattern = "%_S";
 				ctx.billingPending = false;
 				ctx.primarySide = false;
@@ -6383,77 +6420,57 @@ public class ClaimServiceImpl {
 	}
 
 	
-	private ReconciliationResponseDto prepaireReconcillationData(String title,ReconciliationResponseDto responseDto,RcmOffice office,List<ClaimReconcillationDto> esClaims,boolean primaryFlag) {
-
-		responseDto.setTitle(title);
-		responseDto.setOffice(office.getName());
+	private ReconciliationResponseDto prepaireReconcillationData(List<ReconcillationClaimDto> allUploadErrors,boolean excludeErrorClaims,String title,ReconciliationResponseDto responseDto,RcmOffice office,List<ClaimReconcillationDto> esClaims,boolean primaryFlag,ReconciliationDto dto) {
 
 		ReconCategoryContext ctx = resolveCategory(title);
-
 		logger.info("[RECON][{}] office={}, esClaims={}",title, office.getUuid(), esClaims.size());
 
 		/* ---------------- PMS (ES) side ---------------- */
 		Set<String> esClaimKeys = new HashSet<>();
-		Set<String> esClaimIds = new HashSet<>();
-
+		//logger.info("PMS claim for title "+title);
 		for (ClaimReconcillationDto es : esClaims) {
 			String suffix = ctx.primarySide ? "P" : "S";
 			String key = es.getClaimId() + "_" + suffix;
 			esClaimKeys.add(key);
-			esClaimIds.add(es.getClaimId());
+			//logger.info("PMS claim= "+key);
 		}
-
-		responseDto.setClaimsES(esClaims.size());
 
 		/* ---------------- RCM side ---------------- */
-		List<ReconcillationClaimDto> rcmClaims;
+		List<ReconcillationClaimDto> rcmClaims=null;
 		logger.info("[RECON][RCM query for ] office id={},title={}, typePattern={}, billingPending={}, ctx.esStatus={}",office.getUuid(),title, ctx.typePattern,ctx.billingPending,ctx.esStatus);
-		if (ctx.esStatus != null) {
-			rcmClaims = rcmClaimRepository
-					.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNotEsUpdatedStatus(
-							office.getUuid(),
+		
+		if(ctx.esStatus != null && (title.equals(Constants.PRIMARY_CLOSED) || title.equals(Constants.SECONDARY_CLOSED))){
+			rcmClaims = rcmClaimRepository.getClosedClaimsByOfficeAndDos(
+						office.getUuid(),
 							ctx.typePattern,
 							ctx.billingPending,
-							ctx.esStatus
-					);
-		} else {
-			rcmClaims = rcmClaimRepository
-					.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNot(
-							office.getUuid(),
-							ctx.typePattern,
-							ctx.billingPending
-					);
+							ctx.esStatus,
+							dto.getStartDate(),
+							dto.getEndDate()
+    					);
 		}
+		// Secondary Unbilled (Primary Unbilled/Open)
+		else if (ctx.esStatus != null && title.equals(Constants.SECONDARY_UNBILLED_PRIMARY_OPEN)) {
 
-		/* ---------------- Upload Errors ---------------- */
-		List<String> rcmClaimIds = rcmClaims.stream()
-				.map(ReconcillationClaimDto::getClaimId)
-				.collect(Collectors.toList());
+			// Step 1: Get ALL secondary unbilled
+			rcmClaims = rcmClaimRepository
+				.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNot(
+					office.getUuid(),
+					ctx.typePattern,   // %_S
+					ctx.billingPending // true
+				);
 
-		List<ReconcillationClaimDto> uploadErrorClaims =
-				rcmClaimRepository.getClaimInIssueClaimByClaimIdAndOfficeUnarchived(
-						office.getUuid(), rcmClaimIds);
-
-		Set<String> uploadErrorIds = uploadErrorClaims.stream()
-    				.map(ReconcillationClaimDto::getClaimId)
-    				.collect(Collectors.toSet());
-
-		rcmClaims.removeIf(rc -> uploadErrorIds.contains(rc.getClaimId()));
-
-		/* ---------------- Secondary special handling ---------------- */
-		if (title.startsWith("Secondary Unbilled")) {
-			Set<String> primaryKeys = rcmClaims.stream()
+			// Step 2: Get all Primary claim ids of  Secondary claims by replacing _S to _P 
+			List<String> primaryIds = rcmClaims.stream()
 					.map(c -> c.getClaimId().replace("_S", "_P"))
-					.collect(Collectors.toSet());
+					.collect(Collectors.toList());
 
-			if (!primaryKeys.isEmpty()) {
-				List<ReconcillationClaimDto> primaryMatches =
-						ctx.esStatus == ClaimStatusSearchEnum.STATUS_CLOSED.getStatus()
-								? rcmClaimRepository.getClaimbyOfficeAndClaimIdsEsUpdatedStatus(
-										office.getUuid(), "%_P", ctx.esStatus)
-								: rcmClaimRepository.getClaimbyOfficeAndClaimIdsEsUpdatedStatusOrNotSubmittedByBilling(
-										office.getUuid(), "%_P",
-										ClaimStatusSearchEnum.STATUS_OPEN.getStatus());
+			if (!primaryIds.isEmpty()) {
+				// Step 3: Get Primary Claim Status in PMS is "Open" for Primary claim or Billing Team has not submitted the primary claim yet
+				List<ReconcillationClaimDto> primaryMatches = rcmClaimRepository
+										.getClaimbyOfficeAndClaimIdsEsUpdatedStatusOrNotSubmittedByBilling(
+											office.getUuid(), primaryIds,
+											ClaimStatusSearchEnum.STATUS_OPEN.getStatus());
 
 				Set<String> validPrimary = primaryMatches.stream()
 						.map(ReconcillationClaimDto::getClaimId)
@@ -6463,50 +6480,84 @@ public class ClaimServiceImpl {
 						!validPrimary.contains(s.getClaimId().replace("_S", "_P")));
 			}
 		}
+		else if (ctx.esStatus != null && title.equals(Constants.SECONDARY_UNBILLED_PRIMARY_CLOSED)) {
 
-		responseDto.setClaimsRCM(rcmClaims.size());
+			// Step 1: Get ALL secondary unbilled
+			rcmClaims = rcmClaimRepository
+				.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNot(
+					office.getUuid(),
+					ctx.typePattern,   // %_S
+					ctx.billingPending // true
+				);
 
-		/* ---------------- Mismatch calculations ---------------- */
-		Set<com.tricon.rcm.dto.ReconcillationClaimDto> notInPms = new HashSet<>();
-		Set<com.tricon.rcm.dto.ReconcillationClaimDto> notInRcm = new HashSet<>();
+			// Step 2: Get all Primary claim ids of  Secondary claims by replacing _S to _P 
+			List<String> primaryIds = rcmClaims.stream()
+					.map(c -> c.getClaimId().replace("_S", "_P"))
+					.collect(Collectors.toList());
 
-		for (ReconcillationClaimDto rcm : rcmClaims) {
-			if (!esClaimKeys.contains(rcm.getClaimId())) {
-				com.tricon.rcm.dto.ReconcillationClaimDto d =
-						new com.tricon.rcm.dto.ReconcillationClaimDto();
-				d.setClaimId(rcm.getClaimId());
-				d.setClaimUuid(rcm.getClaimUuid());
-				d.setPatientId(rcm.getPatientId());
-				d.setPatientName(rcm.getPatientName());
-				notInPms.add(d);
+			if (!primaryIds.isEmpty()) {
+				// Step 3: Get Primary Claim Status in PMS is "Closed" for Primary claim
+				List<ReconcillationClaimDto> primaryMatches =rcmClaimRepository
+						.getClaimbyOfficeAndClaimIdsEsUpdatedStatus(
+							office.getUuid(),
+							primaryIds,
+							ClaimStatusSearchEnum.STATUS_CLOSED.getStatus()
+						);
+
+				Set<String> validPrimary = primaryMatches.stream()
+						.map(ReconcillationClaimDto::getClaimId)
+						.collect(Collectors.toSet());
+
+				rcmClaims.removeIf(s ->
+						!validPrimary.contains(s.getClaimId().replace("_S", "_P")));
 			}
 		}
+		else if (ctx.esStatus != null && (title.equals(Constants.PRIMARY_OPEN) || title.equals(Constants.SECONDARY_OPEN))) { // primary open || secondary open 
+			rcmClaims = rcmClaimRepository
+					.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNotEsUpdatedStatus(
+							office.getUuid(),
+							ctx.typePattern,
+							ctx.billingPending,
+							ctx.esStatus
+					);
+		} else { // primary unbilled
+	 
+			rcmClaims = rcmClaimRepository
+						.getClaimbyOfficeAndNotArchivedPrimaryorSecondarySubmitedorNot(
+								office.getUuid(),
+								ctx.typePattern,
+								ctx.billingPending
+						);
+		}
+		if (rcmClaims == null) {
+    		rcmClaims = new ArrayList<>();
+		}
+		
+		// Get upload error claims of the same category claims present in ES
+		List<ReconcillationClaimDto> uploadErrorClaims =allUploadErrors.stream()
+														.filter(u -> esClaimKeys.contains(u.getClaimId()))
+														.collect(Collectors.toList());
 
-		for (ClaimReconcillationDto es : esClaims) {
-			String key = es.getClaimId() + "_" + (primaryFlag ? "P" : "S");
-			boolean exists = rcmClaims.stream()
-					.anyMatch(r -> r.getClaimId().equals(key));
-
-			if (!exists) {
-				com.tricon.rcm.dto.ReconcillationClaimDto d =
-						new com.tricon.rcm.dto.ReconcillationClaimDto();
-				d.setClaimId(key);
-				d.setPatientId(es.getPatientId());
-				d.setStatusEsUpdated(es.getStatus());
-				notInRcm.add(d);
-			}
+		// Upload error ids
+		Set<String> uploadErrorSet = uploadErrorClaims.stream().map(ReconcillationClaimDto::getClaimId).collect(Collectors.toSet());
+		
+		// Exclude upload error claims in case of Primary Unbilled or Secondary Unbilled (Primary Closed) or Secondary Unbilled (Primary Unbilled/Open)
+		if(rcmClaims!=null && excludeErrorClaims){
+			rcmClaims.removeIf(rc -> uploadErrorSet.contains(rc.getClaimId()));
 		}
 
-		responseDto.setClaimsNotFoundPMS(notInPms);
-		responseDto.setClaimsNotFoundRCM(notInRcm);
+		/* ----------------Caculate Archived Claims ---------------
+			Claims that are	there in the "#	of Claims in PMS" of 
+			the same category, but is archived	in the RCM Tool
+		----------------------------------------------------------*/
 
-		/* ---------------- Archived ---------------- */
 		responseDto.setClaimArchived(new HashSet<>());
 		if (!esClaimKeys.isEmpty()) {
-			String pass = "'" + String.join("|", esClaimKeys) + "'";
+			String regex = esClaimKeys.stream().map(k -> "_arc_" + k + "$").collect(Collectors.joining("|"));
+
 			List<ReconcillationClaimDto> archived =
 					rcmClaimRepository.getClaimbyOfficeAndClaimIdsArchived(
-							office.getUuid(), pass);
+							office.getUuid(), regex);
 
 			Set<Discrepancy> archivedSet = archived.stream().map(a -> {
 				Discrepancy d = new Discrepancy();
@@ -6517,11 +6568,14 @@ public class ClaimServiceImpl {
 				d.setArchived(true);
 				return d;
 			}).collect(Collectors.toSet());
-
+			// Set No. of archived claims
 			responseDto.setClaimArchived(archivedSet);
 		}
 
-		/* ---------------- Upload Errors response ---------------- */
+		/* ---------------- Upload Errors Calculation ---------------------
+			Claims that are there in the "# of Claims in PMS" of the same
+			category, but is present in the "Upload Errors" of the RCM Tool
+		-------------------------------------------------------------------*/
 		Set<Discrepancy> uploadErrors = uploadErrorClaims.stream().map(u -> {
 			Discrepancy d = new Discrepancy();
 			d.setClaimId(u.getClaimId().split("_")[0]);
@@ -6530,7 +6584,64 @@ public class ClaimServiceImpl {
 			d.setPatientName(u.getPatientName());
 			return d;
 		}).collect(Collectors.toSet());
+		
+		/* ---------------- Mismatch calculations ---------------- */
+		Set<com.tricon.rcm.dto.ReconcillationClaimDto> notInPms = new HashSet<>();
+		Set<com.tricon.rcm.dto.ReconcillationClaimDto> notInRcm = new HashSet<>();
+		// Archived ids
+		Set<String> archivedClaimsSet = responseDto.getClaimArchived().stream().map(Discrepancy::getClaimId).collect(Collectors.toSet());
+		// RCM active ids
+		Set<String> rcmSet = rcmClaims.stream().map(ReconcillationClaimDto::getClaimId).collect(Collectors.toSet());
+        /*
+			Claims that are there in the "# of Claims in PMS" of the same 
+			category, but is not present in the "#of Claims in RCM Tool"
+		*/
+		for (ReconcillationClaimDto rcm : rcmClaims) {
+			String t1=rcm.getClaimId();
+			if (!esClaimKeys.contains(rcm.getClaimId())) {
+				com.tricon.rcm.dto.ReconcillationClaimDto d =
+						new com.tricon.rcm.dto.ReconcillationClaimDto();
+				d.setClaimId(rcm.getClaimId());
+				d.setClaimUuid(rcm.getClaimUuid());
+				d.setPatientId(rcm.getPatientId());
+				d.setPatientName(rcm.getPatientName());
+				notInPms.add(d);
+			}
+		}
+		/*
+			Claims that are there in the "#of Claims in RCM Tool" of the
+			same category, but is not present in the "# of Claims in PMS
+		*/
+		for (ClaimReconcillationDto es : esClaims) {
+			String key = es.getClaimId() + "_" + (primaryFlag ? "P" : "S");
+			boolean inActive = rcmSet.contains(key);
+			boolean inUpload = uploadErrorSet.contains(key);
+			boolean inArchive = archivedClaimsSet.stream().anyMatch(id -> id.endsWith("_arc_"+key));
 
+			// Only if NOT found anywhere → real mismatch
+   			 if (!inActive && !inUpload && !inArchive) {
+				com.tricon.rcm.dto.ReconcillationClaimDto d =
+						new com.tricon.rcm.dto.ReconcillationClaimDto();
+				d.setClaimId(key);
+				d.setPatientId(es.getPatientId());
+				d.setStatusEsUpdated(es.getStatus());
+				notInRcm.add(d);
+			}
+		}
+		
+		// Set Office name
+		responseDto.setOffice(office.getName());
+		// Set claims category title
+		responseDto.setTitle(title);
+		// Set  Mp. of Claims in ES
+		responseDto.setClaimsES(esClaims.size());
+		// Set No. of Claims in RCM Tool
+		responseDto.setClaimsRCM(rcmClaims.size());
+		// Set No. of Claims not found in PMS
+		responseDto.setClaimsNotFoundPMS(notInPms);
+		// Set No. of Claims not found in RCM
+		responseDto.setClaimsNotFoundRCM(notInRcm);
+		// Set No. Claims found in Upload Errors
 		responseDto.setClaimInUploadErrors(uploadErrors);
 
 		logger.info("[RECON][{}][DONE] office={}, es={}, rcm={}, mismPMS={}, mismRCM={}",
@@ -6775,11 +6886,11 @@ public class ClaimServiceImpl {
 					RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 					if (uaof != null) {
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, uaof.getUser(),
-							claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
+							claim.getClaimUuid(), claim, dto.getComment(), systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
 						rcmAssigment.setPendingSince(assignOld.getPendingSince());
 					}else {
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, null,
-								claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
+								claim.getClaimUuid(), claim,  dto.getComment(), systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
 							rcmAssigment.setPendingSince(assignOld.getPendingSince());
 					}
 					
@@ -6835,7 +6946,7 @@ public class ClaimServiceImpl {
 									.findByStatus(claim.getClaimStatusType().getStatus());
 							RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 							rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user, null,
-									claim.getClaimUuid(), claim, "", systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
+									claim.getClaimUuid(), claim,  dto.getComment(), systemStatusBilling, newTeam, Constants.SYSTEM_INITIAL_COMMENT,new Date());
 							rcmAssigment.setPendingSince(claim.getCreatedDate());
 							rcmAssigment.setForceUnassigned(true);
 		                     rcmClaimAssignmentRepo.save(rcmAssigment);

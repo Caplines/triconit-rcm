@@ -60,11 +60,11 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 	//assign.current_team_id!=:teamId and tm.id!=:teamId Removed Condition so that all remarks can come
 		//,@Param("teamId") int teamId
 	@Query(nativeQuery = true, value = " select distinct "
-			 +" comment_assigned_by comment,assign.created_date cd, tm.description teamName,us.first_name fName,us.last_name lName,assign.attachment_with_remarks attchmentsWithRemarks "
-			 +" from  rcm_claim_assignment assign inner join rcm_user us on us.uuid=assign.assigned_by "
+			 +" assign.comment_assigned_by comment,assign.created_date cd, tm.description teamName,us.first_name fName,us.last_name lName,assign.attachment_with_remarks attchmentsWithRemarks "
+			 +" from  rcm_claim_assignment assign left join rcm_user us on us.uuid=assign.assigned_by "
 			 //+" inner join rcm_user_team rut on rut.rcm_user_id=us.uuid "
 			 +" inner join rcm_team tm on tm.id=assign.current_team_id "
-			 +" where claim_id=:claim_id and comment_assigned_by<>'' order by assign.created_date asc "
+			 +" where claim_id=:claim_id and comment_assigned_by is not null and trim(comment_assigned_by) <> '' order by assign.created_date asc "
 	+ "")
     List<ClaimRemarksDto> fetchClaimRemarksOtherTeam(@Param("claim_id") String claimId);
 	
@@ -123,9 +123,27 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 //		   @Param("teamId") int teamId,@Param("statusId") int statusId,@Param("systemCom") String systemCom,
 //		   @Param("claimId") String claimId);
 	
-	@Query(value = "select comment_assigned_by from rcm_claim_assignment where active =false and current_team_id<>:teamId and claim_id=:claimUuid order by created_date desc limit 1", nativeQuery = true)
-	String findLatestClaimCommentByOtherTeam(@Param("claimUuid") String claimUUid,@Param("teamId") int teamId);
+	// @Query(value = "select comment_assigned_by from rcm_claim_assignment where active =false and current_team_id<>:teamId and claim_id=:claimUuid order by created_date desc limit 1", nativeQuery = true)
+	// String findLatestClaimCommentByOtherTeam(@Param("claimUuid") String claimUUid,@Param("teamId") int teamId);
 
+	@Query(value = "SELECT rca.claim_id, rca.comment_assigned_by " +
+               "FROM rcm_claim_assignment rca " +
+               "INNER JOIN (" +
+               "    SELECT claim_id, MAX(created_date) as maxDate " +
+               "    FROM rcm_claim_assignment " +
+               "    WHERE active = false " +
+               "    AND current_team_id <> :teamId " +
+               "    AND claim_id IN :claimUuids " +
+               "    GROUP BY claim_id" +
+               ") latest ON rca.claim_id = latest.claim_id " +
+               "AND rca.created_date = latest.maxDate " +
+               "AND rca.active = false " +
+               "AND rca.current_team_id <> :teamId", 
+               nativeQuery = true)
+		List<Object[]> findLatestClaimCommentsByOtherTeam(
+    	@Param("claimUuids") List<String> claimUuids,
+    	@Param("teamId") int teamId
+	);
 	
 	  @Query(value ="select rc.claim_id as ClaimId ,off.name AS OfficeUuid, "
 	          + "off.company_id as ClientUuid ,c.name as ClientName, "
