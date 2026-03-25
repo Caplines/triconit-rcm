@@ -21,17 +21,16 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 # ── Config ───────────────────────────────────────────────────
-# Set your Docker Hub repo here (e.g. johndoe/capline)
-REPO="${DOCKER_HUB_REPO:-}"
-if [ -z "$REPO" ]; then
-    if [ -f .env ]; then
-        set -a
-        # shellcheck disable=SC1091
-        source .env
-        set +a
-    fi
-    REPO="${DOCKER_HUB_REPO:-}"
+# Set your Docker Hub repo here
+# Load .env first when present so DOCKER_HUB_REPO can come from file.
+if [ -f .env ]; then
+    set -a
+    # shellcheck disable=SC1091
+    source .env.prod
+    set +a
 fi
+
+REPO="${DOCKER_HUB_REPO:-}"
 if [ -z "$REPO" ]; then
     echo "[ERROR] Set DOCKER_HUB_REPO in your environment or .env:"
     echo "        export DOCKER_HUB_REPO=yourdockerhub/capline"
@@ -65,21 +64,18 @@ build_and_push() {
     echo "════════════════════════════════════════"
     echo "  Building: ${NAME}"
     echo "  Tag:      ${VERSION}"
+    echo "  Platforms: linux/amd64, linux/arm64"
     echo "════════════════════════════════════════"
 
-    docker build \
+    # --push is required with buildx multi-platform (cannot load multi-arch to local daemon)
+    docker buildx build \
+        --platform linux/amd64,linux/arm64 \
         -f "$DOCKERFILE" \
         "${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}" \
         -t "$IMAGE_VERSIONED" \
         -t "$IMAGE_LATEST" \
+        --push \
         "$CONTEXT"
-
-    echo ""
-    echo "  Pushing ${IMAGE_VERSIONED}..."
-    docker push "$IMAGE_VERSIONED"
-
-    echo "  Pushing ${IMAGE_LATEST}..."
-    docker push "$IMAGE_LATEST"
 
     echo "  [OK] ${NAME} pushed (version: ${VERSION})"
 }
@@ -127,6 +123,15 @@ if ! docker info 2>/dev/null | grep -q "Username"; then
     echo ""
     echo "[INFO] Not logged in to Docker Hub. Running docker login..."
     docker login
+fi
+
+# Ensure buildx multiplatform builder exists (one-time setup)
+if ! docker buildx inspect multibuilder >/dev/null 2>&1; then
+    echo "[INFO] Creating buildx multibuilder..."
+    docker buildx create --name multibuilder --use
+    docker buildx inspect --bootstrap
+else
+    docker buildx use multibuilder
 fi
 
 case "$TARGET" in
