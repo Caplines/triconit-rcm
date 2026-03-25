@@ -31,12 +31,14 @@ export class AttachFileComponent {
   isAttachedBySameUser:boolean=false;
   fileloader:boolean = false;
   uploadButton:boolean=false;
+  smilePoint: boolean = false;
   
 
   constructor(public constant: AppConstants, private appService: ApplicationServiceService, private downloadService: DownLoadService) {
    }
 
    ngOnInit(){
+    this.smilePoint = Utils.isSmilePoint();
     this.errorMessage = '';
     this.userEmail = Utils.currentUserEmail();
     if(this.inputConfig['isDetailPage']){

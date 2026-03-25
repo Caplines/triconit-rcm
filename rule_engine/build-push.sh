@@ -21,7 +21,15 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 # ── Config ───────────────────────────────────────────────────
-# Set your Docker Hub repo here (e.g. johndoe/capline)
+# Set your Docker Hub repo here
+# Load .env first when present so DOCKER_HUB_REPO can come from file.
+if [ -f .env ]; then
+    set -a
+    # shellcheck disable=SC1091
+    source .env.prod
+    set +a
+fi
+
 REPO="${DOCKER_HUB_REPO:-}"
 if [ -z "$REPO" ]; then
     echo "[ERROR] Set DOCKER_HUB_REPO in your environment or .env:"
