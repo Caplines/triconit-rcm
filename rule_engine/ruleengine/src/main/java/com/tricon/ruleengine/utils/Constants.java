@@ -474,6 +474,8 @@ public class Constants {
 	public static final String RULE_TYPE_AUTO="AUTO";
 	
 	public static final String QUERY_FOR_RCMCALIM_1="QUERY_FOR_RCMCALIM_1";
+	public static final String QUERY_FOR_RCMCALIM_11="QUERY_FOR_RCMCALIM_11";
+	public static final String QUERY_FOR_RCMCALIM_111="QUERY_FOR_RCMCALIM_111";
 	public static final String QUERY_FOR_RCMCALIM_AUDITED="QUERY_FOR_RCMCALIM_AUDITED";
 	public static final String QUERY_FOR_RCMCALIM_FROM_A_TO_B="QUERY_FOR_RCMCALIM_FROM_A_TO_B";
 	

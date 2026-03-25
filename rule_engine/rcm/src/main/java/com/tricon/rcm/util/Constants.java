@@ -226,5 +226,19 @@ public class Constants {
     				+ "  left join rcm_user_assign_office assig on assig.office_id=off.uuid  and assig.team_id=:teamId"
     				+ "  left join rcm_user us on us.uuid=assig.user_id "
     				+ "  where cl.claim_id is not null and  off.company_id in (:companyIds) and off.active is true  ";
+
+	public static final String PRIMARY_UNBILLED ="Primary Unbilled";
+
+    public static final String SECONDARY_UNBILLED_PRIMARY_OPEN = "Secondary Unbilled (Primary Unbilled/Open)";
+
+    public static final String PRIMARY_OPEN ="Primary Open";
+
+    public static final String SECONDARY_OPEN ="Secondary Open";
+
+    public static final String PRIMARY_CLOSED ="Primary Closed";
+
+    public static final String SECONDARY_CLOSED = "Secondary Closed";
+
+    public static final String SECONDARY_UNBILLED_PRIMARY_CLOSED ="Secondary Unbilled (Primary Closed)";
     		
 }
