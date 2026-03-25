@@ -123,9 +123,27 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 //		   @Param("teamId") int teamId,@Param("statusId") int statusId,@Param("systemCom") String systemCom,
 //		   @Param("claimId") String claimId);
 	
-	@Query(value = "select comment_assigned_by from rcm_claim_assignment where active =false and current_team_id<>:teamId and claim_id=:claimUuid order by created_date desc limit 1", nativeQuery = true)
-	String findLatestClaimCommentByOtherTeam(@Param("claimUuid") String claimUUid,@Param("teamId") int teamId);
+	// @Query(value = "select comment_assigned_by from rcm_claim_assignment where active =false and current_team_id<>:teamId and claim_id=:claimUuid order by created_date desc limit 1", nativeQuery = true)
+	// String findLatestClaimCommentByOtherTeam(@Param("claimUuid") String claimUUid,@Param("teamId") int teamId);
 
+	@Query(value = "SELECT rca.claim_id, rca.comment_assigned_by " +
+               "FROM rcm_claim_assignment rca " +
+               "INNER JOIN (" +
+               "    SELECT claim_id, MAX(created_date) as maxDate " +
+               "    FROM rcm_claim_assignment " +
+               "    WHERE active = false " +
+               "    AND current_team_id <> :teamId " +
+               "    AND claim_id IN :claimUuids " +
+               "    GROUP BY claim_id" +
+               ") latest ON rca.claim_id = latest.claim_id " +
+               "AND rca.created_date = latest.maxDate " +
+               "AND rca.active = false " +
+               "AND rca.current_team_id <> :teamId", 
+               nativeQuery = true)
+		List<Object[]> findLatestClaimCommentsByOtherTeam(
+    	@Param("claimUuids") List<String> claimUuids,
+    	@Param("teamId") int teamId
+	);
 	
 	  @Query(value ="select rc.claim_id as ClaimId ,off.name AS OfficeUuid, "
 	          + "off.company_id as ClientUuid ,c.name as ClientName, "

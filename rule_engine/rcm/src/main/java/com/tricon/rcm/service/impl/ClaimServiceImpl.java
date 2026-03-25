@@ -2009,6 +2009,31 @@ public class ClaimServiceImpl {
 			return null;
 	}
 
+	private void populateLastRemarks(List<FreshClaimDataViewDto> listView, int teamId) {
+    if (listView == null || listView.isEmpty()) return;
+    
+    List<String> claimUuids = listView.stream()
+        .map(FreshClaimDataViewDto::getUuid)
+        .collect(Collectors.toList());
+    
+    // ONE query instead of N queries
+    List<Object[]> remarks = rcmClaimAssignmentRepo
+        .findLatestClaimCommentsByOtherTeam(claimUuids, teamId);
+    
+    // Convert result to Map<claimId, comment_assigned_by>
+    Map<String, String> remarksMap = remarks.stream()
+        .collect(Collectors.toMap(
+            row -> (String) row[0],  // claim_id
+            row -> (String) row[1],  // comment_assigned_by
+            (existing, replacement) -> existing
+        ));
+    
+    // Set remarks with no DB call
+    listView.forEach(data ->
+        data.setLastTeamRemark(remarksMap.get(data.getUuid()))
+    );
+}
+
 	public List<FreshClaimDataViewDto> fetchFreshClaimDetails(int teamId, int billingORRebill, String sub,
 			PartialHeader partialHeader) {
         ///Add more logic
@@ -2056,11 +2081,12 @@ public class ClaimServiceImpl {
 ////			  commentsList.addAll(this.fetchLatestCommentsByClaimUuid(claimUuidChunk, teamId));
 ////					}
 	
-			 listView.forEach(data->{
+			//  listView.forEach(data->{
 					 
 					 
-					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-				 });
+			// 		 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+			// 	 });
+			populateLastRemarks(listView, teamId);
 			 
 			
 		   }
@@ -2092,9 +2118,10 @@ public class ClaimServiceImpl {
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				 //Need to get Claim remark in of non billing and internal audit
 				
-				 listView.forEach(data->{
-					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-				 });
+				//  listView.forEach(data->{
+				// 	 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+				//  });
+				populateLastRemarks(listView, teamId);
 				 
 				// this.populateClaimListWithComments(listView, teamId);
 			 }
@@ -2123,10 +2150,11 @@ public class ClaimServiceImpl {
 			 if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				 //Need to get Claim remark in of non billing and internal audit
 				
-				 listView.forEach(data->{
-					 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
-				 });
+				//  listView.forEach(data->{
+				// 	 data.setLastTeamRemark(rcmClaimAssignmentRepo.findLatestClaimCommentByOtherTeam(data.getUuid(), teamId));
+				//  });
 				/// this.populateClaimListWithComments(listView, teamId);
+				populateLastRemarks(listView, teamId);
 			 }
 		}
 		else {
