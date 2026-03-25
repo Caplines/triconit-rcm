@@ -14,6 +14,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.tricon.rcm.dto.GenericResponse;
 import com.tricon.rcm.util.MessageConstants;
+import com.tricon.rcm.exception.ClaimSaveException;
 
 @RestControllerAdvice
 public class ValidationHandler extends ResponseEntityExceptionHandler{
@@ -28,5 +29,11 @@ public class ValidationHandler extends ResponseEntityExceptionHandler{
 			errors.put(fieldName, message);
 		});
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.EMPTY_RESOURCE, errors));
+	}
+
+	@org.springframework.web.bind.annotation.ExceptionHandler(ClaimSaveException.class)
+	public ResponseEntity<Object> handleClaimSaveException(ClaimSaveException ex) {
+		// Keep HTTP 200 to match existing frontend behavior which relies on GenericResponse.status.
+		return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), null));
 	}
 }

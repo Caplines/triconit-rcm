@@ -5578,7 +5578,7 @@
                                                 <div class="alert fade show text-center" *ngIf="alert.showAlertPopup"
                                                     [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
                                                     role="alert">
-                                                    <button type="button" (click)="alert.showAlertPopup=false;"
+                                                    <button type="button" (click)="closeAlertPopup()"
                                                         class="close" data-dismiss="alert" aria-label="Close">
                                                         <span aria-hidden="true">&times;</span>
                                                     </button>
@@ -5705,7 +5705,7 @@
                                             [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':alert.isError}"
                                             role="alert">
                                             <strong>{{alert.alertMsg}}</strong>
-                                            <button type="button" (click)="alert.showAlertPopup=false;" class="close"
+                                            <button type="button" (click)="closeAlertPopup()" class="close"
                                                 data-dismiss="alert" aria-label="Close">
                                                 <span aria-hidden="true">&times;</span>
                                             </button>
@@ -5770,6 +5770,10 @@
                             [ngClass]="{'alert-success': !this.alert.isError,'alert-danger':this.alert.isError}"
                             role="alert">
                             <strong>{{alert.alertMsg}}</strong>
+                            <button type="button" (click)="closeAlertPopup()" class="close"
+                                data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
                         </div>
 
                     </ng-container>

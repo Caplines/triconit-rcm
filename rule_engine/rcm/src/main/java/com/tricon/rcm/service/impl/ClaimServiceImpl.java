@@ -3960,6 +3960,9 @@ public class ClaimServiceImpl {
 		data.forEach(s -> {
            
 			RcmRules rule = rcmRuleRepo.findById(s.getRuleId());
+			if (rule == null) {
+				throw new com.tricon.rcm.exception.ClaimSaveException("Invalid ruleId: " + s.getRuleId());
+			}
 			
 			RcmClaimRuleRemark remark = rcmClaimRuleRemarkRepo.findByRuleAndClaim(rule, claim);
 
@@ -3986,6 +3989,9 @@ public class ClaimServiceImpl {
 
 			
 			RcmRules rule = rcmRuleRepo.findById(s.getRuleId());
+			if (rule == null) {
+				throw new com.tricon.rcm.exception.ClaimSaveException("Invalid ruleId: " + s.getRuleId());
+			}
 			//if (s.getRemark()==null)  return ;
 			if (!rule.getManualAuto().equals(Constants.RULE_TYPE_MANUAL)) return ;
 			RcmClaimRuleValidation val = rcmClaimRuleValidationRepo.findByRuleAndClaim(rule, claim);
@@ -4015,6 +4021,14 @@ public class ClaimServiceImpl {
 
 			RcmClaimsServiceRuleValidation val = rcmClaimsServiceRuleValidationRepo
 					.findByClaimClaimUuidAndRemarkUuid(claim.getClaimUuid(), s.getRemarkUuid());
+
+			if (s.getRemarkUuid() == null || s.getRemarkUuid().trim().isEmpty()) {
+				throw new com.tricon.rcm.exception.ClaimSaveException("Service code validation remarkUuid is required");
+			}
+			if (val == null) {
+				throw new com.tricon.rcm.exception.ClaimSaveException(
+						"Service code validation record not found for remarkUuid: " + s.getRemarkUuid());
+			}
 
 			val.setUpdatedBy(user);
 			val.setUpdatedDate(new Date());
@@ -4155,7 +4169,7 @@ public class ClaimServiceImpl {
 		boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
 		
 		if (!validateClaimRight) {
-			return null;
+			throw new com.tricon.rcm.exception.ClaimSaveException("Not authorized to modify this claim for this client");
 	     }
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
 
@@ -4345,7 +4359,11 @@ public class ClaimServiceImpl {
         if (data.size()==0) return false;
         for(ClaimNoteDto s:data){
 		//data.forEach(s -> {
-			RcmClaimNoteType noteType = rcmClaimNoteTypeRepo.findById(s.getId()).get();
+			Optional<RcmClaimNoteType> noteTypeOpt = rcmClaimNoteTypeRepo.findById(s.getId());
+			if (!noteTypeOpt.isPresent()) {
+				throw new com.tricon.rcm.exception.ClaimSaveException("Claim note type not found for id: " + s.getId());
+			}
+			RcmClaimNoteType noteType = noteTypeOpt.get();
 			RcmClaimNotes notes = rcmClaimNotesRepo.findByClaimAndNoteType(claim, noteType);
 			if (s.getValue() != null && !s.getValue().trim().equals("")) {
 				if (notes != null) {
@@ -4378,7 +4396,11 @@ public class ClaimServiceImpl {
         RcmTeam team =rcmTeamRepo.findById(partialHeader.getTeamId());
         for(ClaimNoteDto s:data){
 		//data.forEach(s -> {
-			RcmClaimNoteType noteType = rcmClaimNoteTypeRepo.findById(s.getId()).get();
+			Optional<RcmClaimNoteType> noteTypeOpt = rcmClaimNoteTypeRepo.findById(s.getId());
+			if (!noteTypeOpt.isPresent()) {
+				throw new com.tricon.rcm.exception.ClaimSaveException("Claim note type not found for id: " + s.getId());
+			}
+			RcmClaimNoteType noteType = noteTypeOpt.get();
 			List<RcmClaimNotesServiceLevel> notess = rcmClaimNotesServiceLevelRepo.findByClaimAndNoteType(claim, noteType);
 			Optional<RcmClaimNotesServiceLevel> notesopt = notess.stream().filter(c -> c.getServiceCode().equals(s.getServiceCode()))
 					.findFirst();
@@ -4446,7 +4468,7 @@ public class ClaimServiceImpl {
        boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
 		
 		if (!validateClaimRight) {
-			return null;
+			throw new com.tricon.rcm.exception.ClaimSaveException("Not authorized to modify this claim for this client");
 	     }
 		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
 
@@ -4479,6 +4501,9 @@ public class ClaimServiceImpl {
 			RcmClaims claim, PartialHeader partialHeader) {
 		data.forEach(s -> {
 			RcmRules rule = rcmRuleRepo.findById(s.getRuleId());
+			if (rule == null) {
+				throw new com.tricon.rcm.exception.ClaimSaveException("Invalid ruleId: " + s.getRuleId());
+			}
 			if (rule.getManualAuto().equals(Constants.RULE_TYPE_MANUAL)) {
 				RcmClaimRuleValidation val = rcmClaimRuleValidationRepo.findByRuleAndClaim(rule, claim);
 				if (s.getMessage() != null && !s.getMessage().trim().equals("")) {
@@ -4516,18 +4541,29 @@ public class ClaimServiceImpl {
 		return "";
 	}
 
+	@Transactional(rollbackFor = Exception.class)
 	public ClaimEditDetailDto saveFullClaim(PartialHeader partialHeader, ClaimEditDto dto) {
 
+		if (dto == null || dto.getClaimUuid() == null || dto.getClaimUuid().trim().isEmpty()) {
+			throw new com.tricon.rcm.exception.ClaimSaveException("claimUuid is required");
+		}
+		
        boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
 		
 		if (!validateClaimRight) {
-			return null;
+			throw new com.tricon.rcm.exception.ClaimSaveException("Not authorized to modify this claim for this client");
 	     }
 		
 		ClaimEditDetailDto claimEditDetailDto= new ClaimEditDetailDto();
 		String message="";
 		RcmClaims claim = rcmClaimRepository.findByClaimUuid(dto.getClaimUuid());
+		if (claim == null) {
+			throw new com.tricon.rcm.exception.ClaimSaveException("Claim not found for claimUuid: " + dto.getClaimUuid());
+		}
 		RcmUser user = userRepo.findByUuid(partialHeader.getJwtUser().getUuid());
+		if (user == null) {
+			throw new com.tricon.rcm.exception.ClaimSaveException("User not found in session");
+		}
 		RcmClaimAssignment assign = rcmClaimAssignmentRepo
 				.findByAssignedToUuidAndClaimsClaimUuidAndActive(partialHeader.getJwtUser().getUuid(), claim.getClaimUuid(), true);
 		// claim.getC
@@ -4537,6 +4573,9 @@ public class ClaimServiceImpl {
 			}
 		boolean notesSaved=false;
 		RcmOffice office =officeRepo.findByUuid(claim.getOffice().getUuid());
+		if (office == null) {
+			throw new com.tricon.rcm.exception.ClaimSaveException("Office not found for claim");
+		}
 		//RcmCompany rcmCompany = rcmCommonServiceImpl.getCompanyFormParitalHeaderCompanyId(officeRepo.findByUuid(claim.getOffice().getUuid()).getCompany().getUuid(), partialHeader.getCompany());
 		boolean originalClaimPendingStatus =claim.isPending();
 		if (validateClaimRight) {

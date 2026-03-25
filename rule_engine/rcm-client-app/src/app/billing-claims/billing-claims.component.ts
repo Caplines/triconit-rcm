@@ -38,6 +38,7 @@ import { DatePickerComponent } from '../shared/date-picker/date-picker/date-pick
 export class BillingClaimsComponent {
 
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
+  private alertHideTimer: any = null;
   alertRecreate: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertAssign: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   alertArch: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
@@ -1490,10 +1491,17 @@ export class BillingClaimsComponent {
   }
 
   showAlertPopup(res: any) {
+    if (this.alertHideTimer) {
+      clearTimeout(this.alertHideTimer);
+      this.alertHideTimer = null;
+    }
     this.alert.showAlertPopup = true;
-    setTimeout(() => { this.alert.showAlertPopup = false; }, 5000);
     if (res.status == 200) {
       this.alert.isError = false;
+      this.alertHideTimer = setTimeout(() => {
+        this.alert.showAlertPopup = false;
+        this.alertHideTimer = null;
+      }, 5000);
 
       this.alert.alertMsg = res.data.message;
       if (this.alert.alertMsg === 'Latter') {
@@ -1517,9 +1525,22 @@ export class BillingClaimsComponent {
 
     } else {
       this.alert.isError = true;
-      this.alert.alertMsg = "Error";
+      this.alert.alertMsg =
+        res?.data?.message ??
+        res?.message ??
+        res?.error?.message ??
+        res?.error?.data?.message ??
+        "Error";
     }
 
+  }
+
+  closeAlertPopup() {
+    if (this.alertHideTimer) {
+      clearTimeout(this.alertHideTimer);
+      this.alertHideTimer = null;
+    }
+    this.alert.showAlertPopup = false;
   }
 
   showAlertAssignPopup(res: any) {
