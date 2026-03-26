@@ -34,6 +34,13 @@ services:
       - rcm-backend-attachments:/opt/project/attachments
       - rcm-backend-pdf:/opt/project/pdf
       - rcm-backend-xml:/opt/project/xml
+      - ${RCM_BOOTSTRAP_DIR:-./bootstrap/rcm-files}:/bootstrap/rcm-files:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      if [ ! -f /opt/project/tricon/files/client_secret.json ] && [ -f /bootstrap/rcm-files/client_secret.json ]; then
+        cp /bootstrap/rcm-files/client_secret.json /opt/project/tricon/files/client_secret.json;
+      fi;
+      exec java -jar /app/rcm.war
     networks:
       - rcm-network
     healthcheck:
