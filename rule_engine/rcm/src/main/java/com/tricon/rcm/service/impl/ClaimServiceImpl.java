@@ -2021,12 +2021,12 @@ public class ClaimServiceImpl {
         .findLatestClaimCommentsByOtherTeam(claimUuids, teamId);
     
     // Convert result to Map<claimId, comment_assigned_by>
-    Map<String, String> remarksMap = remarks.stream()
-        .collect(Collectors.toMap(
-            row -> (String) row[0],  // claim_id
-            row -> (String) row[1],  // comment_assigned_by
-            (existing, replacement) -> existing
-        ));
+    Map<String, String> remarksMap = new HashMap<>();
+    for (Object[] row : remarks) {
+        String claimId = (String) row[0];
+        String comment = row[1] != null ? (String) row[1] : "";
+        remarksMap.put(claimId, comment);
+    }
     
     // Set remarks with no DB call
     listView.forEach(data ->
