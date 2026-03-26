@@ -86,6 +86,7 @@ import com.tricon.rcm.jpa.repository.RcmUserRoleRepo;
 import com.tricon.rcm.jpa.repository.RcmUserTeamRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 //import com.tricon.rcm.jpa.repository.RcmUserTempRepo;
+import com.tricon.rcm.config.RcmGoogleSheetsProperties;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.Constants;
 import com.tricon.rcm.util.EncrytedKeyUtil;
@@ -139,6 +140,9 @@ public class AdminServiceImpl {
 	
 	@Autowired
 	RcmMappingTableRepo mappingTableRepo;
+
+	@Autowired
+	RcmGoogleSheetsProperties rcmGoogleSheetsProperties;
 	
 	@Autowired
 	RcmUtilServiceImpl utilService;
@@ -801,9 +805,9 @@ public class AdminServiceImpl {
 
 			// insert constant record of RCM Database in rcm_mapping_table
 			mappingTable = new RcmMappingTable();
-			mappingTable.setGoogleSheetId(Constants.MAPPING_TABLE_GOOGLE_SHEET_ID);
-			mappingTable.setGoogleSheetSubId(Constants.MAPPING_TABLE_GOOGLE_SHEET_SUB_ID);
-			mappingTable.setGoogleSheetSubName(Constants.MAPPING_TABLE_GOOGLE_SHEET_SUB_NAME);
+			mappingTable.setGoogleSheetId(rcmGoogleSheetsProperties.getRcmDatabaseId());
+			mappingTable.setGoogleSheetSubId(rcmGoogleSheetsProperties.getRcmDatabaseSubId());
+			mappingTable.setGoogleSheetSubName(rcmGoogleSheetsProperties.getRcmDatabaseSubName());
 			mappingTable.setName(Constants.MAPPING_TABLE_NAME_RCM_DATABASE);
 			mappingTable.setCompany(company);
 			mappingTableRepo.save(mappingTable);

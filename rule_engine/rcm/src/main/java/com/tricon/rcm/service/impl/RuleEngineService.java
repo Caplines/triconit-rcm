@@ -40,6 +40,7 @@ import com.tricon.rcm.jpa.repository.RcmRemoteLiteRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.jpa.repository.RcmTeamRepo;
+import com.tricon.rcm.config.RcmGoogleSheetsProperties;
 import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.ConnectAndReadSheets;
 import com.tricon.rcm.util.Constants;
@@ -118,6 +119,9 @@ public class RuleEngineService {
 
 	@Value("${google.client.secret}")
 	private String CLIENT_SECRET_DIR;
+
+	@Autowired
+	RcmGoogleSheetsProperties rcmGoogleSheetsProperties;
 
 	@Autowired
 	RestTemplate restTemplate;
@@ -793,8 +797,8 @@ public class RuleEngineService {
 				 * 
 				 * }
 				 */
-				map = ConnectAndReadSheets.readRemoteLiteSheet("1KVaZbAfaYOGMbYRZuGH-4VVxeZQPIvML0YThPsPNTnw",
-						"Combined", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+				map = ConnectAndReadSheets.readRemoteLiteSheet(rcmGoogleSheetsProperties.getRemoteLiteId(),
+						rcmGoogleSheetsProperties.getRemoteLiteTab(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
 				// map.put(dto1.getOfficeId(), dataDtao);
 
 			} catch (Exception n) {

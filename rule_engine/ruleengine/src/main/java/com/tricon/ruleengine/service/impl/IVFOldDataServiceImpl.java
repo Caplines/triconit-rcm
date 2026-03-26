@@ -58,6 +58,15 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 
 	@Value("${google.client.secret}")
 	private String CLIENT_SECRET_DIR;
+
+	@Value("${ivf.dump.sheet.id}")
+	private String ivfDumpSheetId;
+
+	@Value("${ivf.ortho.sheet.id}")
+	private String ivfOrthoSheetId;
+
+	@Value("${ivf.ortho.sheet.tab}")
+	private String ivfOrthoSheetTab;
 	
 	@Autowired
     @Qualifier("jwtUserDetailsService")
@@ -87,8 +96,7 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
 		try {
 			//no concept of old sheet now
 			//if (!dto.isNewColumns())
-			//https://docs.google.com/spreadsheets/d/1POWJC8as3b3MvhN8EtLacUwLu3ABpI88JUECMQ2Ts10/edit#gid=898165103
-			dto.setSheetId("1POWJC8as3b3MvhN8EtLacUwLu3ABpI88JUECMQ2Ts10");//do this hard code 
+			dto.setSheetId(ivfDumpSheetId);
 			String sheetSubid="";
 			/*
 			
@@ -170,7 +178,7 @@ public class IVFOldDataServiceImpl implements IVFOldDataService {
         	Company company = companyDao.getCompanyByName(Constants.COMPANY_NAME);
 		try {
 			
-			ivfMap = ConnectAndReadSheets.readSheetIvOrtho("1ZW0ppOhi4IxDpZZsqKqwzQCpDWsWUKhBLAUsAEz6180", "IV",
+			ivfMap = ConnectAndReadSheets.readSheetIvOrtho(ivfOrthoSheetId, ivfOrthoSheetTab,
 					CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
 			// ivfMap = ConnectAndReadSheets.readSheetNewDump(dto.getSheetId(), "TEST", null,
 			//		CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, office.getName(), false, true);

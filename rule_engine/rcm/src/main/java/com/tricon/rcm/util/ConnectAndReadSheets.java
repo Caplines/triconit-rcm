@@ -1,11 +1,11 @@
 package com.tricon.rcm.util;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.util.Base64;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -20,20 +20,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 
-import com.google.api.client.auth.oauth2.Credential;
-import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
-import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.http.HttpRequestInitializer;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.jackson2.JacksonFactory;
-import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.auth.http.HttpCredentialsAdapter;
+import com.google.auth.oauth2.ServiceAccountCredentials;
 import com.tricon.rcm.dto.ClaimFromSheet;
 import com.tricon.rcm.dto.ClaimServiceValidationGSheet;
 import com.tricon.rcm.dto.ClaimServiceValidationGSheetData;
@@ -72,19 +68,45 @@ public class ConnectAndReadSheets {
 		;
 	}
 
-	public static Credential getCredentials(String clientDir, String clientFolder) throws IOException {
-		// Load client secrets.
-		File initialFile = new File(clientDir);
-		InputStream targetStream = new FileInputStream(initialFile);
-		// InputStream in =
-		// GoogleFileController.class.getResourceAsStream(CLIENT_SECRET_DIR);
-		GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(JSON_FACTORY, new InputStreamReader(targetStream));
+	/**
+	 * Authenticates using service-account credentials from environment variables.
+	 * G_SHEET_CLIENT_EMAIL  - service account email
+	 * G_SHEET_CLIENT_PRIVATE_KEY - RSA private key (PEM, with or without headers, \n or real newlines)
+	 * Both clientDir and clientFolder are kept for call-site compatibility but are not used.
+	 */
+	public static HttpRequestInitializer getCredentials(String clientDir, String clientFolder) throws IOException {
+		String clientEmail = System.getenv("G_SHEET_CLIENT_EMAIL");
+		String rawKey = System.getenv("G_SHEET_CLIENT_PRIVATE_KEY");
 
-		// Build flow and trigger user authorization request.
-		GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(HTTP_TRANSPORT, JSON_FACTORY,
-				clientSecrets, SCOPES).setDataStoreFactory(new FileDataStoreFactory(new java.io.File(clientFolder)))
-						.setAccessType("offline").build();
-		return new AuthorizationCodeInstalledApp(flow, new LocalServerReceiver()).authorize("user");
+		if (clientEmail == null || clientEmail.isEmpty()) {
+			throw new IOException("G_SHEET_CLIENT_EMAIL environment variable is not set");
+		}
+		if (rawKey == null || rawKey.isEmpty()) {
+			throw new IOException("G_SHEET_CLIENT_PRIVATE_KEY environment variable is not set");
+		}
+
+		// Normalise: replace literal \n with real newlines, strip PEM headers and whitespace
+		String pemBody = rawKey
+				.replace("\\n", "\n")
+				.replace("-----BEGIN PRIVATE KEY-----", "")
+				.replace("-----END PRIVATE KEY-----", "")
+				.replaceAll("\\s+", "");
+
+		try {
+			byte[] keyBytes = Base64.getDecoder().decode(pemBody);
+			PrivateKey privateKey = KeyFactory.getInstance("RSA")
+					.generatePrivate(new PKCS8EncodedKeySpec(keyBytes));
+
+			ServiceAccountCredentials credentials = ServiceAccountCredentials.newBuilder()
+					.setClientEmail(clientEmail)
+					.setPrivateKey(privateKey)
+					.setScopes(SCOPES)
+					.build();
+
+			return new HttpCredentialsAdapter(credentials);
+		} catch (GeneralSecurityException e) {
+			throw new IOException("Failed to build service account credentials from env vars", e);
+		}
 	}
 
 	public static HashMap<String, RemoteLietStatusCount> readRemoteLiteSheet(String spreadsheetId, String sheetName,

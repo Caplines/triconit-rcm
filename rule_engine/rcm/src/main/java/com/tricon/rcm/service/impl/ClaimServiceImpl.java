@@ -227,6 +227,7 @@ import com.tricon.rcm.jpa.repository.RcmTeamRepo;
 import com.tricon.rcm.jpa.repository.RcmUserCompanyRepo;
 import com.tricon.rcm.jpa.repository.RcmUserTeamRepo;
 import com.tricon.rcm.jpa.repository.UserAssignOfficeRepo;
+import com.tricon.rcm.config.RcmGoogleSheetsProperties;
 import com.tricon.rcm.security.JwtUser;
 import com.tricon.rcm.util.ClaimMovementUtil;
 import com.tricon.rcm.util.ClaimUtil;
@@ -266,6 +267,9 @@ public class ClaimServiceImpl {
 
 	@Value("${google.client.secret}")
 	private String CLIENT_SECRET_DIR;
+
+	@Autowired
+	RcmGoogleSheetsProperties rcmGoogleSheetsProperties;
 	
 	@Value("${eoblink.folder}")
 	private String eobLinkFolder;
@@ -2857,11 +2861,11 @@ public class ClaimServiceImpl {
 					if (claim==null) claim = rcmClaimRepository.findByClaimUuid(claimUuid);
 					String sheetYear = Constants.SDF_SHEET_PROVIDER_DATE_HELPING_YEAR.format(claim.getDos());
 			    Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
-					Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
+					rcmGoogleSheetsProperties.getMappingWorkbookId(), rcmGoogleSheetsProperties.getMappingProviderTab(), CLIENT_SECRET_DIR,
 					CREDENTIALS_FOLDER);
 			  	
 			   List<ProivderHelpingSheetDto> helpingList= ConnectAndReadSheets.readProviderScheduleHelpingGSheet(
-					   Constants.Provider_Schedule_SHEET, sheetYear, CLIENT_SECRET_DIR,
+					   rcmGoogleSheetsProperties.getProviderScheduleId(), sheetYear, CLIENT_SECRET_DIR,
 					CREDENTIALS_FOLDER);
                String officeName=implDto.getOfficeName();// officeRepo.findById(claim.getOffice().getUuid()).get().getName();
                //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
@@ -3503,8 +3507,9 @@ public class ClaimServiceImpl {
 
 		HashMap<String, List<ClaimServiceValidationGSheetData>> data = null;
 		try {
-			data = ConnectAndReadSheets.readServiceValidationFromGSheet("1Ba44zmvoNzNBPNaxGPUNVxUu_O41r7HAWq2hyZuCDJc",
-					"Service-Code based Validations", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+			data = ConnectAndReadSheets.readServiceValidationFromGSheet(
+					rcmGoogleSheetsProperties.getServiceValidationId(),
+					rcmGoogleSheetsProperties.getServiceValidationTab(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
 		} catch (Exception v) {
 			v.printStackTrace();
 			logger.error("Error in  RCM Tool Checks and Validations Sheets");
@@ -3517,8 +3522,9 @@ public class ClaimServiceImpl {
 
 		List<CredentialDataAnesthesia> data = null;
 		try {
-			data = ConnectAndReadSheets.readCredentialTrackerAnesthesiaGSheet("1QPfa8aEA5pcSWhGJQSX9R7CC-ZxVA-8_nvagjGAA4s4",
-					"Anesthesia and First Dental Home", CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+			data = ConnectAndReadSheets.readCredentialTrackerAnesthesiaGSheet(
+					rcmGoogleSheetsProperties.getCredentialTrackerId(),
+					rcmGoogleSheetsProperties.getCredentialTrackerAnesTab(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
 		} catch (Exception v) {
 			v.printStackTrace();
 			logger.error("Error in Anesthesia and First Dental Home");
@@ -5085,11 +5091,11 @@ public class ClaimServiceImpl {
 						try {
 							String sheetYear = Constants.SDF_SHEET_PROVIDER_DATE_HELPING_YEAR.format(claim.getDos());
 					    Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
-					    		Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
+					    		rcmGoogleSheetsProperties.getMappingWorkbookId(), rcmGoogleSheetsProperties.getMappingProviderTab(), CLIENT_SECRET_DIR,
 							CREDENTIALS_FOLDER);
 					   	
 					   List<ProivderHelpingSheetDto> helpingList= ConnectAndReadSheets.readProviderScheduleHelpingGSheet(
-					    		Constants.Provider_Schedule_SHEET, sheetYear , CLIENT_SECRET_DIR,
+					    		rcmGoogleSheetsProperties.getProviderScheduleId(), sheetYear , CLIENT_SECRET_DIR,
 							CREDENTIALS_FOLDER);
 		               String officeName=off.getName();// officeRepo.findById(claim.getOffice().getUuid()).get().getName();
 		               //String sheetDate = Constants.SDF_SHEET_PROVIDER_DATE.format(implDto.getDos());
@@ -5205,7 +5211,7 @@ public class ClaimServiceImpl {
 					
 					
 					/*Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
-							Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
+							rcmGoogleSheetsProperties.getMappingWorkbookId(), rcmGoogleSheetsProperties.getMappingProviderTab(), CLIENT_SECRET_DIR,
 							CREDENTIALS_FOLDER);
 					*/
 					String officeName=officeRepo.findById(claim.getOffice().getUuid()).get().getName();
@@ -5215,7 +5221,8 @@ public class ClaimServiceImpl {
 					List<CredentialData> creList = null;
 					try {
 						creList = ConnectAndReadSheets.readCredentialGSheet(
-							"1QPfa8aEA5pcSWhGJQSX9R7CC-ZxVA-8_nvagjGAA4s4", "Master Data", CLIENT_SECRET_DIR,
+							rcmGoogleSheetsProperties.getCredentialTrackerId(),
+							rcmGoogleSheetsProperties.getCredentialTrackerMasterTab(), CLIENT_SECRET_DIR,
 							CREDENTIALS_FOLDER);
 					}catch(Exception v) {
 						v.printStackTrace();
@@ -5817,7 +5824,7 @@ public class ClaimServiceImpl {
 		}
 		
 		Object providerSheetData[] = ConnectAndReadSheets.readProviderGSheet(
-				Constants.Mapping_Tables, Constants.Mapping_Tables_Provider, CLIENT_SECRET_DIR,
+				rcmGoogleSheetsProperties.getMappingWorkbookId(), rcmGoogleSheetsProperties.getMappingProviderTab(), CLIENT_SECRET_DIR,
 				CREDENTIALS_FOLDER);
 		List<ProviderCodeWithSpecialty> proEs = (List<ProviderCodeWithSpecialty>) providerSheetData[0];
 		for(ProviderCodeWithSpecialty pro:proEs) {

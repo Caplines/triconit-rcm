@@ -97,7 +97,8 @@ public class ReportServiceImpl implements ReportService {
 	@Value("${google.client.secret}")
 	private String CLIENT_SECRET_DIR;
 
-	
+	@Value("${digitization.sheet.id}")
+	private String digitizationSpreadsheetId;
 
 	@Override
 	public List<ReportResponseDto> getReports(ReportDto dto) {
@@ -286,7 +287,7 @@ public class ReportServiceImpl implements ReportService {
 		try {
 	    List<Rules> ruleList = tvd.getAllActiveRules();	
 	    List<Rules> ruleListRed = new ArrayList<>();	
-		dto=ConnectAndReadSheets.readGoogleReportsDigitationSheet(Constants.Digitization_of_RE_Results_SpreadSheeId,
+		dto=ConnectAndReadSheets.readGoogleReportsDigitationSheet(digitizationSpreadsheetId,
 			sheetName, dto.getSheetTabId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, dto);
 		Office off = od.getOfficeByName(dto.getOffficeName(),user.getCompany().getUuid());
 		dto.setOfficeId(off.getUuid());
@@ -440,7 +441,7 @@ public class ReportServiceImpl implements ReportService {
 				}
 		   }
 		   
-		   ConnectAndReadSheets.updateGoogleReportsDigitationSheet(Constants.Digitization_of_RE_Results_SpreadSheeId,
+		   ConnectAndReadSheets.updateGoogleReportsDigitationSheet(digitizationSpreadsheetId,
 				   sheetName,dto.getSheetTabId(), CLIENT_SECRET_DIR, CREDENTIALS_FOLDER, finalData);
 		   
 		
