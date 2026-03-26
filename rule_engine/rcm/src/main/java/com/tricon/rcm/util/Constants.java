@@ -91,9 +91,7 @@ public class Constants {
 	public static final String SHOW_ALL_COMPANY_USERS = "All";
 	public static final String MAPPING_TABLE_NAME_RCM_DATABASE = "RCM DataBase";
 	public static final String MAPPING_TABLE_NAME_TFS = "Timely Filling Sheet";
-	public static final String MAPPING_TABLE_GOOGLE_SHEET_ID = "1txTh07ssmXytBscroqVnbSRppeZjt8x1m391Hd1Fsr4";
-	public static final String MAPPING_TABLE_GOOGLE_SHEET_SUB_ID = "0";
-	public static final String MAPPING_TABLE_GOOGLE_SHEET_SUB_NAME = "Paste Data Here";
+	/* Google spreadsheet IDs live in .env (RCM_SHEET_*) via RcmGoogleSheetsProperties */
 	public static final List<String> DEFAULT_ROLE_FOR_SMILEPOINT = Arrays.asList("ADMIN", "UPLOAD_CLAIMS","ACCOUNT_MANAGER");
 	public static final List<String> DEFAULT_ROLE_FOR_OTHERS = Collections.emptyList();
 	public static final String CLIENT_MANAGER = "CLIENT_MANAGER";
@@ -107,13 +105,6 @@ public class Constants {
 	public static final int Primary_Status_Primary_submit=2;
 	public static final String CMC="CMC";
 	public static final String ProviderJoinCons="<<<>>>";
-	//Sheets
-	public static final String Provider_Schedule_SHEET="1r1unO-L2wAB6zAEaKYzMEIUi1nG_F6wTzduzaXqiKAg";
-	///public static final String Provider_Schedule_SHEET_HELP="Helping";
-	public static final String Mapping_Tables="1g9VtQVT5T0-Fp_beLSYhRIbUn-KBqP4TGmYuteMbsd4";
-	public static final String Mapping_Tables_Provider="Provider";
-	
-	//End Sheet
 	public static final String REMOVE_ATTACHMENT_PREFIX="del_";
 	
 	public static final String ARCHIVE_PREFIX="arc_";

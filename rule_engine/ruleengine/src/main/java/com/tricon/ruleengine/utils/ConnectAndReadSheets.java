@@ -501,9 +501,11 @@ public class ConnectAndReadSheets {
 	}
 	
 	public static void main(String [] a) throws IOException {
-		
-		
-		updateGoogleReportsDigitationSheet("1PSzfq1J7ajKWwM9Y7uUsLQ2hPWB0_f8mMs16IF9R69Q", "Patient ID Wise Search",2006499654, "E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files", null);
+		String sheetId = System.getenv("DIGITIZATION_SHEET_ID");
+		if (sheetId == null || sheetId.isEmpty()) {
+			sheetId = "1PSzfq1J7ajKWwM9Y7uUsLQ2hPWB0_f8mMs16IF9R69Q";
+		}
+		updateGoogleReportsDigitationSheet(sheetId, "Patient ID Wise Search",2006499654, "E:/Project/Tricon/files/client_secret.json", "E:/Project/Tricon/files", null);
 	}
 	
 	private static Color getSheetColorByType(int mType) {

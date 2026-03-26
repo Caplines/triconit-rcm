@@ -213,7 +213,7 @@ public class Constants {
    public static final String DEBUG = "DEBUG";
    public static final String EXTI_ENGINE = "EXIT";
    
-   public static final String Digitization_of_RE_Results_SpreadSheeId= "1PSzfq1J7ajKWwM9Y7uUsLQ2hPWB0_f8mMs16IF9R69Q";
+   /** Tab (gid) constants for the digitization workbook; workbook ID is digitization.sheet.id */
    public static final int Digitization_of_RE_Results_TP= 0;
    public static final int Digitization_of_RE_Results_Cl = 634516941;
    public static final int Digitization_of_RE_Results_pat = 2006499654;
