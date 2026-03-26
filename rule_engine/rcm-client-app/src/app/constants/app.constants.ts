@@ -391,7 +391,7 @@ export class AppConstants {
         { name: "Need to follow up for Void Request" },
         { name: "Need to get Provider Credentialed" },
         { name: "Need to call Insurance for reprocessing" },
-        { name: "Need to Bill" },
+        { name: "Additional information required" },
         { name: "Need to followup on void" },
         { name: "Need to Bill" },
         { name: "Need to follow up on void" },
