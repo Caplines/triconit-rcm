@@ -21,7 +21,7 @@ public class FreshClaimDataViewDto {
 	String prName;
 	String secName;
 	String lastTeam;
-	int claimAge;
+	Integer claimAge;
 	String timelyFilingLimitData;
 	float billedAmount;
 	float primTotal;

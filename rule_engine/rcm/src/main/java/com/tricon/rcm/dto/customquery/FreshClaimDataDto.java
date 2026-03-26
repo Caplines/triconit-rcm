@@ -16,7 +16,7 @@ public interface FreshClaimDataDto {
 	String getPrName();
 	String getSecName();
 	String getLastTeam();
-	int getClaimAge();
+	Integer getClaimAge();
 	String getTimelyFilingLimitData();
 	float getBilledAmount();
 	float getPrimTotal();
