@@ -622,6 +622,8 @@ export class AppConstants {
         { reasonName: "Exam & Xray Denial" },
         { reasonName: "INSADJ - 25" },
         { reasonName: "INSADJ - 26" },
+        { reasonName: "SEC INS - ADJ 25" },
+        { reasonName: "SEC INS - ADJ 26" },
 
     ];
 
