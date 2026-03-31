@@ -6309,8 +6309,9 @@ public class ClaimServiceImpl {
 			throw new IllegalArgumentException("Invalid office selected for reconciliation.");
     	}
 		// 2. Prepare date range (used only by CLOSED categories as per requirement)
-		String date1 = dto.getStartDate() != null? Constants.SDF_CredentialSheetAnes.format(dto.getStartDate())	: "";
-		String date2 = dto.getEndDate() != null	? Constants.SDF_CredentialSheetAnes.format(dto.getEndDate()): "";
+		// Must use yyyy-MM-dd format — MySQL cannot parse MM/dd/yyyy in BETWEEN clauses
+		String date1 = dto.getStartDate() != null? Constants.SDF_MYSL_DATE.format(dto.getStartDate())	: "";
+		String date2 = dto.getEndDate() != null	? Constants.SDF_MYSL_DATE.format(dto.getEndDate()): "";
 		logger.info("[RECON][SERVICE][START] office={}, startDate={}, endDate={}",office.getName(),date1,date2);
 		
 		// 3. Fetch PMS (EagleSoft) data via Rule Engine
