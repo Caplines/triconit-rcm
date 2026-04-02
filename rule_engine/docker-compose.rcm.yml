@@ -31,11 +31,11 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
     volumes:
-      - ./data/rcm/files:/opt/project/tricon/files
-      - ./data/rcm/logs:/opt/project/tricon/log
-      - ./data/rcm/attachments:/opt/project/attachments
-      - ./data/rcm/pdf:/opt/project/pdf
-      - ./data/rcm/xml:/opt/project/xml
+      - /opt/project/tricon/files:/opt/project/tricon/files
+      - /opt/project/tricon/log:/opt/project/tricon/log
+      - /opt/project/attachments:/opt/project/attachments
+      - /opt/project/pdf:/opt/project/pdf
+      - /opt/project/xml:/opt/project/xml
     networks:
       - rcm-network
     healthcheck:

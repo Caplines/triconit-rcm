@@ -35,10 +35,10 @@ services:
         limits:
           memory: 3072m
     volumes:
-      - ./data/re/files:/opt/project/tricon/files
-      - ./data/re/logs:/opt/project/tricon/log
+      - /opt/project/tricon/files:/opt/project/tricon/files
+      - /opt/project/tricon/log:/opt/project/tricon/log
       - ${CERTS_PATH:-./certs}:/opt/project/tricon/client:ro
-      - ./data/re/chrome:/opt/project/tricon/chrome
+      - /opt/project/tricon/chrome:/opt/project/tricon/chrome
     networks:
       - ruleengine-network
     healthcheck:

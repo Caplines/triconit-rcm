@@ -28,11 +28,11 @@ services:
     volumes:
       - ./ruleengine:/app
       - ~/.m2:/root/.m2
-      - ./data/re/files:/opt/project/tricon/files
-      - ./data/re/logs:/opt/project/tricon/log
+      - /opt/project/tricon/files:/opt/project/tricon/files
+      - /opt/project/tricon/log:/opt/project/tricon/log
       - ./certs:/opt/project/tricon/client
-      - ./data/re/xml:/opt/project/tricon/xml
-      - ./data/re/chrome:/opt/project/tricon/chrome
+      - /opt/project/tricon/xml:/opt/project/tricon/xml
+      - /opt/project/tricon/chrome:/opt/project/tricon/chrome
       - "../ivf Form:/opt/xslt"
     command: >
       bash -c "
