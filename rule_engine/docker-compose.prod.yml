@@ -35,10 +35,10 @@ services:
         limits:
           memory: 3072m
     volumes:
-      - backend-files:/opt/project/tricon/files
-      - backend-logs:/opt/project/tricon/log
+      - ./data/re/files:/opt/project/tricon/files
+      - ./data/re/logs:/opt/project/tricon/log
       - ${CERTS_PATH:-./certs}:/opt/project/tricon/client:ro
-      - backend-chrome:/opt/project/tricon/chrome
+      - ./data/re/chrome:/opt/project/tricon/chrome
     networks:
       - ruleengine-network
     healthcheck:
@@ -78,8 +78,3 @@ networks:
     driver: bridge
   shared-proxy:
     external: true
-
-volumes:
-  backend-files:
-  backend-logs:
-  backend-chrome:

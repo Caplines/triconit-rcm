@@ -26,14 +26,10 @@ services:
         limits:
           memory: 3072m
     volumes:
-      # Persist application data
-      - backend-files:/opt/project/tricon/files
-      - backend-logs:/opt/project/tricon/log
-      # EagleSoft SSL: when ES_SSL_CLIENT_TRUSTALL=true certs are not used. For prod (trustAll=false) mount certs/ here.
+      - ./data/re/files:/opt/project/tricon/files
+      - ./data/re/logs:/opt/project/tricon/log
       - ${CERTS_PATH:-./certs}:/opt/project/tricon/client:ro
-      - backend-chrome:/opt/project/tricon/chrome
-      # backend-xml volume removed: XSLT templates are baked into the image at /opt/xslt,
-      # and temp XML output uses /tmp/ruleengine/xml/ (no volume needed)
+      - ./data/re/chrome:/opt/project/tricon/chrome
       
     networks:
       - ruleengine-network
@@ -82,7 +78,3 @@ networks:
   shared-proxy:
     external: true
 
-volumes:
-  backend-files:
-  backend-logs:
-  backend-chrome:

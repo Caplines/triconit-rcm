@@ -29,11 +29,11 @@ services:
     volumes:
       - ./rcm:/app                     # Mount source for live development
       - ~/.m2:/root/.m2                # Reuse local Maven cache for faster builds
-      - rcm-backend-files:/opt/project/tricon/files
-      - rcm-backend-logs:/opt/project/tricon/log
-      - rcm-backend-attachments:/opt/project/attachments
-      - rcm-backend-pdf:/opt/project/pdf
-      - rcm-backend-xml:/opt/project/xml
+      - ./data/rcm/files:/opt/project/tricon/files
+      - ./data/rcm/logs:/opt/project/tricon/log
+      - ./data/rcm/attachments:/opt/project/attachments
+      - ./data/rcm/pdf:/opt/project/pdf
+      - ./data/rcm/xml:/opt/project/xml
     command: >
       bash -c "
       apt-get update &&
@@ -68,9 +68,3 @@ networks:
   rcm-network:
     driver: bridge
 
-volumes:
-  rcm-backend-files:
-  rcm-backend-logs:
-  rcm-backend-attachments:
-  rcm-backend-pdf:
-  rcm-backend-xml:
