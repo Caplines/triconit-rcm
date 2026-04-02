@@ -206,6 +206,7 @@ public class RuleEngineService {
 	 * @param user
 	 * @return
 	 */
+	@Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRED, rollbackFor = Exception.class)
 	public String pullAndSaveClaimFromRE(ClaimSourceDto dto, RcmUser user,
 			List<TimelyFilingLimitDto> timelyFilingLimits, ClaimTypeEnum claimTypeEnum, RcmCompany comp,RcmTeam currentTeam, int logId) {
 
@@ -418,44 +419,48 @@ public class RuleEngineService {
 													rcmInsuranceType, timely.getTimelyFilingLimit(),insuranceNameTypeDto.getPreferredModeOfSubmission(), claimTypeEnum);
 											isBilling=true;
 										}
-										claim.setCurrentStatus(ClaimStatusEnum.Claim_Uploaded.getId());	
-										String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
-										RcmTeam systemTeam=rcmTeamRepo.findByNameId(RcmTeamEnum.SYSTEM.getName());
-										claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Claim_Uploaded.getType(),null,systemTeam, user);
-										RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(
-												re.getClaimId() + claimTypeEnum.getSuffix(), off, source);
-										if (isC != null) {
-											isC.setResolved(true);
-											rcmIssueClaimsRepo.save(isC);
-										}
-										/// createAssginmentData
-										if (assignedUserBilling != null && (isBilling || isMedicare ) ) {
-											rcmAssigment = new RcmClaimAssignment();
-											//
-											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-													assignedUserBilling.getUser(), claimUUid, claim,
-													"", systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT, new Date());
+									claim.setCurrentStatus(ClaimStatusEnum.Claim_Uploaded.getId());	
+									String claimUUid = rcmClaimRepository.save(claim).getClaimUuid();
 
-											rcmClaimAssignmentRepo.save(rcmAssigment);
-											claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Billing.getId());
-											claim.setNextAction(ClaimStatusEnum.Need_to_Bill.getId());
-											rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Need_to_Bill.getId(),claim.getClaimUuid());
-											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(),ClaimStatusEnum.Need_to_Bill.getType(),assignedTeamBilling, user);
-										
-										}
-										if (assignedUserInternalAudit != null && (isMedicaid||  isChip || isFCL)) {
-											rcmAssigment = new RcmClaimAssignment();
-											//
-											rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
-													assignedUserInternalAudit.getUser(), claimUUid, claim,
-													"", systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT, new Date());
+									// Resolve any prior upload error immediately after the claim is persisted,
+									// before any subsequent operation can throw and skip this resolution.
+									RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(
+											re.getClaimId() + claimTypeEnum.getSuffix(), off, source);
+									if (isC != null) {
+										isC.setResolved(true);
+										rcmIssueClaimsRepo.save(isC);
+									}
 
-											rcmClaimAssignmentRepo.save(rcmAssigment);
-											claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Review.getId());
-											claim.setNextAction(ClaimStatusEnum.Need_to_Audit.getId());
-											rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Review.getId(),ClaimStatusEnum.Need_to_Audit.getId(),claim.getClaimUuid());
-											claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Review.getType(),ClaimStatusEnum.Need_to_Audit.getType(),assignedTeamInternalAudit, user);
-										}
+									RcmTeam systemTeam=rcmTeamRepo.findByNameId(RcmTeamEnum.SYSTEM.getName());
+									claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Claim_Uploaded.getType(),null,systemTeam, user);
+									/// createAssginmentData
+									if (assignedUserBilling != null && (isBilling || isMedicare ) ) {
+										rcmAssigment = new RcmClaimAssignment();
+										//
+										rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+												assignedUserBilling.getUser(), claimUUid, claim,
+												"", systemStatusBilling,assignedTeamBilling,Constants.SYSTEM_INITIAL_COMMENT, new Date());
+
+										rcmClaimAssignmentRepo.save(rcmAssigment);
+										claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Billing.getId());
+										claim.setNextAction(ClaimStatusEnum.Need_to_Bill.getId());
+										rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Billing.getId(),ClaimStatusEnum.Need_to_Bill.getId(),claim.getClaimUuid());
+										claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Billing.getType(),ClaimStatusEnum.Need_to_Bill.getType(),assignedTeamBilling, user);
+									
+									}
+									if (assignedUserInternalAudit != null && (isMedicaid||  isChip || isFCL)) {
+										rcmAssigment = new RcmClaimAssignment();
+										//
+										rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, user,
+												assignedUserInternalAudit.getUser(), claimUUid, claim,
+												"", systemStatusBilling,assignedTeamInternalAudit,Constants.SYSTEM_INITIAL_COMMENT, new Date());
+
+										rcmClaimAssignmentRepo.save(rcmAssigment);
+										claim.setCurrentStatus(ClaimStatusEnum.Pending_For_Review.getId());
+										claim.setNextAction(ClaimStatusEnum.Need_to_Audit.getId());
+										rcmClaimRepository.updateClaimCurrentStatusWithAction(ClaimStatusEnum.Pending_For_Review.getId(),ClaimStatusEnum.Need_to_Audit.getId(),claim.getClaimUuid());
+										claimCycleService.createNewClaimCycle(claim, ClaimStatusEnum.Pending_For_Review.getType(),ClaimStatusEnum.Need_to_Audit.getType(),assignedTeamInternalAudit, user);
+									}
 										/*
 										 * if (re.getSecStatus().equalsIgnoreCase(Constants.secondaryClaimTypeES)) {
 										 * newClaimCt++; newClaimSCt++; claim = new RcmClaims(); error= new
@@ -497,12 +502,8 @@ public class RuleEngineService {
 										 * claimUUid, claim, Constants.SYSTEM_INITIAL_COMMENT, systemStatusBilling);
 										 * rcmClaimAssignmentRepo.save(rcmAssigment); } }
 										 */
-										if (isC != null) {
-											isC.setResolved(true);
-											rcmIssueClaimsRepo.save(isC);
-										}
-									} else {
-										// OLD Claims Exists
+								} else {
+									// OLD Claims Exists
 										/*
 										 * boolean secondaryPresent = false; boolean primaryPresent = false;
 										 * List<String> buildError=null; for (RcmClaims oldClaims : claims) {
@@ -952,11 +953,21 @@ public class RuleEngineService {
 	public void saveRcmIssueClaim(String claimId, RcmOffice off, RcmUser user, String error, String source,
 			ClaimTypeEnum claimTypeEnum) {
 
-		RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(claimId + claimTypeEnum.getSuffix(),
-				off, source);
+		String fullClaimId = claimId + claimTypeEnum.getSuffix();
+
+		// Safety guard: if the claim is already uploaded to rcm_claims, do not create
+		// or re-open an upload error for it — that would put it in a contradictory state.
+		RcmClaims existingClaim = rcmClaimRepository.findByClaimIdAndOffice(fullClaimId, off);
+		if (existingClaim != null) {
+			logger.warn("saveRcmIssueClaim skipped for claimId={} office={}: claim already exists in rcm_claims",
+					fullClaimId, off.getUuid());
+			return;
+		}
+
+		RcmIssueClaims isC = rcmIssueClaimsRepo.findByClaimIdAndOfficeAndSource(fullClaimId, off, source);
 		if (isC == null) {
 			isC = new RcmIssueClaims();
-			isC.setClaimId(claimId + claimTypeEnum.getSuffix());
+			isC.setClaimId(fullClaimId);
 			isC.setOffice(off);
 			isC.setSource(source);
 			isC.setResolved(false);
