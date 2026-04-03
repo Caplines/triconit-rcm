@@ -60,6 +60,10 @@ services:
     environment:
       - RE_DOMAIN=${RE_DOMAIN}
       - RE_SERVER_NAME=${RE_SERVER_NAME}
+      - PROXY_CONNECT_TIMEOUT=${PROXY_CONNECT_TIMEOUT:-60s}
+      - PROXY_SEND_TIMEOUT=${PROXY_SEND_TIMEOUT:-1800s}
+      - PROXY_READ_TIMEOUT=${PROXY_READ_TIMEOUT:-1800s}
+      - NGINX_SEND_TIMEOUT=${NGINX_SEND_TIMEOUT:-1800s}
     expose:
       - "80"
     depends_on:

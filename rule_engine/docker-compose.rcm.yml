@@ -63,6 +63,10 @@ services:
     environment:
       - RCM_DOMAIN=${RCM_DOMAIN}
       - RCM_SERVER_NAME=${RCM_SERVER_NAME}
+      - PROXY_CONNECT_TIMEOUT=${PROXY_CONNECT_TIMEOUT:-60s}
+      - PROXY_SEND_TIMEOUT=${PROXY_SEND_TIMEOUT:-1800s}
+      - PROXY_READ_TIMEOUT=${PROXY_READ_TIMEOUT:-1800s}
+      - NGINX_SEND_TIMEOUT=${NGINX_SEND_TIMEOUT:-1800s}
     # No host port binding – nginx-proxy (docker-compose.proxy.yml) owns 80/443
     # and routes traffic here via the shared-proxy network.
     expose:

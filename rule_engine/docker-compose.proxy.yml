@@ -28,6 +28,10 @@ services:
       - RE_SERVER_NAME=${RE_SERVER_NAME}
       - RCM_DOMAIN=${RCM_DOMAIN}
       - RCM_SERVER_NAME=${RCM_SERVER_NAME}
+      - PROXY_CONNECT_TIMEOUT=${PROXY_CONNECT_TIMEOUT:-60s}
+      - PROXY_SEND_TIMEOUT=${PROXY_SEND_TIMEOUT:-1800s}
+      - PROXY_READ_TIMEOUT=${PROXY_READ_TIMEOUT:-1800s}
+      - NGINX_SEND_TIMEOUT=${NGINX_SEND_TIMEOUT:-1800s}
     volumes:
       - ./nginx-proxy/${NGINX_CONF:-nginx-ssl.conf}:/etc/nginx/templates/default.conf.template:ro
       - /etc/letsencrypt:/etc/letsencrypt:ro  

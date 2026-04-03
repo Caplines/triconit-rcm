@@ -59,6 +59,11 @@ services:
         max-file: "3"
     ports:
       - "4201:80"  # Port 4201 to avoid conflict with ruleengine-frontend on 4200
+    environment:
+      - PROXY_CONNECT_TIMEOUT=${PROXY_CONNECT_TIMEOUT:-60s}
+      - PROXY_SEND_TIMEOUT=${PROXY_SEND_TIMEOUT:-1800s}
+      - PROXY_READ_TIMEOUT=${PROXY_READ_TIMEOUT:-1800s}
+      - NGINX_SEND_TIMEOUT=${NGINX_SEND_TIMEOUT:-1800s}
     depends_on:
       - rcm-backend
     networks:
