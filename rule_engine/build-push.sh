@@ -85,7 +85,7 @@ build_re_backend() {
     build_and_push \
         "re-backend" \
         ".." \
-        "rule_engine/ruleengine/Dockerfile"
+        "ruleengine/Dockerfile"
 }
 
 build_re_frontend() {
