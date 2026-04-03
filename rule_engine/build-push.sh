@@ -69,6 +69,7 @@ build_and_push() {
 
     # --push is required with buildx multi-platform (cannot load multi-arch to local daemon)
     docker buildx build \
+        --no-cache \
         --platform linux/amd64,linux/arm64 \
         -f "$DOCKERFILE" \
         "${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}" \
