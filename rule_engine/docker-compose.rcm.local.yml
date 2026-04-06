@@ -4,16 +4,22 @@
 #  Backend:  http://localhost:8082   (Spring Boot, for Postman etc.)
 #
 #  Run:   docker compose -f docker-compose.rcm.local.yml up --build
+#  If only .env changed: docker compose -f docker-compose.rcm.local.yml up -d --force-recreate rcm-backend
 #  Stop:  docker compose -f docker-compose.rcm.local.yml down
 #
 #  DB: application-docker.properties (same RDS as RuleEngine).
+#
+#  No host bind mounts for /opt/project data paths — named volumes only (see bottom).
+#  Prod compose files use host/server paths; local uses Docker-managed volumes.
 
 services:
-  # Spring Boot backend (source mounted, mvn spring-boot:run)
+  # Spring Boot backend (locally built image)
   rcm-backend:
-    image: eclipse-temurin:8-jdk
+    build:
+      context: .
+      dockerfile: rcm/Dockerfile
+    image: rule_engine-rcm-backend:local
     container_name: rcm-backend
-    working_dir: /app
     logging:
       driver: "json-file"
       options:
@@ -24,22 +30,15 @@ services:
     env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - DEBUG_AUTO_RULES=${DEBUG_AUTO_RULES:-false}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./rcm:/app                     # Mount source for live development
-      - ~/.m2:/root/.m2                # Reuse local Maven cache for faster builds
-      - /opt/project/tricon/files:/opt/project/tricon/files
-      - /opt/project/tricon/log:/opt/project/tricon/log
-      - /opt/project/attachments:/opt/project/attachments
-      - /opt/project/pdf:/opt/project/pdf
-      - /opt/project/xml:/opt/project/xml
-    command: >
-      bash -c "
-      apt-get update &&
-      apt-get install -y maven &&
-      mvn spring-boot:run
-      "
+      - rcm_local_tricon_files:/opt/project/tricon/files
+      - rcm_local_tricon_log:/opt/project/tricon/log
+      - rcm_local_attachments:/opt/project/attachments
+      - rcm_local_pdf:/opt/project/pdf
+      - rcm_local_xml:/opt/project/xml
     networks:
       - rcm-network
 
@@ -72,4 +71,11 @@ services:
 networks:
   rcm-network:
     driver: bridge
+
+volumes:
+  rcm_local_tricon_files:
+  rcm_local_tricon_log:
+  rcm_local_attachments:
+  rcm_local_pdf:
+  rcm_local_xml:
 

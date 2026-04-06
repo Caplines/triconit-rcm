@@ -1,7 +1,10 @@
-# Run from rule_engine/ directory so ./certs and ./ruleengine resolve correctly:
+# Run from rule_engine/ directory:
 #   cd rule_engine
-#   ./scripts/generate-es-ssl-certs.sh   # creates certs/cacerts.jks and certs/keystore.jks
 #   docker compose -f docker-compose.local.yml up --build
+#
+# Data under /opt/project and /opt/xslt uses Docker named volumes (no host bind mounts).
+# For ES client certs/JKS, copy into the named volume or use ES_SSL_CLIENT_TRUSTALL=true in .env.
+# Prod compose files bind-mount server paths instead.
 #
 version: "3.9"
 
@@ -28,12 +31,12 @@ services:
     volumes:
       - ./ruleengine:/app
       - ~/.m2:/root/.m2
-      - /opt/project/tricon/files:/opt/project/tricon/files
-      - /opt/project/tricon/log:/opt/project/tricon/log
-      - ./certs:/opt/project/tricon/client
-      - /opt/project/tricon/xml:/opt/project/tricon/xml
-      - /opt/project/tricon/chrome:/opt/project/tricon/chrome
-      - "../ivf Form:/opt/xslt"
+      - ruleengine_local_tricon_files:/opt/project/tricon/files
+      - ruleengine_local_tricon_log:/opt/project/tricon/log
+      - ruleengine_local_tricon_client:/opt/project/tricon/client
+      - ruleengine_local_tricon_xml:/opt/project/tricon/xml
+      - ruleengine_local_tricon_chrome:/opt/project/tricon/chrome
+      - ruleengine_local_xslt:/opt/xslt
     command: >
       bash -c "
       apt-get update &&
@@ -78,4 +81,12 @@ services:
 networks:
   ruleengine-network:
     driver: bridge
+
+volumes:
+  ruleengine_local_tricon_files:
+  ruleengine_local_tricon_log:
+  ruleengine_local_tricon_client:
+  ruleengine_local_tricon_xml:
+  ruleengine_local_tricon_chrome:
+  ruleengine_local_xslt:
 

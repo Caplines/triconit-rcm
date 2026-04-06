@@ -343,47 +343,60 @@ public class RuleBookServiceImpl {
 		
 		List<TPValidationResponseDto> dList = new ArrayList<>();
 		try {
-			logger.info("-->" + creList.size());
-			// List<ProviderCodeWithOffice> pro = (List<ProviderCodeWithOffice>)
-			// providerSheetData[1];
+			if (creList == null) {
+				logger.error(
+						"Rule 305 (Credentialing Status): credential list is null — Master Data sheet read failed or was skipped; search logs for readCredentialGSheet / Rule 305");
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule305.error.sheet.message", new Object[] {}, locale), Constants.FAIL,
+						"", "", ""));
+				return dList;
+			}
+			logger.info("Rule 305 (Credentialing Status): credential tracker row count={}", creList.size());
 
 			String claimProvider = rcmClaim.getProviderId();
 
 			if (claimProvider == null) {
-
 				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
 						messageSource.getMessage("rule305.error.message1", new Object[] {}, locale), Constants.FAIL, "",
 						"", ""));
 				return dList;
 			}
-			// String sheetProviderCode = "";
+
 			String applicationStatus = "";
 			String effectiveDate = "";
-			/*
-			 * List<ProviderCodeWithOffice> pCodeList = pro.stream() .filter(e ->
-			 * e.getOffice().trim().equalsIgnoreCase(claimofficeName) &&
-			 * e.getEsCode().trim().equalsIgnoreCase(claimProvider))
-			 * .collect(Collectors.toList()); if (pCodeList != null && pCodeList.size() > 0)
-			 * { sheetProviderCode = pCodeList.get(0).getProviderCode(); }
-			 */
 
 			final String testVal = insuranceCodeFromSheet;
-			// final String insNameFinal = insName;
-			// CredentialData ddd =creList.get(953);
-			// CredentialData ddd1 =creList.get(3032);
-			// CredentialData dd22=creList.get(3031);
-			// CredentialData dd221=creList.get(3030);
+			String insuranceTypeName = (rcmClaim.getRcmInsuranceType() != null)
+					? rcmClaim.getRcmInsuranceType().getName() : null;
+			String treatingProvider = rcmClaim.getTreatingProviderFromClaim();
+
+			logger.info(
+					"Rule 305 filter params: office={}, insuranceTypeName={}, insuranceCode={}, treatingProvider={}, claimProvider={}",
+					claimofficeName, insuranceTypeName, testVal, treatingProvider, claimProvider);
+
+			if (insuranceTypeName == null || treatingProvider == null) {
+				String missing = (insuranceTypeName == null ? "InsuranceType" : "")
+						+ (treatingProvider == null ? (insuranceTypeName == null ? ", " : "") + "TreatingProvider" : "");
+				logger.error("Rule 305: cannot filter — null claim field(s): {}", missing);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule305.error.message",
+								new Object[] { claimProvider + " (missing: " + missing + ")" }, locale),
+						Constants.FAIL, "", "", ""));
+				return dList;
+			}
 
 			List<CredentialData> filterCodeList = creList.stream()
-					.filter(e -> e.getLocation().trim().equalsIgnoreCase(claimofficeName)
-							&& e.getPlanType().trim().equalsIgnoreCase(rcmClaim.getRcmInsuranceType().getName())
-							&& e.getInsuranceCode().trim().equalsIgnoreCase(testVal)
-							&& e.getProviderCode().equalsIgnoreCase(rcmClaim.getTreatingProviderFromClaim()))
+					.filter(e -> e.getLocation() != null && e.getLocation().trim().equalsIgnoreCase(claimofficeName)
+							&& e.getPlanType() != null && e.getPlanType().trim().equalsIgnoreCase(insuranceTypeName)
+							&& e.getInsuranceCode() != null && e.getInsuranceCode().trim().equalsIgnoreCase(testVal)
+							&& e.getProviderCode() != null && e.getProviderCode().equalsIgnoreCase(treatingProvider))
 					.collect(Collectors.toList());
 
 			if (filterCodeList != null && filterCodeList.size() > 0) {
-				applicationStatus = filterCodeList.get(0).getApplicationStatus().toLowerCase();
-				effectiveDate = filterCodeList.get(0).getEffectiveDate().trim();
+				applicationStatus = filterCodeList.get(0).getApplicationStatus() != null
+						? filterCodeList.get(0).getApplicationStatus().toLowerCase() : "";
+				effectiveDate = filterCodeList.get(0).getEffectiveDate() != null
+						? filterCodeList.get(0).getEffectiveDate().trim() : "";
 				logger.info("applicationStatus --" + applicationStatus);
 				logger.info("Effective Date --" + filterCodeList.get(0).getEffectiveDate());
 			}
@@ -416,9 +429,15 @@ public class RuleBookServiceImpl {
 			}
 
 		} catch (Exception n) {
+			String detail = n.getMessage();
+			if (detail == null || detail.isEmpty()) {
+				detail = n.getClass().getSimpleName();
+			}
+			logger.error("Rule 305 (Credentialing Status): unexpected error claimUuid={}",
+					rcmClaim != null ? rcmClaim.getClaimUuid() : "null", n);
 			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
-					messageSource.getMessage("rule.error.exception", new Object[] { n.getMessage() }, locale),
-					Constants.FAIL, "", "", ""));
+					messageSource.getMessage("rule.error.exception", new Object[] { detail }, locale), Constants.FAIL, "",
+					"", ""));
 		}
 
 		logger.info(RuleConstants.rule_log_exit + rule.getName());

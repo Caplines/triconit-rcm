@@ -4,11 +4,11 @@
 #
 # Usage:
 #   docker compose -f docker-compose.rcm.prod.yml pull
-#   docker compose -f docker-compose.rcm.prod.yml up -d
+#   docker compose -f docker-compose.rcm.prod.yml up -d --force-recreate
 #
 # To update a single service:
 #   docker compose -f docker-compose.rcm.prod.yml pull rcm-backend
-#   docker compose -f docker-compose.rcm.prod.yml up -d --no-deps rcm-backend
+#   docker compose -f docker-compose.rcm.prod.yml up -d --no-deps --force-recreate rcm-backend
 # ============================================================
 
 services:
@@ -28,6 +28,7 @@ services:
     env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - DEBUG_AUTO_RULES=${DEBUG_AUTO_RULES:-false}
     volumes:
       - /opt/project/tricon/files:/opt/project/tricon/files
       - /opt/project/tricon/log:/opt/project/tricon/log

@@ -104,11 +104,11 @@ pull_and_restart_re() {
     if [ -n "$SINGLE_SERVICE" ]; then
         echo "[INFO] Updating RE ${SINGLE_SERVICE} only (version: ${VER})..."
         docker compose -f docker-compose.prod.yml pull "$SINGLE_SERVICE"
-        docker compose -f docker-compose.prod.yml up -d --no-deps "$SINGLE_SERVICE"
+        docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate "$SINGLE_SERVICE"
     else
         echo "[INFO] Deploying RuleEngine (version: ${VER})..."
         docker compose -f docker-compose.prod.yml pull
-        docker compose -f docker-compose.prod.yml up -d
+        docker compose -f docker-compose.prod.yml up -d --force-recreate
     fi
     echo "[OK] RuleEngine deployed (version: ${VER})"
 }
@@ -120,11 +120,11 @@ pull_and_restart_rcm() {
     if [ -n "$SINGLE_SERVICE" ]; then
         echo "[INFO] Updating RCM ${SINGLE_SERVICE} only (version: ${VER})..."
         docker compose -f docker-compose.rcm.prod.yml pull "$SINGLE_SERVICE"
-        docker compose -f docker-compose.rcm.prod.yml up -d --no-deps "$SINGLE_SERVICE"
+        docker compose -f docker-compose.rcm.prod.yml up -d --no-deps --force-recreate "$SINGLE_SERVICE"
     else
         echo "[INFO] Deploying RCM (version: ${VER})..."
         docker compose -f docker-compose.rcm.prod.yml pull
-        docker compose -f docker-compose.rcm.prod.yml up -d
+        docker compose -f docker-compose.rcm.prod.yml up -d --force-recreate
     fi
     echo "[OK] RCM deployed (version: ${VER})"
 }

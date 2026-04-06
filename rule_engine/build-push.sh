@@ -22,11 +22,16 @@ cd "$(dirname "$0")"
 
 # ── Config ───────────────────────────────────────────────────
 # Set your Docker Hub repo here
-# Load .env first when present so DOCKER_HUB_REPO can come from file.
-if [ -f .env ]; then
+# Load environment file so DOCKER_HUB_REPO can come from file.
+if [ -f .env.prod ]; then
     set -a
     # shellcheck disable=SC1091
     source .env.prod
+    set +a
+elif [ -f .env ]; then
+    set -a
+    # shellcheck disable=SC1091
+    source .env
     set +a
 fi
 
