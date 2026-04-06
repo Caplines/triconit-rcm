@@ -74,14 +74,6 @@ public class ManageOfficeController extends BaseHeaderController {
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		
-		// Data cleanup: runs in background to avoid blocking the HTTP response
-		CompletableFuture.runAsync(() -> {
-			try {
-				claimServiceImpl.updateDuplicateActives();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		});
 		try {
 			logger.info("------------------Start Process (Manage Offce) ---------------------");
 			processLogger = rcmProcessLoggerImpl.startProcessLogger("Manage Office", dto.toString(),
@@ -90,6 +82,15 @@ public class ManageOfficeController extends BaseHeaderController {
 					partialHeader.getJwtUser());// why is this in ADMIN
 			rcmProcessLoggerImpl.endProcessLogger(processLogger);
 			logger.info("------------------End Process---------------------");
+			// Cleanup runs AFTER the main transaction commits to avoid deadlocking
+			// on rcm_claim_assignment with the bulk deactivation above
+			CompletableFuture.runAsync(() -> {
+				try {
+					claimServiceImpl.updateDuplicateActives();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			});
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
