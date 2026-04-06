@@ -31,6 +31,12 @@ public class ClaimCycleServiceImpl {
 		claimCycleRepo.save(newcycle);
 	}
 
+	public void createNewClaimCycles(List<ClaimCycle> cycles) {
+		if (cycles != null && !cycles.isEmpty()) {
+			claimCycleRepo.saveAll(cycles);
+		}
+	}
+
 	public ClaimCycle createNewClaimCycleWithOldStatus(RcmClaims claim, RcmTeam team, RcmUser user,String newStatus,
 			String nextAction) {
 		String status = newStatus;

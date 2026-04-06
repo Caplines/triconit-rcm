@@ -105,6 +105,30 @@ public interface RcmClaimAssignmentRepo extends JpaRepository<RcmClaimAssignment
 			+" where rca.claim_id=:claim_id and  active is true")
    int countTotalActiveEntiresinClaimAssignment(@Param("claim_id") String claimId);
 
+	@Query(nativeQuery = true, value =
+			"SELECT claim_id, COUNT(*) as cnt FROM rcm_claim_assignment"
+			+ " WHERE claim_id IN (:claimIds) AND active = true GROUP BY claim_id")
+	List<Object[]> countActiveEntriesPerClaim(@Param("claimIds") List<String> claimIds);
+
+	@Query(nativeQuery = true, value =
+			"SELECT claim_id, COUNT(*) as cnt FROM rcm_claim_assignment"
+			+ " WHERE claim_id IN (:claimIds) GROUP BY claim_id")
+	List<Object[]> countTotalEntriesPerClaim(@Param("claimIds") List<String> claimIds);
+
+	@Query(nativeQuery = true, value =
+			"SELECT claim_id, MAX(pending_since) as pending_since FROM rcm_claim_assignment"
+			+ " WHERE claim_id IN (:claimIds) AND active = false AND current_team_id = :teamId GROUP BY claim_id")
+	List<Object[]> findPendingSinceDatesByClaimUuidsAndTeamId(
+			@Param("claimIds") List<String> claimIds,
+			@Param("teamId") int teamId);
+
+	@Query(nativeQuery = true, value =
+			"SELECT * FROM rcm_claim_assignment"
+			+ " WHERE claim_id IN (:claimIds) AND current_team_id = :teamId AND assigned_to IS NULL AND active = true")
+	List<RcmClaimAssignment> findEntriesWithNullAssignedToByClaimIdsAndTeamId(
+			@Param("claimIds") List<String> claimIds,
+			@Param("teamId") int teamId);
+
 	
 	@Query(nativeQuery = true, value = "  "
 			+" SELECT * FROM rcm_claim_assignment rca "

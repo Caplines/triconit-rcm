@@ -3,6 +3,7 @@ package com.tricon.rcm.service.impl;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -45,6 +46,7 @@ import com.tricon.rcm.util.ClaimUtil;
 import com.tricon.rcm.util.ConnectAndReadSheets;
 import com.tricon.rcm.util.Constants;
 import com.google.common.collect.Collections2;
+import com.tricon.rcm.db.entity.ClaimCycle;
 import com.tricon.rcm.db.entity.RcmClaimAssignment;
 import com.tricon.rcm.db.entity.RcmClaimDetail;
 import com.tricon.rcm.db.entity.RcmClaimLog;
@@ -88,6 +90,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -182,6 +185,9 @@ public class RuleEngineService {
 	
 	@Autowired
 	RcmInsuranceTypeDateMappingRepo insuranceTypeDateMappingRepo;
+
+	@Autowired
+	JdbcTemplate jdbcTemplate;
 
 	HttpHeaders headers = null;
 
@@ -1035,187 +1041,268 @@ public class RuleEngineService {
 	}
 	
 	@Transactional(rollbackFor = Exception.class)
-	public boolean assignedUnsAssignedClaimsByTeam(String companyId,RcmUser assignedBy,int teamId,List<String> offices)  {
-		
-		//Assign Unassigned Claims
+	public boolean assignedUnsAssignedClaimsByTeam(String companyId, RcmUser assignedBy, int teamId, List<String> offices) {
 		try {
-		List<String> claims =rcmClaimRepository.getUnAsignedClaims(companyId,offices);
-		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
-				.findByStatus(ClaimStatusEnum.Billing.getType());
-		RcmTeam assignedTeam  = rcmTeamRepo.findById(teamId);
-		logger.info(claims.size()+"");
-		int ct=0;
-		for(String claimUUid:claims) {
-			logger.info("MY COUNT--"+ (++ct));
-			
-			RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
-			//
-			RcmClaims claim = rcmClaimRepository.findByClaimUuid(claimUUid);
-			if (claim.isForceUnassigned()) continue;
-			//if (claim.getFirstWorkedTeamId().getId() == teamId) {
-			UserAssignOffice assignedUser = userAssignOfficeRepo
-					.findByOfficeUuidAndTeamId(claim.getOffice().getUuid(), teamId);
-			 
-			if (assignedUser != null) {
-				int recordCount = rcmClaimAssignmentRepo.findTotalEntiresinClaimAssignment(claimUUid);
+			// 1. Fetch all unassigned claim UUIDs in one bulk query
+			List<String> claimUuids = rcmClaimRepository.getUnAsignedClaims(companyId, offices);
+			if (claimUuids.isEmpty()) return true;
+
+			logger.info("assignedUnsAssignedClaimsByTeam: processing " + claimUuids.size() + " claims for teamId=" + teamId);
+
+			// 2. Pre-fetch all claim objects in one query — eliminates N+1 findByClaimUuid calls
+			Map<String, RcmClaims> claimsMap = rcmClaimRepository.findByClaimUuidIn(claimUuids)
+					.stream().collect(Collectors.toMap(RcmClaims::getClaimUuid, c -> c));
+
+			// 3. Pre-fetch assignment counts for all claims in one query — eliminates N+1 count queries
+			Map<String, Integer> totalCountMap = new HashMap<>();
+			rcmClaimAssignmentRepo.countTotalEntriesPerClaim(claimUuids)
+					.forEach(row -> totalCountMap.put(row[0].toString(), ((Number) row[1]).intValue()));
+
+			// 4. Collect distinct office UUIDs from all fetched claims
+			List<String> distinctOfficeUuids = claimsMap.values().stream()
+					.map(c -> c.getOffice().getUuid()).distinct().collect(Collectors.toList());
+
+			// 5. Pre-fetch all UserAssignOffice records in one query — eliminates N+1 office-user lookups
+			Map<String, UserAssignOffice> officeUserMap = distinctOfficeUuids.isEmpty()
+					? Collections.emptyMap()
+					: userAssignOfficeRepo.findByOfficeUuidInAndTeamId(distinctOfficeUuids, teamId)
+							.stream().collect(Collectors.toMap(uo -> uo.getOffice().getUuid(), uo -> uo));
+
+			// 6. Pre-load all insurance date mappings for this team in one query — eliminates N+1 mapping lookups
+			Map<String, RcmInsuranceTypeDateMapping> insuranceDateMap = insuranceTypeDateMappingRepo
+					.findByTeamId(teamId)
+					.stream().collect(Collectors.toMap(RcmInsuranceTypeDateMapping::getName, m -> m));
+
+			// 7. Pre-fetch null-assigned-to entries for claims that already have records (count > 0)
+			List<String> claimsWithRecords = claimUuids.stream()
+					.filter(uuid -> totalCountMap.getOrDefault(uuid, 0) > 0)
+					.collect(Collectors.toList());
+			Map<String, List<RcmClaimAssignment>> nullAssignedMap = new HashMap<>();
+			if (!claimsWithRecords.isEmpty()) {
+				rcmClaimAssignmentRepo.findEntriesWithNullAssignedToByClaimIdsAndTeamId(claimsWithRecords, teamId)
+						.forEach(rca -> nullAssignedMap
+								.computeIfAbsent(rca.getClaims().getClaimUuid(), k -> new ArrayList<>())
+								.add(rca));
+			}
+
+			// Pre-fetch shared lookup data once
+			RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
+			RcmTeam assignedTeam = rcmTeamRepo.findById(teamId);
+
+			// Accumulators for batch writes — avoids individual save() per claim
+			List<RcmClaimAssignment> newAssignments = new ArrayList<>();
+			List<RcmClaimAssignment> updatedNullAssignments = new ArrayList<>();
+			List<RcmClaims> claimsToSave = new ArrayList<>();
+			List<ClaimCycle> cyclesToSave = new ArrayList<>();
+
+			for (String claimUuid : claimUuids) {
+				RcmClaims claim = claimsMap.get(claimUuid);
+				if (claim == null || claim.isForceUnassigned()) continue;
+
+				UserAssignOffice assignedUser = officeUserMap.get(claim.getOffice().getUuid());
+				if (assignedUser == null) continue;
+
+				int recordCount = totalCountMap.getOrDefault(claimUuid, 0);
+
 				if (recordCount == 0 && teamId == claim.getCurrentTeamId().getId()) {
-				 //Insert only then	
+					RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
 					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
-							claimUUid, claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT, new Date());
-					rcmClaimAssignmentRepo.save(rcmAssigment);
+							claimUuid, claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT, new Date());
+					newAssignments.add(rcmAssigment);
+
 					ClaimStatusEnum status = null;
 					ClaimStatusEnum nextAction = null;
 					if (teamId == RcmTeamEnum.BILLING.getId()) {
-						status=ClaimStatusEnum.Pending_For_Billing;
-						nextAction= ClaimStatusEnum.Need_to_Bill;
-					}
-					else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
-						status=ClaimStatusEnum.Pending_For_Review;
+						status = ClaimStatusEnum.Pending_For_Billing;
+						nextAction = ClaimStatusEnum.Need_to_Bill;
+					} else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+						status = ClaimStatusEnum.Pending_For_Review;
 						nextAction = ClaimStatusEnum.Need_to_Audit;
-					}else if(teamId == RcmTeamEnum.PAYMENT_POSTING.getId()) {
-						status=ClaimStatusEnum.Need_to_Post;
+					} else if (teamId == RcmTeamEnum.PAYMENT_POSTING.getId()) {
+						status = ClaimStatusEnum.Need_to_Post;
 						try {
-							int newCycleStatusId =claim.getClaimStatusType().getId();
+							int newCycleStatusId = claim.getClaimStatusType().getId();
 							status = ClaimStatusEnum.getById(newCycleStatusId);
-						}catch(Exception x){
-							
+						} catch (Exception x) {
 							x.printStackTrace();
-							
 						}
 						nextAction = ClaimStatusEnum.Need_to_Post;
-					}else if(teamId == RcmTeamEnum.PAYMENT_POSTING.getId()) {
-						status=ClaimStatusEnum.Additional_Information_Provided_For_Claim;
-						try {
-							int newCycleStatusId =claim.getClaimStatusType().getId();
-							status = ClaimStatusEnum.getById(newCycleStatusId);
-						}catch(Exception x){
-							
-							x.printStackTrace();
-							
-						}
-						nextAction = ClaimStatusEnum.Additional_Information_Provided_For_Claim;
 					}
-					
-					if (status!= null) {
-						//add logic like date > updater date then update..
+
+					if (status != null) {
+						// Use in-memory map instead of a DB query per claim
 						RcmInsuranceType ins = claim.getRcmInsuranceType();
-						RcmInsuranceType inst = rcmInsuranceTypeRepo.findById(ins.getId());
-						if (inst != null) {
-							RcmInsuranceTypeDateMapping data = insuranceTypeDateMappingRepo
-									.findByTeamIdAndName(teamId, inst.getCode());
+						Date date = new Date();
+						if (ins != null) {
+							RcmInsuranceTypeDateMapping data = insuranceDateMap.get(ins.getCode());
 							if (data != null) {
-								Calendar calendarForNextFollowUpDate = Calendar.getInstance();
-								Date date = new Date();//always current Date claim.getNextFollowUpDate() != null ? claim.getNextFollowUpDate() : new Date();
-								calendarForNextFollowUpDate.setTime(date);
-								calendarForNextFollowUpDate.add(Calendar.DAY_OF_YEAR, data.getNextFollowUpGap());
-								claim.setNextFollowUpDate(calendarForNextFollowUpDate.getTime());
-								claim.setUpdatedDate(date);
-								logger.info("Next Follow Up Data in RcmTable:" + claim.getNextFollowUpDate());
-							}else {
-								Date date = new Date();
+								Calendar cal = Calendar.getInstance();
+								cal.setTime(date);
+								cal.add(Calendar.DAY_OF_YEAR, data.getNextFollowUpGap());
+								claim.setNextFollowUpDate(cal.getTime());
+								logger.info("Next Follow Up Date in RcmTable:" + claim.getNextFollowUpDate());
+							} else {
 								claim.setNextFollowUpDate(date);
-								claim.setUpdatedDate(date);
 							}
+						} else {
+							claim.setNextFollowUpDate(date);
 						}
-						
-						rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), claimUUid);		
-						claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),assignedTeam, assignedBy);
+						claim.setUpdatedDate(date);
+						claim.setCurrentStatus(status.getId());
+						claim.setNextAction(nextAction.getId());
+						claimsToSave.add(claim);
+						cyclesToSave.add(ClaimUtil.createCycle(claim, status.getType(), nextAction.getType(), assignedTeam, assignedBy));
 					}
-				
-				}else {
-					List<RcmClaimAssignment> as =rcmClaimAssignmentRepo.findTotalEntiresinClaimAssignmentWithNullAssignedTo(claimUUid, teamId);
-					for(RcmClaimAssignment y:as) {
+				} else {
+					// Update existing records that have no assigned user yet
+					List<RcmClaimAssignment> nullEntries = nullAssignedMap.getOrDefault(claimUuid, Collections.emptyList());
+					for (RcmClaimAssignment y : nullEntries) {
 						y.setUpdatedBy(assignedUser.getUser());
 						y.setUpdatedDate(new Date());
 						y.setAssignedTo(assignedUser.getUser());
-						rcmClaimAssignmentRepo.save(y);
+						updatedNullAssignments.add(y);
 					}
 				}
-			
 			}
-			//}
-			
-		}
-		}catch(Exception ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
+
+		// Batch all writes — one transaction, massively fewer DB round-trips
+		if (!newAssignments.isEmpty())
+			bulkInsertClaimAssignments(newAssignments);
+		if (!updatedNullAssignments.isEmpty())
+			rcmClaimAssignmentRepo.saveAll(updatedNullAssignments);
+		if (!claimsToSave.isEmpty())
+			rcmClaimRepository.saveAll(claimsToSave);
+		if (!cyclesToSave.isEmpty())
+			claimCycleService.createNewClaimCycles(cyclesToSave);
+
+	} catch (Exception ex) {
+		ex.printStackTrace();
+		return false;
 	}
-	
-	@Transactional(rollbackFor = Exception.class)
-	public boolean assignedClaimsByTeamWithNoActiveInClaimAssigments(RcmUser assignedBy,int teamId,String compmanyId)  {
-		
-		//Assign Unassigned Claims
+	return true;
+}
+
+@Transactional(rollbackFor = Exception.class)
+public boolean assignedClaimsByTeamWithNoActiveInClaimAssigments(RcmUser assignedBy, int teamId, String compmanyId) {
 		try {
-			int currentStatusClosed=ClaimStatusEnum.Case_Closed.getId();
-			//int currentStatusVoided=ClaimStatusEnum.Voided.getId();
-		List<Object> claims =rcmClaimRepository.getValidClaimWithCompanyTeams(compmanyId,teamId,currentStatusClosed);
-		RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo
-				.findByStatus(ClaimStatusEnum.Billing.getType());
-		RcmTeam assignedTeam  = rcmTeamRepo.findById(teamId);
-		Map<String,UserAssignOffice> usersOffices = new HashMap<>();
-		logger.info(claims.size()+"");
-		int ct=0;
-		for(Object c:claims) {
-			logger.info("MY COUNT--"+ (++ct));
-			Object s[] = (Object[]) c;
-			//
-			int recordCount = rcmClaimAssignmentRepo.countTotalActiveEntiresinClaimAssignment(s[0].toString());
-			if (recordCount == 0 ) {
-				RcmClaims claim = rcmClaimRepository.findByClaimUuid(s[0].toString());
-				if (claim.isForceUnassigned()) continue;
-				UserAssignOffice assignedUser =	usersOffices.get(s[1].toString());
-				if (assignedUser == null) {  
-					assignedUser = userAssignOfficeRepo
-							.findByOfficeUuidAndTeamId(s[1].toString(), teamId);
-				   if (assignedUser!=null) usersOffices.put(s[1].toString(), assignedUser);
+			int currentStatusClosed = ClaimStatusEnum.Case_Closed.getId();
+
+			// 1. Fetch all valid (claimUuid, officeId) pairs for company+team in one bulk query
+			List<Object> claimsRaw = rcmClaimRepository.getValidClaimWithCompanyTeams(compmanyId, teamId, currentStatusClosed);
+			if (claimsRaw.isEmpty()) return true;
+
+			logger.info("assignedClaimsByTeamWithNoActiveInClaimAssigments: " + claimsRaw.size() + " claims for teamId=" + teamId);
+
+			// 2. Extract all claim UUIDs and build a uuid→officeId lookup map
+			List<String> allClaimUuids = new ArrayList<>();
+			Map<String, String> claimToOffice = new HashMap<>();
+			for (Object c : claimsRaw) {
+				Object[] s = (Object[]) c;
+				String claimUuid = s[0].toString();
+				allClaimUuids.add(claimUuid);
+				claimToOffice.put(claimUuid, s[1].toString());
+			}
+
+			// 3. Pre-fetch active assignment counts for ALL claims in one query — eliminates N+1
+			Map<String, Integer> activeCountMap = new HashMap<>();
+			rcmClaimAssignmentRepo.countActiveEntriesPerClaim(allClaimUuids)
+					.forEach(row -> activeCountMap.put(row[0].toString(), ((Number) row[1]).intValue()));
+
+			// 4. Retain only claims with zero active assignments — avoids loading full objects unnecessarily
+			List<String> zeroCountUuids = allClaimUuids.stream()
+					.filter(uuid -> activeCountMap.getOrDefault(uuid, 0) == 0)
+					.collect(Collectors.toList());
+			if (zeroCountUuids.isEmpty()) return true;
+
+			// 5. Pre-fetch full claim objects only for zero-count claims — eliminates N+1 findByClaimUuid
+			Map<String, RcmClaims> claimsMap = rcmClaimRepository.findByClaimUuidIn(zeroCountUuids)
+					.stream().collect(Collectors.toMap(RcmClaims::getClaimUuid, c -> c));
+
+			// 6. Determine which claims actually qualify (not force-unassigned, in correct team)
+			List<String> qualifyingUuids = zeroCountUuids.stream()
+					.filter(uuid -> {
+						RcmClaims cl = claimsMap.get(uuid);
+						return cl != null && !cl.isForceUnassigned() && cl.getCurrentTeamId().getId() == teamId;
+					}).collect(Collectors.toList());
+			if (qualifyingUuids.isEmpty()) return true;
+
+			// 7. Pre-fetch distinct offices for qualifying claims
+			List<String> distinctOfficeUuids = qualifyingUuids.stream()
+					.map(claimToOffice::get).distinct().collect(Collectors.toList());
+
+			// 8. Pre-fetch UserAssignOffice records in one query — eliminates N+1 office-user lookups
+			Map<String, UserAssignOffice> officeUserMap = distinctOfficeUuids.isEmpty()
+					? Collections.emptyMap()
+					: userAssignOfficeRepo.findByOfficeUuidInAndTeamId(distinctOfficeUuids, teamId)
+							.stream().collect(Collectors.toMap(uo -> uo.getOffice().getUuid(), uo -> uo));
+
+			// 9. Pre-fetch pending-since dates for qualifying claims in one query — eliminates N+1
+			Map<String, Timestamp> pendingSinceDatesMap = new HashMap<>();
+			rcmClaimAssignmentRepo.findPendingSinceDatesByClaimUuidsAndTeamId(qualifyingUuids, teamId)
+					.forEach(row -> {
+						if (row[1] != null) pendingSinceDatesMap.put(row[0].toString(), (Timestamp) row[1]);
+					});
+
+			RcmClaimStatusType systemStatusBilling = rcmClaimStatusTypeRepo.findByStatus(ClaimStatusEnum.Billing.getType());
+			RcmTeam assignedTeam = rcmTeamRepo.findById(teamId);
+
+			// Determine status/nextAction constants (same for all claims in this team)
+			ClaimStatusEnum statusEnum = null;
+			ClaimStatusEnum nextActionEnum = null;
+			if (teamId == RcmTeamEnum.BILLING.getId()) {
+				statusEnum = ClaimStatusEnum.Pending_For_Billing;
+				nextActionEnum = ClaimStatusEnum.Need_to_Bill;
+			} else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
+				statusEnum = ClaimStatusEnum.Pending_For_Review;
+				nextActionEnum = ClaimStatusEnum.Need_to_Audit;
+			}
+
+			// Accumulators for batch writes
+			List<RcmClaimAssignment> newAssignments = new ArrayList<>();
+			List<RcmClaims> claimsToSave = new ArrayList<>();
+			List<ClaimCycle> cyclesToSave = new ArrayList<>();
+
+			for (String claimUuid : qualifyingUuids) {
+				RcmClaims claim = claimsMap.get(claimUuid);
+				if (claim == null) continue;
+
+				UserAssignOffice assignedUser = officeUserMap.get(claimToOffice.get(claimUuid));
+				if (assignedUser == null) continue;
+
+				RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
+				rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
+						claimUuid, claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT, new Date());
+
+				// Apply pending-since date from pre-fetched map
+				Timestamp pendingSince = pendingSinceDatesMap.get(claimUuid);
+				if (pendingSince != null) {
+					rcmAssigment.setPendingSince(new Date(pendingSince.getTime()));
 				}
-				
-				if (assignedUser != null) {
-					Object pendingSincedate = null;
-					if (claim.getCurrentTeamId().getId() == teamId) {
-						pendingSincedate = rcmClaimAssignmentRepo
-								.findPendingSinceDateByClaimUuidAndCurrentTeamId(claim.getClaimUuid(), teamId);
-					}
-				 //Insert only then	
-					RcmClaimAssignment rcmAssigment = new RcmClaimAssignment();
-					
-					rcmAssigment = ClaimUtil.createAssginmentData(rcmAssigment, assignedBy, assignedUser.getUser(),
-							s[0].toString(), claim, "", systemStatusBilling, assignedTeam, Constants.SYSTEM_INITIAL_COMMENT, new Date());
-					if (pendingSincedate != null) {
-						Timestamp stp = (Timestamp) pendingSincedate;
-						rcmAssigment.setPendingSince(new Date(stp.getTime()));
-					}
-					rcmClaimAssignmentRepo.save(rcmAssigment);
-					ClaimStatusEnum status = null;
-					ClaimStatusEnum nextAction = null;
-					if (teamId == RcmTeamEnum.BILLING.getId()) {
-						status=ClaimStatusEnum.Pending_For_Billing;
-						nextAction= ClaimStatusEnum.Need_to_Bill;
-					}
-					else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
-						status=ClaimStatusEnum.Pending_For_Review;
-						nextAction = ClaimStatusEnum.Need_to_Audit;
-					}
-					if (status!= null) {
-						rcmClaimRepository.updateClaimCurrentStatusWithAction(status.getId(),nextAction.getId(), s[0].toString());		
-						claimCycleService.createNewClaimCycle(claim, status.getType(),nextAction.getType(),assignedTeam, assignedBy);
-						}
-					
-				 }
+				newAssignments.add(rcmAssigment);
+
+				if (statusEnum != null) {
+					claim.setCurrentStatus(statusEnum.getId());
+					claim.setNextAction(nextActionEnum.getId());
+					claimsToSave.add(claim);
+					cyclesToSave.add(ClaimUtil.createCycle(claim, statusEnum.getType(), nextActionEnum.getType(), assignedTeam, assignedBy));
 				}
-			
-			//}
-			
-		}
-		}catch(Exception ex) {
-			ex.printStackTrace();
-			return false;
-		}
-		return true;
+			}
+
+		// Batch all writes — single transaction, no per-claim DB round-trips
+		if (!newAssignments.isEmpty())
+			bulkInsertClaimAssignments(newAssignments);
+		if (!claimsToSave.isEmpty())
+			rcmClaimRepository.saveAll(claimsToSave);
+		if (!cyclesToSave.isEmpty())
+			claimCycleService.createNewClaimCycles(cyclesToSave);
+
+	} catch (Exception ex) {
+		ex.printStackTrace();
+		return false;
 	}
-	
+	return true;
+}
+
 	/**
 	 * Pull Claim Detail from Eagle Soft(Called from Rule Engine).
 	 * @param rcmCompany
@@ -1286,64 +1373,42 @@ public class RuleEngineService {
 	 */
 	@Transactional(rollbackFor = Exception.class)
 	public void reAssignClaimToUserByOffices(RcmCompany company,
-			int teamId,JwtUser jwtUser,List<AssignUserOfficeDto> userOfficeData) {
-		
-		int currentStatusClosed=ClaimStatusEnum.Case_Closed.getId();
-		//List<String> offices = new ArrayList<>();
-		List<String> offices =userOfficeData.stream().map(AssignUserOfficeDto::getOfficeId).collect(Collectors.toList());
-		//int currentStatusVoided=ClaimStatusEnum.Voided.getId();
-		List<PendingClaimToReAssignDto> claimList= rcmClaimRepository.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamIdWithOffice(company.getUuid(),teamId,currentStatusClosed,offices);
-		List<UserAssignOffice> userAssignOffices = new ArrayList<>();
-		RcmUser assignedBy= userRepo.findByUuid(jwtUser.getUuid()) ;
-		for(PendingClaimToReAssignDto cl:claimList) {
-		
-			
-			
-			   //Logic added so that we do minimum Data base call to rcm_user_assign_office table
-			  // if assigned to Same User and Team Then do not do anything else reassign
-				UserAssignOffice exists = userAssignOffices.stream().filter(s -> {
-					   return s.getOffice().getUuid().equals(cl.getOfficeId()) && s.getTeam().getId()==teamId ;
-					   }).findAny().orElse(null);
-				if (exists==null) {
-					UserAssignOffice uo =userAssignOfficeRepo.findByOfficeUuidAndTeamId(cl.getOfficeId(),teamId);
-					if (uo!=null) {
-					userAssignOffices.add(uo);
-					}
-				}
-				
-				exists = userAssignOffices.stream().filter(s -> {
-					   return s.getOffice().getUuid().equals(cl.getOfficeId())  && s.getTeam().getId()==teamId ;
-					   }).findAny().orElse(null);
-				
-				if (exists != null) {
-					
-					if (!exists.getUser().getUuid().equals(cl.getClaimAssignedTo())) {
-						//do reassignment
-						Optional<RcmClaimAssignment> rcaOpt = rcmClaimAssignmentRepo.findById(cl.getClaimAssignmentId());
-						if (rcaOpt.isPresent()) {
-								
-							RcmClaimAssignment rca = rcaOpt.get();
-							rca.setActive(false);
-							rca.setSystemComment("Claim taken back from Pendency Screen by :"+assignedBy.getEmail());
-							rcmClaimAssignmentRepo.save(rca);
-							
-//							rcmClaimAssignmentRepo.assignClaimToUser(assignedBy.getUuid(), 
-//									exists.getUser().getUuid(), teamId, rca.getRcmClaimStatus().getId(), Constants.SYSTEM_INITIAL_COMMENT, cl.getClaimUuid());
-						  
-								    
-							
-							
-						}
-					}
-					
-				}
-				
-				
-			
+			int teamId, JwtUser jwtUser, List<AssignUserOfficeDto> userOfficeData) {
+
+		int currentStatusClosed = ClaimStatusEnum.Case_Closed.getId();
+		List<String> offices = userOfficeData.stream().map(AssignUserOfficeDto::getOfficeId).collect(Collectors.toList());
+
+		// 1. Fetch all currently-pending claims for the affected offices in one bulk query
+		List<PendingClaimToReAssignDto> claimList = rcmClaimRepository
+				.fetchAllPendingClaimsAssignedToSomeOneByCompanyIdAndTeamIdWithOffice(
+						company.getUuid(), teamId, currentStatusClosed, offices);
+
+		RcmUser assignedBy = userRepo.findByUuid(jwtUser.getUuid());
+
+		// 2. Pre-fetch all UserAssignOffice records for the affected offices in ONE query — eliminates N+1
+		Map<String, UserAssignOffice> officeUserMap = offices.isEmpty()
+				? Collections.emptyMap()
+				: userAssignOfficeRepo.findByOfficeUuidInAndTeamId(offices, teamId)
+						.stream().collect(Collectors.toMap(uo -> uo.getOffice().getUuid(), uo -> uo));
+
+		// 3. Collect IDs of assignments that need deactivation — in memory, no extra DB call
+		String systemComment = "Claim taken back from Pendency Screen by :" + assignedBy.getEmail();
+		List<Integer> toDeactivateIds = new ArrayList<>();
+		for (PendingClaimToReAssignDto cl : claimList) {
+			UserAssignOffice exists = officeUserMap.get(cl.getOfficeId());
+			if (exists == null) continue;
+
+			// Only deactivate if the claim is currently assigned to a different user
+			if (!exists.getUser().getUuid().equals(cl.getClaimAssignedTo())) {
+				toDeactivateIds.add(cl.getClaimAssignmentId());
+			}
 		}
-		this.assignedUnsAssignedClaimsByTeam(company.getUuid(),assignedBy,teamId,offices);   
-		
-		
+
+		// 4. Single JDBC batch UPDATE — replaces N individual Hibernate UPDATE round-trips
+		bulkDeactivateClaimAssignmentsByIds(toDeactivateIds, systemComment);
+
+		// 6. Assign the now-unassigned claims to the new users
+		this.assignedUnsAssignedClaimsByTeam(company.getUuid(), assignedBy, teamId, offices);
 	}
 
 	/**
@@ -1471,5 +1536,63 @@ public class RuleEngineService {
 
 		return resultList;
 	}
-	
+
+	private static final String BULK_DEACTIVATE_CLAIM_ASSIGNMENT_SQL =
+		"UPDATE rcm_claim_assignment SET active = FALSE, system_comment = ?, updated_date = ? WHERE id = ?";
+
+	private static final String BULK_INSERT_CLAIM_ASSIGNMENT_SQL =
+		"INSERT INTO rcm_claim_assignment " +
+		"(created_by, created_date, updated_by, updated_date, action_name, active, " +
+		" assigned_by, assigned_to, attachment_with_remarks, claim_id, comment_assigned_by, " +
+		" comment_assigned_to, current_team_id, is_force_unassigned, pending_since, " +
+		" status_id, system_comment, taken_back) " +
+		"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+	/**
+	 * Deactivates claim assignments in a single JDBC batch call instead of N individual
+	 * Hibernate UPDATEs — eliminates N × ~280ms round-trips to the remote DB.
+	 */
+	private void bulkDeactivateClaimAssignmentsByIds(List<Integer> ids, String systemComment) {
+		if (ids == null || ids.isEmpty()) return;
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		List<Object[]> params = ids.stream()
+			.map(id -> new Object[]{systemComment, now, id})
+			.collect(Collectors.toList());
+		jdbcTemplate.batchUpdate(BULK_DEACTIVATE_CLAIM_ASSIGNMENT_SQL, params);
+	}
+
+	/**
+	 * Bypasses Hibernate's per-row INSERT limitation imposed by GenerationType.IDENTITY.
+	 * JdbcTemplate.batchUpdate() calls addBatch() for every row, and with
+	 * rewriteBatchedStatements=true in the JDBC URL the MySQL driver rewrites the whole
+	 * batch into a single multi-row INSERT — reducing N network round-trips to 1.
+	 */
+	private void bulkInsertClaimAssignments(List<RcmClaimAssignment> assignments) {
+		if (assignments == null || assignments.isEmpty()) return;
+		Timestamp now = new Timestamp(System.currentTimeMillis());
+		List<Object[]> params = assignments.stream()
+			.map(a -> new Object[]{
+				a.getCreatedBy()     != null ? a.getCreatedBy().getUuid()     : null,
+				a.getCreatedDate()   != null ? new Timestamp(a.getCreatedDate().getTime()) : now,
+				null,
+				now,
+				a.getActionName(),
+				a.isActive(),
+				a.getAssignedBy()    != null ? a.getAssignedBy().getUuid()    : null,
+				a.getAssignedTo()    != null ? a.getAssignedTo().getUuid()    : null,
+				a.getAttachmentWithRemarks(),
+				a.getClaims()        != null ? a.getClaims().getClaimUuid()   : null,
+				a.getCommentAssignedBy(),
+				a.getCommentAssignedTo(),
+				a.getCurrentTeamId() != null ? a.getCurrentTeamId().getId()   : null,
+				a.isForceUnassigned(),
+				a.getPendingSince()  != null ? new Timestamp(a.getPendingSince().getTime()) : now,
+				a.getRcmClaimStatus() != null ? a.getRcmClaimStatus().getId() : null,
+				a.getSystemComment(),
+				a.isTakenBack()
+			})
+			.collect(Collectors.toList());
+		jdbcTemplate.batchUpdate(BULK_INSERT_CLAIM_ASSIGNMENT_SQL, params);
+	}
+
 }

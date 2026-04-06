@@ -1,6 +1,7 @@
 package com.tricon.rcm.api.controller;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,14 +74,14 @@ public class ManageOfficeController extends BaseHeaderController {
 		if(partialHeader==null)return ResponseEntity
 				.ok(new GenericResponse(HttpStatus.BAD_REQUEST, MessageConstants.SOMETHING_WENT_WRONG, null));
 		
-		//Added for safer side .. No transaction needed
-		try {
-			claimServiceImpl.updateDuplicateActives();
-			}catch (Exception e) {
+		// Data cleanup: runs in background to avoid blocking the HTTP response
+		CompletableFuture.runAsync(() -> {
+			try {
+				claimServiceImpl.updateDuplicateActives();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		
-		///END
+		});
 		try {
 			logger.info("------------------Start Process (Manage Offce) ---------------------");
 			processLogger = rcmProcessLoggerImpl.startProcessLogger("Manage Office", dto.toString(),
