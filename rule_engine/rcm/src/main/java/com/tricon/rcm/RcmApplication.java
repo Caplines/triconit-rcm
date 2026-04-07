@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,7 +26,10 @@ public class RcmApplication {
 	
 	@Bean
 	public RestTemplate restTemplate() {
-		return new RestTemplate();
+		SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+		factory.setConnectTimeout(60_000);
+		factory.setReadTimeout(1_800_000); // 30 min — matches nginx proxy_read_timeout
+		return new RestTemplate(factory);
 	}
 	
 	/*@Bean

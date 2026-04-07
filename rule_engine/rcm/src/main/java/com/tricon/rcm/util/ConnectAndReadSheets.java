@@ -927,12 +927,33 @@ public class ConnectAndReadSheets {
 
 	public static List<CredentialData> readCredentialGSheet(String spreadsheetId, String sheetName, String clientDir,
 			String clientFolder) throws IOException {
+		logger.info("readCredentialGSheet: spreadsheetId={} tab={}", spreadsheetId, sheetName);
 		Sheets service = new Sheets.Builder(HTTP_TRANSPORT, JSON_FACTORY, getCredentials(clientDir, clientFolder))
 				.setApplicationName(APPLICATION_NAME).build();
 
-		ValueRange range = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		ValueRange range;
+		try {
+			range = service.spreadsheets().values().get(spreadsheetId, sheetName).execute();
+		} catch (IOException e) {
+			logger.error(
+					"readCredentialGSheet: Google Sheets API read failed (check tab name, sharing for service account, and API errors) spreadsheetId={} tab={}",
+					spreadsheetId, sheetName, e);
+			throw e;
+		} catch (RuntimeException e) {
+			logger.error(
+					"readCredentialGSheet: unexpected error during Sheets API execute spreadsheetId={} tab={}",
+					spreadsheetId, sheetName, e);
+			throw new IOException("Credential sheet read failed: " + e.getClass().getSimpleName(), e);
+		}
 
 		List<List<Object>> values = range.getValues();
+		if (values == null || values.isEmpty()) {
+			String msg = String.format(
+					"Credential tracker sheet returned no rows (empty sheet, wrong tab name, or restricted range) spreadsheetId=%s tab=%s",
+					spreadsheetId, sheetName);
+			logger.warn("readCredentialGSheet: {}", msg);
+			throw new IOException(msg);
+		}
 
 		List<CredentialData> list = new ArrayList<>();
 		ListIterator li = values.listIterator();

@@ -47,9 +47,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 
 	RcmClaims findByClaimUuid(String claimId);
 
-	List<RcmClaims> findByClaimIdInAndOffice(List<String> claimIds, RcmOffice office);
-	
 	List<RcmClaims> findByClaimUuidIn(List<String> claimUuids);
+
+	List<RcmClaims> findByClaimIdInAndOffice(List<String> claimIds, RcmOffice office);
 
 	String nextActionAndRebillProductionjoin="left join rcm_next_action_required_section nextAction on nextAction.claim_uuid=claims.claim_uuid "
 			+ "left join rcm_request_rebilling_section rebillingSection on rebillingSection.claim_uuid=claims.claim_uuid ";

@@ -4,16 +4,22 @@
 #  Backend:  http://localhost:8082   (Spring Boot, for Postman etc.)
 #
 #  Run:   docker compose -f docker-compose.rcm.local.yml up --build
+#  If only .env changed: docker compose -f docker-compose.rcm.local.yml up -d --force-recreate rcm-backend
 #  Stop:  docker compose -f docker-compose.rcm.local.yml down
 #
 #  DB: application-docker.properties (same RDS as RuleEngine).
+#
+#  No host bind mounts for /opt/project data paths — named volumes only (see bottom).
+#  Prod compose files use host/server paths; local uses Docker-managed volumes.
 
 services:
-  # Spring Boot backend (source mounted, mvn spring-boot:run)
+  # Spring Boot backend (locally built image)
   rcm-backend:
-    image: eclipse-temurin:8-jdk
+    build:
+      context: .
+      dockerfile: rcm/Dockerfile
+    image: rule_engine-rcm-backend:local
     container_name: rcm-backend
-    working_dir: /app
     logging:
       driver: "json-file"
       options:
@@ -24,22 +30,15 @@ services:
     env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - DEBUG_AUTO_RULES=${DEBUG_AUTO_RULES:-false}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./rcm:/app                     # Mount source for live development
-      - ~/.m2:/root/.m2                # Reuse local Maven cache for faster builds
-      - rcm-backend-files:/opt/project/tricon/files
-      - rcm-backend-logs:/opt/project/tricon/log
-      - rcm-backend-attachments:/opt/project/attachments
-      - rcm-backend-pdf:/opt/project/pdf
-      - rcm-backend-xml:/opt/project/xml
-    command: >
-      bash -c "
-      apt-get update &&
-      apt-get install -y maven &&
-      mvn spring-boot:run
-      "
+      - rcm_local_tricon_files:/opt/project/tricon/files
+      - rcm_local_tricon_log:/opt/project/tricon/log
+      - rcm_local_attachments:/opt/project/attachments
+      - rcm_local_pdf:/opt/project/pdf
+      - rcm_local_xml:/opt/project/xml
     networks:
       - rcm-network
 
@@ -59,6 +58,11 @@ services:
         max-file: "3"
     ports:
       - "4201:80"  # Port 4201 to avoid conflict with ruleengine-frontend on 4200
+    environment:
+      - PROXY_CONNECT_TIMEOUT=${PROXY_CONNECT_TIMEOUT:-60s}
+      - PROXY_SEND_TIMEOUT=${PROXY_SEND_TIMEOUT:-1800s}
+      - PROXY_READ_TIMEOUT=${PROXY_READ_TIMEOUT:-1800s}
+      - NGINX_SEND_TIMEOUT=${NGINX_SEND_TIMEOUT:-1800s}
     depends_on:
       - rcm-backend
     networks:
@@ -69,8 +73,9 @@ networks:
     driver: bridge
 
 volumes:
-  rcm-backend-files:
-  rcm-backend-logs:
-  rcm-backend-attachments:
-  rcm-backend-pdf:
-  rcm-backend-xml:
+  rcm_local_tricon_files:
+  rcm_local_tricon_log:
+  rcm_local_attachments:
+  rcm_local_pdf:
+  rcm_local_xml:
+

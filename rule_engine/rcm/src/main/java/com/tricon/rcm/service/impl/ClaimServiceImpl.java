@@ -355,6 +355,14 @@ public class ClaimServiceImpl {
 	
 	@Value("${data.archiveClaims.totalRecordperPage}")
 	private int totalRecordsperPage;
+
+	/**
+	 * When true: force auto-rules on every claim page reload (bypass skip guard
+	 * and force-load claim when needed). Controlled by DEBUG_AUTO_RULES env var
+	 * (maps to debug.auto.rules). Off by default.
+	 */
+	@Value("${debug.auto.rules:false}")
+	private boolean debugAutoRules;
 	
 	@Autowired
 	RcmClaimArchiveHistoryRepo rcmClaimArchiveHistoryRepo;
@@ -2945,7 +2953,19 @@ public class ClaimServiceImpl {
 					//c.printStackTrace();
 				}
 			}
-			if (claim!=null  && !pdf) {
+		// DEBUG_AUTO_RULES=true: ensure claim exists even when IV form is missing
+		if (debugAutoRules && claim == null && !pdf) {
+			claim = rcmClaimRepository.findByClaimUuid(claimUuid);
+		}
+		if (claim!=null  && !pdf) {
+			if (debugAutoRules) {
+				// DEBUG_AUTO_RULES=true: run rules on every page load
+				AutoRunClaimReponseDto autoResponse = runAutomatedRules(claim, partialHeader, claimUuid,false,true);
+				implDto.setAssignmentOfBenefits(autoResponse.getAssignmentOfBenefits());
+				claim.setAssignmentOfBenefits(autoResponse.getAssignmentOfBenefits());
+				claim.setPreferredModeOfSubmission(autoResponse.getPreferredModeOfSubmission());
+				implDto.setPreferredModeOfSubmission(autoResponse.getPreferredModeOfSubmission());
+			} else {
 				if (!dto.getAutoRuleRun()) {
 					AutoRunClaimReponseDto autoResponse = runAutomatedRules(claim, partialHeader, claimUuid,false,true);
 					implDto.setAssignmentOfBenefits(autoResponse.getAssignmentOfBenefits());
@@ -2953,8 +2973,9 @@ public class ClaimServiceImpl {
 					claim.setPreferredModeOfSubmission(autoResponse.getPreferredModeOfSubmission());
 					implDto.setPreferredModeOfSubmission(autoResponse.getPreferredModeOfSubmission());
 				}
-				rcmClaimRepository.save(claim);
 			}
+			rcmClaimRepository.save(claim);
+		}
 			
 			if (implDto.getPreferredModeOfSubmission()==null && implDto.getClientName()!=null ) {
 				//Reading Sheet Again
@@ -5028,7 +5049,6 @@ public class ClaimServiceImpl {
 	}*/
 
 	public AutoRunClaimReponseDto runAutomatedRules(RcmClaims claim,PartialHeader partialHeader, String claimuuid,boolean reRrun,boolean firstRun) {
-
 		 boolean validateClaimRight=checkifCompanyIdMatchesList(partialHeader.getJwtUser().getUuid(),partialHeader.getCompany().getUuid());
 			
 			if (!validateClaimRight) {
@@ -5038,7 +5058,8 @@ public class ClaimServiceImpl {
 		if (claim==null)claim  = rcmClaimRepository.findByClaimUuid(claimuuid);
 		AutoRunClaimReponseDto dto = new AutoRunClaimReponseDto();
 		
-		if (claim.isAutoRuleRun() && !reRrun) {
+		// DEBUG_AUTO_RULES=true: skip the "already run" guard so rules always re-execute
+		if (!debugAutoRules && claim.isAutoRuleRun() && !reRrun) {
 			dto.setMessage("Already Run");
 			return dto;
 		}
@@ -5054,12 +5075,18 @@ public class ClaimServiceImpl {
 
 			if (!claim.isPending() && claim.getCurrentStatus()==0) {
 				dto.setMessage("Already Submitted");
+				logger.info("AUTO_RULE_DEBUG skip runAutomatedRules claimUuid={} reason=alreadySubmitted", claimuuid);
+				System.out.println("AUTO_RULE_DEBUG_STDOUT skip runAutomatedRules claimUuid=" + claimuuid
+						+ " reason=alreadySubmitted");
 				return dto;
 				
 			}
 			
 			if (claim.getCurrentState() ==Constants.CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED) {
 				dto.setMessage("Claim is Archived");
+				logger.info("AUTO_RULE_DEBUG skip runAutomatedRules claimUuid={} reason=archivedClaim", claimuuid);
+				System.out.println(
+						"AUTO_RULE_DEBUG_STDOUT skip runAutomatedRules claimUuid=" + claimuuid + " reason=archivedClaim");
 				return dto;
 			}
 			
@@ -5219,13 +5246,20 @@ public class ClaimServiceImpl {
 
 					rule = getRulesFromList(rules, RuleConstants.RULE_ID_305);
 					List<CredentialData> creList = null;
+					String credentialSheetId = rcmGoogleSheetsProperties.getCredentialTrackerId();
+					String credentialMasterTab = rcmGoogleSheetsProperties.getCredentialTrackerMasterTab();
 					try {
-						creList = ConnectAndReadSheets.readCredentialGSheet(
-							rcmGoogleSheetsProperties.getCredentialTrackerId(),
-							rcmGoogleSheetsProperties.getCredentialTrackerMasterTab(), CLIENT_SECRET_DIR,
-							CREDENTIALS_FOLDER);
-					}catch(Exception v) {
-						v.printStackTrace();
+						logger.info("Rule 305: loading credential tracker spreadsheetId={} tab={}", credentialSheetId,
+								credentialMasterTab);
+						creList = ConnectAndReadSheets.readCredentialGSheet(credentialSheetId, credentialMasterTab,
+								CLIENT_SECRET_DIR, CREDENTIALS_FOLDER);
+						logger.info("Rule 305: credential tracker loaded, row count={}",
+								creList != null ? creList.size() : 0);
+					} catch (Exception v) {
+						logger.error(
+								"Rule 305: credential tracker sheet read failed spreadsheetId={} tab={}. Cause: {}",
+								credentialSheetId, credentialMasterTab,
+								v.getMessage() != null ? v.getMessage() : v.getClass().getSimpleName(), v);
 					}
 					claim.setRcmInsuranceType(rcmInsuranceTypeRepo.findById(claim.getRcmInsuranceType().getId()));
 					
@@ -5279,6 +5313,9 @@ public class ClaimServiceImpl {
 					//}
 					if(ivData!=null) claim.setAssignmentOfBenefits(ivData.getPlanAssignmentofBenefits());
 					if(ivData!=null) dto.setAssignmentOfBenefits(ivData.getPlanAssignmentofBenefits());
+					logger.info("AUTO_RULE_DEBUG persist runAutomatedRules claimUuid={} totalRuleResponses={}", claimuuid, allLIst.size());
+					System.out.println("AUTO_RULE_DEBUG_STDOUT persist runAutomatedRules claimUuid=" + claimuuid
+							+ " totalRuleResponses=" + allLIst.size());
 					saveAutoRuleReport(allLIst, user, claim, rules,partialHeader);
 					claim.setAutoRuleRun(true);
 					rcmClaimRepository.save(claim);
@@ -5295,6 +5332,9 @@ public class ClaimServiceImpl {
 		}
 		dto.setServiceValidationDataDto(readServiceValidationFromGSheet(claim,claim.getClaimUuid(), partialHeader,true));
 		dto.setMessage("success");
+		logger.info("AUTO_RULE_DEBUG exit runAutomatedRules claimUuid={} message={}", claimuuid, dto.getMessage());
+		System.out.println(
+				"AUTO_RULE_DEBUG_STDOUT exit runAutomatedRules claimUuid=" + claimuuid + " message=" + dto.getMessage());
 		return dto;
 	}
 

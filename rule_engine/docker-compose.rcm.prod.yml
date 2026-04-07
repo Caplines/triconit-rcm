@@ -4,11 +4,11 @@
 #
 # Usage:
 #   docker compose -f docker-compose.rcm.prod.yml pull
-#   docker compose -f docker-compose.rcm.prod.yml up -d
+#   docker compose -f docker-compose.rcm.prod.yml up -d --force-recreate
 #
 # To update a single service:
 #   docker compose -f docker-compose.rcm.prod.yml pull rcm-backend
-#   docker compose -f docker-compose.rcm.prod.yml up -d --no-deps rcm-backend
+#   docker compose -f docker-compose.rcm.prod.yml up -d --no-deps --force-recreate rcm-backend
 # ============================================================
 
 services:
@@ -28,12 +28,13 @@ services:
     env_file: .env
     environment:
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-prod}
+      - DEBUG_AUTO_RULES=${DEBUG_AUTO_RULES:-false}
     volumes:
-      - rcm-backend-files:/opt/project/tricon/files
-      - rcm-backend-logs:/opt/project/tricon/log
-      - rcm-backend-attachments:/opt/project/attachments
-      - rcm-backend-pdf:/opt/project/pdf
-      - rcm-backend-xml:/opt/project/xml
+      - /opt/project/tricon/files:/opt/project/tricon/files
+      - /opt/project/tricon/log:/opt/project/tricon/log
+      - /opt/project/attachments:/opt/project/attachments
+      - /opt/project/pdf:/opt/project/pdf
+      - /opt/project/xml:/opt/project/xml
     networks:
       - rcm-network
     healthcheck:
@@ -55,6 +56,10 @@ services:
     environment:
       - RCM_DOMAIN=${RCM_DOMAIN}
       - RCM_SERVER_NAME=${RCM_SERVER_NAME}
+      - PROXY_CONNECT_TIMEOUT=${PROXY_CONNECT_TIMEOUT:-60s}
+      - PROXY_SEND_TIMEOUT=${PROXY_SEND_TIMEOUT:-1800s}
+      - PROXY_READ_TIMEOUT=${PROXY_READ_TIMEOUT:-1800s}
+      - NGINX_SEND_TIMEOUT=${NGINX_SEND_TIMEOUT:-1800s}
     expose:
       - "80"
     depends_on:
@@ -73,10 +78,3 @@ networks:
     driver: bridge
   shared-proxy:
     external: true
-
-volumes:
-  rcm-backend-files:
-  rcm-backend-logs:
-  rcm-backend-attachments:
-  rcm-backend-pdf:
-  rcm-backend-xml:

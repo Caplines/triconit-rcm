@@ -26,14 +26,10 @@ services:
         limits:
           memory: 3072m
     volumes:
-      # Persist application data
-      - backend-files:/opt/project/tricon/files
-      - backend-logs:/opt/project/tricon/log
-      # EagleSoft SSL: when ES_SSL_CLIENT_TRUSTALL=true certs are not used. For prod (trustAll=false) mount certs/ here.
+      - /opt/project/tricon/files:/opt/project/tricon/files
+      - /opt/project/tricon/log:/opt/project/tricon/log
       - ${CERTS_PATH:-./certs}:/opt/project/tricon/client:ro
-      - backend-chrome:/opt/project/tricon/chrome
-      # backend-xml volume removed: XSLT templates are baked into the image at /opt/xslt,
-      # and temp XML output uses /tmp/ruleengine/xml/ (no volume needed)
+      - /opt/project/tricon/chrome:/opt/project/tricon/chrome
       
     networks:
       - ruleengine-network
@@ -61,6 +57,10 @@ services:
     environment:
       - RE_DOMAIN=${RE_DOMAIN}
       - RE_SERVER_NAME=${RE_SERVER_NAME}
+      - PROXY_CONNECT_TIMEOUT=${PROXY_CONNECT_TIMEOUT:-60s}
+      - PROXY_SEND_TIMEOUT=${PROXY_SEND_TIMEOUT:-1800s}
+      - PROXY_READ_TIMEOUT=${PROXY_READ_TIMEOUT:-1800s}
+      - NGINX_SEND_TIMEOUT=${NGINX_SEND_TIMEOUT:-1800s}
     # No host port binding – nginx-proxy (docker-compose.proxy.yml) owns 80/443
     # and routes traffic here via the shared-proxy network.
     expose:
@@ -82,7 +82,3 @@ networks:
   shared-proxy:
     external: true
 
-volumes:
-  backend-files:
-  backend-logs:
-  backend-chrome:

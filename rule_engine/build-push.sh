@@ -22,11 +22,16 @@ cd "$(dirname "$0")"
 
 # ── Config ───────────────────────────────────────────────────
 # Set your Docker Hub repo here
-# Load .env first when present so DOCKER_HUB_REPO can come from file.
-if [ -f .env ]; then
+# Load environment file so DOCKER_HUB_REPO can come from file.
+if [ -f .env.prod ]; then
     set -a
     # shellcheck disable=SC1091
     source .env.prod
+    set +a
+elif [ -f .env ]; then
+    set -a
+    # shellcheck disable=SC1091
+    source .env
     set +a
 fi
 
@@ -69,6 +74,7 @@ build_and_push() {
 
     # --push is required with buildx multi-platform (cannot load multi-arch to local daemon)
     docker buildx build \
+        --no-cache \
         --platform linux/amd64,linux/arm64 \
         -f "$DOCKERFILE" \
         "${BUILD_ARGS[@]+"${BUILD_ARGS[@]}"}" \
@@ -85,7 +91,7 @@ build_re_backend() {
     build_and_push \
         "re-backend" \
         ".." \
-        "rule_engine/ruleengine/Dockerfile"
+        "ruleengine/Dockerfile"
 }
 
 build_re_frontend() {

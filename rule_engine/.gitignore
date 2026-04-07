@@ -5,8 +5,9 @@
 # Generated SSL certs for local ES (run scripts/generate-es-ssl-certs.sh)
 certs/
 
-# Docker volumes
+# Docker volumes / bind-mount data
 docker-volumes/
+data/
 target/
 
 
