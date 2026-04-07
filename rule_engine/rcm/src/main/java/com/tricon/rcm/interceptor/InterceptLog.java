@@ -1,10 +1,9 @@
 package com.tricon.rcm.interceptor;
 
-
 import com.tricon.rcm.security.service.impl.LoggingServiceImpl;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -14,17 +13,29 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 public class InterceptLog implements HandlerInterceptor {
 
-	@Autowired
-	LoggingServiceImpl loggingService;
+    private static final Logger logger = LoggerFactory.getLogger("HTTP");
+    private static final String START_TIME_ATTR = "reqStartTime";
 
-	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
-			throws Exception {
-		if (request.getMethod().equals(HttpMethod.GET.name()) || request.getMethod().equals(HttpMethod.DELETE.name())
-				|| request.getMethod().equals(HttpMethod.POST.name())
-				|| request.getMethod().equals(HttpMethod.PUT.name())) {
-			loggingService.displayReq(request, null);
-		}
-		return true;
-	}
+    @Autowired
+    LoggingServiceImpl loggingService;
+
+    @Override
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        request.setAttribute(START_TIME_ATTR, System.currentTimeMillis());
+        loggingService.saveRequestToDb(request);
+        return true;
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
+                                Object handler, Exception ex) {
+        Long start = (Long) request.getAttribute(START_TIME_ATTR);
+        double elapsed = start != null ? (System.currentTimeMillis() - start) : 0;
+
+        String query = request.getQueryString();
+        String path = request.getRequestURI() + (query != null ? "?" + query : "");
+
+        logger.info("{} {} {} {}", request.getMethod(), path, response.getStatus(),
+                String.format("%.3f ms", elapsed));
+    }
 }
