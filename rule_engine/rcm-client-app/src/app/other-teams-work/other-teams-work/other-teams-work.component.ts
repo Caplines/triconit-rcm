@@ -59,6 +59,15 @@ export class OtherTeamsWorkComponent implements OnInit {
   filteredNextActionRequired: any = [];
   filteredProviderSpeciality: any = [];
   filteredSelectAging: any = [];
+  // Pagination state
+  currentPage: number = 0;
+  pageSize: number = 50;
+  totalCount: number = 0;
+  totalPages: number = 0;
+  storedTotalCount: number = 0;
+  goToPageInput: number = 1;
+  readonly pageSizeOptions: number[] = [20, 50, 100, 200];
+  private readonly PAGE_SIZE_KEY = 'otw_items_per_page';
   tabSwitch: any = { 'submitted': false, 'unSubmitted': true, 'myClaims': false };
   tabValue: any;
   modelElement: any = { 'modal': '', 'span': '' };
@@ -111,13 +120,20 @@ export class OtherTeamsWorkComponent implements OnInit {
 
 
   ngOnInit(): void {
+    const savedSize = localStorage.getItem(this.PAGE_SIZE_KEY);
+    if (savedSize) {
+      const parsed = parseInt(savedSize, 10);
+      if (this.pageSizeOptions.includes(parsed)) {
+        this.pageSize = parsed;
+      }
+    }
     this.clientName = localStorage.getItem("selected_clientName");
     this.isRoleAssociate = Utils.isRoleAsso();
     this.currentTeamName = this.appConstants.teamData.find((e: any) => e.teamId == Utils.selectedTeam());
     this.tabSwitch.unSubmitted = false;
     this.tabSwitch.submitted = true;
     this.tabValue = 'submitted';
-    this.fetchClaims("submitted");
+    this.fetchClaims("submitted", 0);
     this.fetchOtherTeams();
     this.showOrHideColumns(this.currentTeamName);
 
@@ -147,13 +163,20 @@ export class OtherTeamsWorkComponent implements OnInit {
     })
   }
 
-  fetchClaims(subType: string) {
+  fetchClaims(subType: string, page: number = 0) {
     this.loader.listClaimLoader = true;
+    this.currentPage = page;
     //this.clearAssigmentArray();
     let ths = this;
-    ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, (res: any) => {
+    const knownTotalCount = page === 0 ? 0 : this.storedTotalCount;
+    ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, page, ths.pageSize, knownTotalCount, (res: any) => {
       if (res.status === 200) {
-        ths.claimDetail = this.removePrefix(res.data);
+        ths.totalCount = res.data.totalCount;
+        ths.totalPages = res.data.totalPages;
+        ths.currentPage = res.data.page;
+        ths.goToPageInput = ths.currentPage + 1;
+        ths.storedTotalCount = res.data.totalCount;
+        ths.claimDetail = this.removePrefix(res.data.claims);
         let data: any = ths.claimDetail.map((e: any) => {
           if (e.claimId.endsWith("_P")) {
             e['EstAmount'] = e.primeSecSubmittedTotal;
@@ -1621,10 +1644,16 @@ export class OtherTeamsWorkComponent implements OnInit {
   fetchClaimsLead(subType: string) {
     this.loader.listClaimLoader = true;
     let ths = this;
-
-    ths.appService.fetchLeadClaimDet(ths.selectedBtype, subType, (res: any) => {
+    this.currentPage = 0;
+    const knownTotalCountLead = this.currentPage === 0 ? 0 : this.storedTotalCount;
+    ths.appService.fetchLeadClaimDet(ths.selectedBtype, subType, this.currentPage, ths.pageSize, knownTotalCountLead, (res: any) => {
       if (res.status === 200) {
-        ths.claimDetail = this.removePrefix(res.data);
+        ths.totalCount = res.data.totalCount;
+        ths.totalPages = res.data.totalPages;
+        ths.currentPage = res.data.page;
+        ths.goToPageInput = ths.currentPage + 1;
+        ths.storedTotalCount = res.data.totalCount;
+        ths.claimDetail = this.removePrefix(res.data.claims);
         let data: any = ths.claimDetail.map((e: any) => {
           if (e.claimId.endsWith("_P")) {
             e['EstAmount'] = e.primeSecSubmittedTotal;
@@ -1658,19 +1687,22 @@ export class OtherTeamsWorkComponent implements OnInit {
 
   switchTab(tab: any) {
     if (!this.claimDetail) return;
+    this.currentPage = 0;
+    this.storedTotalCount = 0;
+    this.goToPageInput = 1;
     if (tab == 'unSubmitted') {
       this.tabValue = 'unSubmitted';
       this.tabSwitch.unSubmitted = true;
       this.tabSwitch.submitted = false;
       this.tabSwitch.myClaims = false;
-      this.fetchClaims("unSubmitted");
+      this.fetchClaims("unSubmitted", 0);
     }
     if (tab == 'submitted') {
       this.tabValue = 'submitted';
       this.tabSwitch.unSubmitted = false;
       this.tabSwitch.submitted = true;
       this.tabSwitch.myClaims = false;
-      this.fetchClaims("submitted");
+      this.fetchClaims("submitted", 0);
     }
     if (tab == 'myClaims') {
       this.tabValue = 'myClaims';
@@ -1678,6 +1710,67 @@ export class OtherTeamsWorkComponent implements OnInit {
       this.tabSwitch.submitted = false;
       this.tabSwitch.myClaims = true;
       this.fetchClaimsLead('MyClaims');
+    }
+  }
+
+  onPageChange(page: number) {
+    if (page < 0 || page >= this.totalPages || page === this.currentPage) return;
+    this.clearAssigmentArray();
+    if (this.tabSwitch.myClaims) {
+      // Existing MyClaims path in this component is not paged yet.
+      return;
+    }
+    this.fetchClaims(this.tabValue, page);
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    localStorage.setItem(this.PAGE_SIZE_KEY, String(size));
+    this.currentPage = 0;
+    this.goToPageInput = 1;
+    this.clearAssigmentArray();
+    if (this.tabSwitch.myClaims) {
+      this.fetchClaimsLead('MyClaims');
+    } else {
+      this.fetchClaims(this.tabValue, 0);
+    }
+  }
+
+  get pageNumbers(): number[] {
+    const total = this.totalPages;
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i);
+    const current = this.currentPage;
+    const pages = new Set<number>([0, total - 1, current]);
+    if (current > 1) pages.add(current - 1);
+    if (current < total - 2) pages.add(current + 1);
+    return Array.from(pages).sort((a, b) => a - b);
+  }
+
+  get pageStartItem(): number {
+    if (this.totalCount === 0) return 0;
+    return this.currentPage * this.pageSize + 1;
+  }
+
+  get pageEndItem(): number {
+    if (this.totalCount === 0) return 0;
+    return Math.min((this.currentPage + 1) * this.pageSize, this.totalCount);
+  }
+
+  goToSpecificPage() {
+    if (this.totalPages === 0) return;
+    const targetPage = Number(this.goToPageInput);
+    if (!Number.isFinite(targetPage)) {
+      this.goToPageInput = this.currentPage + 1;
+      return;
+    }
+    const normalizedPage = Math.max(1, Math.min(targetPage, this.totalPages));
+    this.goToPageInput = normalizedPage;
+    this.onPageChange(normalizedPage - 1);
+  }
+
+  onGoToPageEnter(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.goToSpecificPage();
     }
   }
 

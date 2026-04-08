@@ -697,10 +697,9 @@ export class SearchClaimsPaginationComponent {
     } else {
       this.isLastTeam = false;
     }
-    ths.appService.fetchLeadClaimDet(ths.selectedBtype, subType, (res: any) => {
+    ths.appService.fetchLeadClaimDet(ths.selectedBtype, subType, 0, 200, 0, (res: any) => {
       if (res.status === 200) {
-        ths.claimDetail = this.removePrefix(res.data);
-        // ths.claimDetail =  res.data;
+        ths.claimDetail = this.removePrefix(res.data.claims);
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();

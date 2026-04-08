@@ -7,6 +7,8 @@ import java.util.Set;
 import javax.transaction.Transactional;
 
 import org.apache.tomcat.util.bcel.classfile.Constant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -127,8 +129,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=1 "
 			+ " left join rcm_user rcau on rcau.uuid=assign.assigned_to "
 			+ " where claims.first_worked_team_id=:teamid and (claims.last_work_team_id  is  null  or claims.last_work_team_id=:teamid) and off.active is true and claims.current_team_id=:teamid  and off.company_id=:companyId " //+ " and pending=true"
@@ -157,8 +159,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=true  "
 			+ " left join rcm_user rcau on rcau.uuid=assign.assigned_to "
 			+ " where claims.first_worked_team_id<>:teamid   and off.active is true and claims.last_work_team_id!=:teamid and claims.current_team_id=:teamid  and off.company_id=:companyId "// + " and pending=true"
@@ -169,7 +171,82 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 						
 			+ " ")
 	List<FreshClaimDataDto> fetchFreshClaimDetails(@Param("companyId") String companyId, @Param("teamid") int teamid);
-	
+
+	@Query(nativeQuery = true,
+		value = ""
+			+ "select * from ("
+			+" select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+" claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+"  CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,"
+			+ " timely_fil_lmt_dt as timelyFilingLimitData, "
+			+ " claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal, "
+			+ " case when assign.pending_since is not null then assign.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " left join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id  and last_work_team_id!=:teamid "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=1 "
+			+ " left join rcm_user rcau on rcau.uuid=assign.assigned_to "
+			+ " where claims.first_worked_team_id=:teamid and (claims.last_work_team_id  is  null  or claims.last_work_team_id=:teamid) and off.active is true and claims.current_team_id=:teamid  and off.company_id=:companyId "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " )a order by ust-claimAge,primeSecSubmittedTotal asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM ("
+			+ " SELECT claims.claim_uuid FROM rcm_claims claims"
+			+ " LEFT JOIN office off ON off.uuid=claims.office_id"
+			+ " WHERE claims.first_worked_team_id=:teamid"
+			+ " AND (claims.last_work_team_id IS NULL OR claims.last_work_team_id=:teamid)"
+			+ " AND off.active IS TRUE"
+			+ " AND claims.current_team_id=:teamid"
+			+ " AND off.company_id=:companyId"
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+			+ ") cnt")
+	Page<FreshClaimDataDto> fetchFreshClaimDetailsPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+			+ "select * from ("
+			+" select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+" claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+"  CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,"
+			+ " timely_fil_lmt_dt as timelyFilingLimitData, "
+			+ " claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal, "
+			+ " case when assign.pending_since is not null then assign.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " left join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id  and last_work_team_id!=:teamid "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_claim_assignment assign on claims.claim_uuid=assign.claim_id and assign.current_team_id=:teamid and assign.active=1 "
+			+ " left join rcm_user rcau on rcau.uuid=assign.assigned_to "
+			+ " where claims.first_worked_team_id=:teamid and (claims.last_work_team_id  is  null  or claims.last_work_team_id=:teamid) and off.active is true and claims.current_team_id=:teamid  and off.company_id=:companyId "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " )a order by ust-claimAge,primeSecSubmittedTotal asc")
+	List<FreshClaimDataDto> fetchFreshClaimDetailsDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
@@ -184,8 +261,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1  "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			//+ " inner join rcm_user ru on ru.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
@@ -198,17 +275,86 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
 			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc ")
 	List<FreshClaimDataDto> fetchFreshClaimDetailsInd(@Param("companyId") String companyId, @Param("teamid") int teamid,@Param("userid") String userId);
-	
+
+	@Query(nativeQuery = true,
+		value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal, prime_sec_submitted_total primeSecSubmittedTotal, "
+			+ " case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,"
+			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1  "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and  claims.first_worked_team_id=:teamid and (claims.last_work_team_id  is  null  or claims.last_work_team_id=:teamid) and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid  "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
+			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM rcm_claims claims"
+			+ " INNER JOIN office off ON off.uuid=claims.office_id"
+			+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+			+ " WHERE claims.current_team_id=:teamid"
+			+ " AND claims.first_worked_team_id=:teamid"
+			+ " AND (claims.last_work_team_id IS NULL OR claims.last_work_team_id=:teamid)"
+			+ " AND off.company_id=:companyId AND off.active IS TRUE"
+			+ " AND rca.assigned_to=:userid"
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")")
+	Page<FreshClaimDataDto> fetchFreshClaimDetailsIndPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal, prime_sec_submitted_total primeSecSubmittedTotal, "
+			+ " case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,"
+			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1  "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and  claims.first_worked_team_id=:teamid and (claims.last_work_team_id  is  null  or claims.last_work_team_id=:teamid) and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid  "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
+			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc")
+	List<FreshClaimDataDto> fetchFreshClaimDetailsIndDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,claims.is_primary as claimTypeStatus, "
-			
+
 			+ " Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
 			+ " from rcm_claims claims "
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			//+ " inner join rcm_user ru on ru.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ "  where off.company_id=:companyId and off.active is true "
@@ -233,8 +379,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1  "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			//+ " inner join rcm_user ru on ru.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
@@ -248,7 +394,73 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc ")
 	List<FreshClaimDataDto> fetchMyClaimDetailsInd(@Param("companyId") String companyId, @Param("teamid") int teamid,@Param("userid") String userId);
 
-	
+	@Query(nativeQuery = true,
+		value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal, prime_sec_submitted_total primeSecSubmittedTotal, "
+			+ " case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,"
+			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,team.name as assignedToTeam,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1  "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid  "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
+			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM rcm_claims claims"
+			+ " INNER JOIN office off ON off.uuid=claims.office_id"
+			+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+			+ " WHERE claims.current_team_id=:teamid"
+			+ " AND off.company_id=:companyId AND off.active IS TRUE"
+			+ " AND rca.assigned_to=:userid"
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")")
+	Page<FreshClaimDataDto> fetchMyClaimDetailsIndPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal, prime_sec_submitted_total primeSecSubmittedTotal, "
+			+ " case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,"
+			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,team.name as assignedToTeam,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1  "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid  and off.company_id=:companyId and off.active is true and rca.assigned_to=:userid  "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+"  and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" "
+			+ " and (primary_status ="+Constants.Primary_Status_Primary+" or primary_status ="+Constants.Primary_Status_Primary_submit+"  ) order by ust-claimAge,primeSecSubmittedTotal asc")
+	List<FreshClaimDataDto> fetchMyClaimDetailsIndDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+
 	/**
 	 * The claims on which first Internal Audit Team has worked and are now in bucket of Billing Team, they 
 	 * should  be shown under "Fresh Claims" and not "Claims Sent back by Other Teams" because it is fresh for
@@ -271,14 +483,10 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id "
 			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  and rca.active=true "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
-			+ " left join rcm_claim_assignment rca1 on rca1.claim_id=claims.claim_uuid   "
-			+" and rca1.id =( "
-			+" select  min(fa.id) "
-			+"     FROM rcm_claim_assignment fa "
-			+"     WHERE fa.claim_id=claims.claim_uuid and fa.current_team_id!=:teamid and  fa.active=false "
-			+"     LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=false AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_assignment rca1 on rca1.id=rca1_agg.min_id "
 			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
@@ -290,6 +498,47 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBilling(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
+	@Query(nativeQuery = true,
+		value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,"
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  and rca.active=true "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=false AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_assignment rca1 on rca1.id=rca1_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and off.active is true and (claims.first_worked_team_id!=:teamid or rca1.id is not null ) and off.company_id=:companyId "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM rcm_claims claims"
+			+ " INNER JOIN office off ON off.uuid=claims.office_id"
+			+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=TRUE"
+			+ " LEFT JOIN (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=FALSE AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid"
+			+ " LEFT JOIN rcm_claim_assignment rca1 ON rca1.id=rca1_agg.min_id"
+			+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE"
+			+ " AND (claims.first_worked_team_id!=:teamid OR rca1.id IS NOT NULL)"
+			+ " AND off.company_id=:companyId"
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED)
+	Page<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBillingPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
 
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,"
@@ -304,14 +553,39 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id "
 			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  and rca.active=true "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
-			+ " left join rcm_claim_assignment rca1 on rca1.claim_id=claims.claim_uuid   "
-			+" and rca1.id =( "
-			+" select  min(fa.id) "
-			+"     FROM rcm_claim_assignment fa "
-			+"     WHERE fa.claim_id=claims.claim_uuid and fa.current_team_id!=:teamid and  fa.active=false "
-			+"     LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=false AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_assignment rca1 on rca1.id=rca1_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and off.active is true and (claims.first_worked_team_id!=:teamid or rca1.id is not null ) and off.company_id=:companyId "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc")
+	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBillingDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,"
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  and rca.active=true "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=false AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_assignment rca1 on rca1.id=rca1_agg.min_id "
 			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
@@ -323,6 +597,77 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBillingByUser(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userId);
+
+	@Query(nativeQuery = true,
+		value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,"
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  and rca.active=true "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=false AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_assignment rca1 on rca1.id=rca1_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and off.active is true and rca.assigned_to=:userid and (claims.first_worked_team_id!=:teamid or rca1.id is not null ) and off.company_id=:companyId "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM rcm_claims claims"
+			+ " INNER JOIN office off ON off.uuid=claims.office_id"
+			+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=TRUE"
+			+ " LEFT JOIN (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=FALSE AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid"
+			+ " LEFT JOIN rcm_claim_assignment rca1 ON rca1.id=rca1_agg.min_id"
+			+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE"
+			+ " AND rca.assigned_to=:userid"
+			+ " AND (claims.first_worked_team_id!=:teamid OR rca1.id IS NOT NULL)"
+			+ " AND off.company_id=:companyId"
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED)
+	Page<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBillingByUserPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,"
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  and rca.active=true "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=false AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_assignment rca1 on rca1.id=rca1_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and off.active is true and rca.assigned_to=:userid and (claims.first_worked_team_id!=:teamid or rca1.id is not null ) and off.company_id=:companyId "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc")
+	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamBillingByUserDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
 
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,"
@@ -341,13 +686,73 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.active is true and off.company_id=:companyId " + " and  rca.active=1"
 			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
 			+ " order by ust-claimAge,primeSecSubmittedTotal asc ")
 	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamInternalAudit(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
+	@Query(nativeQuery = true,
+		value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,"
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,"
+			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id "
+			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.active is true and off.company_id=:companyId and rca.active=1"
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM rcm_claims claims"
+			+ " INNER JOIN office off ON off.uuid=claims.office_id"
+			+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+			+ " WHERE claims.current_team_id=:teamid"
+			+ " AND claims.last_work_team_id!=:teamid"
+			+ " AND off.active IS TRUE AND off.company_id=:companyId"
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED)
+	Page<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamInternalAuditPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,"
+			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,case when claims.dos is not null then DATEDIFF(sysdate(),claims.dos) else -1 end as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,prime_sec_submitted_total primeSecSubmittedTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,"
+			+ " claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id "
+			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid  "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ "  where claims.current_team_id=:teamid and claims.last_work_team_id!=:teamid and off.active is true and off.company_id=:companyId and rca.active=1"
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc")
+	List<FreshClaimDataDto> fetchClaimDetailsWorkedByTeamInternalAuditDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
 
 
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
@@ -369,8 +774,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId " + " and pending=true "
 			+"  and  claims.current_status<>"+Constants.CLAIM_CLOSED+" "
@@ -378,7 +783,70 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 					+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
 	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeam(@Param("companyId") String companyId,
 			@Param("teamid") int teamid);
-	
+
+	@Query(nativeQuery = true,
+		value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,ct.status as claimStatus,claims.claim_type providerSpeciality,insurance.name as primaryInsurance,prime_sec_submitted_total primeSecSubmittedTotal "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId and pending=true "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM rcm_claims claims"
+			+ " INNER JOIN office off ON off.uuid=claims.office_id"
+			+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE AND off.company_id=:companyId AND pending=TRUE"
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+	Page<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeamPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,ct.status as claimStatus,claims.claim_type providerSpeciality,insurance.name as primaryInsurance,prime_sec_submitted_total primeSecSubmittedTotal "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId and pending=true "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc")
+	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeamDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
 	@Query(nativeQuery = true, value = " select off.name as officeName,rca.updated_date as updatedDate,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,ct.status as claimStatus,insurance.name as primaryInsurance,prime_sec_submitted_total primeSecSubmittedTotal "
@@ -397,8 +865,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
 			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
 			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId " + " and pending=false "
 			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
@@ -406,7 +874,70 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 					+ " order by ust-claimAge,primeSecSubmittedTotal asc  ")
 	List<FreshClaimDataDto> fetchSubmittedClaimDetailsOtherTeam(@Param("companyId") String companyId,
 			@Param("teamid") int teamid);
-	
+
+	@Query(nativeQuery = true,
+		value = " select off.name as officeName,rca.updated_date as updatedDate,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,ct.status as claimStatus,insurance.name as primaryInsurance,prime_sec_submitted_total primeSecSubmittedTotal "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance ,claims.is_primary as claimTypeStatus,"
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status"
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId and pending=false "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM rcm_claims claims"
+			+ " INNER JOIN office off ON off.uuid=claims.office_id"
+			+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE AND off.company_id=:companyId AND pending=FALSE"
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+	Page<FreshClaimDataDto> fetchSubmittedClaimDetailsOtherTeamPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,rca.updated_date as updatedDate,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,ct.status as claimStatus,insurance.name as primaryInsurance,prime_sec_submitted_total primeSecSubmittedTotal "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,claims.claim_type providerSpeciality,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance ,claims.is_primary as claimTypeStatus,"
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status"
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ "  where claims.current_team_id=:teamid and off.active is true and off.company_id=:companyId and pending=false "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+			+ " order by ust-claimAge,primeSecSubmittedTotal asc")
+	List<FreshClaimDataDto> fetchSubmittedClaimDetailsOtherTeamDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,claims.claim_type providerSpeciality,insurance.name as primaryInsurance "
@@ -421,8 +952,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status"
 			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
@@ -435,7 +966,71 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ "")
 	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeamInd(@Param("companyId") String companyId,
 			@Param("teamid") int teamid,@Param("userId") String userId);
-	
+
+	@Query(nativeQuery = true,
+		value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,claims.claim_type providerSpeciality,insurance.name as primaryInsurance "
+			+ " ,prime_sec_submitted_total primeSecSubmittedTotal,ct.status as claimStatus,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance ,claims.is_primary as claimTypeStatus,"
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status"
+			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and claims.claim_id is not null and off.active is true and off.company_id=:companyId and rca.assigned_to=:userId and pending=true "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" order by ust-claimAge asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM rcm_claims claims"
+			+ " INNER JOIN office off ON off.uuid=claims.office_id"
+			+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+			+ " WHERE claims.current_team_id=:teamid AND claims.claim_id IS NOT NULL"
+			+ " AND off.active IS TRUE AND off.company_id=:companyId"
+			+ " AND rca.assigned_to=:userId AND pending=TRUE"
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+	Page<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeamIndPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, Pageable pageable);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,claims.claim_type providerSpeciality,insurance.name as primaryInsurance "
+			+ " ,prime_sec_submitted_total primeSecSubmittedTotal,ct.status as claimStatus,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName, "
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,"
+			+ " claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance ,claims.is_primary as claimTypeStatus,"
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status"
+			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and claims.claim_id is not null and off.active is true and off.company_id=:companyId and rca.assigned_to=:userId and pending=true "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" order by ust-claimAge asc")
+	List<FreshClaimDataDto> fetchFreshClaimDetailsOtherTeamIndDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, Pageable pageable);
+
 	@Query(nativeQuery = true, value = " select off.name as officeName,rca.updated_date as updatedDate,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,ct.status as claimStatus,insurance.name as primaryInsurance "
@@ -449,8 +1044,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
 			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
@@ -464,7 +1059,69 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 	List<FreshClaimDataDto> fetchSubmittedClaimDetailsOtherTeamInd(@Param("companyId") String companyId,
 			@Param("teamid") int teamid,@Param("userId") String userId);
 
-	
+	@Query(nativeQuery = true,
+		value = " select off.name as officeName,rca.updated_date as updatedDate,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,ct.status as claimStatus,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName,claims.claim_type providerSpeciality,"
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge,prime_sec_submitted_total primeSecSubmittedTotal, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance ,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id"
+			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and claims.claim_id is not null and off.active is true and off.company_id=:companyId and rca.assigned_to=:userId and pending=false "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" order by ust-claimAge asc",
+		countQuery = ""
+			+ "SELECT count(*) FROM rcm_claims claims"
+			+ " INNER JOIN office off ON off.uuid=claims.office_id"
+			+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+			+ " WHERE claims.current_team_id=:teamid AND claims.claim_id IS NOT NULL"
+			+ " AND off.active IS TRUE AND off.company_id=:companyId"
+			+ " AND rca.assigned_to=:userId AND pending=FALSE"
+			+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+			+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+	Page<FreshClaimDataDto> fetchSubmittedClaimDetailsOtherTeamIndPaged(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, Pageable pageable);
+
+	@Query(nativeQuery = true, value = " select off.name as officeName,rca.updated_date as updatedDate,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
+			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
+			+ " claims.claim_status_type_id as statusType,ct.status as claimStatus,insurance.name as primaryInsurance "
+			+ " ,secinsurance.name as secondaryInsurance ,insuranceT.name prName,secinsuranceT.name secName,claims.claim_type providerSpeciality,"
+			+ " lastteam.name as lastTeam,DATEDIFF(sysdate(),claims.dos) as claimAge,prime_sec_submitted_total primeSecSubmittedTotal, "
+			+ " CAST(COALESCE(timely_fil_lmt_dt,0) as signed) as ust,timely_fil_lmt_dt as timelyFilingLimitData,claims.submitted_total as billedAmount, "
+			+ " claims.prim_total_paid primTotal,claims.sec_submitted_total secTotal,case when rca.pending_since is not null then rca.pending_since else claims.created_date end as pendingSince,claims.status_es as statusES,claims.status_es_updated as statusESUpdated,claims.next_action as nextAction,claims.next_follow_up_date as followUpDate,claims.balance_from_es_after_posting as dueBalance ,claims.is_primary as claimTypeStatus, "
+			+ " rcau.first_name as assignedToFname,rcau.last_name as assignedToLname,Case When claims.rebilled_status Then 1 ELSE 0 End as rebilledStatus,cycle.status_updated as secondaryStarted "
+			+ " from rcm_claims claims "
+			+ " left join rcm_team team on team.id=claims.current_team_id"
+			+ " left join rcm_claim_status_type ct on ct.id=claims.current_status "
+			+ " inner join office off on off.uuid=claims.office_id  "
+			+ " inner join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1 "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
+			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
+			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
+			+ " left join rcm_insurance insurance on insurance.id=claims.prim_insurance_company_id "
+			+ " left join rcm_insurance_type insuranceT on insuranceT.id=insurance.insurance_type_id"
+			+ " left join rcm_insurance secinsurance on secinsurance.id=claims.sec_insurance_company_id "
+			+ " left join rcm_insurance_type secinsuranceT on secinsuranceT.id=secinsurance.insurance_type_id "
+			+ "  where claims.current_team_id=:teamid and claims.claim_id is not null and off.active is true and off.company_id=:companyId and rca.assigned_to=:userId and pending=false "
+			+ " and claims.current_status<>"+Constants.CLAIM_CLOSED+" "
+			+ " and claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED+" order by ust-claimAge asc")
+	List<FreshClaimDataDto> fetchSubmittedClaimDetailsOtherTeamIndDataOnly(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, Pageable pageable);
+
+
 	@Query(nativeQuery = true, value = " select off.name as officeName,claims.claim_uuid as uuid ,claims.claim_id as claimId,claims.patient_id as patientId,"
 			+ " claims.dos as dos ,claims.patient_name as patientName,claims.attachment_count as attachmentCount, "
 			+ " claims.claim_status_type_id as statusType,insurance.name as primaryInsurance "
@@ -479,8 +1136,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 			+ " left join rcm_team team on team.id=claims.current_team_id "
 			+ " inner join office off on off.uuid=claims.office_id  "
 			+ " left join rcm_claim_assignment rca on rca.claim_id=claims.claim_uuid and rca.active=1  "
-			+ " left join rcm_claim_cycle cycle on cycle.claim_id=claims.claim_uuid "
-			+"  and cycle.id =(select  min(cycle1.id) FROM rcm_claim_cycle cycle1 WHERE cycle1.status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' and cycle1.claim_id=claims.claim_uuid LIMIT 1) "
+			+ " left join (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid "
+			+" left join rcm_claim_cycle cycle on cycle.id=cycle_agg.min_id "
 			+ " left join rcm_user rcau on rcau.uuid=rca.assigned_to "
 			//+ " inner join rcm_user ru on ru.uuid=rca.assigned_to "
 			+ " left join rcm_team lastteam on lastteam.id=claims.last_work_team_id "
@@ -1576,6 +2233,252 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		@Transactional
 		@Query(value = "update rcm_claims set due_balance_res_party=:bal,res_party=:res  where claim_uuid =:claimUuid ", nativeQuery = true)
 		void updateDueBalResParty(@Param("bal")String bal,@Param("res")String res,@Param("claimUuid") String claimUuid);
-		
+
+	// -------------------------------------------------------------------------
+	// Two-step pagination: Step 1 UUID-only methods (lightweight, no COUNT, no complex JOINs)
+	// -------------------------------------------------------------------------
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " WHERE c.first_worked_team_id=:teamid"
+		+ " AND (c.last_work_team_id IS NULL OR c.last_work_team_id=:teamid)"
+		+ " AND c.current_team_id=:teamid"
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchFreshClaimUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=c.claim_uuid AND rca.active=1 AND rca.assigned_to=:userid"
+		+ " WHERE c.current_team_id=:teamid"
+		+ " AND c.first_worked_team_id=:teamid"
+		+ " AND (c.last_work_team_id IS NULL OR c.last_work_team_id=:teamid)"
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND (c.primary_status="+Constants.Primary_Status_Primary+" OR c.primary_status="+Constants.Primary_Status_Primary_submit+")"
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchFreshClaimDetailsIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=c.claim_uuid AND rca.active=1 AND rca.assigned_to=:userid"
+		+ " WHERE c.current_team_id=:teamid"
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND (c.primary_status="+Constants.Primary_Status_Primary+" OR c.primary_status="+Constants.Primary_Status_Primary_submit+")"
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchMyClaimDetailsIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=c.claim_uuid AND rca.active=TRUE"
+		+ " LEFT JOIN (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=false AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=c.claim_uuid"
+		+ " WHERE c.current_team_id=:teamid"
+		+ " AND (c.first_worked_team_id!=:teamid OR rca1_agg.min_id IS NOT NULL)"
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchClaimDetailsWorkedByTeamBillingUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=c.claim_uuid AND rca.active=TRUE AND rca.assigned_to=:userid"
+		+ " LEFT JOIN (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=false AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=c.claim_uuid"
+		+ " WHERE c.current_team_id=:teamid"
+		+ " AND (c.first_worked_team_id!=:teamid OR rca1_agg.min_id IS NOT NULL)"
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchClaimDetailsWorkedByTeamBillingByUserUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=c.claim_uuid AND rca.active=1"
+		+ " WHERE c.current_team_id=:teamid AND c.last_work_team_id!=:teamid"
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchClaimDetailsWorkedByTeamInternalAuditUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " WHERE c.current_team_id=:teamid AND c.pending=TRUE"
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchFreshClaimDetailsOtherTeamUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " WHERE c.current_team_id=:teamid AND c.pending=FALSE"
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchSubmittedClaimDetailsOtherTeamUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=c.claim_uuid AND rca.active=1 AND rca.assigned_to=:userId"
+		+ " WHERE c.current_team_id=:teamid AND c.pending=TRUE"
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchFreshClaimDetailsOtherTeamIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, Pageable pageable);
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=c.claim_uuid AND rca.active=1 AND rca.assigned_to=:userId"
+		+ " WHERE c.current_team_id=:teamid AND c.pending=FALSE"
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
+	List<String> fetchSubmittedClaimDetailsOtherTeamIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, Pageable pageable);
+
+	// -------------------------------------------------------------------------
+	// Two-step pagination: Count-only methods (lightweight, no ORDER BY, no data fetch)
+	// -------------------------------------------------------------------------
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM ("
+		+ " SELECT claims.claim_uuid FROM rcm_claims claims"
+		+ " LEFT JOIN office off ON off.uuid=claims.office_id"
+		+ " WHERE claims.first_worked_team_id=:teamid"
+		+ " AND (claims.last_work_team_id IS NULL OR claims.last_work_team_id=:teamid)"
+		+ " AND off.active IS TRUE"
+		+ " AND claims.current_team_id=:teamid"
+		+ " AND off.company_id=:companyId"
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ ") cnt")
+	long countFreshClaims(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+		+ " WHERE claims.current_team_id=:teamid AND claims.first_worked_team_id=:teamid"
+		+ " AND (claims.last_work_team_id IS NULL OR claims.last_work_team_id=:teamid)"
+		+ " AND off.company_id=:companyId AND off.active IS TRUE AND rca.assigned_to=:userid"
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")")
+	long countFreshClaimsInd(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+		+ " WHERE claims.current_team_id=:teamid AND off.company_id=:companyId AND off.active IS TRUE"
+		+ " AND rca.assigned_to=:userid AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")")
+	long countMyClaimsInd(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=TRUE"
+		+ " LEFT JOIN (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=FALSE AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid"
+		+ " LEFT JOIN rcm_claim_assignment rca1 ON rca1.id=rca1_agg.min_id"
+		+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE"
+		+ " AND (claims.first_worked_team_id!=:teamid OR rca1.id IS NOT NULL)"
+		+ " AND off.company_id=:companyId"
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED)
+	long countClaimsWorkedByTeamBilling(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=TRUE"
+		+ " LEFT JOIN (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_assignment WHERE active=FALSE AND current_team_id!=:teamid GROUP BY claim_id) rca1_agg ON rca1_agg.claim_id=claims.claim_uuid"
+		+ " LEFT JOIN rcm_claim_assignment rca1 ON rca1.id=rca1_agg.min_id"
+		+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE AND rca.assigned_to=:userid"
+		+ " AND (claims.first_worked_team_id!=:teamid OR rca1.id IS NOT NULL)"
+		+ " AND off.company_id=:companyId"
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED)
+	long countClaimsWorkedByTeamBillingByUser(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+		+ " WHERE claims.current_team_id=:teamid AND claims.last_work_team_id!=:teamid"
+		+ " AND off.active IS TRUE AND off.company_id=:companyId"
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED)
+	long countClaimsWorkedByTeamInternalAudit(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE AND off.company_id=:companyId AND pending=TRUE"
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+	long countFreshClaimsOtherTeam(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE AND off.company_id=:companyId AND pending=FALSE"
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+	long countSubmittedClaimsOtherTeam(@Param("companyId") String companyId, @Param("teamid") int teamid);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+		+ " WHERE claims.current_team_id=:teamid AND claims.claim_id IS NOT NULL"
+		+ " AND off.active IS TRUE AND off.company_id=:companyId AND rca.assigned_to=:userId AND pending=TRUE"
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+	long countFreshClaimsOtherTeamInd(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+		+ " WHERE claims.current_team_id=:teamid AND claims.claim_id IS NOT NULL"
+		+ " AND off.active IS TRUE AND off.company_id=:companyId AND rca.assigned_to=:userId AND pending=FALSE"
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+	long countSubmittedClaimsOtherTeamInd(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId);
+
+	// -------------------------------------------------------------------------
+	// Two-step pagination: Step 2 full-data fetch by UUIDs (cycle_agg scoped to page UUIDs only)
+	// -------------------------------------------------------------------------
+
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT off.name as officeName, rca.updated_date as updatedDate, claims.claim_uuid as uuid, claims.claim_id as claimId, claims.patient_id as patientId,"
+		+ " claims.dos as dos, claims.patient_name as patientName, claims.attachment_count as attachmentCount,"
+		+ " claims.claim_status_type_id as statusType, ct.status as claimStatus, insurance.name as primaryInsurance, prime_sec_submitted_total primeSecSubmittedTotal,"
+		+ " secinsurance.name as secondaryInsurance, insuranceT.name prName, claims.claim_type providerSpeciality, secinsuranceT.name secName,"
+		+ " lastteam.name as lastTeam, DATEDIFF(SYSDATE(), claims.dos) as claimAge,"
+		+ " CAST(COALESCE(timely_fil_lmt_dt,0) AS SIGNED) as ust, timely_fil_lmt_dt as timelyFilingLimitData, claims.submitted_total as billedAmount,"
+		+ " claims.prim_total_paid primTotal, claims.sec_submitted_total secTotal,"
+		+ " CASE WHEN rca.pending_since IS NOT NULL THEN rca.pending_since ELSE claims.created_date END as pendingSince,"
+		+ " claims.status_es as statusES, claims.status_es_updated as statusESUpdated,"
+		+ " claims.next_action as nextAction, claims.next_follow_up_date as followUpDate,"
+		+ " claims.balance_from_es_after_posting as dueBalance, claims.is_primary as claimTypeStatus,"
+		+ " rcau.first_name as assignedToFname, rcau.last_name as assignedToLname, team.name as assignedToTeam,"
+		+ " CASE WHEN claims.rebilled_status THEN 1 ELSE 0 END as rebilledStatus, cycle.status_updated as secondaryStarted"
+		+ " FROM rcm_claims claims"
+		+ " LEFT JOIN rcm_team team ON team.id=claims.current_team_id"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " LEFT JOIN rcm_claim_status_type ct ON ct.id=claims.current_status"
+		+ " LEFT JOIN rcm_team lastteam ON lastteam.id=claims.last_work_team_id"
+		+ " LEFT JOIN rcm_insurance insurance ON insurance.id=claims.prim_insurance_company_id"
+		+ " LEFT JOIN rcm_insurance_type insuranceT ON insuranceT.id=insurance.insurance_type_id"
+		+ " LEFT JOIN rcm_insurance secinsurance ON secinsurance.id=claims.sec_insurance_company_id"
+		+ " LEFT JOIN rcm_insurance_type secinsuranceT ON secinsuranceT.id=secinsurance.insurance_type_id"
+		+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+		+ " LEFT JOIN rcm_user rcau ON rcau.uuid=rca.assigned_to"
+		+ " LEFT JOIN (SELECT claim_id, MIN(id) as min_id FROM rcm_claim_cycle WHERE status_updated='"+Constants.Need_to_Bill_Secondary_Insurance+"' AND claim_id IN :uuids GROUP BY claim_id) cycle_agg ON cycle_agg.claim_id=claims.claim_uuid"
+		+ " LEFT JOIN rcm_claim_cycle cycle ON cycle.id=cycle_agg.min_id"
+		+ " WHERE claims.claim_uuid IN :uuids")
+	List<FreshClaimDataDto> fetchClaimDataByUuids(@Param("uuids") List<String> uuids);
 
 }

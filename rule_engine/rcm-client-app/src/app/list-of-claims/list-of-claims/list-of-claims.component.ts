@@ -28,6 +28,16 @@ export class ListOfClaimsComponent implements OnInit {
   filteredOfficeName: any = [];
   selectedCheckboxOptions: any = [];
   date: any;
+
+  // Pagination state
+  currentPage: number = 0;
+  pageSize: number = 50;
+  totalCount: number = 0;
+  totalPages: number = 0;
+  storedTotalCount: number = 0;
+  goToPageInput: number = 1;
+  readonly pageSizeOptions: number[] = [20, 50, 100, 200];
+  private readonly PAGE_SIZE_KEY = 'loc_items_per_page';
   modelElement: any = { 'modal': '', 'span': '' }
   @ViewChild('reassignmentSelectBox') reassignmentSelectBox!: ElementRef;
   teamsMs: Array<TeamsM>;
@@ -71,6 +81,13 @@ export class ListOfClaimsComponent implements OnInit {
 
 
   ngOnInit(): void {
+    const savedSize = localStorage.getItem(this.PAGE_SIZE_KEY);
+    if (savedSize) {
+      const parsed = parseInt(savedSize, 10);
+      if (this.pageSizeOptions.includes(parsed)) {
+        this.pageSize = parsed;
+      }
+    }
     this.isAccessToListOfClaims();
     this.fetchOtherTeams();
     this.clientName = localStorage.getItem("selected_clientName");
@@ -105,8 +122,9 @@ export class ListOfClaimsComponent implements OnInit {
 
 
 
-  fetchClaims(subType: string) {
+  fetchClaims(subType: string, page: number = 0) {
     this.loader.listClaimLoader = true;
+    this.currentPage = page;
     let ths = this;
     if (subType == 'sendBack') {
       this.isLastTeam = true;
@@ -115,9 +133,15 @@ export class ListOfClaimsComponent implements OnInit {
       this.isLastTeam = false;
       this.selectedSubtype = 'Fresh';
     }
-    ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, (res: any) => {
+    const knownTotalCount = page === 0 ? 0 : this.storedTotalCount;
+    ths.appService.fetchAssociateClaimDet(ths.selectedBtype, subType, page, ths.pageSize, knownTotalCount, (res: any) => {
       if (res.status === 200) {
-        ths.claimDetail = res.data;
+        ths.totalCount = res.data.totalCount;
+        ths.totalPages = res.data.totalPages;
+        ths.currentPage = res.data.page;
+        ths.goToPageInput = ths.currentPage + 1;
+        ths.storedTotalCount = res.data.totalCount;
+        ths.claimDetail = res.data.claims;
         let data: any = ths.claimDetail.map((e: any) => {
           if (e.claimId.endsWith("_P")) {
             e['EstAmount'] = e.primeSecSubmittedTotal;
@@ -129,7 +153,6 @@ export class ListOfClaimsComponent implements OnInit {
           return e;
         })
         ths.claimDetail = data;
-        //console.log(ths.claimDetail);
 
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
@@ -142,14 +165,68 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionAgeBracket(subType);
         this.showAgeBracket_WithColor_AndClaimIdDigits();
       }
-      // else {
-      //   this.loader.listClaimLoader = false;
-      //   if(res.data == "not Autorized")
-      //   this.logout();
-      //   //ERROR
-      // }
-
     });
+  }
+
+  onPageChange(page: number) {
+    if (page < 0 || page >= this.totalPages || page === this.currentPage) return;
+    this.clearAssigmentArray();
+    if (this.tabSwitch.MyClaims) {
+      this.fetchClaimsLead(this.selectedSubtype, page);
+    } else {
+      this.fetchClaims(this.selectedSubtype, page);
+    }
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    localStorage.setItem(this.PAGE_SIZE_KEY, String(size));
+    this.currentPage = 0;
+    this.goToPageInput = 1;
+    this.clearAssigmentArray();
+    if (this.tabSwitch.MyClaims) {
+      this.fetchClaimsLead(this.selectedSubtype, 0);
+    } else {
+      this.fetchClaims(this.selectedSubtype, 0);
+    }
+  }
+
+  get pageNumbers(): number[] {
+    const total = this.totalPages;
+    if (total <= 7) return Array.from({ length: total }, (_, i) => i);
+    const current = this.currentPage;
+    const pages = new Set<number>([0, total - 1, current]);
+    if (current > 1) pages.add(current - 1);
+    if (current < total - 2) pages.add(current + 1);
+    return Array.from(pages).sort((a, b) => a - b);
+  }
+
+  get pageStartItem(): number {
+    if (this.totalCount === 0) return 0;
+    return this.currentPage * this.pageSize + 1;
+  }
+
+  get pageEndItem(): number {
+    if (this.totalCount === 0) return 0;
+    return Math.min((this.currentPage + 1) * this.pageSize, this.totalCount);
+  }
+
+  goToSpecificPage() {
+    if (this.totalPages === 0) return;
+    const targetPage = Number(this.goToPageInput);
+    if (!Number.isFinite(targetPage)) {
+      this.goToPageInput = this.currentPage + 1;
+      return;
+    }
+    const normalizedPage = Math.max(1, Math.min(targetPage, this.totalPages));
+    this.goToPageInput = normalizedPage;
+    this.onPageChange(normalizedPage - 1);
+  }
+
+  onGoToPageEnter(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      this.goToSpecificPage();
+    }
   }
 
   filterOptionClaimType(subType: string) {
@@ -924,18 +1001,24 @@ export class ListOfClaimsComponent implements OnInit {
     return Utils.isRoleLead();
   }
 
-  fetchClaimsLead(subType: string) {
+  fetchClaimsLead(subType: string, page: number = 0) {
     this.loader.listClaimLoader = true;
+    this.currentPage = page;
     let ths = this;
     if (subType == 'sendBack') {
       this.isLastTeam = true;
     } else {
       this.isLastTeam = false;
     }
-    ths.appService.fetchLeadClaimDet(ths.selectedBtype, subType, (res: any) => {
+    const knownTotalCountLead = page === 0 ? 0 : this.storedTotalCount;
+    ths.appService.fetchLeadClaimDet(ths.selectedBtype, subType, page, ths.pageSize, knownTotalCountLead, (res: any) => {
       if (res.status === 200) {
-        ths.claimDetail = this.removePrefix(res.data);
-        // ths.claimDetail =  res.data;
+        ths.totalCount = res.data.totalCount;
+        ths.totalPages = res.data.totalPages;
+        ths.currentPage = res.data.page;
+        ths.goToPageInput = ths.currentPage + 1;
+        ths.storedTotalCount = res.data.totalCount;
+        ths.claimDetail = this.removePrefix(res.data.claims);
 
         let data: any = ths.claimDetail.map((e: any) => {
           if (e.claimId.endsWith("_P")) {
@@ -957,40 +1040,36 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOptionInsuranceName(subType);
         this.filterOptionInsuranceType(subType);
         this.filterOptionLastTeamWorked();
-        this.filterOptionAgeBracket(subType)
+        this.filterOptionAgeBracket(subType);
         this.showAgeBracket_WithColor_AndClaimIdDigits();
       }
-      // else {
-      //   this.loader.listClaimLoader = false;
-      //   if(res.data == "not Autorized")
-      //   this.logout();
-      //   //ERROR
-      // }
-
     });
   }
   switchTab(tab: any) {
     if (!this.claimDetail) return;
+    this.currentPage = 0;
+    this.storedTotalCount = 0;
+    this.clearAssigmentArray();
     if (tab == 'Fresh') {
       this.tabValue = 'Fresh';
       this.tabSwitch.Fresh = true;
       this.tabSwitch.sendBack = false;
       this.tabSwitch.MyClaims = false;
-      this.fetchClaims('Fresh');
+      this.fetchClaims('Fresh', 0);
     }
     else if (tab == 'sendBack') {
       this.tabValue = 'sendBack';
       this.tabSwitch.Fresh = false;
       this.tabSwitch.sendBack = true;
       this.tabSwitch.MyClaims = false;
-      this.fetchClaims('sendBack');
+      this.fetchClaims('sendBack', 0);
     }
     else if (tab == 'MyClaims') {
       this.tabValue = 'MyClaims';
       this.tabSwitch.Fresh = false;
       this.tabSwitch.sendBack = false;
       this.tabSwitch.MyClaims = true;
-      this.fetchClaimsLead('MyClaims');
+      this.fetchClaimsLead('MyClaims', 0);
     }
 
     // tab.withDos = !tab.withDos;

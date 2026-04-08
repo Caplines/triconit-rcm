@@ -46,12 +46,14 @@ export class ApplicationServiceService extends BaseService {
   }
 
 
-  fetchAssociateClaimDet(teamId: number, subtype: string, callback: any) {
-    this.getData({}, this.httpUrl['fetchAssociateClaimDet'] + "/" + teamId + "/" + subtype, callback);
+  fetchAssociateClaimDet(teamId: number, subtype: string, page: number, size: number, knownTotalCount: number, callback: any) {
+    const url = `${this.httpUrl['fetchAssociateClaimDet']}/${teamId}/${subtype}?page=${page}&size=${size}&knownTotalCount=${knownTotalCount}`;
+    this.getData({}, url, callback);
   }
 
-  fetchLeadClaimDet(teamId: number, subtype: string, callback: any) {
-    this.getData({}, this.httpUrl['fetchLeadClaimDet'] + "/" + teamId + "/" + subtype, callback);
+  fetchLeadClaimDet(teamId: number, subtype: string, page: number, size: number, knownTotalCount: number, callback: any) {
+    const url = `${this.httpUrl['fetchLeadClaimDet']}/${teamId}/${subtype}?page=${page}&size=${size}&knownTotalCount=${knownTotalCount}`;
+    this.getData({}, url, callback);
   }
   fetchCompanyNameData(callback: any) {
     this.getData({}, this.httpUrl['getCompany'], callback)
