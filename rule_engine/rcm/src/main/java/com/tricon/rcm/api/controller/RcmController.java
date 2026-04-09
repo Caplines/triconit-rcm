@@ -202,6 +202,18 @@ public class RcmController extends BaseHeaderController{
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(required = false) Integer size,
 			@RequestParam(defaultValue = "0") long knownTotalCount,
+			@RequestParam(required = false) String sortBy,
+			@RequestParam(required = false, defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false, defaultValue = "") String officeFilter,
+			@RequestParam(required = false, defaultValue = "") String claimTypeFilter,
+			@RequestParam(required = false, defaultValue = "") String ageBracketFilter,
+			@RequestParam(required = false, defaultValue = "") String insuranceFilter,
+			@RequestParam(required = false, defaultValue = "") String insuranceTypeFilter,
+			@RequestParam(required = false, defaultValue = "") String currentStatusFilter,
+			@RequestParam(required = false, defaultValue = "") String nextActionFilter,
+			@RequestParam(required = false, defaultValue = "") String providerSpecialityFilter,
+			@RequestParam(required = false, defaultValue = "") String lastTeamFilter,
+			@RequestParam(required = false, defaultValue = "") String statusTypeFilter,
 			Model model) {
 
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -210,7 +222,10 @@ public class RcmController extends BaseHeaderController{
 		}
 		int effectiveSize = (size == null) ? defaultRecordsPerPage : Math.min(size, maxRecordsPerPage);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchFreshClaimDetails(partialHeader.getTeamId(), type, subType, partialHeader, page, effectiveSize, knownTotalCount)));
+				claimServiceImpl.fetchFreshClaimDetails(partialHeader.getTeamId(), type, subType, partialHeader, page, effectiveSize, knownTotalCount,
+						sortBy, sortOrder, officeFilter, claimTypeFilter, ageBracketFilter,
+						insuranceFilter, insuranceTypeFilter, currentStatusFilter, nextActionFilter,
+						providerSpecialityFilter, lastTeamFilter, statusTypeFilter)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching Unbilled Claims Details (Admin Ubnilled Claims)", response = FreshClaimDataDto.class, responseContainer = "List")
@@ -236,6 +251,18 @@ public class RcmController extends BaseHeaderController{
 			@RequestParam(defaultValue = "0") int page,
 			@RequestParam(required = false) Integer size,
 			@RequestParam(defaultValue = "0") long knownTotalCount,
+			@RequestParam(required = false) String sortBy,
+			@RequestParam(required = false, defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false, defaultValue = "") String officeFilter,
+			@RequestParam(required = false, defaultValue = "") String claimTypeFilter,
+			@RequestParam(required = false, defaultValue = "") String ageBracketFilter,
+			@RequestParam(required = false, defaultValue = "") String insuranceFilter,
+			@RequestParam(required = false, defaultValue = "") String insuranceTypeFilter,
+			@RequestParam(required = false, defaultValue = "") String currentStatusFilter,
+			@RequestParam(required = false, defaultValue = "") String nextActionFilter,
+			@RequestParam(required = false, defaultValue = "") String providerSpecialityFilter,
+			@RequestParam(required = false, defaultValue = "") String lastTeamFilter,
+			@RequestParam(required = false, defaultValue = "") String statusTypeFilter,
 			Model model) {
 
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
@@ -244,7 +271,10 @@ public class RcmController extends BaseHeaderController{
 		}
 		int effectiveSize = (size == null) ? defaultRecordsPerPage : Math.min(size, maxRecordsPerPage);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchFreshClaimDetailsLead(partialHeader.getTeamId(), type, subType, partialHeader, page, effectiveSize, knownTotalCount)));
+				claimServiceImpl.fetchFreshClaimDetailsLead(partialHeader.getTeamId(), type, subType, partialHeader, page, effectiveSize, knownTotalCount,
+						sortBy, sortOrder, officeFilter, claimTypeFilter, ageBracketFilter,
+						insuranceFilter, insuranceTypeFilter, currentStatusFilter, nextActionFilter,
+						providerSpecialityFilter, lastTeamFilter, statusTypeFilter)));
 	}
 	
 	@ApiOperation(value = "Api For Saving Remark and Asssigning Claims (Other teams)", response = String.class, responseContainer = "List")

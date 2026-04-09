@@ -46,13 +46,55 @@ export class ApplicationServiceService extends BaseService {
   }
 
 
-  fetchAssociateClaimDet(teamId: number, subtype: string, page: number, size: number, knownTotalCount: number, callback: any) {
-    const url = `${this.httpUrl['fetchAssociateClaimDet']}/${teamId}/${subtype}?page=${page}&size=${size}&knownTotalCount=${knownTotalCount}`;
+  fetchAssociateClaimDet(teamId: number, subtype: string, page: number, size: number, knownTotalCount: number, callback: any, queryOptions?: {
+    sortBy?: string; sortOrder?: string;
+    officeFilter?: string; claimTypeFilter?: string; ageBracketFilter?: string;
+    insuranceFilter?: string; insuranceTypeFilter?: string;
+    currentStatusFilter?: string; nextActionFilter?: string;
+    providerSpecialityFilter?: string; lastTeamFilter?: string;
+    statusTypeFilter?: string;
+    [key: string]: any;
+  }) {
+    const params: string[] = [`page=${page}`, `size=${size}`, `knownTotalCount=${knownTotalCount}`];
+    if (queryOptions?.sortBy) params.push(`sortBy=${encodeURIComponent(queryOptions.sortBy)}`);
+    if (queryOptions?.sortOrder) params.push(`sortOrder=${encodeURIComponent(queryOptions.sortOrder)}`);
+    if (queryOptions?.officeFilter) params.push(`officeFilter=${encodeURIComponent(queryOptions.officeFilter)}`);
+    if (queryOptions?.claimTypeFilter) params.push(`claimTypeFilter=${encodeURIComponent(queryOptions.claimTypeFilter)}`);
+    if (queryOptions?.ageBracketFilter) params.push(`ageBracketFilter=${encodeURIComponent(queryOptions.ageBracketFilter)}`);
+    if (queryOptions?.insuranceFilter) params.push(`insuranceFilter=${encodeURIComponent(queryOptions.insuranceFilter)}`);
+    if (queryOptions?.insuranceTypeFilter) params.push(`insuranceTypeFilter=${encodeURIComponent(queryOptions.insuranceTypeFilter)}`);
+    if (queryOptions?.currentStatusFilter) params.push(`currentStatusFilter=${encodeURIComponent(queryOptions.currentStatusFilter)}`);
+    if (queryOptions?.nextActionFilter) params.push(`nextActionFilter=${encodeURIComponent(queryOptions.nextActionFilter)}`);
+    if (queryOptions?.providerSpecialityFilter) params.push(`providerSpecialityFilter=${encodeURIComponent(queryOptions.providerSpecialityFilter)}`);
+    if (queryOptions?.lastTeamFilter) params.push(`lastTeamFilter=${encodeURIComponent(queryOptions.lastTeamFilter)}`);
+    if (queryOptions?.statusTypeFilter) params.push(`statusTypeFilter=${encodeURIComponent(queryOptions.statusTypeFilter)}`);
+    const url = `${this.httpUrl['fetchAssociateClaimDet']}/${teamId}/${subtype}?${params.join('&')}`;
     this.getData({}, url, callback);
   }
 
-  fetchLeadClaimDet(teamId: number, subtype: string, page: number, size: number, knownTotalCount: number, callback: any) {
-    const url = `${this.httpUrl['fetchLeadClaimDet']}/${teamId}/${subtype}?page=${page}&size=${size}&knownTotalCount=${knownTotalCount}`;
+  fetchLeadClaimDet(teamId: number, subtype: string, page: number, size: number, knownTotalCount: number, callback: any, queryOptions?: {
+    sortBy?: string; sortOrder?: string;
+    officeFilter?: string; claimTypeFilter?: string; ageBracketFilter?: string;
+    insuranceFilter?: string; insuranceTypeFilter?: string;
+    currentStatusFilter?: string; nextActionFilter?: string;
+    providerSpecialityFilter?: string; lastTeamFilter?: string;
+    statusTypeFilter?: string;
+    [key: string]: any;
+  }) {
+    const params: string[] = [`page=${page}`, `size=${size}`, `knownTotalCount=${knownTotalCount}`];
+    if (queryOptions?.sortBy) params.push(`sortBy=${encodeURIComponent(queryOptions.sortBy)}`);
+    if (queryOptions?.sortOrder) params.push(`sortOrder=${encodeURIComponent(queryOptions.sortOrder)}`);
+    if (queryOptions?.officeFilter) params.push(`officeFilter=${encodeURIComponent(queryOptions.officeFilter)}`);
+    if (queryOptions?.claimTypeFilter) params.push(`claimTypeFilter=${encodeURIComponent(queryOptions.claimTypeFilter)}`);
+    if (queryOptions?.ageBracketFilter) params.push(`ageBracketFilter=${encodeURIComponent(queryOptions.ageBracketFilter)}`);
+    if (queryOptions?.insuranceFilter) params.push(`insuranceFilter=${encodeURIComponent(queryOptions.insuranceFilter)}`);
+    if (queryOptions?.insuranceTypeFilter) params.push(`insuranceTypeFilter=${encodeURIComponent(queryOptions.insuranceTypeFilter)}`);
+    if (queryOptions?.currentStatusFilter) params.push(`currentStatusFilter=${encodeURIComponent(queryOptions.currentStatusFilter)}`);
+    if (queryOptions?.nextActionFilter) params.push(`nextActionFilter=${encodeURIComponent(queryOptions.nextActionFilter)}`);
+    if (queryOptions?.providerSpecialityFilter) params.push(`providerSpecialityFilter=${encodeURIComponent(queryOptions.providerSpecialityFilter)}`);
+    if (queryOptions?.lastTeamFilter) params.push(`lastTeamFilter=${encodeURIComponent(queryOptions.lastTeamFilter)}`);
+    if (queryOptions?.statusTypeFilter) params.push(`statusTypeFilter=${encodeURIComponent(queryOptions.statusTypeFilter)}`);
+    const url = `${this.httpUrl['fetchLeadClaimDet']}/${teamId}/${subtype}?${params.join('&')}`;
     this.getData({}, url, callback);
   }
   fetchCompanyNameData(callback: any) {

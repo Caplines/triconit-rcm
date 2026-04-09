@@ -18,7 +18,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -2051,12 +2050,24 @@ public class ClaimServiceImpl {
 }
 
 	public PagedClaimsResponse fetchFreshClaimDetails(int teamId, int billingORRebill, String sub,
-			PartialHeader partialHeader, int page, int size, long knownTotalCount) {
+			PartialHeader partialHeader, int page, int size, long knownTotalCount,
+			String sortBy, String sortOrder,
+			String officeFilter, String claimTypeFilter, String ageBracketFilter,
+			String insuranceFilter, String insuranceTypeFilter,
+			String currentStatusFilter, String nextActionFilter,
+			String providerSpecialityFilter, String lastTeamFilter, String statusTypeFilter) {
         ///Add more logic
 		List<FreshClaimDataDto> list = null;
 		long totalCount = 0;
 		List<FreshClaimDataViewDto> listView=new ArrayList<>();
-		org.springframework.data.domain.Pageable pageable = PageRequest.of(page, size);
+	boolean isServerSortRequested = sortBy != null && !sortBy.trim().isEmpty();
+	boolean isFiltersActive = isNonEmpty(officeFilter) || isNonEmpty(claimTypeFilter) || isNonEmpty(ageBracketFilter)
+			|| isNonEmpty(insuranceFilter) || isNonEmpty(insuranceTypeFilter)
+			|| isNonEmpty(currentStatusFilter) || isNonEmpty(nextActionFilter)
+			|| isNonEmpty(providerSpecialityFilter) || isNonEmpty(lastTeamFilter) || isNonEmpty(statusTypeFilter);
+	org.springframework.data.domain.Pageable pageable = (isServerSortRequested || isFiltersActive)
+			? org.springframework.data.domain.Pageable.unpaged()
+			: PageRequest.of(page, size);
 		String companyId = partialHeader.getCompany().getUuid();
 		String userId = partialHeader.getJwtUser().getUuid();
 
@@ -2104,7 +2115,7 @@ public class ClaimServiceImpl {
 				}
 			}
 			if (!pageUuids.isEmpty()) {
-				list = rcmClaimRepository.fetchClaimDataByUuids(pageUuids);
+				list = fetchClaimDataBatched(pageUuids);
 				Map<String, FreshClaimDataDto> byUuid = list.stream()
 					.collect(Collectors.toMap(FreshClaimDataDto::getUuid, d -> d, (a, b) -> a));
 				list = pageUuids.stream().map(byUuid::get).filter(Objects::nonNull).collect(Collectors.toList());
@@ -2176,7 +2187,7 @@ public class ClaimServiceImpl {
 				}
 			}
 			if (!pageUuids.isEmpty()) {
-				list = rcmClaimRepository.fetchClaimDataByUuids(pageUuids);
+				list = fetchClaimDataBatched(pageUuids);
 				Map<String, FreshClaimDataDto> byUuid = list.stream()
 					.collect(Collectors.toMap(FreshClaimDataDto::getUuid, d -> d, (a, b) -> a));
 				list = pageUuids.stream().map(byUuid::get).filter(Objects::nonNull).collect(Collectors.toList());
@@ -2234,7 +2245,7 @@ public class ClaimServiceImpl {
 				}
 			}
 			if (!pageUuids.isEmpty()) {
-				list = rcmClaimRepository.fetchClaimDataByUuids(pageUuids);
+				list = fetchClaimDataBatched(pageUuids);
 				Map<String, FreshClaimDataDto> byUuid = list.stream()
 					.collect(Collectors.toMap(FreshClaimDataDto::getUuid, d -> d, (a, b) -> a));
 				list = pageUuids.stream().map(byUuid::get).filter(Objects::nonNull).collect(Collectors.toList());
@@ -2292,7 +2303,7 @@ public class ClaimServiceImpl {
 				}
 		    }
 			if (!pageUuids.isEmpty()) {
-				list = rcmClaimRepository.fetchClaimDataByUuids(pageUuids);
+				list = fetchClaimDataBatched(pageUuids);
 				Map<String, FreshClaimDataDto> byUuid = list.stream()
 					.collect(Collectors.toMap(FreshClaimDataDto::getUuid, d -> d, (a, b) -> a));
 				list = pageUuids.stream().map(byUuid::get).filter(Objects::nonNull).collect(Collectors.toList());
@@ -2307,17 +2318,44 @@ public class ClaimServiceImpl {
 			});
 		}
 
-		  // search secondary claims from listView for some extra manipulations
-		  String filterStatus= ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getType();
-		  List<FreshClaimDataViewDto> filteredClaims = filterPrimarySecondaryClaimsWithUsingPrimaryStatus(listView, filterStatus,
-				  partialHeader.getCompany().getUuid());
-		  return new PagedClaimsResponse(filteredClaims, totalCount, page, size);
+	  // search secondary claims from listView for some extra manipulations
+	  String filterStatus= ClaimStatusEnum.Need_to_Bill_Secondary_Insurance.getType();
+	  List<FreshClaimDataViewDto> filteredClaims = filterPrimarySecondaryClaimsWithUsingPrimaryStatus(listView, filterStatus,
+			  partialHeader.getCompany().getUuid());
+  if (isFiltersActive || isServerSortRequested) {
+	  if (isFiltersActive) {
+		  applyFilters(filteredClaims, officeFilter, claimTypeFilter, ageBracketFilter,
+				  insuranceFilter, insuranceTypeFilter, currentStatusFilter, nextActionFilter,
+				  providerSpecialityFilter, lastTeamFilter, statusTypeFilter);
+	  }
+	  if (isServerSortRequested) {
+		  applyServerSort(filteredClaims, sortBy, sortOrder);
+	  }
+	  totalCount = filteredClaims.size();
+	  int fromIndex = Math.max(0, page * size);
+	  int toIndex = Math.min(fromIndex + size, filteredClaims.size());
+	  List<FreshClaimDataViewDto> paged = fromIndex >= toIndex ? new ArrayList<>() : filteredClaims.subList(fromIndex, toIndex);
+	  return new PagedClaimsResponse(paged, totalCount, page, size);
+  }
+  return new PagedClaimsResponse(filteredClaims, totalCount, page, size);
 	}
 	
 	public PagedClaimsResponse fetchFreshClaimDetailsLead(int teamId, int billingORRebill, String sub,
-			PartialHeader partialHeader, int page, int size, long knownTotalCount) {
+			PartialHeader partialHeader, int page, int size, long knownTotalCount,
+			String sortBy, String sortOrder,
+			String officeFilter, String claimTypeFilter, String ageBracketFilter,
+			String insuranceFilter, String insuranceTypeFilter,
+			String currentStatusFilter, String nextActionFilter,
+			String providerSpecialityFilter, String lastTeamFilter, String statusTypeFilter) {
 
-		org.springframework.data.domain.Pageable pageable = PageRequest.of(page, size);
+	boolean isServerSortRequested = sortBy != null && !sortBy.trim().isEmpty();
+	boolean isFiltersActive = isNonEmpty(officeFilter) || isNonEmpty(claimTypeFilter) || isNonEmpty(ageBracketFilter)
+			|| isNonEmpty(insuranceFilter) || isNonEmpty(insuranceTypeFilter)
+			|| isNonEmpty(currentStatusFilter) || isNonEmpty(nextActionFilter)
+			|| isNonEmpty(providerSpecialityFilter) || isNonEmpty(lastTeamFilter) || isNonEmpty(statusTypeFilter);
+	org.springframework.data.domain.Pageable pageable = (isServerSortRequested || isFiltersActive)
+			? org.springframework.data.domain.Pageable.unpaged()
+			: PageRequest.of(page, size);
 		List<FreshClaimDataDto> list = null;
 		long totalCount = 0;
 		String companyId = partialHeader.getCompany().getUuid();
@@ -2341,7 +2379,7 @@ public class ClaimServiceImpl {
 			}
 		}
 		if (!pageUuids.isEmpty()) {
-			list = rcmClaimRepository.fetchClaimDataByUuids(pageUuids);
+			list = fetchClaimDataBatched(pageUuids);
 			Map<String, FreshClaimDataDto> byUuid = list.stream()
 				.collect(Collectors.toMap(FreshClaimDataDto::getUuid, d -> d, (a, b) -> a));
 			list = pageUuids.stream().map(byUuid::get).filter(Objects::nonNull).collect(Collectors.toList());
@@ -2355,7 +2393,176 @@ public class ClaimServiceImpl {
 			dataView.setNextAction(ClaimStatusEnum.getById(data.getNextAction()) != null ? ClaimStatusEnum.getById(data.getNextAction()).getType() : "N/A");
 			listView.add(dataView);
 		});
-		return new PagedClaimsResponse(listView, totalCount, page, size);
+	if (isFiltersActive || isServerSortRequested) {
+		if (isFiltersActive) {
+			applyFilters(listView, officeFilter, claimTypeFilter, ageBracketFilter,
+					insuranceFilter, insuranceTypeFilter, currentStatusFilter, nextActionFilter,
+					providerSpecialityFilter, lastTeamFilter, statusTypeFilter);
+		}
+		if (isServerSortRequested) {
+			applyServerSort(listView, sortBy, sortOrder);
+		}
+		totalCount = listView.size();
+		int fromIndex = Math.max(0, page * size);
+		int toIndex = Math.min(fromIndex + size, listView.size());
+		List<FreshClaimDataViewDto> paged = fromIndex >= toIndex ? new ArrayList<>() : listView.subList(fromIndex, toIndex);
+		return new PagedClaimsResponse(paged, totalCount, page, size);
+	}
+	return new PagedClaimsResponse(listView, totalCount, page, size);
+	}
+
+	private boolean isNonEmpty(String s) {
+		return s != null && !s.trim().isEmpty();
+	}
+
+	/**
+	 * Fetches full claim data for a list of UUIDs in batches of 500 to avoid
+	 * MySQL's performance degradation with very large IN clauses.
+	 */
+	private static final int UUID_BATCH_SIZE = 500;
+
+	private List<FreshClaimDataDto> fetchClaimDataBatched(List<String> uuids) {
+		if (uuids == null || uuids.isEmpty()) return new ArrayList<>();
+		if (uuids.size() <= UUID_BATCH_SIZE) {
+			return rcmClaimRepository.fetchClaimDataByUuids(uuids);
+		}
+		List<FreshClaimDataDto> result = new ArrayList<>(uuids.size());
+		for (int i = 0; i < uuids.size(); i += UUID_BATCH_SIZE) {
+			int end = Math.min(i + UUID_BATCH_SIZE, uuids.size());
+			result.addAll(rcmClaimRepository.fetchClaimDataByUuids(uuids.subList(i, end)));
+		}
+		return result;
+	}
+
+	private void applyFilters(List<FreshClaimDataViewDto> claims,
+			String officeFilter, String claimTypeFilter, String ageBracketFilter,
+			String insuranceFilter, String insuranceTypeFilter,
+			String currentStatusFilter, String nextActionFilter,
+			String providerSpecialityFilter, String lastTeamFilter, String statusTypeFilter) {
+		if (claims == null || claims.isEmpty()) return;
+		if (isNonEmpty(officeFilter)) {
+			Set<String> offices = new HashSet<>(Arrays.asList(officeFilter.split(",")));
+			claims.removeIf(c -> c.getOfficeName() == null || !offices.contains(c.getOfficeName()));
+		}
+		if (isNonEmpty(claimTypeFilter)) {
+			Set<String> types = new HashSet<>(Arrays.asList(claimTypeFilter.split(",")));
+			if (!types.contains("Primary") || !types.contains("Secondary")) {
+				claims.removeIf(c -> {
+					if (c.getClaimId() == null) return true;
+					boolean isPrimary = c.getClaimId().endsWith("_P");
+					return isPrimary ? !types.contains("Primary") : !types.contains("Secondary");
+				});
+			}
+		}
+		if (isNonEmpty(ageBracketFilter)) {
+			Set<String> brackets = new HashSet<>(Arrays.asList(ageBracketFilter.split(",")));
+			claims.removeIf(c -> !brackets.contains(getAgeBracketLabel(c.getClaimAge())));
+		}
+		if (isNonEmpty(insuranceFilter)) {
+			Set<String> insurances = new HashSet<>(Arrays.asList(insuranceFilter.split(",")));
+			claims.removeIf(c -> {
+				boolean isPrimary = c.getClaimId() != null && c.getClaimId().endsWith("_P");
+				String ins = isPrimary ? c.getPrimaryInsurance() : c.getSecondaryInsurance();
+				return ins == null || !insurances.contains(ins);
+			});
+		}
+		if (isNonEmpty(insuranceTypeFilter)) {
+			Set<String> insTypes = new HashSet<>(Arrays.asList(insuranceTypeFilter.split(",")));
+			claims.removeIf(c -> {
+				boolean isPrimary = c.getClaimId() != null && c.getClaimId().endsWith("_P");
+				String insType = isPrimary ? c.getPrName() : c.getSecName();
+				return insType == null || !insTypes.contains(insType);
+			});
+		}
+		if (isNonEmpty(currentStatusFilter)) {
+			Set<String> statuses = new HashSet<>(Arrays.asList(currentStatusFilter.split(",")));
+			claims.removeIf(c -> c.getClaimStatus() == null || !statuses.contains(c.getClaimStatus()));
+		}
+		if (isNonEmpty(nextActionFilter)) {
+			Set<String> actions = new HashSet<>(Arrays.asList(nextActionFilter.split(",")));
+			claims.removeIf(c -> c.getNextAction() == null || !actions.contains(c.getNextAction()));
+		}
+		if (isNonEmpty(providerSpecialityFilter)) {
+			Set<String> specialities = new HashSet<>(Arrays.asList(providerSpecialityFilter.split(",")));
+			claims.removeIf(c -> c.getProviderSpeciality() == null || !specialities.contains(c.getProviderSpeciality()));
+		}
+		if (isNonEmpty(lastTeamFilter)) {
+			Set<String> teams = new HashSet<>(Arrays.asList(lastTeamFilter.split(",")));
+			claims.removeIf(c -> c.getLastTeam() == null || !teams.contains(c.getLastTeam()));
+		}
+		if (isNonEmpty(statusTypeFilter)) {
+			Set<String> statusTypes = new HashSet<>(Arrays.asList(statusTypeFilter.split(",")));
+			if (!statusTypes.contains("1") || !statusTypes.contains("2")) {
+				claims.removeIf(c -> {
+					// If rebilledStatus=1, effective statusType=2 (Re-Billing), else use actual statusType
+					int effectiveStatus = (c.getRebilledStatus() == 1) ? 2 : 1;
+					return !statusTypes.contains(String.valueOf(effectiveStatus));
+				});
+			}
+		}
+	}
+
+	private String getAgeBracketLabel(Integer claimAge) {
+		if (claimAge == null || claimAge < 0) return "365+";
+		if (claimAge <= 30) return "0-30";
+		if (claimAge <= 60) return "31-60";
+		if (claimAge <= 90) return "61-90";
+		if (claimAge <= 180) return "91-180";
+		if (claimAge <= 365) return "181-365";
+		return "365+";
+	}
+
+	private void applyServerSort(List<FreshClaimDataViewDto> claims, String sortBy, String sortOrder) {
+		if (claims == null || claims.isEmpty() || sortBy == null || sortBy.trim().isEmpty()) return;
+		Comparator<FreshClaimDataViewDto> comparator = Comparator.comparing(
+			claim -> getSortValue(claim, sortBy),
+			Comparator.nullsLast((a, b) -> {
+				if (a instanceof String && b instanceof String) {
+					return ((String) a).compareToIgnoreCase((String) b);
+				}
+				return ((Comparable) a).compareTo(b);
+			})
+		);
+		if ("desc".equalsIgnoreCase(sortOrder)) {
+			comparator = comparator.reversed();
+		}
+		claims.sort(comparator);
+	}
+
+	private Comparable<?> getSortValue(FreshClaimDataViewDto claim, String sortBy) {
+		switch (sortBy) {
+			case "officeName":
+				return claim.getOfficeName();
+			case "patientId":
+				return claim.getPatientId();
+			case "patientName":
+				return claim.getPatientName();
+			case "dos":
+				return claim.getDos();
+			case "claimAge":
+				return claim.getClaimAge();
+			case "pendingSince":
+				return claim.getPendingSince();
+			case "primaryInsurance":
+				return claim.getPrimaryInsurance();
+			case "prName":
+				return claim.getPrName();
+			case "statusType":
+				return claim.getStatusType();
+			case "billedAmount":
+				return claim.getBilledAmount();
+			case "lastTeam":
+				return claim.getLastTeam();
+			case "dueDateSort":
+				return claim.getFollowUpDate() != null ? claim.getFollowUpDate() : claim.getPendingSince();
+			case "EstAmount":
+				if (claim.getClaimId() != null && claim.getClaimId().endsWith("_P")) {
+					return claim.getPrimeSecSubmittedTotal();
+				}
+				return claim.getSecTotal();
+			default:
+				return null;
+		}
 	}
 
 	public List<FreshClaimDataDto> fetchClaimsByTeamNotFrom(int teamId,PartialHeader partialHeader) {
@@ -7337,118 +7544,120 @@ public class ClaimServiceImpl {
 	 * where below Conditions will fulfill
 	 */
 	private List<FreshClaimDataViewDto> filterPrimarySecondaryClaimsWithUsingPrimaryStatus(
-			List<FreshClaimDataViewDto> listView, String status,String companyUuid) {
+			List<FreshClaimDataViewDto> listView, String status, String companyUuid) {
 
-		// Filter secondary claims where nextAction is need to bill insurance of primary
-		// claims
-		// if claim is primary then ClaimTypeStatus=1 otherwise will be 0
+		if (listView == null || listView.isEmpty()) return listView;
 
-		List<FreshClaimDataViewDto> secondaryClaims = listView.stream().filter(x -> !x.isClaimTypeStatus())
-				.collect(Collectors.toList());
+		// Pre-compute base claim IDs once to avoid repeated split() inside loops — O(n)
+		Map<String, String> baseIdCache = new HashMap<>(listView.size() * 2);
+		for (FreshClaimDataViewDto item : listView) {
+			if (item.getClaimId() != null && !baseIdCache.containsKey(item.getClaimId())) {
+				baseIdCache.put(item.getClaimId(), item.getClaimId().split("_")[0]);
+			}
+		}
 
-		LinkedList<FreshClaimDataViewDto> listOfAllClaims = new LinkedList<>(listView);
-		//logger.info("ListOfClaims:" + listOfPrimaryClaims);
-		//logger.info("SecondaryClaimList:" + secondaryClaims);
-		Map<String,List<FreshClaimDataViewDto>> primaryMissingForSecondary= new HashMap<>();
-		secondaryClaims.forEach(secondary -> {
+		// Build O(1) lookup map for primary claims.  Key: "officeName|patientId|baseClaimId"
+		Map<String, FreshClaimDataViewDto> primaryByKey = new HashMap<>();
+		for (FreshClaimDataViewDto item : listView) {
+			if (item.isClaimTypeStatus() && item.getClaimId() != null) {
+				String key = item.getOfficeName() + "|" + item.getPatientId() + "|"
+						+ baseIdCache.getOrDefault(item.getClaimId(), "");
+				primaryByKey.put(key, item);
+			}
+		}
+
+		List<FreshClaimDataViewDto> secondaryClaims = new ArrayList<>();
+		for (FreshClaimDataViewDto item : listView) {
+			if (!item.isClaimTypeStatus()) secondaryClaims.add(item);
+		}
+
+		// Use ArrayList — removeIf is O(n); LinkedList.removeIf is also O(n) but with far worse cache behaviour
+		List<FreshClaimDataViewDto> listOfAllClaims = new ArrayList<>(listView);
+		Set<String> uuidsToRemove = new HashSet<>();
+		Map<String, List<FreshClaimDataViewDto>> primaryMissingForSecondary = new HashMap<>();
+
+		for (FreshClaimDataViewDto secondary : secondaryClaims) {
 			try {
-				String secondaryClaimId[] = secondary.getClaimId().split("_");
-				FreshClaimDataViewDto  correspondingPrimary = listOfAllClaims.stream().filter(x -> x.isClaimTypeStatus()
-						&& x.getOfficeName().equals(secondary.getOfficeName()) && x.getPatientId().equals(secondary.getPatientId())
-						&& secondaryClaimId[0].equals(x.getClaimId().split("_")[0])).findFirst().orElse(null);
-				
-				if (correspondingPrimary!=null) {
-					if (correspondingPrimary.getSecondaryStarted()==null) {
-						//Remove
-						listOfAllClaims.removeIf(all -> (all.getOfficeName().equals(secondary.getOfficeName())
-								&& all.getPatientId().equals(secondary.getPatientId()) 
-								&& !all.isClaimTypeStatus()
-								&& secondary.getClaimId().split("_")[0].equals(all.getClaimId().split("_")[0] )));	
-						
+				String baseId = baseIdCache.getOrDefault(secondary.getClaimId(), "");
+				String key = secondary.getOfficeName() + "|" + secondary.getPatientId() + "|" + baseId;
+				FreshClaimDataViewDto correspondingPrimary = primaryByKey.get(key);
+
+				if (correspondingPrimary != null) {
+					if (correspondingPrimary.getSecondaryStarted() == null) {
+						if (secondary.getUuid() != null) uuidsToRemove.add(secondary.getUuid());
 					}
-				}else {
-					FreshClaimDataViewDto  ds= new FreshClaimDataViewDto();
+				} else {
+					FreshClaimDataViewDto ds = new FreshClaimDataViewDto();
 					BeanUtils.copyProperties(secondary, ds);
 					ds.setClaimTypeStatus(true);
-					ds.setClaimId(secondaryClaimId[0]+"_"+"P");
-					if (primaryMissingForSecondary.get(secondary.getOfficeName())==null){
-			           List<FreshClaimDataViewDto> l11= new ArrayList<>();
-			           l11.add(ds);
-			         //Prepair list of primary if its missing from  List
-			           primaryMissingForSecondary.put(secondary.getOfficeName(),l11);
-		             }else {
-		            	//Prepair list of primary if its missing from  List
-		            	 List<FreshClaimDataViewDto> l1 = primaryMissingForSecondary.get(secondary.getOfficeName());
-		            	 l1.add(ds);
-		             }
-					
-					
+					ds.setClaimId(baseId + "_P");
+					primaryMissingForSecondary
+						.computeIfAbsent(secondary.getOfficeName(), k -> new ArrayList<>())
+						.add(ds);
 				}
-				/*		listOfAllClaims.stream().
-				listOfAllClaims.removeIf(all -> (all.getOfficeName().equals(secondary.getOfficeName())
-						&& all.getPatientId().equals(secondary.getPatientId())
-						&& secondaryClaimId[0].equals(all.getClaimId().split("_")[0])
-						&& !all.isClaimTypeStatus() && all.getSecondaryStarted()!=null) //&& !primary.getNextAction().equals(status)
-						);*/
 			} catch (Exception e) {
 				e.printStackTrace();
 				logger.error("Inside filterPrimarySecondaryClaimsWithUsingPrimaryStatus:" + e.getMessage());
 			}
-		});
-		
-		//There can be case where Secondary is Present  by Primary is not there 
-		//so we need to fetch corresponding primary and see id That Primary allows to  work on secondary of not
-		List<FreshClaimDataViewDto> remainPrimaryListView = new ArrayList<>();
-		for (Map.Entry<String, List<FreshClaimDataViewDto>> entry : primaryMissingForSecondary.entrySet()) {
-			List <String > claims  = new ArrayList<>();
-			entry.getValue().stream().map(FreshClaimDataViewDto::getClaimId).forEach(claims::add);
-		   List<FreshClaimDataDto> remainPrimary= rcmClaimRepository.fetchPrimaryClaimsWithIds(companyUuid, entry.getKey(), claims);
-		   
-		   remainPrimary.forEach(data->{
-				final FreshClaimDataViewDto	dataView = new FreshClaimDataViewDto();
-				dataView.setClaimId(data.getClaimId());
-				dataView.setOfficeName(data.getOfficeName());
-				dataView.setPatientId(data.getPatientId());
-				dataView.setSecondaryStarted(data.getSecondaryStarted());
-				dataView.setClaimTypeStatus(data.getClaimTypeStatus());
-				remainPrimaryListView.add(dataView);
-				// System.out.println("primary:"+dataView.getClaimId()+":dataView.setOfficeName():"+dataView.getOfficeName()  +":dataView.getSecondaryStarted():"+dataView.getSecondaryStarted());
+		}
+
+		// Single-pass removal for first batch — O(n)
+		if (!uuidsToRemove.isEmpty()) {
+			listOfAllClaims.removeIf(item -> !item.isClaimTypeStatus() && item.getUuid() != null
+					&& uuidsToRemove.contains(item.getUuid()));
+		}
+
+		// Handle secondaries whose primary is not in the current page — DB lookup
+		if (!primaryMissingForSecondary.isEmpty()) {
+			List<FreshClaimDataViewDto> remainPrimaryListView = new ArrayList<>();
+			for (Map.Entry<String, List<FreshClaimDataViewDto>> entry : primaryMissingForSecondary.entrySet()) {
+				List<String> claimIds = entry.getValue().stream()
+						.map(FreshClaimDataViewDto::getClaimId).collect(Collectors.toList());
+				List<FreshClaimDataDto> remainPrimary = rcmClaimRepository
+						.fetchPrimaryClaimsWithIds(companyUuid, entry.getKey(), claimIds);
+				remainPrimary.forEach(data -> {
+					final FreshClaimDataViewDto dataView = new FreshClaimDataViewDto();
+					dataView.setClaimId(data.getClaimId());
+					dataView.setOfficeName(data.getOfficeName());
+					dataView.setPatientId(data.getPatientId());
+					dataView.setSecondaryStarted(data.getSecondaryStarted());
+					dataView.setClaimTypeStatus(data.getClaimTypeStatus());
+					remainPrimaryListView.add(dataView);
 				});
-		 }
-		 secondaryClaims.forEach(secondary -> {
-			try {
-				String secondaryClaimId[] = secondary.getClaimId().split("_");
-			  // System.out.println("secondary:"+secondaryClaimId[0]);
-				FreshClaimDataViewDto  correspondingPrimary = remainPrimaryListView.stream().filter(x -> x.isClaimTypeStatus()
-						&& x.getOfficeName().equals(secondary.getOfficeName()) && x.getPatientId().equals(secondary.getPatientId())
-						&& secondaryClaimId[0].equals(x.getClaimId().split("_")[0])).findFirst().orElse(null);
-				
-				if (correspondingPrimary!=null) {
-					 //System.out.println("REMOVE11 secondary:"+secondaryClaimId[0]);
-					if (correspondingPrimary.getSecondaryStarted()==null) {
-						//Remove
-						 // System.out.println("REMOVE secondary:"+secondaryClaimId[0]);
-						listOfAllClaims.removeIf(all -> (all.getOfficeName().equals(secondary.getOfficeName())
-								&& !secondary.isClaimTypeStatus()
-								&& all.getPatientId().equals(secondary.getPatientId())
-								&& secondary.getClaimId().split("_")[0].equals(all.getClaimId().split("_")[0] )));	
-						
-					}
-				}
-			
-			} catch (Exception e) {
-				e.printStackTrace();
-				logger.error("Inside filterPrimarySecondaryClaimsWithUsingPrimaryStatus:" + e.getMessage());
 			}
-		});
-		
-		
-		
-		
-		List<FreshClaimDataViewDto> finalList = new ArrayList<>(listOfAllClaims.size());
-		
-		finalList.addAll(listOfAllClaims);
-		return finalList;
+
+			// O(1) lookup map for fetched primaries
+			Map<String, FreshClaimDataViewDto> remainPrimaryByKey = new HashMap<>();
+			for (FreshClaimDataViewDto item : remainPrimaryListView) {
+				if (item.getClaimId() != null) {
+					String baseId = item.getClaimId().split("_")[0];
+					String key = item.getOfficeName() + "|" + item.getPatientId() + "|" + baseId;
+					remainPrimaryByKey.put(key, item);
+				}
+			}
+
+			Set<String> uuidsToRemove2 = new HashSet<>();
+			for (FreshClaimDataViewDto secondary : secondaryClaims) {
+				try {
+					if (secondary.getUuid() != null && uuidsToRemove.contains(secondary.getUuid())) continue;
+					String baseId = baseIdCache.getOrDefault(secondary.getClaimId(), "");
+					String key = secondary.getOfficeName() + "|" + secondary.getPatientId() + "|" + baseId;
+					FreshClaimDataViewDto correspondingPrimary = remainPrimaryByKey.get(key);
+					if (correspondingPrimary != null && correspondingPrimary.getSecondaryStarted() == null) {
+						if (secondary.getUuid() != null) uuidsToRemove2.add(secondary.getUuid());
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error("Inside filterPrimarySecondaryClaimsWithUsingPrimaryStatus:" + e.getMessage());
+				}
+			}
+			if (!uuidsToRemove2.isEmpty()) {
+				listOfAllClaims.removeIf(item -> !item.isClaimTypeStatus() && item.getUuid() != null
+						&& uuidsToRemove2.contains(item.getUuid()));
+			}
+		}
+
+		return listOfAllClaims;
 	}
 	
 	@Transactional
