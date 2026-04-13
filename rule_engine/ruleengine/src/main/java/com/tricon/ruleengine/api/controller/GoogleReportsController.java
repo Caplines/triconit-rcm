@@ -6,6 +6,8 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,15 +34,28 @@ import com.tricon.ruleengine.logger.RuleEngineLogger;
 import com.tricon.ruleengine.model.db.Company;
 import com.tricon.ruleengine.service.EagleSoftDBAccessService;
 import com.tricon.ruleengine.service.GoogleReportService;
-import com.tricon.ruleengine.service.impl.EagleSoftDBAccessServiceImpl;
 import com.tricon.ruleengine.utils.Constants;
 
 @CrossOrigin
 @RestController
 public class GoogleReportsController {
 
-	public static boolean alreadyRunning=false;
-	
+	/**
+	 * Per-office locks: each office gets its own AtomicBoolean so a slow report
+	 * for one office never blocks reports for any other office.
+	 * compareAndSet(false, true) is the atomic acquire — eliminates the TOCTOU
+	 * race that existed with the old check-then-set pattern.
+	 */
+	private static final ConcurrentHashMap<String, AtomicBoolean> officeLocks =
+		new ConcurrentHashMap<>();
+
+	private AtomicBoolean getOfficeLock(String office) {
+		return officeLocks.computeIfAbsent(
+			office != null && !office.isEmpty() ? office : "_unknown",
+			k -> new AtomicBoolean(false)
+		);
+	}
+
 	static Class<?> clazz = GoogleReportsController.class;
 	
 	@Autowired
@@ -61,17 +76,31 @@ public class GoogleReportsController {
             @RequestParam(value = "columnCount", required = true) int columnCount,
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
 			HttpServletResponse response) {
-		//
-		es.setUpSSLCertificates();
-		//System.out.println(query);
-		// query = " select " + + query;
-		//System.out.println(office);
-		//System.out.println(ids);
-		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
-		
-		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password,cmp.getUuid());
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", dataMap));
 
+		AtomicBoolean lock = getOfficeLock(office);
+		if (!lock.compareAndSet(false, true)) {
+			RuleEngineLogger.generateLogs(clazz, "googleReport: office busy, rejecting for office=" + office,
+					Constants.rule_log_debug, null);
+			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+					.body(new GenericResponse(HttpStatus.SERVICE_UNAVAILABLE,
+							"Server is busy processing a report for " + office + ". Please retry.", null));
+		}
+		try {
+			es.setUpSSLCertificates();
+			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+			if (cmp == null) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Company configuration error", null));
+			}
+			Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office, password, cmp.getUuid());
+			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", dataMap));
+		} catch (Exception e) {
+			RuleEngineLogger.generateLogs(clazz, "googleReport error: " + e.getMessage(), Constants.rule_log_debug, null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error fetching report", null));
+		} finally {
+			lock.set(false);
+		}
 	}
 
 	@CrossOrigin
@@ -86,219 +115,163 @@ public class GoogleReportsController {
             @RequestParam(value = "columnCount", required = true) int columnCount,
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
 			HttpServletResponse response) throws JSONException {
-		//
-		es.setUpSSLCertificates();
-		List<FlexBean> beanList = new ArrayList<>();
-		FlexBean dataBean = null;
-		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
-		//System.out.println(query);
-		query = " select " + selectcolumns + " " + query;
-		//System.out.println(office);
-		//System.out.println(ids);
-		//System.out.println(query);
-		Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password,cmp.getUuid());
-		String finalData = "";
-		if (dataMap != null) {
-			String a[] = selectcolumns.split(",");
-			List<String> li = Arrays.asList(a);
-			int y = 0;
-			String comma = "";
-			for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
-				if (entry.getValue() != null) {
-					List<String> des = (List<String>) (entry.getValue());
-					int x = 0;
-					if (y > 0)
-						comma = ",";
-					finalData = finalData + comma + "{";
-					String comma2 = "";
-					dataBean = new FlexBean();// dataBean
-					for (String da : li) {
-						String v = des.get(x);
-						if (v == null)
-							v = "";
-						dataBean.set(da.replaceAll(" ", "_"), v);
-						finalData = finalData + comma2 + "\"" + da.replaceAll(" ", "_") + "\":\"" + v + "\"";
-						x++;
-						if (x > 0)
-							comma2 = ",";
 
-						// {"phonetype":"N95","cat":"WP"},{}
-					}
-					beanList.add(dataBean);
-					finalData = finalData + "}";
-					y++;
-
-				}
-
-			}
+		AtomicBoolean lock = getOfficeLock(office);
+		if (!lock.compareAndSet(false, true)) {
+			RuleEngineLogger.generateLogs(clazz, "googleReport2: office busy, rejecting for office=" + office,
+					Constants.rule_log_debug, null);
+			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+					.body(new GenericResponse(HttpStatus.SERVICE_UNAVAILABLE,
+							"Server is busy processing a report for " + office + ". Please retry.", null));
 		}
-		finalData = "{\"data\":[" + finalData + "]}";
-		//JSONObject jsonObj = new JSONObject(finalData);
-		//System.out.println("FFFFFFFFF=" + finalData);
-
-		//JSONObject jsonObj2 = new JSONObject("{\"phonetype\":\"N95\",\"cat\":\"WP\"}");
-
-		// https://medium.com/@paulgambill/how-to-import-json-data-into-google-spreadsheets-in-less-than-5-minutes-a3fede1a014a
-		// return finalData;
-		return ResponseEntity.ok(beanList);
-
-	}
-
-	private List<Object> fetchData(String selectcolumns,String query,String ids,int columnCount,String password,
-			              String office, HttpServletRequest request,
-			HttpServletResponse response) {
-		List<Object> l = new ArrayList<>();	
-		Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
 		try {
-			alreadyRunning=true;
 			es.setUpSSLCertificates();
-			
-			/*
-		    System.out.println("DPPPPPPPPPP--"+request.getRequestURI());
-			System.out.println("DPPPPPPPPPP--"+request.getHeaderNames());
-			for (Enumeration<?> e = request.getHeaderNames(); e.hasMoreElements();) {
-			    String nextHeaderName = (String) e.nextElement();
-			    String headerValue = request.getHeader(nextHeaderName);
-			    System.out.println("DPPPPPPPPPP--"+nextHeaderName);
-			    System.out.println("DPPPPPPPPPP--"+headerValue);
-			    
-				}
-			
-			System.out.println("----------------------");
-			System.out.println("---------URL-------------"+request.getRequestURL());
-			`.out.println("RRRRRRRRRRRRR---------"+request.getRemoteHost() );
-			
-			System.out.println(new URL(request.getRequestURL().toString()).getHost());
-			*/
-			List<GoogleReportDTO> beanList = new ArrayList<>();
-			GoogleReportDTO dataBean = null;
-			String a[] = selectcolumns.split(",");
+			List<FlexBean> beanList = new ArrayList<>();
+			Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+			if (cmp == null) {
+				return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+						.body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Company configuration error", null));
+			}
 			query = " select " + selectcolumns + " " + query;
-			boolean unicode16=false;        //patperio 
-			if (query.toLowerCase().contains("patperio ")) unicode16=true;
-			LinkedHashMap<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office,password,cmp.getUuid());
-			//String finalData = "";
+			Map<String, List<String>> dataMap = gs.getESDataFromServer(query, ids, columnCount, office, password, cmp.getUuid());
 			if (dataMap != null) {
-				//List<String> li = Arrays.asList(a);
-				//String comma = "";
+				String[] a = selectcolumns.split(",");
+				List<String> li = Arrays.asList(a);
 				for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
 					if (entry.getValue() != null) {
-						List<String> des = (List<String>) (entry.getValue());
+						List<String> des = entry.getValue();
 						int x = 0;
-						//finalData = finalData + comma + "{";
-						dataBean = new GoogleReportDTO();// dataBean
-						
-						for (int y=0;y<a.length;y++) {
+						FlexBean dataBean = new FlexBean();
+						for (String da : li) {
 							String v = des.get(x);
-							//int ss=0;
-							if(unicode16) {//handle uincode characters
-								//avoid loop here to 32 
-								if(a[y].contains("tooth_1")|| a[y].contains("tooth_2") || a[y].contains("tooth_3")
-								  || a[y].contains("tooth_4")  || a[y].contains("tooth_5") || a[y].contains("tooth_6")
-								  || a[y].contains("tooth_7")  || a[y].contains("tooth_8") || a[y].contains("tooth_9")
-								  || a[y].contains("tooth_10")  || a[y].contains("tooth_11") || a[y].contains("tooth_12")
-								  || a[y].contains("tooth_13")  || a[y].contains("tooth_14") || a[y].contains("tooth_15")
-								  || a[y].contains("tooth_16")  || a[y].contains("tooth_17") || a[y].contains("tooth_18")
-								  || a[y].contains("tooth_19")  || a[y].contains("tooth_20") || a[y].contains("tooth_21")
-								  || a[y].contains("tooth_22")  || a[y].contains("tooth_23") || a[y].contains("tooth_24")
-								  || a[y].contains("tooth_25")  || a[y].contains("tooth_26") || a[y].contains("tooth_27")
-								  || a[y].contains("tooth_28")  || a[y].contains("tooth_29") || a[y].contains("tooth_30")
-								  || a[y].contains("tooth_31")  || a[y].contains("tooth_32")
-								  
-								  ) {
-									
-										v = des.get(x);
-										v=v.replaceAll("\n", "");
-										//System.out.println(v);
-											try {
-										byte[] b=v.getBytes("UTF-8");
-										v="";	
-										for(int n=0;n<b.length;n++) {
-											if ((b[n]+"").equals("32")) continue;
-											v=v+b[n]+",";
-										}
-										v=v.replaceAll(",$", "");
-										 }catch(Exception u) {
-											 
-										 }
-									
-									}	
-							}
-							
-							
-							
-							setUPResponseData(dataBean, x, v);
+							if (v == null) v = "";
+							dataBean.set(da.replaceAll(" ", "_"), v);
 							x++;
 						}
 						beanList.add(dataBean);
-
 					}
-
 				}
 			}
-	          /*
-	          * http://localhost:8080/googleESReport?query=
-	            FROM dbo.syscolumns b,sysobjects a where a.id=b.id and a.name LIKE 'treatment_plans'
-	            &selectcolumns=b.name&columnCount=1&office=Jasper&password=134568 
-	          */
-			    //Add name and age
-			
-			
-			//Class<?> c2 = Class.forName("com.tricon.ruleengine.dto.sheetresponse.Response"+columnCount);//--Done
-			
-			if (beanList!=null) {
-			
-			for (GoogleReportDTO d:beanList) {
-			    l.add(setUPResponseDataRequired(d,columnCount,null));
-			}
-			}
-			
-		}catch (Exception e) {
-			// TODO: handle exception
-		}finally {
-			alreadyRunning=false;
+			return ResponseEntity.ok(beanList);
+		} catch (Exception e) {
+			RuleEngineLogger.generateLogs(clazz, "googleReport2 error: " + e.getMessage(), Constants.rule_log_debug, null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error fetching report", null));
+		} finally {
+			lock.set(false);
 		}
-		return l;
 	}
-	
-	private boolean checktimer(int max) throws InterruptedException {
-		
-		RuleEngineLogger.generateLogs(clazz, "checktimer "+alreadyRunning+"--"+max, Constants.rule_log_debug, null);
-		if (alreadyRunning) {
-			RuleEngineLogger.generateLogs(clazz, "checktimer "+alreadyRunning, Constants.rule_log_debug, null);
-			max++;
-			if (max>7) return false;
-			Thread.sleep(2000);
-			checktimer(max);
-		}
-		RuleEngineLogger.generateLogs(clazz, "checktimer "+alreadyRunning+"--"+max, Constants.rule_log_debug, null);
-		
-		return false;
-	}
-	
-	@CrossOrigin
-	@GetMapping
-	@RequestMapping(value = "/googleESReport")
-	@ResponseBody
-	public ResponseEntity<Object> fethESGoogleresponse(
-			@RequestParam(value = "selectcolumns", required = true) String selectcolumns,
-			@RequestParam(value = "query", required = true) String query,
-			@RequestParam(value = "ids", required = false) String ids,
-			@RequestParam(value = "columnCount", required = true) int columnCount,
-			@RequestParam(value = "password", required = true) String password,
-			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
-			HttpServletResponse response) throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
-		//
-		List<Object> l = null;	
-		if (alreadyRunning) {
-			
-			checktimer(1);
-		}
-		
-		l= fetchData(selectcolumns, query, ids, columnCount, password, office, request, response);
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", l));
 
-	}
+/**
+ * Pure data-fetch logic. Lock acquisition and release are handled by the caller.
+ * This method never touches the per-office lock.
+ */
+private List<Object> fetchData(String selectcolumns, String query, String ids,
+        int columnCount, String password, String office,
+        HttpServletRequest request, HttpServletResponse response) {
+    List<Object> l = new ArrayList<>();
+    try {
+        Company cmp = companyDao.getCompanyByName(Constants.COMPANY_NAME);
+        if (cmp == null) {
+            RuleEngineLogger.generateLogs(clazz, "fetchData: company not found, aborting",
+                    Constants.rule_log_debug, null);
+            return l;
+        }
+
+        es.setUpSSLCertificates();
+
+        List<GoogleReportDTO> beanList = new ArrayList<>();
+        String[] a = selectcolumns.split(",");
+        query = " select " + selectcolumns + " " + query;
+        boolean unicode16 = query.toLowerCase().contains("patperio ");
+
+        LinkedHashMap<String, List<String>> dataMap = gs.getESDataFromServer(
+                query, ids, columnCount, office, password, cmp.getUuid());
+
+        if (dataMap != null) {
+            for (Map.Entry<String, List<String>> entry : dataMap.entrySet()) {
+                if (entry.getValue() != null) {
+                    List<String> des = entry.getValue();
+                    int x = 0;
+                    GoogleReportDTO dataBean = new GoogleReportDTO();
+                    for (int y = 0; y < a.length; y++) {
+                        String v = des.get(x);
+                        if (unicode16) {
+                            if (a[y].contains("tooth_1") || a[y].contains("tooth_2") || a[y].contains("tooth_3")
+                                || a[y].contains("tooth_4") || a[y].contains("tooth_5") || a[y].contains("tooth_6")
+                                || a[y].contains("tooth_7") || a[y].contains("tooth_8") || a[y].contains("tooth_9")
+                                || a[y].contains("tooth_10") || a[y].contains("tooth_11") || a[y].contains("tooth_12")
+                                || a[y].contains("tooth_13") || a[y].contains("tooth_14") || a[y].contains("tooth_15")
+                                || a[y].contains("tooth_16") || a[y].contains("tooth_17") || a[y].contains("tooth_18")
+                                || a[y].contains("tooth_19") || a[y].contains("tooth_20") || a[y].contains("tooth_21")
+                                || a[y].contains("tooth_22") || a[y].contains("tooth_23") || a[y].contains("tooth_24")
+                                || a[y].contains("tooth_25") || a[y].contains("tooth_26") || a[y].contains("tooth_27")
+                                || a[y].contains("tooth_28") || a[y].contains("tooth_29") || a[y].contains("tooth_30")
+                                || a[y].contains("tooth_31") || a[y].contains("tooth_32")) {
+                                v = v.replaceAll("\n", "");
+                                try {
+                                    byte[] b = v.getBytes("UTF-8");
+                                    StringBuilder sb = new StringBuilder();
+                                    for (byte bv : b) {
+                                        if (bv != 32) sb.append(bv).append(",");
+                                    }
+                                    v = sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
+                                } catch (Exception u) {}
+                            }
+                        }
+                        setUPResponseData(dataBean, x, v);
+                        x++;
+                    }
+                    beanList.add(dataBean);
+                }
+            }
+        }
+
+        for (GoogleReportDTO d : beanList) {
+            l.add(setUPResponseDataRequired(d, columnCount, null));
+        }
+
+    } catch (Exception e) {
+        RuleEngineLogger.generateLogs(clazz, "fetchData error for office=" + office + ": " + e.getMessage(),
+                Constants.rule_log_debug, null);
+    }
+    return l;
+}
+
+@CrossOrigin
+@GetMapping
+@RequestMapping(value = "/googleESReport")
+@ResponseBody
+public ResponseEntity<Object> fethESGoogleresponse(
+        @RequestParam(value = "selectcolumns", required = true) String selectcolumns,
+        @RequestParam(value = "query", required = true) String query,
+        @RequestParam(value = "ids", required = false) String ids,
+        @RequestParam(value = "columnCount", required = true) int columnCount,
+        @RequestParam(value = "password", required = true) String password,
+        @RequestParam(value = "office", required = true) String office,
+        HttpServletRequest request,
+        HttpServletResponse response) throws JSONException, MalformedURLException, ClassNotFoundException {
+
+    AtomicBoolean lock = getOfficeLock(office);
+    if (!lock.compareAndSet(false, true)) {
+        // Another request for this office is already in-flight.
+        // Return 503 immediately — no thread blocking, no sleeping.
+        // The caller (Google Apps Script) should retry after a few seconds.
+        RuleEngineLogger.generateLogs(clazz,
+            "googleESReport: office busy, rejecting request for office=" + office,
+            Constants.rule_log_debug, null);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new GenericResponse(HttpStatus.SERVICE_UNAVAILABLE,
+                      "Server is busy processing a report for " + office + ". Please retry in a few seconds.",
+                      null));
+    }
+    try {
+        List<Object> l = fetchData(selectcolumns, query, ids, columnCount, password, office, request, response);
+        return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", l));
+    } finally {
+        lock.set(false);
+    }
+}
 
 	private GoogleReportDTO setUPResponseData(GoogleReportDTO dataBean, int x, String data) {
 		

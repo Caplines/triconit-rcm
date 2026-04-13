@@ -158,11 +158,11 @@ public class RcmController {
 			@RequestParam(value = "office", required = false) String officeUuid,
 			@RequestParam(value = "password", required = true) String password,
 			@RequestParam(value = "primarySecondary", required = true) String primarySecondary)
-			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+		throws JSONException, MalformedURLException, ClassNotFoundException {
 
-		String ids = null;
-		// Office office = null;
-		RuleEngineLogger.generateLogs(clazz, "ENTER fetch-claims From  Rule Engine" + new Date(), " INFO", null);
+	String ids = null;
+	// Office office = null;
+	RuleEngineLogger.generateLogs(clazz, "ENTER fetch-claims From  Rule Engine" + new Date(), " INFO", null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report No Created Successfully", "Key Error"));
@@ -236,29 +236,26 @@ public class RcmController {
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-				});
-			}
+			});
 		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Claim Data Fetched Successfully", rootDto));
+	}
+	return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Claim Data Fetched Successfully", rootDto));
 	}
 
 	@RequestMapping(value = "/fetch-insurance", method = RequestMethod.GET)
 	public ResponseEntity<?> fetchInsurance(@RequestHeader("x-api-key") String apiKey,
 			@RequestParam(value = "office", required = false) String officeUuid,
 			@RequestParam(value = "password", required = true) String password)
-			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
+		throws JSONException, MalformedURLException, ClassNotFoundException {
 
-		String ids = null;
-		// Office office = null;
-		RuleEngineLogger.generateLogs(clazz, "ENTER fetch-insurance From  Rule Engine" + new Date(), " INFO", null);
+	String ids = null;
+	// Office office = null;
+	RuleEngineLogger.generateLogs(clazz, "ENTER fetch-insurance From  Rule Engine" + new Date(), " INFO", null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report No Created Successfully", "Key Error"));
@@ -312,18 +309,15 @@ public class RcmController {
 					} catch (ClassNotFoundException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 
-				});
-			}
+			});
 		}
-		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Insurance Data Fetched Successfully", rootDto));
+	}
+	return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Insurance Data Fetched Successfully", rootDto));
 	}
 	
 	@RequestMapping(value = "/claim-appointment-date", method = RequestMethod.GET)
