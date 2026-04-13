@@ -3011,11 +3011,11 @@
                                                                 [(ngModel)]="this.claimSectionModal.INSURANCE_FOLLOW_UP['modal']['currentClaimStatus']"
                                                                 [ngClass]="{'is-invalid':emptyFields['INSURANCE_FOLLOW_UP'] && emptyFields['INSURANCE_FOLLOW_UP']['currentClaimStatus']}">
                                                                 <option value="">Select</option>
-                                                                <option value="Additional Information Required">
-                                                                    Additional Information Required</option>
-                                                                <option value="Denied">Denied</option>
+                                                                <option value="Additional information required">
+                                                                    Additional information required</option>
+                                                                <option value="Claim Denied">Claim Denied</option>
                                                                 <option value="Paid">Paid</option>
-                                                                <option value="Partial Paid">Partial Paid</option>
+                                                                <option value="Partial paid">Partial paid</option>
                                                                 <option value="In Process">In Process</option>
                                                                 <option value="Appeal Upheld">Appeal Upheld</option>
                                                                 <option value="Voided">Voided</option>
@@ -3024,8 +3024,7 @@
                                                                 </option>
                                                                 <option value="EOB Not Generated">EOB Not Generated
                                                                 </option>
-                                                                <option value="Partial paid">Partial paid</option>
-                                                                <option value="Claim not on file">Claim not on file
+                                                                <option value="Claim not on File">Claim not on File
                                                                 </option>
                                                                 <option value="Reprocessed">Reprocessed</option>
                                                                 <option *ngIf="!smilePoint" value="Claim received but no claim number generated">
