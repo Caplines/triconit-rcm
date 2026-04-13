@@ -28,6 +28,9 @@ services:
     environment:
       # Use 'docker' so SSL paths point to /opt/project/tricon/client (mounted below)
       - SPRING_PROFILES_ACTIVE=docker
+      # Give the JVM enough heap to avoid GC thrash OOM. Without this the JVM
+      # defaults to a small fraction of host RAM and thrashes under load.
+      - JAVA_TOOL_OPTIONS=-Xms512m -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/heapdump.hprof
     volumes:
       - ./ruleengine:/app
       - ~/.m2:/root/.m2

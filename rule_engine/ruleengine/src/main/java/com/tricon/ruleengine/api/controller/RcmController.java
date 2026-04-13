@@ -160,9 +160,9 @@ public class RcmController {
 			@RequestParam(value = "primarySecondary", required = true) String primarySecondary)
 		throws JSONException, MalformedURLException, ClassNotFoundException {
 
-	String ids = null;
-	// Office office = null;
-	RuleEngineLogger.generateLogs(clazz, "ENTER fetch-claims From  Rule Engine" + new Date(), " INFO", null);
+		String ids = null;
+		// Office office = null;
+		RuleEngineLogger.generateLogs(clazz, "ENTER fetch-claims From  Rule Engine" + new Date(), Constants.rule_log_info, null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report No Created Successfully", "Key Error"));
@@ -253,9 +253,9 @@ public class RcmController {
 			@RequestParam(value = "password", required = true) String password)
 		throws JSONException, MalformedURLException, ClassNotFoundException {
 
-	String ids = null;
-	// Office office = null;
-	RuleEngineLogger.generateLogs(clazz, "ENTER fetch-insurance From  Rule Engine" + new Date(), " INFO", null);
+		String ids = null;
+		// Office office = null;
+		RuleEngineLogger.generateLogs(clazz, "ENTER fetch-insurance From  Rule Engine" + new Date(), Constants.rule_log_info, null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report No Created Successfully", "Key Error"));
@@ -330,7 +330,7 @@ public class RcmController {
 
 		String ids = null;
 		// Office office = null;
-		RuleEngineLogger.generateLogs(clazz, "ENTER Appointment Date From  Rule Engine" + new Date(), " INFO", null);
+		RuleEngineLogger.generateLogs(clazz, "ENTER Appointment Date From  Rule Engine" + new Date(), Constants.rule_log_info, null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report No Created Successfully", "Key Error"));
@@ -378,7 +378,7 @@ public class RcmController {
 
 		String ids = null;
 		// Office office = null;
-		RuleEngineLogger.generateLogs(clazz, "ENTER reconcillation Query From RCM" + new Date(), " INFO", null);
+		RuleEngineLogger.generateLogs(clazz, "ENTER reconcillation Query From RCM" + new Date(), Constants.rule_log_info, null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created Successfully", "Key Error"));
@@ -536,7 +536,7 @@ public class RcmController {
 
 		List<CaplineIVFFormDto> d = null;
 		// Office office = null;
-		RuleEngineLogger.generateLogs(clazz, "ENTER IVF DATA From  Rule Engine" + new Date(), " INFO", null);
+		RuleEngineLogger.generateLogs(clazz, "ENTER IVF DATA From  Rule Engine" + new Date(), Constants.rule_log_info, null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created", "Key Error"));
@@ -561,7 +561,7 @@ public class RcmController {
 			@RequestParam(value = "claimId", required = true) String claimId)
 			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
 
-		RuleEngineLogger.generateLogs(clazz, "ENTER Claim Data From ES" + new Date(), " INFO", null);
+		RuleEngineLogger.generateLogs(clazz, "ENTER Claim Data From ES" + new Date(), Constants.rule_log_info, null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created", "Key Error"));
@@ -589,7 +589,7 @@ public class RcmController {
 			@RequestParam(value = "tpId", required = true) String tpId)
 			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
 
-		RuleEngineLogger.generateLogs(clazz, "ENTER Treatment Data From ES" + new Date(), " INFO", null);
+		RuleEngineLogger.generateLogs(clazz, "ENTER Treatment Data From ES" + new Date(), Constants.rule_log_info, null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created", "Key Error"));
@@ -617,7 +617,7 @@ public class RcmController {
 			@RequestParam(value = "patientId", required = true) String patientId)
 			throws JSONException, MalformedURLException, ClassNotFoundException, InterruptedException {
 
-		RuleEngineLogger.generateLogs(clazz, "ENTER TPIdsFromES For RCM" + new Date(), " INFO", null);
+		RuleEngineLogger.generateLogs(clazz, "ENTER TPIdsFromES For RCM" + new Date(), Constants.rule_log_info, null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Report Not Created", "Key Error"));
@@ -647,7 +647,7 @@ public class RcmController {
 
 		String ids = null;
 		// Office office = null;
-		RuleEngineLogger.generateLogs(clazz, "ENTER Due Balance Query From  Rule Engine" + new Date(), " INFO", null);
+		RuleEngineLogger.generateLogs(clazz, "ENTER Due Balance Query From  Rule Engine" + new Date(), Constants.rule_log_info, null);
 
 		if (!checkForKey(apiKey)) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "Balance Query Not Created Successfully", "Key Error"));
@@ -686,7 +686,7 @@ public class RcmController {
 	private boolean checkForKey(String apiKey) {
 
 		if (apiKey == null || !apiKey.equals(rcmEnvPrimaryClaim.getApiKey())) {
-			RuleEngineLogger.generateLogs(clazz, "ERROR -in KEY" + new Date(), " INFO", null);
+			RuleEngineLogger.generateLogs(clazz, "ERROR -in KEY" + new Date(), Constants.rule_log_info, null);
 			return false;
 
 		} else
