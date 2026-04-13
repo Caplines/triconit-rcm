@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.Hibernate;
+
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
@@ -367,92 +369,87 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	}
 
 	@Override
-	public Patient updatePatientDataWithDetailsAndHistory2(Patient pat,boolean detailsSave,boolean onlySave) throws Exception {
-		// TODO Auto-generated method stub
-		//Session session = getSession();
-		Patient p=pat;
-		try {
-			//Transaction transaction = session.beginTransaction();
-			// Break into 3 methods
-			RuleEngineLogger.generateLogs(clazz, "Entering To Save patient from DUMP 2.."
-					+pat.getPatientId(), Constants.rule_log_debug, null);
-			
-			Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
-			PatientDetail pd = iter.next();
-			
-			
-			
-			
-			// String x=null;
-			if (detailsSave) {
-				int id= (Integer)saveEntiy(pd);
-				pd.setId(id);
-				
-				PatientDetail2 pd2 = pd.getPatientDetails2();
-				if (pd2.getPatient()==null) pd2.setPatient(pd.getPatient());
-				if (pd2.getPatientDetail()==null) pd2.setPatientDetail(pd);
-				pd2.setCreatedBy(pd.getCreatedBy());
-				int id1= (Integer)saveEntiy(pd2);
-				
-				
-				Set<PatientDetail> s=new HashSet<>();
-				s.add(pd);
-				pat.setPatientDetails(s);
-				p=pat;
-				
-			}
-			else if (!onlySave) {
-				updateEntity(pd);
-				//updateEntity(pd2);
-				PatientDetail2 pd21= pd.getPatientDetails2();
-				Set<PatientDetail2> setPD2 = pat.getPatientDetails2();
-				 Integer p21Id=-1;
-				if (setPD2!=null && setPD2.size()>0) {
-					for(PatientDetail2 ps:setPD2) {
-						if (ps.getPatientDetail().getId()==pd.getId()) {
-							p21Id=ps.getId();
-						}
-					}
-					if (p21Id!=-1) {
-					  pd21.setId(p21Id);
-					  pd21.setPatientDetail(pd);
-					  pd21.setCreatedBy(pat.getCreatedBy());
-					  pd21.setUpdatedBy(pat.getUpdatedBy());
-					  pd21.setPatient(pat);
-					  updateEntity(pd21);
-					}else {
-						pd21.setCreatedBy(pat.getCreatedBy());
-						pd21.setPatient(pat);
-						pd21.setPatientDetail(pd);
-						saveEntiy(pd21);
-					}
-				}else {
-					pd21.setCreatedBy(pat.getCreatedBy());
-					pd21.setPatient(pat);
-					pd21.setPatientDetail(pd);
-					saveEntiy(pd21);
-				}
-					//pd21.setUpdatedBy(pat.getUpdatedBy());
-					
-					
-				
-				
-				Set<PatientDetail> s=new HashSet<>();
-				s.add(pd);
-				pat.setPatientDetails(s);
-				p=pat;
-				//p=pd;
-				
-			}
-			
-			// x.split("");
-			//transaction.commit();
-		} finally {
-			//closeSession(session);
-		}
-         return p;
-		
-	}
+public Patient updatePatientDataWithDetailsAndHistory2(Patient pat, boolean detailsSave, boolean onlySave) throws Exception {
+    Patient p = pat;
+    try {
+        RuleEngineLogger.generateLogs(clazz, "Entering To Save patient from DUMP 2.."
+                + pat.getPatientId(), Constants.rule_log_debug, null);
+
+        Iterator<PatientDetail> iter = pat.getPatientDetails().iterator();
+        PatientDetail pd = iter.next();
+
+        if (detailsSave) {
+            int id = (Integer) saveEntiy(pd);
+            pd.setId(id);
+
+            PatientDetail2 pd2 = pd.getPatientDetails2();
+            if (pd2.getPatient() == null) pd2.setPatient(pd.getPatient());
+            if (pd2.getPatientDetail() == null) pd2.setPatientDetail(pd);
+            pd2.setCreatedBy(pd.getCreatedBy());
+            int id1 = (Integer) saveEntiy(pd2);
+
+            Set<PatientDetail> s = new HashSet<>();
+            s.add(pd);
+            pat.setPatientDetails(s);
+            p = pat;
+
+        } else if (!onlySave) {
+            updateEntity(pd);
+
+            PatientDetail2 pd21 = pd.getPatientDetails2();
+
+            // Fix: Re-fetch patientDetails2 within an active session to avoid LazyInitializationException
+            Set<PatientDetail2> setPD2 = null;
+            try {
+                Patient freshPat = (Patient) getSession().get(Patient.class, pat.getPatientId());
+                if (freshPat != null) {
+                    Hibernate.initialize(freshPat.getPatientDetails2());
+                    setPD2 = freshPat.getPatientDetails2();
+                }
+            } catch (Exception e) {
+                RuleEngineLogger.generateLogs(clazz, "Could not re-fetch patientDetails2 for patient "
+                        + pat.getPatientId() + " - " + e.getMessage(), Constants.rule_log_debug, null);
+                setPD2 = null;
+            }
+
+            Integer p21Id = -1;
+            if (setPD2 != null && setPD2.size() > 0) {
+                for (PatientDetail2 ps : setPD2) {
+                    if (ps.getPatientDetail().getId() == pd.getId()) {
+                        p21Id = ps.getId();
+                    }
+                }
+                if (p21Id != -1) {
+                    pd21.setId(p21Id);
+                    pd21.setPatientDetail(pd);
+                    pd21.setCreatedBy(pat.getCreatedBy());
+                    pd21.setUpdatedBy(pat.getUpdatedBy());
+                    pd21.setPatient(pat);
+                    updateEntity(pd21);
+                } else {
+                    pd21.setCreatedBy(pat.getCreatedBy());
+                    pd21.setPatient(pat);
+                    pd21.setPatientDetail(pd);
+                    saveEntiy(pd21);
+                }
+            } else {
+                pd21.setCreatedBy(pat.getCreatedBy());
+                pd21.setPatient(pat);
+                pd21.setPatientDetail(pd);
+                saveEntiy(pd21);
+            }
+
+            Set<PatientDetail> s = new HashSet<>();
+            s.add(pd);
+            pat.setPatientDetails(s);
+            p = pat;
+        }
+
+    } finally {
+        // session cleanup handled by caller/Spring
+    }
+    return p;
+}
 
 	@Override
 	public void updatePatientDataWithDetailsAndHistory3(Patient pat, Office off) throws Exception {
