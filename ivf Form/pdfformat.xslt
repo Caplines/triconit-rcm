@@ -1061,9 +1061,9 @@ border-collapse: collapse;
 						   <span class="sub-heading"><xsl:value-of select="perioMnt6"/></span>
 						 </td>
                         <td  class="withds colourexam">
-                           <span class="main-heading-1">IV Sedation<br/>(D9248)</span>
+                           <span class="main-heading-1">IV Sedation<br/>(D9245)</span>
 						 </td>
-                        <td colspan="3"> <span class="sub-heading"><xsl:value-of select="sedations3"/></span>
+                        <td colspan="3"> <span class="sub-heading"><xsl:value-of select="sedations4"/></span>
                         </td>
                         <td class="withds colourexam">
                          <span class="main-heading-1">Night Gaurds(D9945) %</span>

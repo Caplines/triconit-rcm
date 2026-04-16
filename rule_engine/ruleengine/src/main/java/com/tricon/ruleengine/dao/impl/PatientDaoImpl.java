@@ -153,34 +153,48 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	
 	@Override
 	public Patient checkforPatientWithId(String patientid, Office off) {
-
-		Session session = getSession();
-		Patient pat = null;
-		try {
-			Criteria criteria = session.createCriteria(Patient.class);
-			criteria.add(Restrictions.eq("patientId", patientid));
-			criteria.createAlias("office", "off");
-			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
-			/*if (patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0
-					&& patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0) {
-				Iterator<PatientDetail> iter = patH.getPatientDetails().iterator();
-				PatientDetail patO = iter.next();
-			
-			criteria.add(Restrictions.eq("patientDetails", patO.getGeneralDateIVwasDone()));
+		// Retry once: transient TCP drops to AWS RDS can cause the @OneToOne secondary
+		// SELECTs to fail mid-session. A fresh C3P0 connection (tested on checkout) fixes it.
+		String hql = "SELECT DISTINCT p FROM Patient p " +
+			"LEFT JOIN FETCH p.patientDetails " +
+			"LEFT JOIN FETCH p.patientHistory " +
+			"WHERE p.patientId = :pid AND p.office.uuid = :officeUuid";
+		for (int attempt = 1; attempt <= 2; attempt++) {
+			Session session = getSession();
+			try {
+				@SuppressWarnings("unchecked")
+				java.util.List<Patient> patients = session.createQuery(hql)
+					.setParameter("pid", patientid)
+					.setParameter("officeUuid", off.getUuid())
+					.list();
+				return patients.isEmpty() ? null : patients.get(0);
+			} catch (Exception e) {
+				RuleEngineLogger.generateLogs(clazz,
+					"checkforPatientWithId attempt " + attempt + " failed for patient ["
+					+ patientid + "]: " + e.getMessage(),
+					Constants.rule_log_debug, null);
+				// PatientDetail2 duplicate-row issue: clean up the duplicate and retry via
+				// the Criteria-based path that already handles this case correctly.
+				if (attempt == 1 && e.getMessage() != null
+						&& e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")
+						&& e.getMessage().contains("More than one row with the given identifier was found: ")) {
+					try {
+						String pdId = e.getMessage()
+							.split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0]
+							.split("More than one row with the given identifier was found: ")[1].trim();
+						Patient cleaned = checkForDuplicatePatDetials2(patientid, off, null, false, pdId);
+						if (cleaned != null) return cleaned;
+					} catch (Exception ex) {
+						RuleEngineLogger.generateLogs(clazz,
+							"checkForDuplicatePatDetials2 fallback failed for patient [" + patientid + "]: " + ex.getMessage(),
+							Constants.rule_log_debug, null);
+					}
+				}
+			} finally {
+				closeSession(session);
 			}
-            */
-			pat = (Patient) criteria.uniqueResult();
-			if (pat!=null)Hibernate.initialize(pat.getPatientDetails());
-			if (pat!=null)Hibernate.initialize(pat.getPatientHistory());
-		}catch(HibernateException e){
-			closeSession(session);
-			
-		}catch(Exception e){
 		}
-		finally {
-			closeSession(session);
-		}
-		return pat;
+		return null;
 	}
 	@Override
 	public Patient checkforPatientWithIdAndOffice(String patientid, Office off,Patient patH,boolean chekcforException) {
@@ -190,42 +204,53 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 
 	@Override
 	public Patient checkforPatientWithIdAndOfficeAndGeneralDate(String patientid, Office off,Patient patH,boolean chekcforException,String generalDate) {
-
-		Session session = getSession();
-		Patient pat = null;
-		try {
-			Criteria criteria = session.createCriteria(Patient.class);
-			criteria.add(Restrictions.eq("patientId", patientid));
-			criteria.createAlias("office", "off");
-			criteria.createAlias("patientHistory", "patientHistory", JoinType.LEFT_OUTER_JOIN);
-			criteria.createAlias("patientDetails", "patientDetails", JoinType.INNER_JOIN);
-			criteria.createAlias("patientDetails2", "patientDetails2", JoinType.LEFT_OUTER_JOIN);
-			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
-			if (generalDate!=null ) {
-			if (!generalDate.equals(""))criteria.add(Restrictions.eq("patientDetails.generalDateIVwasDone", generalDate));
-			}
-			/*if (patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0
-					&& patH.getPatientDetails() != null && patH.getPatientDetails().size() > 0) {
-				Iterator<PatientDetail> iter = patH.getPatientDetails().iterator();
-				PatientDetail patO = iter.next();
-			
-			criteria.add(Restrictions.eq("patientDetails", patO.getGeneralDateIVwasDone()));
-			}
-            */
-			pat = (Patient) criteria.uniqueResult();
-			if (pat!=null)Hibernate.initialize(pat.getPatientDetails());
-		}catch(HibernateException e){
-			closeSession(session);
-			if (chekcforException && e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")) {
-				
-				pat =checkForDuplicatePatDetials2(patientid,off,patH,false,e.getMessage().split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0].split("More than one row with the given identifier was found: ")[1]);
-			}
-		}catch(Exception e){
+		// Retry once on transient connection failure (same reason as checkforPatientWithId).
+		String hql = "SELECT DISTINCT p FROM Patient p " +
+			"LEFT JOIN FETCH p.patientDetails pd " +
+			"LEFT JOIN FETCH p.patientHistory " +
+			"WHERE p.patientId = :pid AND p.office.uuid = :officeUuid";
+		if (generalDate != null && !generalDate.isEmpty()) {
+			hql += " AND pd.generalDateIVwasDone = :generalDate";
 		}
-		finally {
-			closeSession(session);
+		for (int attempt = 1; attempt <= 2; attempt++) {
+			Session session = getSession();
+			try {
+				org.hibernate.Query q = session.createQuery(hql);
+				q.setParameter("pid", patientid);
+				q.setParameter("officeUuid", off.getUuid());
+				if (generalDate != null && !generalDate.isEmpty()) {
+					q.setParameter("generalDate", generalDate);
+				}
+				@SuppressWarnings("unchecked")
+				java.util.List<Patient> results = q.list();
+				return results.isEmpty() ? null : results.get(0);
+			} catch (Exception e) {
+				RuleEngineLogger.generateLogs(clazz,
+					"checkforPatientWithIdAndOfficeAndGeneralDate attempt " + attempt
+					+ " failed for patient [" + patientid + "]: " + e.getMessage(),
+					Constants.rule_log_debug, null);
+				// PatientDetail2 duplicate-row issue: clean up the duplicate and fall back
+				// to the no-date lookup so the patient is always found.
+				if (attempt == 1 && e.getMessage() != null
+						&& e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")
+						&& e.getMessage().contains("More than one row with the given identifier was found: ")) {
+					try {
+						String pdId = e.getMessage()
+							.split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0]
+							.split("More than one row with the given identifier was found: ")[1].trim();
+						Patient cleaned = checkForDuplicatePatDetials2(patientid, off, null, false, pdId);
+						if (cleaned != null) return cleaned;
+					} catch (Exception ex) {
+						RuleEngineLogger.generateLogs(clazz,
+							"checkForDuplicatePatDetials2 fallback failed for patient [" + patientid + "]: " + ex.getMessage(),
+							Constants.rule_log_debug, null);
+					}
+				}
+			} finally {
+				closeSession(session);
+			}
 		}
-		return pat;
+		return null;
 	}
 
 	private Patient checkforPatient(String patientid, Office off,Patient patH,boolean chekcforException,String generalDate) {
@@ -250,21 +275,23 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			criteria.add(Restrictions.eq("patientDetails", patO.getGeneralDateIVwasDone()));
 			}
             */
-			pat = (Patient) criteria.uniqueResult();
-		}catch(HibernateException e){
-			closeSession(session);
-			if (chekcforException && e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")) {
-				
-				pat =checkForDuplicatePatDetials2(patientid,off,patH,false,e.getMessage().split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0].split("More than one row with the given identifier was found: ")[1]);
-			}
-		}catch(Exception e){
+		pat = (Patient) criteria.uniqueResult();
+		if (pat != null) Hibernate.initialize(pat.getPatientDetails());
+		if (pat != null) Hibernate.initialize(pat.getPatientHistory());
+	}catch(HibernateException e){
+		closeSession(session);
+		if (chekcforException && e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")) {
+			
+			pat =checkForDuplicatePatDetials2(patientid,off,patH,false,e.getMessage().split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0].split("More than one row with the given identifier was found: ")[1]);
 		}
-		finally {
-			closeSession(session);
-		}
-		return pat;
-		
+	}catch(Exception e){
 	}
+	finally {
+		closeSession(session);
+	}
+	return pat;
+	
+}
 	private Patient checkForDuplicatePatDetials2(String patientid, Office off,Patient patH,boolean chekcforException,String patDetailId) {
 		Session session = getSession();
 

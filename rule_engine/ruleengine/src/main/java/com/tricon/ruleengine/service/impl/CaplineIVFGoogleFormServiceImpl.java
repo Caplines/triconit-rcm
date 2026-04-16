@@ -26,6 +26,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import org.hibernate.Hibernate;
 import com.tricon.ruleengine.dao.OfficeDao;
 import com.tricon.ruleengine.dao.PatientDao;
 import com.tricon.ruleengine.dao.RcmClaimDao;
@@ -175,6 +176,15 @@ public class CaplineIVFGoogleFormServiceImpl implements CaplineIVFGoogleFormServ
 			employerName = x.getEmployerName();
 			ivFormTypeId=x.getiVFormType().getId();
 		}
+		// Safety net: if the DAO returned a patient but its lazy collections failed to
+		// initialize (e.g. a stale C3P0 connection was used), re-fetch before touching them.
+		if (patd != null && !Hibernate.isInitialized(patd.getPatientDetails())) {
+			Patient refetched = patientDao.checkforPatientWithId(pat.getPatientId(), office);
+			if (refetched != null) {
+				patd = refetched;
+			}
+		}
+
 		try {
 			if (patd == null) {
 

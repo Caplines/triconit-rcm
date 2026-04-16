@@ -577,8 +577,8 @@ table#data-scroll-t1 tr:nth-child(odd) {
 					<tr>
 						<td>Nitrous (D9230): <span class="newff"><xsl:value-of select="data/sedations1"/></span></td>
 						<td>IV Sedation (D9243): <span class="newff"><xsl:value-of select="data/sedations2"/></span></td>
-						<td colspan="2">IV Sedation (D9248): <span class="newff"><xsl:value-of select="data/sedations3"/></span>
-						</td>
+					<td colspan="2">IV Sedation (D9245): <span class="newff"><xsl:value-of select="data/sedations4"/></span>
+					</td>
 
 					</tr>
 				</table>
@@ -971,8 +971,8 @@ table#data-scroll-t1 tr:nth-child(odd) {
 					<tr>
 						<td>D9230(%): <span class="newff"><xsl:value-of select="data/sedations1"/></span></td>
 						<td>Frequency: <span class="newff"><xsl:value-of select="data/sedations1fr"/></span></td>
-						<td>D9248(%): <span class="newff"><xsl:value-of select="data/sedations3"/></span></td>
-						<td>Frequency: <span class="newff"><xsl:value-of select="data/sedations3fr"/></span></td>
+						<td>D9245(%): <span class="newff"><xsl:value-of select="data/sedations4"/></span></td>
+						<td>Frequency: <span class="newff"><xsl:value-of select="data/sedations4fr"/></span></td>
 						<td>D9239(%): <span class="newff"><xsl:value-of select="data/d9239"/></span></td>
 						<td>Frequency: <span class="newff"><xsl:value-of select="data/d9239fr"/></span></td>
 					</tr>
