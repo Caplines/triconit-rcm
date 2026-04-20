@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.math.BigInteger;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -2073,6 +2074,8 @@ public class ClaimServiceImpl {
 
 		if (sub.equals("Fresh")) {
 			List<String> pageUuids;
+			final List<String> officeNamesForPushdown = parseOfficeFilterList(officeFilter);
+			final boolean useOfficePushdown = !officeNamesForPushdown.isEmpty();
 			if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 					// Fresh claims for other-team associate
@@ -2086,11 +2089,17 @@ public class ClaimServiceImpl {
 				} else {
 					// Fresh claims for billing/internal-audit associate
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
+						pageUuids = useOfficePushdown
+								? rcmClaimRepository.fetchFreshClaimDetailsIndUuidsForOfficeNames(companyId, teamId, userId, officeNamesForPushdown, uuidQueryOffset(pageable), uuidQueryLimit(pageable))
+								: rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
-						totalCount = rcmClaimRepository.countFreshClaimsInd(companyId, teamId, userId);
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
+						totalCount = useOfficePushdown
+								? rcmClaimRepository.countFreshClaimsIndForOfficeNames(companyId, teamId, userId, officeNamesForPushdown)
+								: rcmClaimRepository.countFreshClaimsInd(companyId, teamId, userId);
+						pageUuids = useOfficePushdown
+								? rcmClaimRepository.fetchFreshClaimDetailsIndUuidsForOfficeNames(companyId, teamId, userId, officeNamesForPushdown, uuidQueryOffset(pageable), uuidQueryLimit(pageable))
+								: rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				}
 			} else {
@@ -2106,11 +2115,17 @@ public class ClaimServiceImpl {
 				} else {
 					// Fresh claims for billing/internal-audit lead/manager
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchFreshClaimUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
+						pageUuids = useOfficePushdown
+								? rcmClaimRepository.fetchFreshClaimUuidsForOfficeNames(companyId, teamId, officeNamesForPushdown, uuidQueryOffset(pageable), uuidQueryLimit(pageable))
+								: rcmClaimRepository.fetchFreshClaimUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
-						totalCount = rcmClaimRepository.countFreshClaims(companyId, teamId);
-						pageUuids = rcmClaimRepository.fetchFreshClaimUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
+						totalCount = useOfficePushdown
+								? rcmClaimRepository.countFreshClaimsForOfficeNames(companyId, teamId, officeNamesForPushdown)
+								: rcmClaimRepository.countFreshClaims(companyId, teamId);
+						pageUuids = useOfficePushdown
+								? rcmClaimRepository.fetchFreshClaimUuidsForOfficeNames(companyId, teamId, officeNamesForPushdown, uuidQueryOffset(pageable), uuidQueryLimit(pageable))
+								: rcmClaimRepository.fetchFreshClaimUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				}
 			}
@@ -2415,6 +2430,17 @@ public class ClaimServiceImpl {
 		return s != null && !s.trim().isEmpty();
 	}
 
+	/** Comma-separated office names from the list-of-claims filter; used for SQL push-down on UUID queries. */
+	private List<String> parseOfficeFilterList(String officeFilter) {
+		if (!isNonEmpty(officeFilter)) {
+			return Collections.emptyList();
+		}
+		return Arrays.stream(officeFilter.split(","))
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.collect(Collectors.toList());
+	}
+
 	/**
 	 * Native UUID-list queries use explicit LIMIT/OFFSET in SQL. Passing a
 	 * {@link org.springframework.data.domain.Pageable} into those methods caused Hibernate to wrap
@@ -2425,6 +2451,13 @@ public class ClaimServiceImpl {
 		return pageable.isPaged() ? (int) Math.min(pageable.getOffset(), (long) Integer.MAX_VALUE) : 0;
 	}
 
+	/**
+	 * When {@code pageable} is unpaged (server-side sort and/or filters active in
+	 * {@link #fetchFreshClaimDetails}), this returns {@link Integer#MAX_VALUE}, so native UUID queries
+	 * load candidate claim ids for the whole team scope before in-memory filter/sort — often slower
+	 * than DB-paged fetches even though the final page is smaller. Office filters are pushed into SQL
+	 * for billing/internal-audit Fresh paths to shrink that set early.
+	 */
 	private static int uuidQueryLimit(org.springframework.data.domain.Pageable pageable) {
 		return pageable.isPaged() ? pageable.getPageSize() : Integer.MAX_VALUE;
 	}
@@ -2530,12 +2563,7 @@ public class ClaimServiceImpl {
 		if (claims == null || claims.isEmpty() || sortBy == null || sortBy.trim().isEmpty()) return;
 		Comparator<FreshClaimDataViewDto> comparator = Comparator.comparing(
 			claim -> getSortValue(claim, sortBy),
-			Comparator.nullsLast((a, b) -> {
-				if (a instanceof String && b instanceof String) {
-					return ((String) a).compareToIgnoreCase((String) b);
-				}
-				return ((Comparable) a).compareTo(b);
-			})
+			Comparator.nullsLast((a, b) -> compareSortKeyValues(sortBy, a, b))
 		);
 		if ("desc".equalsIgnoreCase(sortOrder)) {
 			comparator = comparator.reversed();
@@ -2543,12 +2571,83 @@ public class ClaimServiceImpl {
 		claims.sort(comparator);
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private int compareSortKeyValues(String sortBy, Object a, Object b) {
+		if ("patientId".equals(sortBy)) {
+			return comparePatientIdSortKeys(a, b);
+		}
+		if (a instanceof String && b instanceof String) {
+			return ((String) a).compareToIgnoreCase((String) b);
+		}
+		return ((Comparable) a).compareTo(b);
+	}
+
+	/** Numeric order for digit-only IDs; mixed/alphanumeric fall back to case-insensitive string order. */
+	private int comparePatientIdSortKeys(Object a, Object b) {
+		if (a == null && b == null) {
+			return 0;
+		}
+		if (a == null) {
+			return 1;
+		}
+		if (b == null) {
+			return -1;
+		}
+		BigInteger ba = patientIdKeyToBigInteger(a);
+		BigInteger bb = patientIdKeyToBigInteger(b);
+		if (ba != null && bb != null) {
+			return ba.compareTo(bb);
+		}
+		String sa = a instanceof BigInteger ? ((BigInteger) a).toString() : String.valueOf(a);
+		String sb = b instanceof BigInteger ? ((BigInteger) b).toString() : String.valueOf(b);
+		return sa.compareToIgnoreCase(sb);
+	}
+
+	private BigInteger patientIdKeyToBigInteger(Object o) {
+		if (o instanceof BigInteger) {
+			return (BigInteger) o;
+		}
+		if (o instanceof String) {
+			String s = ((String) o).trim();
+			if (!s.isEmpty() && s.chars().allMatch(Character::isDigit)) {
+				try {
+					return new BigInteger(s);
+				} catch (NumberFormatException e) {
+					return null;
+				}
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Patient IDs are stored as strings but are usually numeric; lexicographic order would place "100" before "2".
+	 * Pure digit strings become {@link BigInteger} for correct numeric ordering; non-digit IDs stay as strings.
+	 */
+	private Comparable<?> parsePatientIdForNumericSort(String patientId) {
+		if (patientId == null) {
+			return null;
+		}
+		String s = patientId.trim();
+		if (s.isEmpty()) {
+			return null;
+		}
+		if (s.chars().allMatch(Character::isDigit)) {
+			try {
+				return new BigInteger(s);
+			} catch (NumberFormatException e) {
+				return s;
+			}
+		}
+		return s;
+	}
+
 	private Comparable<?> getSortValue(FreshClaimDataViewDto claim, String sortBy) {
 		switch (sortBy) {
 			case "officeName":
 				return claim.getOfficeName();
 			case "patientId":
-				return claim.getPatientId();
+				return parsePatientIdForNumericSort(claim.getPatientId());
 			case "patientName":
 				return claim.getPatientName();
 			case "dos":

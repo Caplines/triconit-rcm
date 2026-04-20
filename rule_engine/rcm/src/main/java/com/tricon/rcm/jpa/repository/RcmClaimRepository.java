@@ -2250,6 +2250,20 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
 	List<String> fetchFreshClaimUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("offset") int offset, @Param("limit") int limit);
 
+	/** Same as {@link #fetchFreshClaimUuids} but restricts to the given office display names (filter push-down). */
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " WHERE c.first_worked_team_id=:teamid"
+		+ " AND (c.last_work_team_id IS NULL OR c.last_work_team_id=:teamid)"
+		+ " AND c.current_team_id=:teamid"
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " AND o.name IN (:officeNames)"
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchFreshClaimUuidsForOfficeNames(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("officeNames") List<String> officeNames, @Param("offset") int offset, @Param("limit") int limit);
+
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
 		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
@@ -2263,6 +2277,22 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
 		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
 	List<String> fetchFreshClaimDetailsIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, @Param("offset") int offset, @Param("limit") int limit);
+
+	/** Same as {@link #fetchFreshClaimDetailsIndUuids} but restricts to the given office display names. */
+	@Query(nativeQuery = true, value = ""
+		+ " SELECT c.claim_uuid FROM rcm_claims c"
+		+ " INNER JOIN office o ON o.uuid=c.office_id AND o.active IS TRUE AND o.company_id=:companyId"
+		+ " INNER JOIN rcm_claim_assignment rca ON rca.claim_id=c.claim_uuid AND rca.active=1 AND rca.assigned_to=:userid"
+		+ " WHERE c.current_team_id=:teamid"
+		+ " AND c.first_worked_team_id=:teamid"
+		+ " AND (c.last_work_team_id IS NULL OR c.last_work_team_id=:teamid)"
+		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND (c.primary_status="+Constants.Primary_Status_Primary+" OR c.primary_status="+Constants.Primary_Status_Primary_submit+")"
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " AND o.name IN (:officeNames)"
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchFreshClaimDetailsIndUuidsForOfficeNames(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, @Param("officeNames") List<String> officeNames, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2373,6 +2403,21 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ ") cnt")
 	long countFreshClaims(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM ("
+		+ " SELECT claims.claim_uuid FROM rcm_claims claims"
+		+ " LEFT JOIN office off ON off.uuid=claims.office_id"
+		+ " WHERE claims.first_worked_team_id=:teamid"
+		+ " AND (claims.last_work_team_id IS NULL OR claims.last_work_team_id=:teamid)"
+		+ " AND off.active IS TRUE"
+		+ " AND claims.current_team_id=:teamid"
+		+ " AND off.company_id=:companyId"
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS
+		+ " AND off.name IN (:officeNames)"
+		+ ") cnt")
+	long countFreshClaimsForOfficeNames(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("officeNames") List<String> officeNames);
+
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
 		+ " INNER JOIN office off ON off.uuid=claims.office_id"
 		+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
@@ -2384,6 +2429,19 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")"
 		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countFreshClaimsInd(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid);
+
+	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
+		+ " INNER JOIN office off ON off.uuid=claims.office_id"
+		+ " LEFT JOIN rcm_claim_assignment rca ON rca.claim_id=claims.claim_uuid AND rca.active=1"
+		+ " WHERE claims.current_team_id=:teamid AND claims.first_worked_team_id=:teamid"
+		+ " AND (claims.last_work_team_id IS NULL OR claims.last_work_team_id=:teamid)"
+		+ " AND off.company_id=:companyId AND off.active IS TRUE AND rca.assigned_to=:userid"
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")"
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS
+		+ " AND off.name IN (:officeNames)")
+	long countFreshClaimsIndForOfficeNames(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, @Param("officeNames") List<String> officeNames);
 
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
 		+ " INNER JOIN office off ON off.uuid=claims.office_id"

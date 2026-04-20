@@ -47,8 +47,19 @@ export class ListOfClaimsComponent implements OnInit {
     lastTeamFilter: '',
     statusTypeFilter: ''
   };
+  /** Edits before user clicks Apply; API uses `serverFilters` until then. */
+  pendingServerFilters: any = {
+    officeFilter: '',
+    claimTypeFilter: '',
+    ageBracketFilter: '',
+    insuranceFilter: '',
+    insuranceTypeFilter: '',
+    lastTeamFilter: '',
+    statusTypeFilter: ''
+  };
   readonly pageSizeOptions: number[] = [20, 50, 100, 200];
   private readonly PAGE_SIZE_KEY = 'loc_items_per_page';
+  private readonly LIST_FILTER_STATE_KEY = 'loc_list_of_claims_filter_state_v1';
   modelElement: any = { 'modal': '', 'span': '' }
   @ViewChild('reassignmentSelectBox') reassignmentSelectBox!: ElementRef;
   teamsMs: Array<TeamsM>;
@@ -64,7 +75,6 @@ export class ListOfClaimsComponent implements OnInit {
   clientName: string = '';
   isFilterValueExist: boolean = false;
   isLastTeam: boolean = false;
-  fliterName: string = '';
   tabSwitch: any = { 'Fresh': true, 'sendBack': false, 'MyClaims': false };
   assignmentType: any = { 'assignSameTeam': 1, 'assignOtherTeam': 2, 'unAssign': 3 };
   assignmentTypeSelect: number = -1;
@@ -77,12 +87,22 @@ export class ListOfClaimsComponent implements OnInit {
   listofClaimsForAssignAction: any = [];
   selectedOfficeNames: Array<string> = [];
   accessAdminBillingClaims: boolean = false;
-  @HostListener('mouseleave') onMouseLeave(event: Event) {
-    if (event?.target) {
-      setTimeout(() => {
-        this.showFilteredDropdown[this.fliterName] = false;
-      }, 500);
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    let el = event.target as HTMLElement | null;
+    if (el && el.nodeType !== Node.ELEMENT_NODE) {
+      el = el.parentElement;
     }
+    if (el?.closest?.('.loc-claims-filter-anchor')) {
+      return;
+    }
+    this.closeAllFilterDropdowns();
+  }
+
+  closeAllFilterDropdowns(): void {
+    Object.keys(this.showFilteredDropdown).forEach((k) => {
+      this.showFilteredDropdown[k] = false;
+    });
   }
 
   constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title, private downloadService: DownLoadService) {
@@ -99,6 +119,7 @@ export class ListOfClaimsComponent implements OnInit {
         this.pageSize = parsed;
       }
     }
+    this._restoreListStateFromStorage();
     this.isAccessToListOfClaims();
     this.fetchOtherTeams();
     this.clientName = localStorage.getItem("selected_clientName");
@@ -110,7 +131,16 @@ export class ListOfClaimsComponent implements OnInit {
   isAccessToListOfClaims() {
     if (Utils.selectedTeam() == 7 || Utils.selectedTeam() == 3) {
       this.accessToListOfClaims = true;
-      this.fetchClaims(this.selectedSubtype);
+      if (this.tabSwitch.MyClaims && this.isRoleLead) {
+        this.fetchClaimsLead('MyClaims', 0);
+      } else {
+        if (this.tabSwitch.MyClaims && !this.isRoleLead) {
+          this.tabSwitch = { Fresh: true, sendBack: false, MyClaims: false };
+          this.tabValue = 'Fresh';
+        }
+        const sub = this.tabSwitch.sendBack ? 'sendBack' : 'Fresh';
+        this.fetchClaims(sub, 0);
+      }
     } else {
       this.accessToListOfClaims = false;
     }
@@ -174,7 +204,7 @@ export class ListOfClaimsComponent implements OnInit {
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
-        if (!this._hasActiveFilters()) {
+        if (this._shouldRebuildFilterColumnOptions()) {
           this.filterOptionClaimType(subType);
           this.filterOptionActionRequired(subType);
           this.filterOptionInsuranceName(subType);
@@ -182,13 +212,179 @@ export class ListOfClaimsComponent implements OnInit {
           this.filterOptionLastTeamWorked();
           this.filterOptionAgeBracket(subType);
         }
+        this._syncAllFilterUiFromPending();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
       }
     }, { sortBy: this.serverSortBy, sortOrder: this.serverSortOrder, ...this.serverFilters });
   }
 
+  private _emptyFilters() {
+    return {
+      officeFilter: '',
+      claimTypeFilter: '',
+      ageBracketFilter: '',
+      insuranceFilter: '',
+      insuranceTypeFilter: '',
+      lastTeamFilter: '',
+      statusTypeFilter: ''
+    };
+  }
+
+  private _filtersAnyNonEmpty(f: any): boolean {
+    return Object.values(f).some((v: any) => v !== '');
+  }
+
+  private _filtersEqual(a: any, b: any): boolean {
+    const keys = ['officeFilter', 'claimTypeFilter', 'ageBracketFilter', 'insuranceFilter', 'insuranceTypeFilter', 'lastTeamFilter', 'statusTypeFilter'];
+    return keys.every((k) => (a[k] || '') === (b[k] || ''));
+  }
+
   private _hasActiveFilters(): boolean {
-    return Object.values(this.serverFilters).some((v: any) => v !== '');
+    return this._filtersAnyNonEmpty(this.serverFilters) || this._filtersAnyNonEmpty(this.pendingServerFilters);
+  }
+
+  get hasUnappliedPendingFilters(): boolean {
+    return !this._filtersEqual(this.serverFilters, this.pendingServerFilters);
+  }
+
+  get canResetFilters(): boolean {
+    return this._filtersAnyNonEmpty(this.serverFilters)
+      || this._filtersAnyNonEmpty(this.pendingServerFilters)
+      || this.hasUnappliedPendingFilters;
+  }
+
+  applyPendingFilters(): void {
+    this.loader.listClaimLoader = true;
+    this.serverFilters = { ...this.pendingServerFilters };
+    this._persistListFilterState();
+    this._applyServerFilters();
+  }
+
+  private _resetFilterUiToAllSelected(): void {
+    if (this.filteredOfficeName?.length) {
+      this.filteredOfficeName.forEach((e: any) => { e.checked = true; });
+    }
+    this.isFilterAllSelected.officeName = true;
+    const cols = ['claimType', 'ageBracket', 'actionRequired', 'insuranceName', 'insuranceType', 'lastTeamWorked'];
+    for (const col of cols) {
+      const arr = this.filteredColumnData[col];
+      if (arr?.length) {
+        arr.forEach((e: any) => { e.checked = true; });
+      }
+      if (this.isFilterAllSelected[col] !== undefined) {
+        this.isFilterAllSelected[col] = true;
+      }
+    }
+  }
+
+  resetFilters(): void {
+    this.loader.listClaimLoader = true;
+    this.serverFilters = this._emptyFilters();
+    this.pendingServerFilters = this._emptyFilters();
+    this._resetFilterUiToAllSelected();
+    this._persistListFilterState();
+    this._applyServerFilters();
+  }
+
+  private _persistListFilterState(): void {
+    try {
+      const listViewTab = this.tabSwitch.MyClaims ? 'MyClaims' : this.tabSwitch.sendBack ? 'sendBack' : 'Fresh';
+      const payload = {
+        serverFilters: { ...this.serverFilters },
+        pendingServerFilters: { ...this.pendingServerFilters },
+        serverSortBy: this.serverSortBy,
+        serverSortOrder: this.serverSortOrder,
+        listViewTab
+      };
+      localStorage.setItem(this.LIST_FILTER_STATE_KEY, JSON.stringify(payload));
+    } catch {
+      /* ignore quota / privacy mode */
+    }
+  }
+
+  private _restoreListStateFromStorage(): void {
+    try {
+      const raw = localStorage.getItem(this.LIST_FILTER_STATE_KEY);
+      if (!raw) return;
+      const o = JSON.parse(raw);
+      if (o.serverFilters && typeof o.serverFilters === 'object') {
+        this.serverFilters = { ...this._emptyFilters(), ...o.serverFilters };
+      }
+      if (o.pendingServerFilters && typeof o.pendingServerFilters === 'object') {
+        this.pendingServerFilters = { ...this._emptyFilters(), ...o.pendingServerFilters };
+      }
+      if (typeof o.serverSortBy === 'string') this.serverSortBy = o.serverSortBy;
+      if (typeof o.serverSortOrder === 'string') this.serverSortOrder = o.serverSortOrder;
+      const tab = o.listViewTab as string;
+      if (tab === 'sendBack') {
+        this.tabSwitch = { Fresh: false, sendBack: true, MyClaims: false };
+        this.tabValue = 'sendBack';
+      } else if (tab === 'MyClaims' && Utils.isRoleLead()) {
+        this.tabSwitch = { Fresh: false, sendBack: false, MyClaims: true };
+        this.tabValue = 'MyClaims';
+      } else {
+        this.tabSwitch = { Fresh: true, sendBack: false, MyClaims: false };
+        this.tabValue = 'Fresh';
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
+  private _shouldRebuildFilterColumnOptions(): boolean {
+    if (!this._hasActiveFilters()) return true;
+    return !(this.filteredColumnData.claimType?.length > 0);
+  }
+
+  private _syncCheckboxListFromComma(comma: string, items: any[], valueKey: string): void {
+    if (!items?.length) return;
+    if (!comma || !String(comma).trim()) {
+      items.forEach((e: any) => { e.checked = true; });
+      return;
+    }
+    const selected = new Set(String(comma).split(',').map((s) => s.trim()).filter(Boolean));
+    items.forEach((e: any) => {
+      const v = String(e[valueKey]);
+      e.checked = selected.has(v);
+    });
+  }
+
+  private _everyItemChecked(items: any[]): boolean {
+    if (!items?.length) return true;
+    return items.every((x: any) => x.checked);
+  }
+
+  private _syncOfficeFilterUiFromPending(): void {
+    if (!this.filteredOfficeName?.length) return;
+    const raw = this.pendingServerFilters.officeFilter || '';
+    if (!String(raw).trim()) {
+      this.filteredOfficeName.forEach((e: any) => { e.checked = true; });
+      this.isFilterAllSelected.officeName = true;
+      return;
+    }
+    const selected = new Set(String(raw).split(',').map((s) => s.trim()).filter(Boolean));
+    this.filteredOfficeName.forEach((e: any) => {
+      const name = String(e.officeName || e.name || '').trim();
+      e.checked = selected.has(name);
+    });
+    this.isFilterAllSelected.officeName = this._everyItemChecked(this.filteredOfficeName);
+  }
+
+  private _syncAllFilterUiFromPending(): void {
+    this._syncOfficeFilterUiFromPending();
+    const p = this.pendingServerFilters;
+    this._syncCheckboxListFromComma(p.claimTypeFilter, this.filteredColumnData.claimType, 'claimType');
+    this.isFilterAllSelected.claimType = this._everyItemChecked(this.filteredColumnData.claimType);
+    this._syncCheckboxListFromComma(p.ageBracketFilter, this.filteredColumnData.ageBracket, 'ageBracket');
+    this.isFilterAllSelected.ageBracket = this._everyItemChecked(this.filteredColumnData.ageBracket);
+    this._syncCheckboxListFromComma(p.statusTypeFilter, this.filteredColumnData.actionRequired, 'statusType');
+    this.isFilterAllSelected.actionRequired = this._everyItemChecked(this.filteredColumnData.actionRequired);
+    this._syncCheckboxListFromComma(p.insuranceFilter, this.filteredColumnData.insuranceName, 'insuranceName');
+    this.isFilterAllSelected.insuranceName = this._everyItemChecked(this.filteredColumnData.insuranceName);
+    this._syncCheckboxListFromComma(p.insuranceTypeFilter, this.filteredColumnData.insuranceType, 'insuranceType');
+    this.isFilterAllSelected.insuranceType = this._everyItemChecked(this.filteredColumnData.insuranceType);
+    this._syncCheckboxListFromComma(p.lastTeamFilter, this.filteredColumnData.lastTeamWorked, 'lastTeam');
+    this.isFilterAllSelected.lastTeamWorked = this._everyItemChecked(this.filteredColumnData.lastTeamWorked);
   }
 
   private _applyServerFilters() {
@@ -208,7 +404,8 @@ export class ListOfClaimsComponent implements OnInit {
     if (this.tabSwitch.MyClaims) {
       this.fetchClaimsLead(this.selectedSubtype, page);
     } else {
-      this.fetchClaims(this.selectedSubtype, page);
+      const sub = this.tabSwitch.sendBack ? 'sendBack' : 'Fresh';
+      this.fetchClaims(sub, page);
     }
   }
 
@@ -218,10 +415,12 @@ export class ListOfClaimsComponent implements OnInit {
     this.currentPage = 0;
     this.goToPageInput = 1;
     this.clearAssigmentArray();
+    this._persistListFilterState();
     if (this.tabSwitch.MyClaims) {
       this.fetchClaimsLead(this.selectedSubtype, 0);
     } else {
-      this.fetchClaims(this.selectedSubtype, 0);
+      const sub = this.tabSwitch.sendBack ? 'sendBack' : 'Fresh';
+      this.fetchClaims(sub, 0);
     }
   }
 
@@ -424,10 +623,12 @@ export class ListOfClaimsComponent implements OnInit {
     this.currentPage = 0;
     this.storedTotalCount = 0;
     this.clearAssigmentArray();
+    this._persistListFilterState();
     if (this.tabSwitch.MyClaims) {
       this.fetchClaimsLead(this.selectedSubtype, 0);
     } else {
-      this.fetchClaims(this.selectedSubtype, 0);
+      const sub = this.tabSwitch.sendBack ? 'sendBack' : 'Fresh';
+      this.fetchClaims(sub, 0);
     }
   }
 
@@ -435,7 +636,6 @@ export class ListOfClaimsComponent implements OnInit {
     this.filteredOfficeName = data;
     this.filteredOfficeName.forEach((e: any) => {
       this.claimDetail.forEach((ele: any) => {
-        e['checked'] = true;
         if (ele['claimId'].includes("_P")) {
           ele['claimType'] = "Primary"
         } else if (ele['claimId'].includes("_S")) {
@@ -444,12 +644,13 @@ export class ListOfClaimsComponent implements OnInit {
       })
     });
     this.sortFiltereData(this.filteredOfficeName);
+    this._syncOfficeFilterUiFromPending();
   }
 
   filterOfficeName(e?: any, filterProperty?: any) {
     if (!e) {
       this.filteredItems = this.claimDetail;
-      this.isFilterAllSelected.officeName = true;
+      this._syncAllFilterUiFromPending();
       return;
     } else {
       let isAllSelected: boolean = true;
@@ -457,9 +658,9 @@ export class ListOfClaimsComponent implements OnInit {
         if (this.filteredOfficeName[i].checked == false) { isAllSelected = false; break; }
       }
       this.isFilterAllSelected.officeName = isAllSelected;
-      this.serverFilters.officeFilter = isAllSelected ? ''
+      this.pendingServerFilters.officeFilter = isAllSelected ? ''
         : this.filteredOfficeName.filter((x: any) => x.checked).map((x: any) => x.officeName || x.name).join(',');
-      this._applyServerFilters();
+      this._persistListFilterState();
     }
   }
 
@@ -657,9 +858,9 @@ export class ListOfClaimsComponent implements OnInit {
       if (this.filteredColumnData.claimType[i].checked == false) { isAllSelected = false; break; }
     }
     this.isFilterAllSelected.claimType = isAllSelected;
-    this.serverFilters.claimTypeFilter = isAllSelected ? ''
+    this.pendingServerFilters.claimTypeFilter = isAllSelected ? ''
       : this.filteredColumnData.claimType.filter((x: any) => x.checked).map((x: any) => x.claimType).join(',');
-    this._applyServerFilters();
+    this._persistListFilterState();
   }
 
   filterAgeBracket(filterProperty: any) {
@@ -668,9 +869,9 @@ export class ListOfClaimsComponent implements OnInit {
       if (this.filteredColumnData.ageBracket[i].checked == false) { isAllSelected = false; break; }
     }
     this.isFilterAllSelected.ageBracket = isAllSelected;
-    this.serverFilters.ageBracketFilter = isAllSelected ? ''
+    this.pendingServerFilters.ageBracketFilter = isAllSelected ? ''
       : this.filteredColumnData.ageBracket.filter((x: any) => x.checked).map((x: any) => x.ageBracket).join(',');
-    this._applyServerFilters();
+    this._persistListFilterState();
   }
 
   filterActionRequired(filterProperty: any) {
@@ -680,9 +881,9 @@ export class ListOfClaimsComponent implements OnInit {
     }
     this.isFilterAllSelected.actionRequired = isAllSelected;
     // statusType: Billing=1, Re-Billing=2 (rebilledStatus override handled on backend)
-    this.serverFilters['statusTypeFilter'] = isAllSelected ? ''
+    this.pendingServerFilters['statusTypeFilter'] = isAllSelected ? ''
       : this.filteredColumnData.actionRequired.filter((x: any) => x.checked).map((x: any) => String(x.statusType)).join(',');
-    this._applyServerFilters();
+    this._persistListFilterState();
   }
 
   filterInsuranceName(filterProperty: any) {
@@ -691,9 +892,9 @@ export class ListOfClaimsComponent implements OnInit {
       if (this.filteredColumnData.insuranceName[i].checked == false) { isAllSelected = false; break; }
     }
     this.isFilterAllSelected.insuranceName = isAllSelected;
-    this.serverFilters.insuranceFilter = isAllSelected ? ''
+    this.pendingServerFilters.insuranceFilter = isAllSelected ? ''
       : this.filteredColumnData.insuranceName.filter((x: any) => x.checked).map((x: any) => x.insuranceName).join(',');
-    this._applyServerFilters();
+    this._persistListFilterState();
   }
 
   filterInsuranceType(filterProperty: any) {
@@ -702,9 +903,9 @@ export class ListOfClaimsComponent implements OnInit {
       if (this.filteredColumnData.insuranceType[i].checked == false) { isAllSelected = false; break; }
     }
     this.isFilterAllSelected.insuranceType = isAllSelected;
-    this.serverFilters.insuranceTypeFilter = isAllSelected ? ''
+    this.pendingServerFilters.insuranceTypeFilter = isAllSelected ? ''
       : this.filteredColumnData.insuranceType.filter((x: any) => x.checked).map((x: any) => x.insuranceType).join(',');
-    this._applyServerFilters();
+    this._persistListFilterState();
   }
 
   filterLastTeamWorked(filterProperty: any) {
@@ -713,9 +914,9 @@ export class ListOfClaimsComponent implements OnInit {
       if (this.filteredColumnData.lastTeamWorked[i].checked == false) { isAllSelected = false; break; }
     }
     this.isFilterAllSelected.lastTeamWorked = isAllSelected;
-    this.serverFilters.lastTeamFilter = isAllSelected ? ''
+    this.pendingServerFilters.lastTeamFilter = isAllSelected ? ''
       : this.filteredColumnData.lastTeamWorked.filter((x: any) => x.checked).map((x: any) => x.lastTeam || x.lastTeamWorked).join(',');
-    this._applyServerFilters();
+    this._persistListFilterState();
   }
 
 
@@ -983,8 +1184,11 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   showHideFilteredDropdown(filterName: any) {
-    this.showFilteredDropdown[filterName] = !this.showFilteredDropdown[filterName];
-    this.fliterName = filterName;
+    const next = !this.showFilteredDropdown[filterName];
+    Object.keys(this.showFilteredDropdown).forEach((k) => {
+      this.showFilteredDropdown[k] = false;
+    });
+    this.showFilteredDropdown[filterName] = next;
   }
   getMonthName(month: any) {
     const monthNames = [
@@ -999,6 +1203,7 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
   fetchClaimsLead(subType: string, page: number = 0) {
+    this.selectedSubtype = subType;
     this.loader.listClaimLoader = true;
     this.currentPage = page;
     let ths = this;
@@ -1038,7 +1243,7 @@ export class ListOfClaimsComponent implements OnInit {
         ths.loader.listClaimLoader = false;
         this.filterOfficeName();
         this.fetchOfficeByUuid();
-        if (!this._hasActiveFilters()) {
+        if (this._shouldRebuildFilterColumnOptions()) {
           this.filterOptionClaimType(subType);
           this.filterOptionActionRequired(subType);
           this.filterOptionInsuranceName(subType);
@@ -1046,6 +1251,7 @@ export class ListOfClaimsComponent implements OnInit {
           this.filterOptionLastTeamWorked();
           this.filterOptionAgeBracket(subType);
         }
+        this._syncAllFilterUiFromPending();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
       }
     }, { sortBy: this.serverSortBy, sortOrder: this.serverSortOrder, ...this.serverFilters });
@@ -1055,7 +1261,9 @@ export class ListOfClaimsComponent implements OnInit {
     this.currentPage = 0;
     this.storedTotalCount = 0;
     this.clearAssigmentArray();
-    this.serverFilters = { officeFilter: '', claimTypeFilter: '', ageBracketFilter: '', insuranceFilter: '', insuranceTypeFilter: '', lastTeamFilter: '', statusTypeFilter: '' };
+    this.serverFilters = this._emptyFilters();
+    this.pendingServerFilters = this._emptyFilters();
+    this._persistListFilterState();
     if (tab == 'Fresh') {
       this.tabValue = 'Fresh';
       this.tabSwitch.Fresh = true;
