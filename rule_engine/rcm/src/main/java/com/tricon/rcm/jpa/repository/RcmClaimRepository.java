@@ -2246,8 +2246,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND c.current_team_id=:teamid"
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchFreshClaimUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchFreshClaimUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2259,8 +2260,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 		+ " AND (c.primary_status="+Constants.Primary_Status_Primary+" OR c.primary_status="+Constants.Primary_Status_Primary_submit+")"
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchFreshClaimDetailsIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchFreshClaimDetailsIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2270,8 +2272,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 		+ " AND (c.primary_status="+Constants.Primary_Status_Primary+" OR c.primary_status="+Constants.Primary_Status_Primary_submit+")"
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchMyClaimDetailsIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchMyClaimDetailsIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2282,8 +2285,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND (c.first_worked_team_id!=:teamid OR rca1_agg.min_id IS NOT NULL)"
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchClaimDetailsWorkedByTeamBillingUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchClaimDetailsWorkedByTeamBillingUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2294,8 +2298,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND (c.first_worked_team_id!=:teamid OR rca1_agg.min_id IS NOT NULL)"
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchClaimDetailsWorkedByTeamBillingByUserUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchClaimDetailsWorkedByTeamBillingByUserUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2304,8 +2309,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " WHERE c.current_team_id=:teamid AND c.last_work_team_id!=:teamid"
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchClaimDetailsWorkedByTeamInternalAuditUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchClaimDetailsWorkedByTeamInternalAuditUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2313,8 +2319,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " WHERE c.current_team_id=:teamid AND c.pending=TRUE"
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchFreshClaimDetailsOtherTeamUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchFreshClaimDetailsOtherTeamUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2322,8 +2329,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " WHERE c.current_team_id=:teamid AND c.pending=FALSE"
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchSubmittedClaimDetailsOtherTeamUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchSubmittedClaimDetailsOtherTeamUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2332,8 +2340,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " WHERE c.current_team_id=:teamid AND c.pending=TRUE"
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchFreshClaimDetailsOtherTeamIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchFreshClaimDetailsOtherTeamIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, @Param("offset") int offset, @Param("limit") int limit);
 
 	@Query(nativeQuery = true, value = ""
 		+ " SELECT c.claim_uuid FROM rcm_claims c"
@@ -2342,8 +2351,9 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " WHERE c.current_team_id=:teamid AND c.pending=FALSE"
 		+ " AND c.current_status<>"+Constants.CLAIM_CLOSED
 		+ " AND c.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC")
-	List<String> fetchSubmittedClaimDetailsOtherTeamIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, Pageable pageable);
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C
+		+ " ORDER BY c.sort_priority, c.prime_sec_submitted_total ASC LIMIT :limit OFFSET :offset")
+	List<String> fetchSubmittedClaimDetailsOtherTeamIndUuids(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId, @Param("offset") int offset, @Param("limit") int limit);
 
 	// -------------------------------------------------------------------------
 	// Two-step pagination: Count-only methods (lightweight, no ORDER BY, no data fetch)
@@ -2359,6 +2369,7 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND off.company_id=:companyId"
 		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
 		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS
 		+ ") cnt")
 	long countFreshClaims(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
@@ -2370,7 +2381,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND off.company_id=:companyId AND off.active IS TRUE AND rca.assigned_to=:userid"
 		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
 		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-		+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")")
+		+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")"
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countFreshClaimsInd(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid);
 
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
@@ -2379,7 +2391,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " WHERE claims.current_team_id=:teamid AND off.company_id=:companyId AND off.active IS TRUE"
 		+ " AND rca.assigned_to=:userid AND claims.current_status<>"+Constants.CLAIM_CLOSED
 		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-		+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")")
+		+ " AND (primary_status="+Constants.Primary_Status_Primary+" OR primary_status="+Constants.Primary_Status_Primary_submit+")"
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countMyClaimsInd(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid);
 
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
@@ -2391,7 +2404,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND (claims.first_worked_team_id!=:teamid OR rca1.id IS NOT NULL)"
 		+ " AND off.company_id=:companyId"
 		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED)
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countClaimsWorkedByTeamBilling(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
@@ -2403,7 +2417,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " AND (claims.first_worked_team_id!=:teamid OR rca1.id IS NOT NULL)"
 		+ " AND off.company_id=:companyId"
 		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED)
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countClaimsWorkedByTeamBillingByUser(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userid") String userid);
 
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
@@ -2412,21 +2427,24 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " WHERE claims.current_team_id=:teamid AND claims.last_work_team_id!=:teamid"
 		+ " AND off.active IS TRUE AND off.company_id=:companyId"
 		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
-		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED)
+		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countClaimsWorkedByTeamInternalAudit(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
 		+ " INNER JOIN office off ON off.uuid=claims.office_id"
 		+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE AND off.company_id=:companyId AND pending=TRUE"
 		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
-		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countFreshClaimsOtherTeam(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
 		+ " INNER JOIN office off ON off.uuid=claims.office_id"
 		+ " WHERE claims.current_team_id=:teamid AND off.active IS TRUE AND off.company_id=:companyId AND pending=FALSE"
 		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
-		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countSubmittedClaimsOtherTeam(@Param("companyId") String companyId, @Param("teamid") int teamid);
 
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
@@ -2435,7 +2453,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " WHERE claims.current_team_id=:teamid AND claims.claim_id IS NOT NULL"
 		+ " AND off.active IS TRUE AND off.company_id=:companyId AND rca.assigned_to=:userId AND pending=TRUE"
 		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
-		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countFreshClaimsOtherTeamInd(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId);
 
 	@Query(nativeQuery = true, value = "SELECT count(*) FROM rcm_claims claims"
@@ -2444,7 +2463,8 @@ public interface RcmClaimRepository extends JpaRepository<RcmClaims, String> {
 		+ " WHERE claims.current_team_id=:teamid AND claims.claim_id IS NOT NULL"
 		+ " AND off.active IS TRUE AND off.company_id=:companyId AND rca.assigned_to=:userId AND pending=FALSE"
 		+ " AND claims.current_status<>"+Constants.CLAIM_CLOSED
-		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED)
+		+ " AND claims.current_state="+Constants.CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED
+		+ Constants.SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS)
 	long countSubmittedClaimsOtherTeamInd(@Param("companyId") String companyId, @Param("teamid") int teamid, @Param("userId") String userId);
 
 	// -------------------------------------------------------------------------

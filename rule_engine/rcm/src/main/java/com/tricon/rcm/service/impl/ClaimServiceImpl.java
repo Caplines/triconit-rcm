@@ -2077,40 +2077,40 @@ public class ClaimServiceImpl {
 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 					// Fresh claims for other-team associate
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countFreshClaimsOtherTeamInd(companyId, teamId, userId);
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				} else {
 					// Fresh claims for billing/internal-audit associate
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countFreshClaimsInd(companyId, teamId, userId);
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				}
 			} else {
 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 					// Fresh claims for other-team lead/manager
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countFreshClaimsOtherTeam(companyId, teamId);
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				} else {
 					// Fresh claims for billing/internal-audit lead/manager
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchFreshClaimUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countFreshClaims(companyId, teamId);
-						pageUuids = rcmClaimRepository.fetchFreshClaimUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				}
 			}
@@ -2163,11 +2163,11 @@ public class ClaimServiceImpl {
 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 					// Submitted claims for other-team associate
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countSubmittedClaimsOtherTeamInd(companyId, teamId, userId);
-						pageUuids = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				} else {
 					pageUuids = new ArrayList<>();
@@ -2176,11 +2176,11 @@ public class ClaimServiceImpl {
 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 					// Submitted claims for other-team lead/manager
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeamUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeamUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countSubmittedClaimsOtherTeam(companyId, teamId);
-						pageUuids = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeamUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchSubmittedClaimDetailsOtherTeamUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				} else {
 					pageUuids = new ArrayList<>();
@@ -2221,11 +2221,11 @@ public class ClaimServiceImpl {
 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 					// Unsubmitted claims for other-team associate (same as fresh)
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countFreshClaimsOtherTeamInd(companyId, teamId, userId);
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				} else {
 					pageUuids = new ArrayList<>();
@@ -2234,11 +2234,11 @@ public class ClaimServiceImpl {
 				if (teamId != RcmTeamEnum.BILLING.getId() && teamId != RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 					// Unsubmitted claims for other-team lead/manager (same as fresh)
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countFreshClaimsOtherTeam(companyId, teamId);
-						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchFreshClaimDetailsOtherTeamUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				} else {
 					pageUuids = new ArrayList<>();
@@ -2278,28 +2278,28 @@ public class ClaimServiceImpl {
 			if (teamId == RcmTeamEnum.BILLING.getId()) {
 				if (partialHeader.getRole().equals(Constants.ASSOCIATE)) {
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBillingByUserUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBillingByUserUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countClaimsWorkedByTeamBillingByUser(companyId, teamId, userId);
-						pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBillingByUserUuids(companyId, teamId, userId, pageable);
+						pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBillingByUserUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				} else {
 					if (knownTotalCount > 0) {
-						pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBillingUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBillingUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 						totalCount = knownTotalCount;
 					} else {
 						totalCount = rcmClaimRepository.countClaimsWorkedByTeamBilling(companyId, teamId);
-						pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBillingUuids(companyId, teamId, pageable);
+						pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamBillingUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					}
 				}
 			} else if (teamId == RcmTeamEnum.INTERNAL_AUDIT.getId()) {
 				if (knownTotalCount > 0) {
-					pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamInternalAuditUuids(companyId, teamId, pageable);
+					pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamInternalAuditUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 					totalCount = knownTotalCount;
 				} else {
 					totalCount = rcmClaimRepository.countClaimsWorkedByTeamInternalAudit(companyId, teamId);
-					pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamInternalAuditUuids(companyId, teamId, pageable);
+					pageUuids = rcmClaimRepository.fetchClaimDetailsWorkedByTeamInternalAuditUuids(companyId, teamId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 				}
 		    }
 			if (!pageUuids.isEmpty()) {
@@ -2363,19 +2363,19 @@ public class ClaimServiceImpl {
 		List<String> pageUuids;
 		if (sub.equals("MyClaims")) {
 			if (knownTotalCount > 0) {
-				pageUuids = rcmClaimRepository.fetchMyClaimDetailsIndUuids(companyId, teamId, userId, pageable);
+				pageUuids = rcmClaimRepository.fetchMyClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 				totalCount = knownTotalCount;
 			} else {
 				totalCount = rcmClaimRepository.countMyClaimsInd(companyId, teamId, userId);
-				pageUuids = rcmClaimRepository.fetchMyClaimDetailsIndUuids(companyId, teamId, userId, pageable);
+				pageUuids = rcmClaimRepository.fetchMyClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 			}
 		} else {
 			if (knownTotalCount > 0) {
-				pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, pageable);
+				pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 				totalCount = knownTotalCount;
 			} else {
 				totalCount = rcmClaimRepository.countFreshClaimsInd(companyId, teamId, userId);
-				pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, pageable);
+				pageUuids = rcmClaimRepository.fetchFreshClaimDetailsIndUuids(companyId, teamId, userId, uuidQueryOffset(pageable), uuidQueryLimit(pageable));
 			}
 		}
 		if (!pageUuids.isEmpty()) {
@@ -2413,6 +2413,20 @@ public class ClaimServiceImpl {
 
 	private boolean isNonEmpty(String s) {
 		return s != null && !s.trim().isEmpty();
+	}
+
+	/**
+	 * Native UUID-list queries use explicit LIMIT/OFFSET in SQL. Passing a
+	 * {@link org.springframework.data.domain.Pageable} into those methods caused Hibernate to wrap
+	 * the SQL in a derived table; ORDER BY then referred to alias {@code c} on the outer query,
+	 * which only exposed {@code claim_uuid}, producing "Unknown column 'c.sort_priority'".
+	 */
+	private static int uuidQueryOffset(org.springframework.data.domain.Pageable pageable) {
+		return pageable.isPaged() ? (int) Math.min(pageable.getOffset(), (long) Integer.MAX_VALUE) : 0;
+	}
+
+	private static int uuidQueryLimit(org.springframework.data.domain.Pageable pageable) {
+		return pageable.isPaged() ? pageable.getPageSize() : Integer.MAX_VALUE;
 	}
 
 	/**
