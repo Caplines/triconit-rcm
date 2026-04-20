@@ -691,6 +691,10 @@ public class IVFFormConversionUtil {
 		pd.setProphyD1110FL(d.getProphy1());
 		pd.setProphyD1120FL(d.getProphy2());
 		pd.setProviderName(d.getBasicInfo19());
+		// Rule 135: optional claim vs sheet providers (falls back to basicInfo19 for sheet side)
+		String sheetProv = firstNonBlankTrimmed(d.getProviderOnClaimFromSheet(), d.getBasicInfo19());
+		pd.setProviderOnClaimFromSheet(sheetProv);
+		pd.setProviderOnClaim(trimToNull(d.getProviderOnClaim()));
 		pd.setRef(d.getBasicInfo12());
 		pd.setReplacementClause(d.getProsthetics2());
 
@@ -1710,5 +1714,22 @@ public class IVFFormConversionUtil {
 			return p;
 		}
 
+	private static String firstNonBlankTrimmed(String primary, String fallback) {
+		if (primary != null && !primary.trim().isEmpty()) {
+			return primary.trim();
+		}
+		if (fallback != null && !fallback.trim().isEmpty()) {
+			return fallback.trim();
+		}
+		return "";
+	}
+
+	private static String trimToNull(String s) {
+		if (s == null) {
+			return null;
+		}
+		String t = s.trim();
+		return t.isEmpty() ? null : t;
+	}
 
 }

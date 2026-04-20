@@ -320,6 +320,40 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 		}
 		return teamId;
 	}
+
+	@Override
+	public String[] getProviderFieldsByTpId(String tpId, String patientId, String officeId) {
+		if (patientId == null || patientId.isEmpty()) return null;
+		Session session = getSession();
+		try {
+			// Use patient_id + office_id for reliable correlation (tp_id is not always
+			// the EagleSoft TP integer in rcm_claims). Prefer exact tp_id match when set.
+			String sql = "SELECT provider_on_claim, provider_on_claim_from_sheet"
+					+ " FROM rcm_claims"
+					+ " WHERE patient_id = '" + patientId + "'"
+					+ (officeId != null && !officeId.isEmpty() ? " AND office_id = '" + officeId + "'" : "")
+					+ " AND provider_on_claim IS NOT NULL AND provider_on_claim != ''"
+					+ " ORDER BY"
+					+ "   CASE WHEN tp_id = '" + tpId + "' THEN 0 ELSE 1 END,"
+					+ "   created_date DESC"
+					+ " LIMIT 1";
+			@SuppressWarnings("unchecked")
+			java.util.List<Object[]> rows = session.createSQLQuery(sql).list();
+			if (rows != null && !rows.isEmpty()) {
+				Object[] row = rows.get(0);
+				String poc   = row[0] != null ? row[0].toString() : null;
+				String pocfs = row[1] != null ? row[1].toString() : null;
+				return new String[]{ poc, pocfs };
+			}
+		} catch (Exception e) {
+			RuleEngineLogger.generateLogs(clazz,
+					"getProviderFieldsByTpId ERROR patientId=" + patientId + " : " + e.getMessage(),
+					Constants.rule_log_debug, null);
+		} finally {
+			closeSession(session);
+		}
+		return null;
+	}
 	
 	
 

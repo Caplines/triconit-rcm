@@ -37,8 +37,10 @@ services:
       - /etc/letsencrypt:/etc/letsencrypt:ro  
     networks:
       - shared-proxy
+    # Do not curl "/" — that proxies to ruleengine-frontend and returns 502 when the app stack is down,
+    # which makes the proxy look "unhealthy" even though nginx is fine. Validate config + main process only.
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost > /dev/null 2>&1 || exit 1"]
+      test: ["CMD-SHELL", "nginx -t 2>/dev/null && kill -0 1"]
       interval: 30s
       timeout: 10s
       retries: 3

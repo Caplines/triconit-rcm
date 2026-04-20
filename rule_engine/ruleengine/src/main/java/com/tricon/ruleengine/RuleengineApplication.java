@@ -42,6 +42,19 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class })
 public class RuleengineApplication extends SpringBootServletInitializer{
 
+	static {
+		// Tomcat TLD scanner follows MANIFEST Class-Path on some legacy jars and logs FileNotFoundException
+		// for sibling paths (common in Docker). Merged with Tomcat defaults by StandardJarScanFilter.
+		String key = "tomcat.util.scan.StandardJarScanFilter.jarsToSkip";
+		String extra = "findbugs-*.jar,jaxb-impl-*.jar,c3p0-*.jar,mchange-commons-java-*.jar";
+		String cur = System.getProperty(key);
+		if (cur == null || cur.isEmpty()) {
+			System.setProperty(key, extra);
+		} else if (!cur.contains("findbugs-")) {
+			System.setProperty(key, cur + "," + extra);
+		}
+	}
+
 	/**
 	 * This method is still needed for backward compatibility with WAR deployment
 	 * but is optional for standalone JAR execution

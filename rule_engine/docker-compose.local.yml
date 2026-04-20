@@ -6,8 +6,6 @@
 # For ES client certs/JKS, copy into the named volume or use ES_SSL_CLIENT_TRUSTALL=true in .env.
 # Prod compose files bind-mount server paths instead.
 #
-version: "3.9"
-
 services:
 
   # =========================
@@ -16,6 +14,7 @@ services:
   backend:
     image: eclipse-temurin:8-jdk
     container_name: ruleengine-backend
+    restart: unless-stopped
     working_dir: /app
     logging:
       driver: "json-file"

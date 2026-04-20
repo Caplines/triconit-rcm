@@ -109,6 +109,11 @@ public class CaplineIVFFormDto {
 	
 	//Provider last Name
 	private String basicInfo19;
+
+	/** Optional: RCM-style provider resolved from claim (for Rule 135). */
+	private String providerOnClaim;
+	/** Optional: RCM-style provider(s) from sheet; multi-value delimiter same as Constants.PROVIDER_JOIN_CONS. */
+	private String providerOnClaimFromSheet;
 	
 	//Insurance Address
 	private String basicInfo20;
@@ -1051,6 +1056,22 @@ public class CaplineIVFFormDto {
 
 	public void setBasicInfo19(String basicInfo19) {
 		this.basicInfo19 = basicInfo19;
+	}
+
+	public String getProviderOnClaim() {
+		return providerOnClaim;
+	}
+
+	public void setProviderOnClaim(String providerOnClaim) {
+		this.providerOnClaim = providerOnClaim;
+	}
+
+	public String getProviderOnClaimFromSheet() {
+		return providerOnClaimFromSheet;
+	}
+
+	public void setProviderOnClaimFromSheet(String providerOnClaimFromSheet) {
+		this.providerOnClaimFromSheet = providerOnClaimFromSheet;
 	}
 
 	public String getBasicInfo20() {

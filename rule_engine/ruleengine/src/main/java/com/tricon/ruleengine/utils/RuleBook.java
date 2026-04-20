@@ -18,6 +18,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -59,7 +60,7 @@ import com.tricon.ruleengine.model.sheet.PreferredDentist;
 import com.tricon.ruleengine.model.sheet.AdultMedicaidInsurance;
 import com.tricon.ruleengine.model.sheet.AdultMedicaidOffice;
 import com.tricon.ruleengine.model.sheet.CRAReqMappingDto;
-//import com.tricon.ruleengine.model.sheet.TreatmentPlan;
+import com.tricon.ruleengine.model.sheet.TreatmentPlan;
 import com.tricon.ruleengine.model.sheet.CommonDataCheck;
 
 /**
@@ -19085,8 +19086,251 @@ public class RuleBook {
 					String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
 			}
 			return dList;
-	}	
-		
+	}
+
+	/**
+	 * Compares claim-resolved treating provider to sheet/schedule provider string(s),
+	 * using the same delimiter semantics as RCM ({@link Constants#PROVIDER_JOIN_CONS}).
+	 * When {@code providerOnClaim} is empty, the rule passes (IVF-only payloads have no claim field).
+	 */
+	/**
+	 * Rule 135 — "Provider on claim vs sheet treating provider".
+	 *
+	 * <p>The <em>claim provider</em> is derived from the EagleSoft treatment plan rows in
+	 * {@code tpList}: for every row that is a {@link TreatmentPlan}, the full name
+	 * ({@code providerFirstName + " " + providerLastName}) is collected.  If no name can be
+	 * found (e.g. the list is empty or the name fields are blank) the rule is skipped with
+	 * PASS so that IVF-only payloads without billing data are not penalised.
+	 *
+	 * <p>The <em>sheet treating provider</em> is {@link IVFTableSheet#getProviderOnClaimFromSheet()},
+	 * which already falls back to {@code basicInfo19} during IVF-form conversion.
+	 */
+	public List<TPValidationResponseDto> Rule135(List<Object> tpList, Object ivfSheet,
+			MessageSource messageSource, Rules rule, BufferedWriter bw) {
+		List<TPValidationResponseDto> dList = new ArrayList<>();
+		Set<String> fcodes = new HashSet<>();
+		Set<String> surfaces = new HashSet<>();
+		Set<String> teethC = new HashSet<>();
+		if (rule == null) {
+			return dList;
+		}
+		try {
+			IVFTableSheet ivf = (IVFTableSheet) ivfSheet;
+
+			// --- Source values ---
+			// providerOnClaim      = the rendering provider actually on the claim (from IVF form field)
+			// providerOnClaimFromSheet = the expected treating provider from the IVF schedule sheet
+			String rawClaim = ivf.getProviderOnClaim();
+			String rawSheet = ivf.getProviderOnClaimFromSheet();
+
+			System.out.println("[Rule135] step=enter"
+					+ " | providerOnClaim (raw)=\"" + rawClaim + "\""
+					+ " | providerOnClaimFromSheet (raw)=\"" + rawSheet + "\"");
+
+			// --- Sanitise: strip <<<>>> markers (used in RCM system as cross-reference prefix) ---
+			String claimSanitised = stripRcmMarkers(rawClaim);
+			String sheetSanitised = stripRcmMarkers(rawSheet);
+
+			System.out.println("[Rule135] step=after_sanitise"
+					+ " | claim (sanitised)=\"" + claimSanitised + "\""
+					+ " | sheet (sanitised)=\"" + sheetSanitised + "\"");
+
+			// --- If claim provider is absent, skip rule (IVF-only workflows have no billing data) ---
+			if (claimSanitised.isEmpty()) {
+				System.out.println("[Rule135] step=skip | reason=providerOnClaim is blank -> PASS (skipped)");
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule135.skip.pass.message", new Object[] {}, locale), Constants.PASS,
+						String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+				return dList;
+			}
+
+			// --- If sheet provider is absent, fail as incomplete ---
+			if (sheetSanitised.isEmpty()) {
+				System.out.println("[Rule135] step=fail_incomplete"
+						+ " | claim=\"" + claimSanitised + "\" | sheet=blank -> FAIL");
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule135.error.incomplete.message", new Object[] {}, locale),
+						Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+				return dList;
+			}
+
+			// --- Extract last names for format-agnostic comparison ---
+			// providerOnClaim may be "Neal Patel" (FirstName LastName)
+			// providerOnClaimFromSheet may be "Dr. Ghazal, Tariq (PEDO)" (sheet format) or "Tariq Ghazal"
+			String claimLastName = extractLastNameForRule135(claimSanitised);
+			// Sheet side may contain multiple providers joined by PROVIDER_JOIN_CONS
+			List<String> sheetLastNames = new ArrayList<>();
+			for (String piece : sheetSanitised.split(Pattern.quote(Constants.PROVIDER_JOIN_CONS))) {
+				String ln = extractLastNameForRule135(piece.trim());
+				if (!ln.isEmpty()) {
+					sheetLastNames.add(ln);
+				}
+			}
+
+			System.out.println("[Rule135] step=extracted"
+					+ " | claimLastName=\"" + claimLastName + "\""
+					+ " | sheetLastNames=" + sheetLastNames
+					+ " | claim (sanitised)=\"" + claimSanitised + "\""
+					+ " | sheet (sanitised)=\"" + sheetSanitised + "\"");
+
+			if (claimLastName.isEmpty()) {
+				System.out.println("[Rule135] step=skip | reason=could not extract last name from claim provider -> PASS (skipped)");
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule135.skip.pass.message", new Object[] {}, locale), Constants.PASS,
+						String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+				return dList;
+			}
+
+			// --- Compare: claim last name must match at least one sheet last name ---
+			boolean match = false;
+			for (String sheetLN : sheetLastNames) {
+				boolean eq = claimLastName.equals(sheetLN);
+				System.out.println("[Rule135] step=compare"
+						+ " | claimLastName=\"" + claimLastName + "\" vs sheetLastName=\"" + sheetLN + "\""
+						+ " -> equal=" + eq);
+				if (eq) {
+					match = true;
+					break;
+				}
+			}
+
+			System.out.println("[Rule135] step=result | match=" + match
+					+ " | claimLastName=\"" + claimLastName + "\""
+					+ " | sheetLastNames=" + sheetLastNames);
+
+			if (match) {
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule135.pass.message", new Object[] {}, locale), Constants.PASS,
+						String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+			} else {
+				String sheetDisplay = sheetLastNames.isEmpty() ? sheetSanitised : String.join(", ", sheetLastNames);
+				dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+						messageSource.getMessage("rule135.error.mismatch.message",
+								new Object[] { claimLastName, sheetDisplay }, locale),
+						Constants.FAIL, String.join(",", surfaces), String.join(",", teethC), String.join(",", fcodes)));
+			}
+		} catch (Exception x) {
+			x.printStackTrace();
+			System.out.println("[Rule135] step=exception | message=" + x.getMessage());
+			dList.add(new TPValidationResponseDto(rule.getId(), rule.getName(),
+					messageSource.getMessage("rule.error.exception", new Object[] { x.getMessage() }, locale),
+					Constants.FAIL, "", "", ""));
+		}
+		return dList;
+	}
+
+	/**
+	 * Strips RCM system markers from a provider name string.
+	 * Currently removes the {@code <<<>>>} cross-reference prefix that the RCM
+	 * tool writes into some provider fields.
+	 * Returns an empty string if the input is null or blank after stripping.
+	 */
+	private static String stripRcmMarkers(String raw) {
+		if (raw == null) return "";
+		String s = raw.replace("<<<>>>", "").replace('\u00A0', ' ').trim();
+		s = s.replaceAll("\\s+", " ");
+		return s;
+	}
+
+	/**
+	 * Extracts the last name from a provider name for Rule 135 comparison.
+	 * Handles two common formats:
+	 * <ul>
+	 *   <li>Sheet format:  "Dr. Ghazal, Tariq (PEDO)" → "ghazal"</li>
+	 *   <li>Plain format:  "Neal Patel"               → "patel"</li>
+	 *   <li>EagleSoft:     "Dr. Thomas Edward Yardley"→ "yardley"</li>
+	 * </ul>
+	 */
+	private static String extractLastNameForRule135(String sanitised) {
+		if (sanitised == null || sanitised.isEmpty()) return "";
+		String s = sanitised.toLowerCase(Locale.ROOT).trim();
+		// Strip honorific prefix
+		s = s.replaceAll("^(dr\\.?|dds\\.?|dmd\\.?|ms\\.?|mr\\.?|mrs\\.?)\\s+", "").trim();
+		// Strip trailing specialty in parentheses: "(pedo)", "(gen)" etc.
+		s = s.replaceAll("\\s*\\([^)]*\\)\\s*$", "").trim();
+		if (s.isEmpty()) return "";
+		// Sheet format: "ghazal, tariq" — last name is before the comma
+		if (s.contains(",")) {
+			String beforeComma = s.substring(0, s.indexOf(",")).trim();
+			return beforeComma.replaceAll("[^a-z]$", "").trim();
+		}
+		// Plain / EagleSoft format: "neal patel" or "thomas edward yardley" — last word is last name
+		String[] tokens = s.split("\\s+");
+		return tokens[tokens.length - 1].replaceAll("[^a-z0-9]", "");
+	}
+
+	private static String normalizeProviderNameForRule135(String raw) {
+		if (raw == null) {
+			return "";
+		}
+		String s = raw.replace('\u00A0', ' ').trim();
+		if (s.isEmpty()) {
+			return "";
+		}
+		s = s.replaceAll("\\s+", " ");
+		return s.toLowerCase(Locale.ROOT);
+	}
+
+	/**
+	 * Extracts the last name from an EagleSoft-formatted provider name.
+	 * EagleSoft stores providers as "Dr. FirstName [MiddleName] LastName".
+	 * The last name is the final whitespace-separated token, lowercased.
+	 * Example: "dr. thomas edward yardley" → "yardley"
+	 */
+	private static final java.util.regex.Pattern HONORIFIC_PREFIX =
+			java.util.regex.Pattern.compile("^(dr\\.?|dds\\.?|dmd\\.?|ms\\.?|mr\\.?|mrs\\.?)\\s+");
+
+	/**
+	 * Returns a "firstname|lastname" key from an EagleSoft-formatted provider name,
+	 * or {@code null} if the name does not start with a doctor honorific (Dr./DDS/DMD).
+	 *
+	 * <p>Filtering to honorific-prefixed names excludes hygienists ("Ashlyn Butcher"),
+	 * practice names ("Winnie Family Dental"), and inactive-flagged entries
+	 * ("Do Not Use Rachel Rothermel"), which should never be the rendering doctor on a claim.
+	 *
+	 * <p>EagleSoft format: "Dr. FirstName [Middle...] LastName"
+	 * Example: "dr. thomas edward yardley" → "thomas|yardley"
+	 */
+	private static String extractFirstLastKeyFromEagleSoftProvider(String normalized) {
+		if (normalized == null || normalized.isEmpty()) return null;
+		java.util.regex.Matcher m = HONORIFIC_PREFIX.matcher(normalized);
+		if (!m.find()) return null;   // not a doctor-level entry → ignore
+		String rest = normalized.substring(m.end()).trim();
+		String[] tokens = rest.split("\\s+");
+		if (tokens.length == 0) return null;
+		String first = tokens[0].replaceAll("[^a-z0-9]", "");
+		String last  = tokens[tokens.length - 1].replaceAll("[^a-z0-9]", "");
+		if (first.isEmpty() || last.isEmpty()) return null;
+		return first + "|" + last;
+	}
+
+	/**
+	 * Returns a "firstname|lastname" key from an IVF-sheet-formatted provider name,
+	 * or {@code null} if no meaningful key can be extracted.
+	 *
+	 * <p>IVF sheet format: "Dr. LastName, FirstName (Specialty)"
+	 * Example: "dr. yardley, thomas (gen)" → "thomas|yardley"
+	 *
+	 * <p>Falls back to the EagleSoft parser when no comma is present.
+	 */
+	private static String extractFirstLastKeyFromIVFSheetProvider(String normalized) {
+		if (normalized == null || normalized.isEmpty()) return null;
+		if (normalized.contains(",")) {
+			// Strip the honorific prefix first, then split on comma
+			java.util.regex.Matcher m = HONORIFIC_PREFIX.matcher(normalized);
+			String stripped = m.find() ? normalized.substring(m.end()).trim() : normalized;
+			int commaIdx = stripped.indexOf(",");
+			String lastName  = stripped.substring(0, commaIdx).trim().replaceAll("[^a-z0-9]", "");
+			// After the comma: "thomas (gen)" → take the first word before any "("
+			String afterComma = stripped.substring(commaIdx + 1).trim();
+			String firstPart  = afterComma.split("[\\s(]")[0].replaceAll("[^a-z0-9]", "");
+			if (lastName.isEmpty() || firstPart.isEmpty()) return null;
+			return firstPart + "|" + lastName;
+		}
+		// No comma present — fall back to EagleSoft format parser
+		return extractFirstLastKeyFromEagleSoftProvider(normalized);
+	}
+
 	//Deductible Coverage Match
 	public List<TPValidationResponseDto> RuleXXX(Object ivfSheet, List<Object> tpList, MessageSource messageSource,
 			List<EagleSoftPatient> espatients,
@@ -19241,13 +19485,24 @@ public class RuleBook {
 
 	private CRAReqMappingDto getMappingFromCRA(List<CRAReqMappingDto> list, String insuranceName, String planType,
 			String group, String empName) {
+		if (list == null || list.isEmpty()) {
+			return null;
+		}
 		CRAReqMappingDto r = null;// DentaQuest - Adult Medicaid //Dentaquest-Adult Medicaid
-		Collection<CRAReqMappingDto> ruleGen = Collections2.filter(list, rule -> (rule.getInsuranceName()
-				.replaceAll(" ", "").trim().equalsIgnoreCase(insuranceName.replaceAll(" ", "").trim())
-				&& rule.getPlanType().replaceAll(" ", "").trim().equalsIgnoreCase(planType.replaceAll(" ", "").trim())
-				&& (rule.getGroupEmpName().replaceAll(" ", "").trim().equalsIgnoreCase(group.replaceAll(" ", "").trim())
-						|| rule.getGroupEmpName().replaceAll(" ", "").trim()
-								.equalsIgnoreCase(empName.replaceAll(" ", "")))));
+		final String insN = insuranceName == null ? "" : insuranceName.replaceAll(" ", "").trim();
+		final String planN = planType == null ? "" : planType.replaceAll(" ", "").trim();
+		final String groupN = group == null ? "" : group.replaceAll(" ", "").trim();
+		final String empN = empName == null ? "" : empName.replaceAll(" ", "").trim();
+		Collection<CRAReqMappingDto> ruleGen = Collections2.filter(list, rule -> {
+			if (rule == null) {
+				return false;
+			}
+			String rn = rule.getInsuranceName() == null ? "" : rule.getInsuranceName().replaceAll(" ", "").trim();
+			String pt = rule.getPlanType() == null ? "" : rule.getPlanType().replaceAll(" ", "").trim();
+			String ge = rule.getGroupEmpName() == null ? "" : rule.getGroupEmpName().replaceAll(" ", "").trim();
+			return rn.equalsIgnoreCase(insN) && pt.equalsIgnoreCase(planN)
+					&& (ge.equalsIgnoreCase(groupN) || ge.equalsIgnoreCase(empN));
+		});
 		for (CRAReqMappingDto rule : ruleGen) {
 			r = rule;
 			break;
