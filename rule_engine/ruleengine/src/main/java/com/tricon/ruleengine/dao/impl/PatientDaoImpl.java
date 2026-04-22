@@ -223,7 +223,14 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 				}
 				@SuppressWarnings("unchecked")
 				java.util.List<Patient> results = q.list();
-				return results.isEmpty() ? null : results.get(0);
+				if (results.isEmpty()) {
+					return null;
+				}
+				Patient loaded = results.get(0);
+				// patientDetails2 is lazy; must initialize before session closes, otherwise
+				// updatePatientDataWithDetailsAndHistory2() hits LazyInitializationException on .size()
+				Hibernate.initialize(loaded.getPatientDetails2());
+				return loaded;
 			} catch (Exception e) {
 				RuleEngineLogger.generateLogs(clazz,
 					"checkforPatientWithIdAndOfficeAndGeneralDate attempt " + attempt
