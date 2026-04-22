@@ -1,3 +1,22 @@
+.list-claims-table-wrap {
+    .list-claims-loading-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.7);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .list-claims-loading-inner {
+        padding: 1rem 1.5rem;
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    }
+}
+
 .switchBox {
     display: inline-flex;
     background: #eee;
@@ -526,6 +545,9 @@ h1 {
     display: flex;
     width: 100%;
     justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0 4px;
 }
 
 .changeColor {

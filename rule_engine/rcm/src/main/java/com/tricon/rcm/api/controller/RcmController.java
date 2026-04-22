@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tricon.rcm.dto.AllPendencyReportDto;
@@ -95,6 +97,12 @@ public class RcmController extends BaseHeaderController{
 
 	@Autowired
 	Environment ev;
+
+	@Value("${data.listClaims.maxRecordsPerPage:200}")
+	private int maxRecordsPerPage;
+
+	@Value("${data.listClaims.defaultRecordsPerPage:50}")
+	private int defaultRecordsPerPage;
 
 	@Autowired
 	RcmCommonServiceImpl rcmCommonServiceImpl;
@@ -190,20 +198,34 @@ public class RcmController extends BaseHeaderController{
 	@GetMapping("/api/fetch-fresh-claims-det/{type}/{subType}")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','ADMIN')")
 	public ResponseEntity<Object> fetchFreshClaimsDetails(@PathVariable("type") int type,
-			@PathVariable("subType") String subType,Model model) {
-		
+			@PathVariable("subType") String subType,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(required = false) Integer size,
+			@RequestParam(defaultValue = "0") long knownTotalCount,
+			@RequestParam(required = false) String sortBy,
+			@RequestParam(required = false, defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false, defaultValue = "") String officeFilter,
+			@RequestParam(required = false, defaultValue = "") String claimTypeFilter,
+			@RequestParam(required = false, defaultValue = "") String ageBracketFilter,
+			@RequestParam(required = false, defaultValue = "") String insuranceFilter,
+			@RequestParam(required = false, defaultValue = "") String insuranceTypeFilter,
+			@RequestParam(required = false, defaultValue = "") String currentStatusFilter,
+			@RequestParam(required = false, defaultValue = "") String nextActionFilter,
+			@RequestParam(required = false, defaultValue = "") String providerSpecialityFilter,
+			@RequestParam(required = false, defaultValue = "") String lastTeamFilter,
+			@RequestParam(required = false, defaultValue = "") String statusTypeFilter,
+			Model model) {
+
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader==null) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
-		/*try {
-			claimServiceImpl.updateDuplicateActives();
-			}catch (Exception e) {
-				e.printStackTrace();
-			}*/
-		
+		int effectiveSize = (size == null) ? defaultRecordsPerPage : Math.min(size, maxRecordsPerPage);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchFreshClaimDetails(partialHeader.getTeamId(), type, subType,partialHeader)));
+				claimServiceImpl.fetchFreshClaimDetails(partialHeader.getTeamId(), type, subType, partialHeader, page, effectiveSize, knownTotalCount,
+						sortBy, sortOrder, officeFilter, claimTypeFilter, ageBracketFilter,
+						insuranceFilter, insuranceTypeFilter, currentStatusFilter, nextActionFilter,
+						providerSpecialityFilter, lastTeamFilter, statusTypeFilter)));
 	}
 	
 	@ApiOperation(value = "Api For Fetching Unbilled Claims Details (Admin Ubnilled Claims)", response = FreshClaimDataDto.class, responseContainer = "List")
@@ -225,20 +247,34 @@ public class RcmController extends BaseHeaderController{
 	@GetMapping("/api/fetch-fresh-claims-det-lead/{type}/{subType}")
 	@PreAuthorize("hasAnyRole('TL','SUPER_ADMIN','ASSO','ADMIN')")
 	public ResponseEntity<Object> fetchFreshClaimsDetailsLead(@PathVariable("type") int type,
-			@PathVariable("subType") String subType,Model model) {
-		
+			@PathVariable("subType") String subType,
+			@RequestParam(defaultValue = "0") int page,
+			@RequestParam(required = false) Integer size,
+			@RequestParam(defaultValue = "0") long knownTotalCount,
+			@RequestParam(required = false) String sortBy,
+			@RequestParam(required = false, defaultValue = "asc") String sortOrder,
+			@RequestParam(required = false, defaultValue = "") String officeFilter,
+			@RequestParam(required = false, defaultValue = "") String claimTypeFilter,
+			@RequestParam(required = false, defaultValue = "") String ageBracketFilter,
+			@RequestParam(required = false, defaultValue = "") String insuranceFilter,
+			@RequestParam(required = false, defaultValue = "") String insuranceTypeFilter,
+			@RequestParam(required = false, defaultValue = "") String currentStatusFilter,
+			@RequestParam(required = false, defaultValue = "") String nextActionFilter,
+			@RequestParam(required = false, defaultValue = "") String providerSpecialityFilter,
+			@RequestParam(required = false, defaultValue = "") String lastTeamFilter,
+			@RequestParam(required = false, defaultValue = "") String statusTypeFilter,
+			Model model) {
+
 		PartialHeader partialHeader = (PartialHeader) model.getAttribute("headerInfo");
 		if (partialHeader==null) {
 			return ResponseEntity.ok(new GenericResponse(HttpStatus.BAD_REQUEST, "", "not Autorized"));
 		}
-		
-		/*try {
-			claimServiceImpl.updateDuplicateActives();
-			}catch (Exception e) {
-				e.printStackTrace();
-			}*/
+		int effectiveSize = (size == null) ? defaultRecordsPerPage : Math.min(size, maxRecordsPerPage);
 		return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "",
-				claimServiceImpl.fetchFreshClaimDetailsLead(partialHeader.getTeamId(), type, subType,partialHeader)));
+				claimServiceImpl.fetchFreshClaimDetailsLead(partialHeader.getTeamId(), type, subType, partialHeader, page, effectiveSize, knownTotalCount,
+						sortBy, sortOrder, officeFilter, claimTypeFilter, ageBracketFilter,
+						insuranceFilter, insuranceTypeFilter, currentStatusFilter, nextActionFilter,
+						providerSpecialityFilter, lastTeamFilter, statusTypeFilter)));
 	}
 	
 	@ApiOperation(value = "Api For Saving Remark and Asssigning Claims (Other teams)", response = String.class, responseContainer = "List")
