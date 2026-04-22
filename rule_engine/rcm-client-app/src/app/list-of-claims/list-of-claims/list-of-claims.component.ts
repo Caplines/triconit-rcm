@@ -1,4 +1,4 @@
-import { Component, OnInit, LOCALE_ID, Inject, HostListener, ViewChild, ElementRef } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, LOCALE_ID, Inject, HostListener, ViewChild, ElementRef } from '@angular/core';
 import { ApplicationServiceService } from '../../service/application-service.service';
 import { AppConstants } from '../../constants/app.constants';
 import { ClaimAssociateDetailModel } from '../../models/claim-associate-detail-model';
@@ -22,7 +22,7 @@ export class ListOfClaimsComponent implements OnInit {
   expandCollapse: boolean = true;
   switchBox: any = { 'billing': true, 'reBilling': false };
   isSorted: any = {};
-  loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false, 'assignLoader': false };
+  loader: any = { 'billingLoader': false, 'listClaimLoader': false, 'exportPDFLoader': false, 'exportCSVLoader': false, 'assignLoader': false, 'bulkReassignmentLoader': false };
   showFilteredDropdown: any = { 'officeName': false, 'claimType': false, 'insuranceType': false, 'insuranceName': false, 'lastTeamWorked': false, 'actionRequired': false, 'ageBracket': false };
   filteredItems: any = [];
   filteredOfficeName: any = [];
@@ -58,8 +58,17 @@ export class ListOfClaimsComponent implements OnInit {
     statusTypeFilter: ''
   };
   readonly pageSizeOptions: number[] = [20, 50, 100, 200];
+  /** Matches backend `data.listClaims.maxRecordsPerPage` — one request returns at most this many rows. */
+  private readonly EXPORT_PAGE_CHUNK = 10000;
   private readonly PAGE_SIZE_KEY = 'loc_items_per_page';
   private readonly LIST_FILTER_STATE_KEY = 'loc_list_of_claims_filter_state_v1';
+
+  exportModalOpen = false;
+  exportModalKind: 'csv' | 'pdf' = 'csv';
+  /** true = all matching rows (up to totalCount), false = first N rows only */
+  exportScopeAll = true;
+  exportRowLimitInput = 1000;
+  exportLoading = false;
   modelElement: any = { 'modal': '', 'span': '' }
   @ViewChild('reassignmentSelectBox') reassignmentSelectBox!: ElementRef;
   teamsMs: Array<TeamsM>;
@@ -85,6 +94,8 @@ export class ListOfClaimsComponent implements OnInit {
   selectedHeaders: string[];
   isRoleAssociate: boolean;
   listofClaimsForAssignAction: any = [];
+  /** True when "Select all for reassignment" loaded every row matching current filters (all pages), not just this page. */
+  reassignmentSelectAllMode = false;
   selectedOfficeNames: Array<string> = [];
   accessAdminBillingClaims: boolean = false;
   @HostListener('document:click', ['$event'])
@@ -105,7 +116,7 @@ export class ListOfClaimsComponent implements OnInit {
     });
   }
 
-  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title, private downloadService: DownLoadService) {
+  constructor(@Inject(LOCALE_ID) private locale: string, private appService: ApplicationServiceService, public appConstants: AppConstants, private title: Title, private downloadService: DownLoadService, private cdr: ChangeDetectorRef) {
     this.selectedBtype = this.appConstants.BILLING_ID;
     title.setTitle(Utils.defaultTitle + "List Of Claims");
   }
@@ -205,12 +216,12 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOfficeName();
         this.fetchOfficeByUuid();
         if (this._shouldRebuildFilterColumnOptions()) {
-          this.filterOptionClaimType(subType);
-          this.filterOptionActionRequired(subType);
-          this.filterOptionInsuranceName(subType);
-          this.filterOptionInsuranceType(subType);
-          this.filterOptionLastTeamWorked();
-          this.filterOptionAgeBracket(subType);
+        this.filterOptionClaimType(subType);
+        this.filterOptionActionRequired(subType);
+        this.filterOptionInsuranceName(subType);
+        this.filterOptionInsuranceType(subType);
+        this.filterOptionLastTeamWorked();
+        this.filterOptionAgeBracket(subType);
         }
         this._syncAllFilterUiFromPending();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
@@ -920,8 +931,162 @@ export class ListOfClaimsComponent implements OnInit {
   }
 
 
-  exportToCsv() {
-    this.loader.exportCSVLoader = true;
+  openExportModal(kind: 'csv' | 'pdf'): void {
+    this.exportModalKind = kind;
+    this.exportScopeAll = true;
+    this.exportRowLimitInput = this.totalCount > 0 ? Math.min(1000, this.totalCount) : 1;
+    this.exportModalOpen = true;
+  }
+
+  closeExportModal(): void {
+    this.exportModalOpen = false;
+  }
+
+  confirmExport(): void {
+    if (this.totalCount === 0 || this.hasUnappliedPendingFilters) {
+      return;
+    }
+    const kind = this.exportModalKind;
+    const maxRows = this.exportScopeAll
+      ? this.totalCount
+      : Math.min(
+          this.totalCount,
+          Math.max(1, parseInt(String(this.exportRowLimitInput), 10) || 1)
+        );
+    this.closeExportModal();
+    this.exportLoading = true;
+    if (kind === 'csv') {
+      this.loader.exportCSVLoader = true;
+    } else {
+      this.loader.exportPDFLoader = true;
+    }
+    this.collectClaimsForExport(maxRows)
+      .then((rows) => {
+        if (kind === 'csv') {
+          this.buildAndDownloadCsvFromRows(rows);
+          this.loader.exportCSVLoader = false;
+          this.exportLoading = false;
+        } else {
+          return this.downloadPdfWithRows(rows);
+        }
+      })
+      .then(() => {
+        if (kind === 'pdf') {
+          this.loader.exportPDFLoader = false;
+          this.exportLoading = false;
+        }
+      })
+      .catch(() => {
+        this.loader.exportCSVLoader = false;
+        this.loader.exportPDFLoader = false;
+        this.exportLoading = false;
+      });
+  }
+
+  private fetchExportPagePromise(page: number, pageSize: number, knownTotalCount: number, isLead: boolean): Promise<any> {
+    return new Promise((resolve) => {
+      const opts = { sortBy: this.serverSortBy, sortOrder: this.serverSortOrder, ...this.serverFilters };
+      const cb = (res: any) => resolve(res);
+      if (isLead) {
+        this.appService.fetchLeadClaimDet(this.selectedBtype, 'MyClaims', page, pageSize, knownTotalCount, cb, opts);
+      } else {
+        const sub = this.tabSwitch.sendBack ? 'sendBack' : 'Fresh';
+        this.appService.fetchAssociateClaimDet(this.selectedBtype, sub, page, pageSize, knownTotalCount, cb, opts);
+      }
+    });
+  }
+
+  private mapRowsForExport(raw: any[], isLead: boolean): any[] {
+    const base = isLead ? this.removePrefix(raw.map((e: any) => ({ ...e }))) : raw.map((e: any) => ({ ...e }));
+    return base.map((e: any) => {
+      const x = { ...e };
+      if (x.claimId.endsWith('_P')) {
+        x['EstAmount'] = x.primeSecSubmittedTotal;
+      } else {
+        x['EstAmount'] = x.secTotal;
+      }
+      x['dueDateSort'] = x.followUpDate == null ? x.pendingSince : x.followUpDate;
+      if (isLead) {
+        if (x['nextAction'] == this.appConstants.NEED_TO_RE_BILL) {
+          x['statusType'] = this.appConstants.RE_BILLING_ID;
+        }
+      } else if (x['rebilledStatus'] == this.appConstants.LIST_CLAIM_REBILL) {
+        x['statusType'] = this.appConstants.RE_BILLING_ID;
+      }
+      return x;
+    });
+  }
+
+  private enrichExportRowsForDisplay(claims: any[]): void {
+    const currentDate: any = new Date().setHours(0, 0, 0, 0);
+    claims.forEach((e: any) => {
+      if (e.dos) {
+        const dos: any = new Date(e.dos);
+        const diffTime = Math.abs(currentDate - dos);
+        const diffDays: any = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        e.ageBracket =
+          diffDays <= 30
+            ? `0-30`
+            : diffDays > 30 && diffDays <= 60
+              ? `31-60`
+              : diffDays > 60 && diffDays <= 90
+                ? `61-90`
+                : diffDays > 90 && diffDays <= 180
+                  ? '91-180'
+                  : diffDays > 180 && diffDays <= 365
+                    ? '181-365'
+                    : diffDays > 365
+                      ? '365+'
+                      : '';
+      }
+      if (e.claimId) {
+        e.newClaimId = e.claimId.replace('_P', '').replace('_S', '');
+      }
+      if (e.claimAge && e.timelyFilingLimitData) {
+        e.colorChange = Number(e.timelyFilingLimitData) - e.claimAge < 30;
+      }
+    });
+  }
+
+  private async collectClaimsForExport(targetRows: number): Promise<any[]> {
+    const isLead = this.tabSwitch.MyClaims && this.isRoleLead;
+    if (this.totalCount === 0 || targetRows <= 0) {
+      return [];
+    }
+    const maxRows = Math.min(targetRows, this.totalCount);
+    const accumulated: any[] = [];
+    let page = 0;
+    let knownTotalCount = 0;
+    while (accumulated.length < maxRows) {
+      const chunkSize = Math.min(this.EXPORT_PAGE_CHUNK, maxRows - accumulated.length);
+      const res: any = await this.fetchExportPagePromise(page, chunkSize, knownTotalCount, isLead);
+      if (!res || res.status !== 200) {
+        throw new Error('Export fetch failed');
+      }
+      knownTotalCount = res.data.totalCount;
+      const raw = res.data.claims || [];
+      const mapped = this.mapRowsForExport(raw, isLead);
+      accumulated.push(...mapped);
+      if (accumulated.length > maxRows) {
+        accumulated.splice(maxRows);
+      }
+      if (raw.length === 0) {
+        break;
+      }
+      if (accumulated.length >= maxRows) {
+        break;
+      }
+      const totalPages = res.data.totalPages != null ? res.data.totalPages : 1;
+      if (page >= totalPages - 1) {
+        break;
+      }
+      page++;
+    }
+    this.enrichExportRowsForDisplay(accumulated);
+    return accumulated;
+  }
+
+  buildAndDownloadCsvFromRows(sourceRows: any[]) {
     const headerConfigs = {
       Fresh: [
         "Office",
@@ -972,8 +1137,7 @@ export class ListOfClaimsComponent implements OnInit {
       headers: this.selectedHeaders
     }
 
-    let excelData: any;
-    excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
+    let excelData: any = [...sourceRows];
     excelData = excelData.map((e: any) => {
       if (e.dos) {
         let date: Date = new Date(e.dos);
@@ -1074,7 +1238,36 @@ export class ListOfClaimsComponent implements OnInit {
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     //console.log(excelData.sort());
     new ngxCsv(excelData, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}`, options);
-    this.loader.exportCSVLoader = false;
+  }
+
+  private downloadPdfWithRows(rows: any[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!rows || rows.length === 0) {
+        resolve();
+        return;
+      }
+      const data = {
+        fileName: 'List_Of_Claims',
+        data: rows,
+        clientName: this.clientName,
+        tabSwitch: this.tabValue,
+        currentTeamId: this.currentTeamId
+      };
+      this.appService.lisOfClaimsPdfDownload(data, 'pdf', (res: any) => {
+        if (res.status === 200) {
+          this.date = new Date();
+          this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+          this.downloadService.saveBolbData(
+            res.body,
+            `${localStorage.getItem('selected_clientName')}_List_of_Claims_${this.date}.pdf`
+          );
+          resolve();
+        } else {
+          console.log('something went wrong');
+          reject(new Error('PDF export failed'));
+        }
+      });
+    });
   }
 
 
@@ -1244,12 +1437,12 @@ export class ListOfClaimsComponent implements OnInit {
         this.filterOfficeName();
         this.fetchOfficeByUuid();
         if (this._shouldRebuildFilterColumnOptions()) {
-          this.filterOptionClaimType(subType);
-          this.filterOptionActionRequired(subType);
-          this.filterOptionInsuranceName(subType);
-          this.filterOptionInsuranceType(subType);
-          this.filterOptionLastTeamWorked();
-          this.filterOptionAgeBracket(subType);
+        this.filterOptionClaimType(subType);
+        this.filterOptionActionRequired(subType);
+        this.filterOptionInsuranceName(subType);
+        this.filterOptionInsuranceType(subType);
+        this.filterOptionLastTeamWorked();
+        this.filterOptionAgeBracket(subType);
         }
         this._syncAllFilterUiFromPending();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
@@ -1293,23 +1486,13 @@ export class ListOfClaimsComponent implements OnInit {
     // this.selectAll(event, 'officeName');
   }
 
-  downloadPdf() {
-    this.loader.exportPDFLoader = true;
-    if (this.filteredItems.length != 0) {
-      let data = { "fileName": "List_Of_Claims", "data": this.filteredItems, "clientName": this.clientName, "tabSwitch": this.tabValue, "currentTeamId": this.currentTeamId };
-      this.appService.lisOfClaimsPdfDownload(data, "pdf", (res: any) => {
-        if (res.status === 200) {
-          this.date = new Date();
-          this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-          //console.log(res.body);
-          this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}.pdf`);
-          this.loader.exportPDFLoader = false;
-        } else {
-          console.log("something went wrong");
-          this.loader.exportPDFLoader = false;
-        }
-      })
-    }
+  /** Used by this template and parent wrappers (e.g. search-claims). Opens export modal for full or limited PDF download. */
+  downloadPdf(): void {
+    this.openExportModal('pdf');
+  }
+
+  exportToCsv(): void {
+    this.openExportModal('csv');
   }
 
   showAgeBracket_WithColor_AndClaimIdDigits() {
@@ -1357,37 +1540,90 @@ export class ListOfClaimsComponent implements OnInit {
     return Utils;
   }
 
-  createClaimAssignmentList(event: any, data: any) {
+  private readCheckboxChecked(ev: Event): boolean {
+    const t = ev.target as HTMLElement | null;
+    if (t && (t as HTMLInputElement).type === 'checkbox') {
+      return (t as HTMLInputElement).checked;
+    }
+    return false;
+  }
 
-    if (event.srcElement.checked) {
+  createClaimAssignmentList(event: Event, data: any) {
+    const checked = (event.target && (event.target as HTMLInputElement).type === 'checkbox')
+      ? (event.target as HTMLInputElement).checked
+      : false;
+    if (checked) {
+      this.reassignmentSelectAllMode = false;
       this.listofClaimsForAssignAction.push(data);
       data.assignAction = true;
       if (this.listofClaimsForAssignAction.length == this.filteredItems.length) {
         this.reassignmentSelectBox.nativeElement.checked = true;
       }
     } else {
+      this.reassignmentSelectAllMode = false;
       this.reassignmentSelectBox.nativeElement.checked = false;
-      this.listofClaimsForAssignAction = this.listofClaimsForAssignAction.filter((obj: any) => { return obj.uuid !== data.uuid });
+      this.listofClaimsForAssignAction = this.listofClaimsForAssignAction.filter((obj: any) => {
+        return obj.uuid !== data.uuid;
+      });
     }
-
+    this.cdr.detectChanges();
   }
 
-  selectAllReAssigment(event: any) {
+  /** All rows matching applied server filters + sort + tab (same as export "all matching"). */
+  private async getAllRowsForBulkReassignment(): Promise<any[]> {
+    if (this.totalCount === 0) {
+      return [];
+    }
+    return this.collectClaimsForExport(this.totalCount);
+  }
 
-    let ths = this;
+  async selectAllReAssigment(event: Event) {
+    const ths = this;
+    const checked = ths.readCheckboxChecked(event);
+    if (!checked) {
     ths.selectedOfficeNames = [];
     ths.listofClaimsForAssignAction = [];
+      ths.reassignmentSelectAllMode = false;
     ths.filteredItems.forEach((element: any) => {
       element.assignAction = false;
     });
-    //listofClaimsForAssignAction
-    if (event.srcElement.checked) {
-      ths.filteredItems.forEach((element: any) => {
-        element.assignAction = true;
-      });
-      ths.listofClaimsForAssignAction = ths.filteredItems;
+      ths.cdr.detectChanges();
+      return;
     }
-
+    ths.selectedOfficeNames = [];
+    if (ths.hasUnappliedPendingFilters) {
+      const inp = event.target as HTMLInputElement;
+      if (inp?.type === 'checkbox') {
+        inp.checked = false;
+      }
+      alert('Apply filters before selecting all claims for reassignment.');
+      ths.cdr.detectChanges();
+      return;
+    }
+    ths.loader.bulkReassignmentLoader = true;
+    ths.cdr.detectChanges();
+    try {
+      const rows = await ths.getAllRowsForBulkReassignment();
+      ths.listofClaimsForAssignAction = [...rows];
+      ths.reassignmentSelectAllMode = rows.length > 0;
+      const idSet = new Set(rows.map((r: any) => r.uuid || r.claimUuid));
+      ths.filteredItems.forEach((el: any) => {
+        const uid = el.uuid || el.claimUuid;
+        el.assignAction = idSet.has(uid);
+      });
+      if (ths.reassignmentSelectBox?.nativeElement) {
+        ths.reassignmentSelectBox.nativeElement.checked = rows.length > 0;
+      }
+    } catch {
+      const inp = event.target as HTMLInputElement;
+      if (inp?.type === 'checkbox') {
+        inp.checked = false;
+      }
+      alert('Could not load all matching claims. Try again.');
+    } finally {
+      ths.loader.bulkReassignmentLoader = false;
+      ths.cdr.detectChanges();
+    }
   }
 
   openAssigmentPopUp() {
@@ -1396,7 +1632,10 @@ export class ListOfClaimsComponent implements OnInit {
 
   clearAssigmentArray() {
     this.listofClaimsForAssignAction = [];
+    this.reassignmentSelectAllMode = false;
+    if (this.reassignmentSelectBox?.nativeElement) {
     this.reassignmentSelectBox.nativeElement.checked = false;
+    }
     this.filteredItems.forEach((element: any) => {
       element.assignAction = false;
     });

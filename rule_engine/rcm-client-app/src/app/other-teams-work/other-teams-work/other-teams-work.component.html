@@ -6,6 +6,8 @@
                     <div class="detail-box">
                         <div class="detail-box-form">
                             <div class="listClaimBox mt-2 mb-1">
+                                <!-- One wrapper so global .listClaimBox flex (space-between) pairs [tabs+filters] | [exports/actions], like billing list-of-claims -->
+                                <div>
                                 <div class="btn-group btn-group-toggle">
                                     <label class="btn btn-light" [ngClass]="{'active':tabSwitch.unSubmitted}">
                                         <input class="form-check-input" type="radio" name="options"
@@ -21,22 +23,32 @@
                                         <input class="form-check-input" type="radio" [disabled]="loader.listClaimLoader"
                                             name="options" id="option3" (change)="switchTab('myClaims')">My Claims
                                     </label>
+                                    </div>
+                                    <div class="form-inline mt-2 mb-1 flex-wrap align-items-center" *ngIf="claimDetail">
+                                        <button type="button" class="btn btn-primary btn-sm mr-2"
+                                            [disabled]="loader.listClaimLoader || !hasUnappliedPendingFilters"
+                                            (click)="applyPendingFilters()">Apply filters</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm mr-2"
+                                            [disabled]="loader.listClaimLoader || !canResetFilters"
+                                            (click)="resetFilters()">Reset filters</button>
+                                        <small *ngIf="hasUnappliedPendingFilters" class="text-muted">Unsaved filter changes</small>
+                                    </div>
                                 </div>
                                 <div class="otherTeamBox mt-2 mb-2" *ngIf="!isRoleAssociate">
 
-                                    <button type="button" class="icon-btn" (click)="downloadPdf()"
-                                        [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
+                                    <button type="button" class="icon-btn" (click)="openExportModal('pdf')"
+                                        [disabled]="totalCount===0 || hasUnappliedPendingFilters || loader.exportPDFLoader || exportLoading">
                                         <img src="../../assets/img/pdf.png" /></button><span
-                                        *ngIf="loader.exportPDFLoader" class="spinner-border text-danger mx-1"></span>
-                                    <button type="button" class="icon-btn" (click)="exportToCsv()"
-                                        [disabled]="filteredItems.length==0">
+                                        *ngIf="loader.exportPDFLoader || exportLoading" class="spinner-border text-danger mx-1"></span>
+                                    <button type="button" class="icon-btn" (click)="openExportModal('csv')"
+                                        [disabled]="totalCount===0 || hasUnappliedPendingFilters || loader.exportCSVLoader || exportLoading">
                                         <img src="../../assets/img/xls.png" /></button><span
-                                        *ngIf="loader.exportCSVLoader" class="spinner-border text-success mx-1"></span>
-                                    <button
-                                        *ngIf="currentTeamName.unFormatedName == 'PAYMENT_POSTING' && tabValue == 'submitted'"
-                                        type="button" class="btn btn-danger" (click)="transferClaimsConfirmModal()"
-                                        style="margin-left: 15px;">
-                                        <strong>Send to Aging</strong> </button>
+                                        *ngIf="loader.exportCSVLoader || exportLoading" class="spinner-border text-success mx-1"></span>
+                                    <div class="update-button"
+                                        *ngIf="currentTeamName.unFormatedName == 'PAYMENT_POSTING' && tabValue == 'submitted'">
+                                        <a href="javascript:void(0);" class="btn btn-danger"
+                                            (click)="transferClaimsConfirmModal()">Send to Aging</a>
+                                    </div>
                                     <div *ngIf="!isRoleAssociate" class="update-button" style="float: right;"><a
                                             href="javascript:void(0);" class="btn btn-success"
                                             [ngClass]="{'disabled':listofClaimsForAssignAction.length==0}"
@@ -68,7 +80,13 @@
                             </ng-container>
 
                             <div class="form-row  collapse" [ngClass]="{'show':expandCollapse}" id="ruleEngine">
-                                <div class="table-responsive" style="min-height:300px;">
+                                <div class="table-responsive list-claims-table-wrap position-relative" style="min-height:300px;">
+                                    <div class="list-claims-loading-overlay" *ngIf="loader.listClaimLoader">
+                                        <div class="list-claims-loading-inner text-center">
+                                            <span class="spinner-border text-primary" role="status" aria-hidden="true"></span>
+                                            <div class="mt-2 small text-muted">Loading claims…</div>
+                                        </div>
+                                    </div>
                                     <table
                                         class="table table-striped table-wrapper-scroll-y table-inner-scrollbar filterDropdown"
                                         id="table" *ngIf="claimDetail">
@@ -76,12 +94,11 @@
                                             <tr>
                                                 <th>
                                                     <div class="dFlex">
-                                                        Office <div class="dropdown">
+                                                        Office <div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('officeName')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.officeName">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -224,12 +241,11 @@
                                                                 30-59 days, etc.).
                                                             </span>
                                                         </div>
-                                                        <div class="dropdown">
+                                                        <div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('ageBracket')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.ageBracket">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -267,12 +283,11 @@
                                                 </th>
                                                 <th class="insuranceName">
                                                     <div class="dFlex">
-                                                        Insurance Name <div class="dropdown">
+                                                        Insurance Name <div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('insuranceName')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.insuranceName">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -311,12 +326,11 @@
                                                 </th>
                                                 <th class="insuranceType">
                                                     <div class="dFlex">
-                                                        Insurance Type <div class="dropdown">
+                                                        Insurance Type <div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('insuranceType')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.insuranceType">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -355,12 +369,11 @@
                                                 </th>
                                                 <th class="insuranceType">
                                                     <div class="dFlex">
-                                                        Claim Type<div class="dropdown">
+                                                        Claim Type<div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('claimType')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.claimType">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -403,12 +416,11 @@
                                                 <th
                                                     *ngIf="(staticUtil.isNotTeamOffice() && staticUtil.isNotTeamPosting()) || staticUtil.isNotTeamPosting()">
                                                     <div class="dFlex">
-                                                        Assigned By <div class="dropdown">
+                                                        Assigned By <div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('lastTeam')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.lastTeam">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -485,12 +497,11 @@
 
                                                 <th *ngIf="showColumns.currentStatus">
                                                     <div class="dFlex">
-                                                        Current Status <div class="dropdown">
+                                                        Current Status <div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('currentStatus')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.currentStatus">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -532,12 +543,11 @@
 
                                                 <th *ngIf="showColumns.nextActionRequired">
                                                     <div class="dFlex">
-                                                        Current Action Required<div class="dropdown">
+                                                        Current Action Required<div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('nextActionRequired')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.nextActionRequired">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -593,13 +603,12 @@
 
                                                 <th *ngIf="showColumns.providerSpeciality">
                                                     <div class="dFlex">
-                                                        Provider Speciality <div class="dropdown">
+                                                        Provider Speciality <div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('providerSpeciality')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
                                                                 style="margin-left:-70px;"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.providerSpeciality">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -710,9 +719,16 @@
                                                                 <div class="tooltip-backdrop"></div>
                                                             </ng-container>
 
-                                                            <input type="checkbox" checked="{{selectAllAging}}"
+                                                            <input type="checkbox"
+                                                                [checked]="!!selectAllAging"
                                                                 (change)="selectAllClaimsToAging($event)"
+                                                                [disabled]="loader.bulkAgingLoader"
+                                                                [attr.aria-busy]="loader.bulkAgingLoader"
                                                                 style=" vertical-align: sub;"></span>
+                                                        <ng-container *ngIf="loader.bulkAgingLoader">
+                                                            <div class="text-muted small mt-1 d-flex align-items-center">Loading…<span
+                                                                class="spinner-border spinner-border-sm text-primary ml-1" role="status" aria-label="Loading"></span></div>
+                                                        </ng-container>
                                                         <div class="tooltip2">
                                                             <img src="../../assets/img/question-icon.png"
                                                                 (click)="toggleTooltip('transferToAging');" />
@@ -727,13 +743,12 @@
                                                                 eligible for sending to Aging Team.
                                                             </span>
                                                         </div>
-                                                        <div class="dropdown">
+                                                        <div class="dropdown loc-claims-filter-anchor">
                                                             <img (click)="showHideFilteredDropdown('selectAging')"
                                                                 src="../../assets/img/filterIcon.png"
                                                                 style="cursor: pointer; margin-left: 6px;" />
                                                             <div class="dropdown-menu filter-dropdown-menu"
                                                                 style="margin-left:-232px;"
-                                                                (mouseleave)="onMouseLeave($event)"
                                                                 *ngIf="showFilteredDropdown.selectAging">
                                                                 <div class="clearClose">
                                                                     <label class="mx-1">
@@ -801,12 +816,20 @@
                                                 </th>
                                                 <th *ngIf="!isRoleAssociate" style="z-index:9999">
                                                     <div class="dFlex">
-                                                        <label for="reassignment" class="reassignmentcl"
-                                                            (change)="selectAllReAssigment($event)">
+                                                        <label for="reassignment" class="reassignmentcl">
                                                             <input type="checkbox" id="reassignment"
-                                                                #reassignmentSelectBox>
-                                                            {{reassignmentSelectBox.checked ? 'Deselect All
-                                                            For Reassignment':'Select All For Reassignment'}}
+                                                                #reassignmentSelectBox
+                                                                [disabled]="loader.bulkReassignmentLoader"
+                                                                [attr.aria-busy]="loader.bulkReassignmentLoader"
+                                                                (change)="selectAllReAssigment($event)">
+                                                            <ng-container *ngIf="loader.bulkReassignmentLoader; else otwReassignLabelText">
+                                                                <span class="text-muted small d-inline-flex align-items-center">Loading claims…<span
+                                                                    class="spinner-border spinner-border-sm text-primary ml-2" role="status" aria-label="Loading"></span></span>
+                                                            </ng-container>
+                                                            <ng-template #otwReassignLabelText>
+                                                                {{reassignmentSelectBox.checked ? 'Deselect All
+                                                                For Reassignment':'Select All For Reassignment'}}
+                                                            </ng-template>
                                                         </label>
                                                         <ng-container *ngIf="showTooltipConfig['reassign']">
                                                             <div class="tooltip-backdrop"></div>
@@ -964,7 +987,7 @@
                                                                     *ngIf="det.diffForPaymentPosting;else myFlagFalse;">
                                                                     <label class="no-css-checkbox-container">
                                                                         <input type="checkbox"
-                                                                            checked="{{det.selectAging}}"
+                                                                            [checked]="!!det.selectAging"
                                                                             (change)="selectTransferClaims($event,det)">
                                                                         <div class="checkmark"></div>
                                                                     </label> &nbsp;
@@ -994,7 +1017,7 @@
                                     </ng-container>
                                 </div>
                                 <div class="d-flex align-items-center justify-content-between flex-wrap mt-2 mb-1 px-1"
-                                    *ngIf="totalCount > 0 && !loader.listClaimLoader && !tabSwitch.myClaims">
+                                    *ngIf="totalCount > 0 && !loader.listClaimLoader">
                                     <div class="d-flex align-items-center">
                                         <span class="text-muted small mr-2">Rows per page:</span>
                                         <select class="form-control form-control-sm mr-3" style="width:90px;"
@@ -1004,7 +1027,7 @@
                                         <span class="text-muted small">
                                             {{pageStartItem}}-{{pageEndItem}} of {{totalCount}}
                                         </span>
-                                    </div>
+                            </div>
                                     <div class="d-flex align-items-center">
                                         <button class="btn btn-sm btn-outline-secondary mr-1"
                                             [disabled]="currentPage === 0"
@@ -1049,6 +1072,39 @@
                                 </div>
                             </div>
 
+                        </div>
+                    </div>
+
+                    <div *ngIf="exportModalOpen" id="export-modal-otw" class="modal assignmd" [style.display]="'block'">
+                        <div class="modal-content">
+                            <div class="modal-header detail-box">
+                                <h5 class="modal-title">{{ exportModalKind === 'pdf' ? 'Export to PDF' : 'Export to CSV' }}</h5>
+                                <button type="button" (click)="closeExportModal()" class="close"><span>×</span></button>
+                            </div>
+                            <div class="modal-body mcont">
+                                <p class="small text-muted mb-3">Export uses applied filters, sort order, and tab (Unbilled / Billed / My Claims). Use &quot;Apply filters&quot; first if you see &quot;Unsaved filter changes&quot;.</p>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="exportScopeOtw" id="exportScopeAllOtw"
+                                        [(ngModel)]="exportScopeAll" [value]="true">
+                                    <label class="form-check-label" for="exportScopeAllOtw">All matching rows ({{ totalCount | number }})</label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="exportScopeOtw" id="exportScopeLimitOtw"
+                                        [(ngModel)]="exportScopeAll" [value]="false">
+                                    <label class="form-check-label" for="exportScopeLimitOtw">First N rows only</label>
+                                </div>
+                                <div class="form-inline align-items-center flex-wrap" *ngIf="!exportScopeAll">
+                                    <label class="mr-2 mb-0" for="exportRowLimitOtw">N</label>
+                                    <input type="number" id="exportRowLimitOtw" class="form-control form-control-sm" style="width: 120px;"
+                                        min="1" [max]="totalCount" [(ngModel)]="exportRowLimitInput" />
+                                    <span class="text-muted small ml-2">up to {{ totalCount | number }} rows</span>
+                                </div>
+                            </div>
+                            <div class="modal-footer" style="border-top: none; padding-top: 0;">
+                                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeExportModal()">Cancel</button>
+                                <button type="button" class="btn btn-primary btn-sm" (click)="confirmExport()"
+                                    [disabled]="exportLoading || totalCount===0">Download</button>
+                            </div>
                         </div>
                     </div>
 

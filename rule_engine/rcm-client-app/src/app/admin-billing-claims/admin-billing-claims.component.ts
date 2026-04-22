@@ -54,6 +54,17 @@ export class AdminBillingClaimsComponent implements OnInit {
   alert: any = { 'showAlertPopup': false, 'alertMsg': '', 'isError': false };
   selectedCompanyUuid: any = "";
   selectedClientName: string = "";
+  /** Client-side pagination over `filteredItems` (API returns the full list for the selected client). */
+  listPageIndex = 0;
+  listPageSize = 50;
+  readonly listPageSizeOptions: number[] = [20, 50, 100, 200];
+  private readonly ADMIN_LIST_PAGE_KEY = 'admin_billing_list_page_size';
+  listGoToPageInput = 1;
+  exportModalOpen = false;
+  exportModalKind: 'csv' | 'pdf' = 'csv';
+  exportScopeAll = true;
+  exportRowLimitInput = 1000;
+  exportLoading = false;
 
   @HostListener('mouseleave') onMouseLeave(event: Event) {
     if (event?.target) {
@@ -69,7 +80,207 @@ export class AdminBillingClaimsComponent implements OnInit {
   }
 
   ngOnInit() {
+    const saved = localStorage.getItem(this.ADMIN_LIST_PAGE_KEY);
+    if (saved) {
+      const p = parseInt(saved, 10);
+      if (this.listPageSizeOptions.includes(p)) {
+        this.listPageSize = p;
+      }
+    }
+    this.clientName = localStorage.getItem('selected_clientName') || '';
+    this.currentTeamId = Utils.selectedTeam();
     this.getcompanyData();
+  }
+
+  private resetAdminListPagination(): void {
+    this.listPageIndex = 0;
+    this.listGoToPageInput = 1;
+  }
+
+  /** Keep current page valid when filters/sort change the row count. */
+  private ensureListPageInRange(): void {
+    const tp = this.listTotalPages;
+    if (tp === 0) {
+      this.listPageIndex = 0;
+      this.listGoToPageInput = 1;
+      return;
+    }
+    if (this.listPageIndex >= tp) {
+      this.listPageIndex = tp - 1;
+    }
+    this.listGoToPageInput = this.listPageIndex + 1;
+  }
+
+  get listFilteredTotal(): number {
+    return this.filteredItems.length;
+  }
+
+  get listTotalPages(): number {
+    const n = this.filteredItems.length;
+    if (n === 0) {
+      return 0;
+    }
+    return Math.max(1, Math.ceil(n / this.listPageSize));
+  }
+
+  get pagedFilteredItems(): any[] {
+    const start = this.listPageIndex * this.listPageSize;
+    return this.filteredItems.slice(start, start + this.listPageSize);
+  }
+
+  get listPageStartItem(): number {
+    if (this.filteredItems.length === 0) {
+      return 0;
+    }
+    return this.listPageIndex * this.listPageSize + 1;
+  }
+
+  get listPageEndItem(): number {
+    if (this.filteredItems.length === 0) {
+      return 0;
+    }
+    return Math.min((this.listPageIndex + 1) * this.listPageSize, this.filteredItems.length);
+  }
+
+  get listPageNumbers(): number[] {
+    const total = this.listTotalPages;
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i);
+    }
+    const current = this.listPageIndex;
+    const pages = new Set<number>([0, total - 1, current]);
+    if (current > 1) {
+      pages.add(current - 1);
+    }
+    if (current < total - 2) {
+      pages.add(current + 1);
+    }
+    return Array.from(pages).sort((a, b) => a - b);
+  }
+
+  onListPageChange(page: number): void {
+    if (page < 0 || page >= this.listTotalPages || page === this.listPageIndex) {
+      return;
+    }
+    this.listPageIndex = page;
+    this.listGoToPageInput = page + 1;
+  }
+
+  onListPageSizeChange(size: number | string): void {
+    const n = typeof size === 'number' && !Number.isNaN(size) ? size : parseInt(String(size), 10);
+    if (!this.listPageSizeOptions.includes(n)) {
+      return;
+    }
+    this.listPageSize = n;
+    localStorage.setItem(this.ADMIN_LIST_PAGE_KEY, String(n));
+    this.resetAdminListPagination();
+  }
+
+  goToListSpecificPage(): void {
+    if (this.listTotalPages === 0) {
+      return;
+    }
+    const targetPage = Number(this.listGoToPageInput);
+    if (!Number.isFinite(targetPage)) {
+      this.listGoToPageInput = this.listPageIndex + 1;
+      return;
+    }
+    const normalizedPage = Math.max(1, Math.min(targetPage, this.listTotalPages));
+    this.listGoToPageInput = normalizedPage;
+    this.onListPageChange(normalizedPage - 1);
+  }
+
+  onListPageEnter(event: KeyboardEvent): void {
+    if (event.key === 'Enter') {
+      this.goToListSpecificPage();
+    }
+  }
+
+  openExportModal(kind: 'csv' | 'pdf'): void {
+    this.exportModalKind = kind;
+    this.exportScopeAll = true;
+    this.exportRowLimitInput = this.listFilteredTotal > 0 ? Math.min(1000, this.listFilteredTotal) : 1;
+    this.exportModalOpen = true;
+  }
+
+  closeExportModal(): void {
+    this.exportModalOpen = false;
+  }
+
+  confirmExport(): void {
+    if (this.listFilteredTotal === 0) {
+      return;
+    }
+    const kind = this.exportModalKind;
+    const maxRows = this.exportScopeAll
+      ? this.listFilteredTotal
+      : Math.min(
+          this.listFilteredTotal,
+          Math.max(1, parseInt(String(this.exportRowLimitInput), 10) || 1)
+        );
+    this.closeExportModal();
+    this.exportLoading = true;
+    if (kind === 'csv') {
+      this.loader.exportCSVLoader = true;
+    } else {
+      this.loader.exportPDFLoader = true;
+    }
+    const rows = this.filteredItems.slice(0, maxRows);
+    Promise.resolve()
+      .then(() => {
+        if (kind === 'csv') {
+          this.buildAndDownloadCsvFromRows(rows);
+          this.loader.exportCSVLoader = false;
+          this.exportLoading = false;
+        } else {
+          return this.downloadPdfWithRows(rows);
+        }
+      })
+      .then(() => {
+        if (kind === 'pdf') {
+          this.loader.exportPDFLoader = false;
+          this.exportLoading = false;
+        }
+      })
+      .catch(() => {
+        this.loader.exportCSVLoader = false;
+        this.loader.exportPDFLoader = false;
+        this.exportLoading = false;
+      });
+  }
+
+  private downloadPdfWithRows(rows: any[]): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!rows || rows.length === 0) {
+        resolve();
+        return;
+      }
+      const data = {
+        fileName: 'List_Of_Claims',
+        data: rows,
+        clientName: this.clientName,
+        tabSwitch: this.tabValue,
+        currentTeamId: this.currentTeamId
+      };
+      this.appService.lisOfClaimsPdfDownload(data, 'pdf', (res: any) => {
+        if (res.status === 200) {
+          this.date = new Date();
+          this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
+          this.downloadService.saveBolbData(
+            res.body,
+            `${localStorage.getItem('selected_clientName')}_List_of_Claims_${this.date}.pdf`
+          );
+          resolve();
+        } else {
+          console.log('something went wrong');
+          reject(new Error('PDF export failed'));
+        }
+      });
+    });
+  }
+
+  downloadPdf(): void {
+    this.openExportModal('pdf');
   }
 
   getcompanyData() {
@@ -113,6 +324,7 @@ export class AdminBillingClaimsComponent implements OnInit {
         // this.filterOptionLastTeamWorked();
         this.filterOptionAgeBracket();
         this.showAgeBracket_WithColor_AndClaimIdDigits();
+        this.resetAdminListPagination();
       }
 
     })
@@ -264,6 +476,7 @@ export class AdminBillingClaimsComponent implements OnInit {
 
   sortData(data: any, sortProp: string, order: any, sortType: string) {
     this.appService.sortData(data, sortProp, order, sortType);
+    this.ensureListPageInRange();
   }
 
   showFilterOptionOfficeName(data: any) {
@@ -285,6 +498,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     if (!e) {
       this.filteredItems = this.claimDetail;
       this.isFilterAllSelected.officeName = true;
+      this.resetAdminListPagination();
     } else {
       let isAllSelected: boolean = true;
       for (let i = 0; i < this.filteredOfficeName.length; i++) {
@@ -301,6 +515,7 @@ export class AdminBillingClaimsComponent implements OnInit {
       });
       this.addOrRemoveFilterOffice();
       this.clearAssigmentArray();
+      this.resetAdminListPagination();
     }
   }
 
@@ -652,6 +867,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     });
     this.addOrRemoveFilterClaimType();
     this.clearAssigmentArray();
+    this.resetAdminListPagination();
   }
 
   filterAgeBracket(filterProperty: any) {
@@ -670,6 +886,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     });
     this.addOrRemoveFilterAgeBracket();
     this.clearAssigmentArray();
+    this.resetAdminListPagination();
   }
 
   filterActionRequired(filterProperty: any) {
@@ -688,6 +905,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     });
     this.addOrRemoveFilterStatus();
     this.clearAssigmentArray();
+    this.resetAdminListPagination();
   }
 
   filterInsuranceName(filterProperty: any) {
@@ -706,6 +924,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     });
     this.addOrRemoveFilterInsName();
     this.clearAssigmentArray();
+    this.resetAdminListPagination();
   }
 
   filterInsuranceType(filterProperty: any) {
@@ -724,6 +943,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     });
     this.addOrRemoveFilterInsType();
     this.clearAssigmentArray();
+    this.resetAdminListPagination();
   }
 
   filterAssignedToTeam(filterProperty: any) {
@@ -742,6 +962,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     });
     this.addOrRemoveAssignedToTeam();
     this.clearAssigmentArray();
+    this.resetAdminListPagination();
   }
 
   filterAssignedTo(filterProperty: any) {
@@ -760,6 +981,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     });
     this.addOrRemoveAssignedTo();
     this.clearAssigmentArray();
+    this.resetAdminListPagination();
   }
 
   // filterLastTeamWorked(filterProperty: any) {
@@ -788,8 +1010,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     }
   }
 
-  exportToCsv() {
-    this.loader.exportCSVLoader = true;
+  buildAndDownloadCsvFromRows(sourceRows: any[]) {
     let options: any = {
       showLabels: true,
       headers: [
@@ -815,7 +1036,7 @@ export class AdminBillingClaimsComponent implements OnInit {
     }
 
     let excelData: any;
-    excelData = [...this.filteredItems];  //creating a copy of data so that nothing affects original data.
+    excelData = [...sourceRows];
     excelData = excelData.map((e: any) => {
       if (e.dos) {
         let date: Date = new Date(e.dos);
@@ -884,7 +1105,10 @@ export class AdminBillingClaimsComponent implements OnInit {
     this.date = new Date();
     this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
     new ngxCsv(excelData, `${'Bulk Billing'} ${this.selectedClientName} ${this.date}`, options);
-    this.loader.exportCSVLoader = false;
+  }
+
+  exportToCsv(): void {
+    this.openExportModal('csv');
   }
 
   selectAll(event: any, filterProperty: any) {
@@ -1005,25 +1229,6 @@ export class AdminBillingClaimsComponent implements OnInit {
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
     return monthNames[month];
-  }
-
-  downloadPdf() {
-    this.loader.exportPDFLoader = true;
-    if (this.filteredItems.length != 0) {
-      let data = { "fileName": "List_Of_Claims", "data": this.filteredItems, "clientName": this.clientName, "tabSwitch": this.tabValue, "currentTeamId": this.currentTeamId };
-      this.appService.lisOfClaimsPdfDownload(data, "pdf", (res: any) => {
-        if (res.status === 200) {
-          this.date = new Date();
-          this.date = `${this.date.getMonth() + 1}/${this.date.getDate()}/${this.date.getFullYear()}`;
-          //console.log(res.body);
-          this.downloadService.saveBolbData(res.body, `${localStorage.getItem("selected_clientName")}_List_of_Claims_${this.date}.pdf`);
-          this.loader.exportPDFLoader = false;
-        } else {
-          console.log("something went wrong");
-          this.loader.exportPDFLoader = false;
-        }
-      })
-    }
   }
 
   showAgeBracket_WithColor_AndClaimIdDigits() {
