@@ -287,6 +287,9 @@ public class Constants {
 	
 	//Logs
 	public static String rule_log_debug="DEBUG";
+	public static String rule_log_info="INFO";
+	public static String rule_log_warn="WARN";
+	public static String rule_log_error="ERROR";
 	public static String rule_log_enter="Entering the Rule --";
 	public static String rule_log_exit="Exiting The Rule --";
 	public static String rule_log_read_fil_start="Start Reading The File --";

@@ -71,6 +71,12 @@ public class AppConfig {
 	@Value("${hibernate.c3p01.max_statements}")
 	private String CONN_POOL_MAX_STAT;
 
+	@Value("${hibernate.c3p01.num_helper_threads}")
+	private String CONN_POOL_NUM_HELPER_THREADS;
+
+	@Value("${hibernate.c3p01.unreturned_connection_timeout}")
+	private String CONN_POOL_UNRETURNED_TIMEOUT;
+
 
 //	@Autowired
 //	private Environment env;
@@ -99,7 +105,20 @@ public class AppConfig {
 		dataSource.setTestConnectionOnCheckout(true);
 		dataSource.setPreferredTestQuery("SELECT 1");
 		dataSource.setAcquireIncrement(Integer.parseInt(CONN_POOL_ACQUIRE_INC));
+		// maxStatements=0 disables the global statement cache (GooGooStatementCache).
+		// With caching enabled, C3P0's 3 helper threads close evicted prepared
+		// statements via ClientPreparedStatement.realClose() which can block on a
+		// slow/busy MySQL connection and deadlock the entire pool. Disabling cache
+		// eliminates that path entirely — statements close synchronously on the
+		// app thread where they were used, not through the shared helper pool.
 		dataSource.setMaxStatements(Integer.parseInt(CONN_POOL_MAX_STAT));
+		// More helper threads means pool management (connection test/refurbish) is
+		// not starved even if a few tasks take longer than expected.
+		dataSource.setNumHelperThreads(Integer.parseInt(CONN_POOL_NUM_HELPER_THREADS));
+		// Force-reclaim connections that haven't been returned after this many seconds.
+		// Prevents a single slow/leaked operation from exhausting the pool permanently.
+		dataSource.setUnreturnedConnectionTimeout(Integer.parseInt(CONN_POOL_UNRETURNED_TIMEOUT));
+		dataSource.setDebugUnreturnedConnectionStackTraces(true);
 		
 		// https://aodcoding.wordpress.com/2015/05/22/handling-connection-pool-issues-in-spring-boot/
 		// http://christoph-burmeister.eu/?p=3093
