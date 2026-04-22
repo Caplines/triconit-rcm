@@ -80,11 +80,12 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" COALESCE(us.last_name, us_creator.last_name) as last_name, "+
 				" CASE WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran' END as runenginerun, " +
 				" CASE WHEN rcsd.clean_claim is true THEN 'Yes' ELSE 'No' END as cleanClaim, " +
-				" cl.submitted_total, rcc.comments, cl.rebilled_status, cl.provider_on_claim " +
+				" cl.submitted_total, rcc.comments, rrs.is_rebilling, cl.provider_on_claim " +
 				" from rcm_claims cl " +
 				" inner join office off on off.uuid = cl.office_id " +
 				" inner join company cmp on cmp.uuid = off.company_id " +
 				" left join rcm_claims_submission_details rcsd on rcsd.claim_id = cl.claim_uuid " +
+				" left join rcm_rebilling_section rrs on rrs.claim_uuid = cl.claim_uuid " +
 				" left join rcm_user us on rcsd.submitted_by = us.uuid " +
 				" left join rcm_user us_creator on cl.created_by = us_creator.uuid "+
 				" left join rcm_insurance pins on pins.id = cl.prim_insurance_company_id " +
@@ -117,7 +118,7 @@ public class RcmClaimDaoImpl extends BaseDaoImpl implements RcmClaimDao{
 				" COALESCE(us_rebill.last_name, us_creator.last_name) as last_name, "+
 				" CASE WHEN rc.id is null THEN 'Rule Not Run' ELSE 'Rule Ran' END as runenginerun, " +
 				" 'Yes' as cleanClaim, " +
-				" cl.submitted_total, rcc.comments, cl.rebilled_status, cl.provider_on_claim " +
+				" cl.submitted_total, rcc.comments, rrs.is_rebilling, cl.provider_on_claim " +
 				" from rcm_rebilling_section rrs " +
 				" inner join rcm_claims cl on cl.claim_uuid = rrs.claim_uuid " +
 				" inner join office off on off.uuid = cl.office_id " +
