@@ -1,0 +1,8 @@
+-- =============================================================================
+-- Consolidated production DDL (indexes + documented column) lives here:
+--
+--   src/main/resources/db/rcm_deployment_production.sql
+--
+-- Run that file against production (mysql client, DBA tool, or paste contents).
+-- This path is kept for older references to performance_indexes.sql.
+-- =============================================================================

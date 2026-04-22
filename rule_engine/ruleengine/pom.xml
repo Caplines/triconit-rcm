@@ -114,10 +114,13 @@
 			<artifactId>jjwt</artifactId>
 			<version>0.9.0</version>
 		</dependency>
+		<!-- findbugs 3.0.1 embeds a Class-Path manifest pointing at sibling jars under ~/.m2; Tomcat's TLD
+		     scanner then logs FileNotFoundException noise (and looks like a crash). Use annotations only. -->
 		<dependency>
-			<groupId>com.google.code.findbugs</groupId>
-			<artifactId>findbugs</artifactId>
-			<version>3.0.1</version>
+			<groupId>com.github.spotbugs</groupId>
+			<artifactId>spotbugs-annotations</artifactId>
+			<version>4.8.6</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
@@ -142,6 +145,13 @@
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-json</artifactId>
 			<version>1.18.1</version>
+			<exclusions>
+				<!-- jaxb-impl 2.2.x manifest Class-Path points at jars that are not co-located when nested in a Boot fat jar -->
+				<exclusion>
+					<groupId>com.sun.xml.bind</groupId>
+					<artifactId>jaxb-impl</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>javax.ws.rs</groupId>
@@ -152,6 +162,12 @@
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
 			<version>2.11.0</version>
+		</dependency>
+		<!-- org.apache.commons.lang.* (StringUtils, WordUtils, SystemUtils) used by RuleBook, services, scrapers -->
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
 		</dependency>
 		<!-- <dependency> -->
 		<!-- <groupId>ch.qos.logback</groupId> -->
@@ -229,9 +245,9 @@
 		</dependency>
 
 		<dependency>
-    		<groupId>org.springframework.boot</groupId>
-    		<artifactId>spring-boot-devtools</artifactId>
-   			<scope>runtime</scope>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
 		</dependency>
 
 		<dependency>
@@ -292,6 +308,7 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<mainClass>com.tricon.ruleengine.RuleengineApplication</mainClass>
+					<excludeDevtools>true</excludeDevtools>
 				</configuration>
 				<executions>
 					<execution>

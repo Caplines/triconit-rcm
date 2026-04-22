@@ -30,6 +30,10 @@ public class IVFTableSheet {
 	private String aptDate;// Q
 	private String payerId;// R
 	private String providerName;// S
+	/** Treating provider resolved from claim path (optional; when empty Rule 135 is skipped). */
+	private String providerOnClaim;
+	/** Provider name(s) from sheet/schedule; multiple values joined with the same delimiter as RCM (see Constants.PROVIDER_JOIN_CONS). */
+	private String providerOnClaimFromSheet;
 	private String insAddress;// T
 	private String planType;// U
 	private String planTermedDate;// V
@@ -959,6 +963,18 @@ public class IVFTableSheet {
 	}
 	public void setProviderName(String providerName) {
 		this.providerName = providerName;
+	}
+	public String getProviderOnClaim() {
+		return providerOnClaim;
+	}
+	public void setProviderOnClaim(String providerOnClaim) {
+		this.providerOnClaim = providerOnClaim;
+	}
+	public String getProviderOnClaimFromSheet() {
+		return providerOnClaimFromSheet;
+	}
+	public void setProviderOnClaimFromSheet(String providerOnClaimFromSheet) {
+		this.providerOnClaimFromSheet = providerOnClaimFromSheet;
 	}
 	public String getInsAddress() {
 		return insAddress;

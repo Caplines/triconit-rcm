@@ -26,12 +26,12 @@
                         class="btn btn-success" [ngClass]="{'disabled':listofClaimsForSubmission.length==0}"
                         (click)="openAssigmentPopUp()">
                         Submit Claims</a></div>
-                    <button type="button" class="icon-btn" (click)="downloadPdf()"
-                      [disabled]="filteredItems.length==0 || loader.exportPDFLoader">
-                      <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader"
+                    <button type="button" class="icon-btn" (click)="openExportModal('pdf')"
+                      [disabled]="listFilteredTotal===0 || loader.exportPDFLoader || exportLoading">
+                      <img src="../../assets/img/pdf.png" /></button><span *ngIf="loader.exportPDFLoader || exportLoading"
                       class="spinner-border text-danger mx-1"></span>
-                    <button type="button" class="icon-btn" (click)="exportToCsv()" [disabled]="filteredItems.length==0">
-                      <img src="../../assets/img/xls.png" /></button><span *ngIf="loader.exportCSVLoader"
+                    <button type="button" class="icon-btn" (click)="openExportModal('csv')" [disabled]="listFilteredTotal===0 || loader.exportCSVLoader || exportLoading">
+                      <img src="../../assets/img/xls.png" /></button><span *ngIf="loader.exportCSVLoader || exportLoading"
                       class="spinner-border text-success mx-1"></span>
                   </div>
                 </div>
@@ -454,7 +454,7 @@
                         </td>
                       </tr>
                       <ng-container *ngIf="!showLoader">
-                        <ng-container *ngFor="let det of filteredItems">
+                        <ng-container *ngFor="let det of pagedFilteredItems">
                           <tr *ngIf="showLoader">
                             <td colspan="7" class="text-center"><span class="loader-data "></span> </td>
                           </tr>
@@ -540,6 +540,83 @@
                     </tbody>
                   </table>
                 </div>
+
+                <div class="d-flex align-items-center justify-content-between flex-wrap mt-2 mb-1 px-1" *ngIf="listFilteredTotal > 0 && !showLoader">
+                  <div class="d-flex align-items-center">
+                    <span class="text-muted small mr-2">Rows per page:</span>
+                    <select class="form-control form-control-sm mr-3" style="width:90px;" [ngModel]="listPageSize" (ngModelChange)="onListPageSizeChange($event)">
+                      <option *ngFor="let opt of listPageSizeOptions" [ngValue]="opt">{{opt}}</option>
+                    </select>
+                    <span class="text-muted small">
+                      {{listPageStartItem}}-{{listPageEndItem}} of {{listFilteredTotal}}
+                    </span>
+                  </div>
+                  <div class="d-flex align-items-center">
+                    <button class="btn btn-sm btn-outline-secondary mr-1" [disabled]="listPageIndex === 0" (click)="onListPageChange(listPageIndex - 1)">Prev</button>
+                    <button class="btn btn-sm btn-outline-secondary mr-2" [disabled]="listPageIndex >= listTotalPages - 1" (click)="onListPageChange(listPageIndex + 1)">Next</button>
+                    <span class="text-muted small mr-2">Page {{listPageIndex + 1}} / {{listTotalPages}}</span>
+                    <input type="number"
+                      class="form-control form-control-sm mr-1"
+                      style="width:90px;"
+                      min="1"
+                      [max]="listTotalPages"
+                      [(ngModel)]="listGoToPageInput"
+                      (keydown)="onListPageEnter($event)"
+                      placeholder="Go to" />
+                    <button class="btn btn-sm btn-primary mr-2" (click)="goToListSpecificPage()">Go</button>
+                    <nav *ngIf="listTotalPages > 0">
+                      <ul class="pagination pagination-sm mb-0">
+                        <li class="page-item" [class.disabled]="listPageIndex === 0">
+                          <a class="page-link" href="javascript:void(0);" (click)="onListPageChange(0)" title="First">«</a>
+                        </li>
+                        <ng-container *ngFor="let p of listPageNumbers; let i = index">
+                          <li class="page-item disabled" *ngIf="i > 0 && p > listPageNumbers[i-1] + 1">
+                            <span class="page-link">…</span>
+                          </li>
+                          <li class="page-item" [class.active]="p === listPageIndex">
+                            <a class="page-link" href="javascript:void(0);" (click)="onListPageChange(p)">{{p + 1}}</a>
+                          </li>
+                        </ng-container>
+                        <li class="page-item" [class.disabled]="listPageIndex >= listTotalPages - 1">
+                          <a class="page-link" href="javascript:void(0);" (click)="onListPageChange(listTotalPages - 1)" title="Last">»</a>
+                        </li>
+                      </ul>
+                    </nav>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="exportModalOpen" id="export-modal-admin" class="modal assignmd" [style.display]="'block'">
+            <div class="modal-content">
+              <div class="modal-header detail-box">
+                <h5 class="modal-title">{{ exportModalKind === 'pdf' ? 'Export to PDF' : 'Export to CSV' }}</h5>
+                <button type="button" (click)="closeExportModal()" class="close"><span>×</span></button>
+              </div>
+              <div class="modal-body mcont">
+                <p class="small text-muted mb-3">Exports the current filtered rows for the selected client (same filters and column sort as the table).</p>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="exportScopeAdm" id="exportScopeAllAdm"
+                    [(ngModel)]="exportScopeAll" [value]="true">
+                  <label class="form-check-label" for="exportScopeAllAdm">All filtered rows ({{ listFilteredTotal | number }})</label>
+                </div>
+                <div class="form-check mb-2">
+                  <input class="form-check-input" type="radio" name="exportScopeAdm" id="exportScopeLimitAdm"
+                    [(ngModel)]="exportScopeAll" [value]="false">
+                  <label class="form-check-label" for="exportScopeLimitAdm">First N rows only</label>
+                </div>
+                <div class="form-inline align-items-center flex-wrap" *ngIf="!exportScopeAll">
+                  <label class="mr-2 mb-0" for="exportRowLimitAdm">N</label>
+                  <input type="number" id="exportRowLimitAdm" class="form-control form-control-sm" style="width: 120px;"
+                    min="1" [max]="listFilteredTotal" [(ngModel)]="exportRowLimitInput" />
+                  <span class="text-muted small ml-2">up to {{ listFilteredTotal | number }} rows</span>
+                </div>
+              </div>
+              <div class="modal-footer" style="border-top: none; padding-top: 0;">
+                <button type="button" class="btn btn-outline-secondary btn-sm" (click)="closeExportModal()">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" (click)="confirmExport()"
+                  [disabled]="exportLoading || listFilteredTotal===0">Download</button>
               </div>
             </div>
           </div>

@@ -25,11 +25,13 @@ services:
       resources:
         limits:
           memory: 3072m
+    # Host paths (left side): on Linux servers use /opt/project/tricon/... On Docker Desktop Mac,
+    # override RE_BIND_* in .env to repo-relative dirs (see .env.example) or add /opt/... to File Sharing.
     volumes:
-      - /opt/project/tricon/files:/opt/project/tricon/files
-      - /opt/project/tricon/log:/opt/project/tricon/log
+      - ${RE_BIND_FILES:-/opt/project/tricon/files}:/opt/project/tricon/files
+      - ${RE_BIND_LOG:-/opt/project/tricon/log}:/opt/project/tricon/log
       - ${CERTS_PATH:-./certs}:/opt/project/tricon/client:ro
-      - /opt/project/tricon/chrome:/opt/project/tricon/chrome
+      - ${RE_BIND_CHROME:-/opt/project/tricon/chrome}:/opt/project/tricon/chrome
       
     networks:
       - ruleengine-network

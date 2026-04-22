@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -38,8 +39,21 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  */
 
 @SpringBootApplication(exclude = { JpaRepositoriesAutoConfiguration.class,
- HibernateJpaAutoConfiguration.class})
+ HibernateJpaAutoConfiguration.class, DataSourceAutoConfiguration.class })
 public class RuleengineApplication extends SpringBootServletInitializer{
+
+	static {
+		// Tomcat TLD scanner follows MANIFEST Class-Path on some legacy jars and logs FileNotFoundException
+		// for sibling paths (common in Docker). Merged with Tomcat defaults by StandardJarScanFilter.
+		String key = "tomcat.util.scan.StandardJarScanFilter.jarsToSkip";
+		String extra = "findbugs-*.jar,jaxb-impl-*.jar,c3p0-*.jar,mchange-commons-java-*.jar";
+		String cur = System.getProperty(key);
+		if (cur == null || cur.isEmpty()) {
+			System.setProperty(key, extra);
+		} else if (!cur.contains("findbugs-")) {
+			System.setProperty(key, cur + "," + extra);
+		}
+	}
 
 	/**
 	 * This method is still needed for backward compatibility with WAR deployment

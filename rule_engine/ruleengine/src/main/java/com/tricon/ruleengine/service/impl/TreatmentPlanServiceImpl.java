@@ -182,6 +182,9 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	
 	@Autowired
 	IVformTypeDao iVformTypeDao;
+
+	@Autowired
+	com.tricon.ruleengine.dao.RcmClaimDao rcmClaimDao;
 	
 	@Autowired
 	OSIVFormCodesService oSIVFormCodesService;
@@ -2938,6 +2941,61 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 	 RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_133,
 	          		 Constants.rule_log_debug, bw);
      //End D4921 with D43 Series Codes
+
+		// Provider on claim vs sheet (Rule 135).
+		// Look up provider_on_claim and provider_on_claim_from_sheet directly from
+		// rcm_claims (same shared DB) so Rule135 compares the actual rendered claim
+		// provider against the IVF sheet's expected treating provider.
+		rule = resolveRule135ForTreatmentPlan(rules, bw);
+		try {
+			// Derive the exact TP ID and patient ID from the first item in tList.
+			String tpIdForLookup = null;
+			String patientIdForLookup = null;
+			if (tList != null && !tList.isEmpty()) {
+				Object first = tList.get(0);
+				if (first instanceof com.tricon.ruleengine.model.sheet.TreatmentPlan) {
+					com.tricon.ruleengine.model.sheet.TreatmentPlan tp135 =
+							(com.tricon.ruleengine.model.sheet.TreatmentPlan) first;
+					tpIdForLookup = tp135.getId();
+					if (tp135.getPatient() != null) patientIdForLookup = tp135.getPatient().getId();
+				} else if (first instanceof com.tricon.ruleengine.model.sheet.CommonDataCheck) {
+					com.tricon.ruleengine.model.sheet.CommonDataCheck cd135 =
+							(com.tricon.ruleengine.model.sheet.CommonDataCheck) first;
+					tpIdForLookup = cd135.getId();
+					if (cd135.getPatient() != null) patientIdForLookup = cd135.getPatient().getId();
+				}
+			}
+			if (tpIdForLookup == null) tpIdForLookup = dtod.getTreatmentPlanId();
+			String offIdForLookup = dtod.getOfficeId();
+			System.out.println("[Rule135-inject] lookup tpId=" + tpIdForLookup + " patientId=" + patientIdForLookup + " officeId=" + offIdForLookup);
+			String[] rcmProviders = rcmClaimDao.getProviderFieldsByTpId(tpIdForLookup, patientIdForLookup, offIdForLookup);
+			if (rcmProviders != null) {
+				com.tricon.ruleengine.model.sheet.IVFTableSheet ivfSheet135 =
+						(com.tricon.ruleengine.model.sheet.IVFTableSheet) ivfMap.get(ivx).get(0);
+				if (rcmProviders[0] != null && !rcmProviders[0].isEmpty()) {
+					ivfSheet135.setProviderOnClaim(rcmProviders[0]);
+					System.out.println("[Rule135-inject] providerOnClaim from rcm_claims=\"" + rcmProviders[0] + "\"");
+				}
+				if (rcmProviders[1] != null && !rcmProviders[1].isEmpty()) {
+					ivfSheet135.setProviderOnClaimFromSheet(rcmProviders[1]);
+					System.out.println("[Rule135-inject] providerOnClaimFromSheet from rcm_claims=\"" + rcmProviders[1] + "\"");
+				}
+			} else {
+				System.out.println("[Rule135-inject] no rcm_claims row found for tp_id=" + tpIdForLookup + " office=" + offIdForLookup);
+			}
+		} catch (Exception ex) {
+			System.out.println("[Rule135-inject] lookup failed: " + ex.getMessage());
+		}
+		dtoRL = rb.Rule135(tList, ivfMap.get(ivx).get(0), messageSource, rule, bw);
+		if (dtoRL != null) {
+			list.addAll(dtoRL);
+			for (TPValidationResponseDto t : dtoRL) {
+				dtoR = new TPValidationResponseDto(rule.getId(), rule.getName(), t.getMessage(),
+					t.getResultType(), t.getSurface(), t.getTooth(), t.getServiceCode());
+			}
+		}
+		RuleEngineLogger.generateLogs(clazz, Constants.rule_log_exit + "-" + Constants.RULE_ID_135,
+			Constants.rule_log_debug, bw);
 	
      // RULE_ID_79 "Insurance and Address"
 		/*
@@ -4027,6 +4085,31 @@ public class TreatmentPlanServiceImpl implements TreatmentPlanService {
 		}
 
 		return r;
+	}
+
+	/**
+	 * Rule 135 is selected by {@code rules.short_name == Constants.RULE_ID_135}. If that row is absent from
+	 * the DB, {@link #getRulesFromList} returns null and the rule would never run; return a synthetic rule so
+	 * the API still returns Rule 135 until operators run {@code scripts/insert-rule-135-mysql.sql}.
+	 */
+	private Rules resolveRule135ForTreatmentPlan(List<Rules> rules, BufferedWriter bw) {
+		Rules fromDb = getRulesFromList(rules, Constants.RULE_ID_135);
+		if (fromDb != null) {
+			return fromDb;
+		}
+		Rules syn = new Rules();
+		syn.setId(135);
+		syn.setName(Constants.RULE_ID_135);
+		syn.setShortName(Constants.RULE_ID_135);
+		syn.setDescription("Placeholder until rules.short_name is seeded; see scripts/insert-rule-135-mysql.sql");
+		syn.setActive(1);
+		syn.setRuleType("R");
+		syn.setManualAuto("A");
+		RuleEngineLogger.generateLogs(clazz,
+				"Rule 135: no rules row for short_name=\"" + Constants.RULE_ID_135
+						+ "\"; using synthetic rule id 135. Seed DB with scripts/insert-rule-135-mysql.sql.",
+				Constants.rule_log_debug, bw);
+		return syn;
 	}
 
 	private Rules getRulesFromListByid(List<Rules> rules, int id) {

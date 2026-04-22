@@ -22,4 +22,13 @@ public interface RcmClaimDao {
 	public List<RCMQuerySubData1> getAuditQueryFieldsFromClaimData_3(String claimIds);
 		
 	public int getTeamIdByName(String teamName);
+
+	/**
+	 * Looks up provider fields stored in {@code rcm_claims} using patient ID and
+	 * office UUID, preferring an exact {@code tp_id} match when available.
+	 * Returns a two-element String array: [provider_on_claim, provider_on_claim_from_sheet].
+	 * Either element may be null if the row or column is empty.
+	 * Returns null if no matching row is found.
+	 */
+	String[] getProviderFieldsByTpId(String tpId, String patientId, String officeId);
 }

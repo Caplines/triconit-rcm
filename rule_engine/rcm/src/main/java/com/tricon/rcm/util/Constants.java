@@ -111,6 +111,31 @@ public class Constants {
 	
 	public static final int CLAIM_ARCHIVE_PREFIX_CANBE_SUBMITED=0;
 	public static final String Need_to_Bill_Secondary_Insurance="Need to Bill Secondary Insurance";
+
+	/**
+	 * Aligns UUID / count queries with {@code filterPrimarySecondaryClaimsWithUsingPrimaryStatus}:
+	 * drop secondary rows when a matching primary exists and has no cycle row with
+	 * {@link #Need_to_Bill_Secondary_Insurance} (DTO {@code secondaryStarted} would be null).
+	 * Keeps SQL LIMIT/OFFSET and totals consistent with the visible list.
+	 */
+	public static final String SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_C =
+			" AND NOT ( c.is_primary = 0 AND EXISTS ( "
+			+ " SELECT 1 FROM rcm_claims prim WHERE prim.office_id = c.office_id "
+			+ " AND (prim.patient_id <=> c.patient_id) "
+			+ " AND prim.claim_id = CONCAT(SUBSTRING_INDEX(c.claim_id, '_', 1), '_P') "
+			+ " AND NOT EXISTS ( SELECT 1 FROM rcm_claim_cycle cy WHERE cy.claim_id = prim.claim_uuid "
+			+ " AND cy.status_updated = '" + Need_to_Bill_Secondary_Insurance + "' ) "
+			+ " ) ) ";
+
+	public static final String SQL_EXCLUDE_HIDDEN_SECONDARY_CLAIMS_ALIAS_CLAIMS =
+			" AND NOT ( claims.is_primary = 0 AND EXISTS ( "
+			+ " SELECT 1 FROM rcm_claims prim WHERE prim.office_id = claims.office_id "
+			+ " AND (prim.patient_id <=> claims.patient_id) "
+			+ " AND prim.claim_id = CONCAT(SUBSTRING_INDEX(claims.claim_id, '_', 1), '_P') "
+			+ " AND NOT EXISTS ( SELECT 1 FROM rcm_claim_cycle cy WHERE cy.claim_id = prim.claim_uuid "
+			+ " AND cy.status_updated = '" + Need_to_Bill_Secondary_Insurance + "' ) "
+			+ " ) ) ";
+
 	public static final int CLAIM_ARCHIVE_PREFIX_CANNOT_SUBMITED=1;
 	public static final List<String> SKIP_URL_FROM_RCM_LOGS = Arrays.asList("/api/list-of-claim/d/pdf",
 				"/api/issue-claim/d/pdf", "/api/other-teams-work/d/pdf", "/api/ivf/d/pdf", "/api/tp-link/d/pdf",

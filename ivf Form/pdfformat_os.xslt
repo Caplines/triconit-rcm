@@ -371,10 +371,10 @@
                 <td><xsl:value-of select="sedations1"/></td>
                 <td>Frequency</td>
                 <td><xsl:value-of select="sedations1fr"/></td>
-                <td>D9248(%) </td>
-                <td><xsl:value-of select="sedations3"/></td>
+                <td>D9245(%) </td>
+                <td><xsl:value-of select="sedations4"/></td>
                 <td>Frequency</td>
-                <td><xsl:value-of select="sedations3fr"/></td>
+                <td><xsl:value-of select="sedations4fr"/></td>
                 <td>D9239(%)</td>
                 <td><xsl:value-of select="d9239"/></td>
                 <td>Frequency</td>

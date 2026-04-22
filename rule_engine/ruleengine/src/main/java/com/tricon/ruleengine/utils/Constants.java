@@ -175,6 +175,10 @@ public class Constants {
 	public static final String RULE_ID_131="Bitewing limitation in UHC Adult Medicaid";
 	public static final String RULE_ID_132="D9910 with D9630 on same DOS";
 	public static final String RULE_ID_133="D4921 with D43 Series Codes";
+	/** Must match {@code rules.short_name} for Rule 135. */
+	public static final String RULE_ID_135 = "Provider on claim vs sheet treating provider";
+	/** Same delimiter as RCM {@code com.tricon.rcm.util.Constants.ProviderJoinCons} for multi-provider sheet values. */
+	public static final String PROVIDER_JOIN_CONS = "<<<>>>";
 	//public static final String RULE_ID_RuleXXX="Deductible Coverage Match";
 	//Rules now also used in RCM TOOL..take care of Ids. RCM Starts From 300
 	

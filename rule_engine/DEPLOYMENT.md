@@ -147,6 +147,8 @@ nano .env    # or vim, etc.
 | `nginx-ssl-rcm-only.conf` | RCM domain only | RCM only, HTTPS |
 | `nginx-nossl.conf` | None | HTTP only — before certbot or for testing |
 
+> **Local laptop (no Let’s Encrypt on your Mac):** Any `nginx-ssl*.conf` tells the proxy to load `/etc/letsencrypt/live/${RE_DOMAIN}/fullchain.pem` (see `docker-compose.proxy.yml`, which mounts the host’s `/etc/letsencrypt`). On a dev machine that path is usually empty or missing, so nginx exits with `BIO_new_file() failed` / `cannot load certificate`. This is **not** a Spring Boot bug; you picked an SSL proxy profile without certs. Use **`NGINX_CONF=nginx-nossl.conf`** in `.env`, or run **`./deploy-init-re.sh --no-ssl`**, or skip the shared proxy and use **`docker-compose.local.yml`** (section 9).
+
 ---
 
 ## 4. Quick Deploy (Recommended)
@@ -461,6 +463,8 @@ Otherwise the backend container won't find EagleSoft SSL certs and will log "ES 
 
 Use the `*.local.yml` compose files to run either app locally. No proxy or SSL needed — services are accessible directly on localhost.
 
+If you **do** run `docker-compose.proxy.yml` on your laptop, set **`NGINX_CONF=nginx-nossl.conf`** unless you have real certbot files under `/etc/letsencrypt/live/<your-RE_DOMAIN>/` on the host (you almost never do locally).
+
 ### 9.1 RuleEngine (local)
 
 | URL | Purpose |
@@ -601,6 +605,7 @@ Same pattern for RCM with `RCM_DOMAIN` → `rcm-frontend` → `rcm-backend:8081`
 | Problem | Cause | Fix |
 |---------|-------|-----|
 | nginx-proxy won't start | SSL cert missing | Run certbot or use `--no-ssl` / `NGINX_CONF=nginx-nossl.conf` |
+| `Mounts denied` / path not shared (Docker Desktop Mac) | `docker-compose.yml` defaults bind `/opt/project/tricon/...`, which does not exist on macOS | In `.env` set `RE_BIND_FILES`, `RE_BIND_LOG`, `RE_BIND_CHROME` to repo-relative dirs (see `.env.example`), or use `docker-compose.local.yml` for dev |
 | 502 Bad Gateway | App container not running or still starting | Check: `docker compose -f docker-compose.yml ps` — wait for healthy or restart |
 | Backend PKIX / SSL error | EagleSoft certs missing or wrong password | Set `ES_SSL_CLIENT_TRUSTALL=true` in `.env` for testing, or add proper certs to `certs/` |
 | "shared-proxy network not found" | Network not created | Run: `docker network create shared-proxy` |

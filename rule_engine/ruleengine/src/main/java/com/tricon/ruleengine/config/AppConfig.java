@@ -97,7 +97,13 @@ public class AppConfig {
 		dataSource.setPassword(DB_PASSWORD);
 		dataSource.setMinPoolSize(Integer.parseInt(CONN_POOL_MIN_SIZE));
 		dataSource.setMaxPoolSize(Integer.parseInt(CONN_POOL_MAX_SIZE));
-		dataSource.setMaxIdleTime(Integer.parseInt(CONN_POOL_IDLE_PERIOD));
+		// CONN_POOL_TIMWEOUT = timeout property (seconds a connection may sit idle before eviction)
+		dataSource.setMaxIdleTime(Integer.parseInt(CONN_POOL_TIMWEOUT));
+		// CONN_POOL_IDLE_PERIOD = idle_test_period (how often C3P0 tests idle connections, in seconds)
+		dataSource.setIdleConnectionTestPeriod(Integer.parseInt(CONN_POOL_IDLE_PERIOD));
+		// Test every connection before handing it to the app; prevents stale-connection errors
+		dataSource.setTestConnectionOnCheckout(true);
+		dataSource.setPreferredTestQuery("SELECT 1");
 		dataSource.setAcquireIncrement(Integer.parseInt(CONN_POOL_ACQUIRE_INC));
 		// maxStatements=0 disables the global statement cache (GooGooStatementCache).
 		// With caching enabled, C3P0's 3 helper threads close evicted prepared
