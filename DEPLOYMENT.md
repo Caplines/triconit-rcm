@@ -200,7 +200,7 @@ Never commit `.env` to git. The `.env.example` file is the committed template.
 | | `JWT_EXPIRATION` | `600000` | Token expiry in ms |
 | **EagleSoft SSL** | `ES_SSL_CLIENT_TRUSTALL` | `true` | Set `true` for dev/testing, `false` for production |
 | | `ES_SSL_CLIENT_PASSWORD` | `changeit` | Keystore password |
-| **JVM** | `JAVA_OPTS` | `-Xms512m -Xmx2048m` | RE backend heap size |
+| **JVM** | `JAVA_OPTS` | `-Xms256m -Xmx1536m` (default in `rule_engine/docker-compose`) | RE backend heap size; tune in `.env` |
 | **CORS** | `CORS_ALLOWED_ORIGINS` | `https://domain.com` | Comma-separated allowed origins |
 | **Mail** | `MAIL_USERNAME` | `you@gmail.com` | RCM email sending |
 | | `MAIL_PASSWORD` | `app-password` | Gmail app password |
@@ -372,7 +372,7 @@ DB_URL=jdbc:mysql://...
 DB_USERNAME=...
 DB_PASSWORD=...
 ES_SSL_CLIENT_TRUSTALL=true
-JAVA_OPTS=-Xms512m -Xmx2048m
+JAVA_OPTS=-Xms256m -Xmx1536m
 ```
 
 > **No domain yet?** Use the server's public IP address for both `*_DOMAIN` and `*_SERVER_NAME`, and set `NGINX_CONF=nginx-nossl.conf`. The app will be accessible at `http://<ip>`. See [Section 11](#11-ssl--https-setup) for adding SSL later.
@@ -762,7 +762,7 @@ ES_SSL_CLIENT_TRUSTALL=true
 **Fix:** Reduce `JAVA_OPTS` in `.env`:
 ```env
 # 4GB server, RE only
-JAVA_OPTS=-Xms512m -Xmx2048m
+JAVA_OPTS=-Xms256m -Xmx1536m
 
 # 4GB server, RE + RCM together
 JAVA_OPTS=-Xms512m -Xmx1024m

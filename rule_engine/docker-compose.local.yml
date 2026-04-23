@@ -29,7 +29,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       # Give the JVM enough heap to avoid GC thrash OOM. MAVEN_OPTS only
       # applies to Maven + the Spring Boot JVM it forks, not to apt/dpkg Java.
-      - MAVEN_OPTS=-Xms512m -Xmx1536m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp/heapdump.hprof
+      - MAVEN_OPTS=-Xms256m -Xmx1536m
     volumes:
       - ./ruleengine:/app
       - ~/.m2:/root/.m2

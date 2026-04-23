@@ -21,11 +21,18 @@ public class EagleSoftFetchData {
 
 	static Class<?> clazz = EagleSoftFetchData.class;
 
+	/** Max time to block on a single line read from the EagleSoft agent (property {@code eagle.soft.socket.read-timeout-millis}). */
+	private static volatile int socketReadTimeoutMs = 120_000;
+
 	/** Explicit factory set by EagleSoftDBAccessServiceImpl when certs are configured; avoids using JVM default context which may have empty truststore. */
 	private static volatile SSLSocketFactory esSocketFactory;
 
 	public static void setESSSLSocketFactory(SSLSocketFactory factory) {
 		esSocketFactory = factory;
+	}
+
+	public static void setSocketReadTimeoutMs(int ms) {
+		socketReadTimeoutMs = Math.max(0, ms);
 	}
 
 	/** Returns the factory to use for ES connections: explicit one if set, otherwise default (may fail if default context has no trust anchors). */
@@ -105,6 +112,11 @@ public class EagleSoftFetchData {
 			
 		socket = getSocketFactory().createSocket();
 			socket.connect(new InetSocketAddress(esDB.getIpAddress(), esDB.geteSport()), 5000);
+			int to = socketReadTimeoutMs;
+			if (to > 0) {
+				socket.setSoTimeout(to);
+			}
+			socket.setKeepAlive(true);
 			
 			//return ((SSLSocketFactory) SSLSocketFactory.getDefault()).createSocket(esDB.getIpAddress(), esDB.geteSport());
 		} catch (IOException e) {

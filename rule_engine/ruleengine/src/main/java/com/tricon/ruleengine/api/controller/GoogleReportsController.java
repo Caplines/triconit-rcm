@@ -6,8 +6,10 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,6 +18,7 @@ import org.json.JSONException;
 import org.springframework.beans.BeanUtils;
 //import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -41,20 +44,20 @@ import com.tricon.ruleengine.utils.Constants;
 public class GoogleReportsController {
 
 	/**
-	 * Per-office locks: each office gets its own AtomicBoolean so a slow report
-	 * for one office never blocks reports for any other office.
-	 * compareAndSet(false, true) is the atomic acquire — eliminates the TOCTOU
-	 * race that existed with the old check-then-set pattern.
+	 * Google report APIs only: per-office fair {@link Semaphore} — up to N concurrent
+	 * in-flight fetches; extra callers wait; beyond {@link #maxQueueLength} waiting
+	 * threads we reject (HTTP 429).
 	 */
-	private static final ConcurrentHashMap<String, AtomicBoolean> officeLocks =
-		new ConcurrentHashMap<>();
+	private static final ConcurrentHashMap<String, Semaphore> officeReportSemaphores = new ConcurrentHashMap<>();
 
-	private AtomicBoolean getOfficeLock(String office) {
-		return officeLocks.computeIfAbsent(
-			office != null && !office.isEmpty() ? office : "_unknown",
-			k -> new AtomicBoolean(false)
-		);
-	}
+	@Value("${google.report.per-office.concurrency:3}")
+	private int perOfficeConcurrency;
+
+	@Value("${google.report.max-queue-waiting:10}")
+	private int maxQueueLength;
+
+	@Value("${google.report.acquire-wait-millis:120000}")
+	private long acquireWaitMillis;
 
 	static Class<?> clazz = GoogleReportsController.class;
 	
@@ -67,6 +70,55 @@ public class GoogleReportsController {
 	@Autowired
 	CompanyDao companyDao;
 
+	private static String officeKey(String office) {
+		if (office == null || office.isEmpty()) {
+			return "_unknown";
+		}
+		return office.trim().toLowerCase();
+	}
+
+	private Semaphore semaphoreForOffice(String office) {
+		return officeReportSemaphores.computeIfAbsent(officeKey(office),
+				k -> new Semaphore(Math.max(1, perOfficeConcurrency), true));
+	}
+
+	/**
+	 * @return empty if a permit was acquired (caller must {@link Semaphore#release()} the same {@code sem} in {@code finally});
+	 *         otherwise a ready-to-return error response
+	 */
+	private Optional<ResponseEntity<Object>> tryAcquireGoogleReport(Semaphore sem, String office, String endpointName) {
+		if (sem.getQueueLength() >= maxQueueLength) {
+			RuleEngineLogger.generateLogs(clazz,
+					endpointName + ": queue full for office=" + office + " (waiting=" + sem.getQueueLength() + ")",
+					Constants.rule_log_debug, null);
+			return Optional.of(ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+					.body(new GenericResponse(HttpStatus.TOO_MANY_REQUESTS,
+							"Too many report requests are queued for " + office + ". Please try again in a few moments.",
+							null)));
+		}
+		try {
+			if (!sem.tryAcquire(acquireWaitMillis, TimeUnit.MILLISECONDS)) {
+				RuleEngineLogger.generateLogs(clazz,
+						endpointName + ": acquire timeout for office=" + office,
+						Constants.rule_log_debug, null);
+				return Optional.of(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+						.body(new GenericResponse(HttpStatus.SERVICE_UNAVAILABLE,
+								"Report service is busy for " + office + ". Please retry shortly.",
+								null)));
+			}
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			RuleEngineLogger.generateLogs(clazz,
+					endpointName + ": interrupted waiting for office=" + office,
+					Constants.rule_log_debug, null);
+			return Optional.of(ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+					.body(new GenericResponse(HttpStatus.SERVICE_UNAVAILABLE,
+							"Report request was interrupted. Please retry.",
+							null)));
+		}
+		return Optional.empty();
+	}
+
 	@CrossOrigin
 	@GetMapping
 	@RequestMapping(value = "/googleReport")
@@ -77,13 +129,10 @@ public class GoogleReportsController {
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
 			HttpServletResponse response) {
 
-		AtomicBoolean lock = getOfficeLock(office);
-		if (!lock.compareAndSet(false, true)) {
-			RuleEngineLogger.generateLogs(clazz, "googleReport: office busy, rejecting for office=" + office,
-					Constants.rule_log_debug, null);
-			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-					.body(new GenericResponse(HttpStatus.SERVICE_UNAVAILABLE,
-							"Server is busy processing a report for " + office + ". Please retry.", null));
+		Semaphore sem = semaphoreForOffice(office);
+		Optional<ResponseEntity<Object>> rejected = tryAcquireGoogleReport(sem, office, "googleReport");
+		if (rejected.isPresent()) {
+			return rejected.get();
 		}
 		try {
 			es.setUpSSLCertificates();
@@ -99,7 +148,7 @@ public class GoogleReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error fetching report", null));
 		} finally {
-			lock.set(false);
+			sem.release();
 		}
 	}
 
@@ -116,13 +165,10 @@ public class GoogleReportsController {
 			@RequestParam(value = "office", required = true) String office, HttpServletRequest request,
 			HttpServletResponse response) throws JSONException {
 
-		AtomicBoolean lock = getOfficeLock(office);
-		if (!lock.compareAndSet(false, true)) {
-			RuleEngineLogger.generateLogs(clazz, "googleReport2: office busy, rejecting for office=" + office,
-					Constants.rule_log_debug, null);
-			return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-					.body(new GenericResponse(HttpStatus.SERVICE_UNAVAILABLE,
-							"Server is busy processing a report for " + office + ". Please retry.", null));
+		Semaphore sem = semaphoreForOffice(office);
+		Optional<ResponseEntity<Object>> rejected = tryAcquireGoogleReport(sem, office, "googleReport2");
+		if (rejected.isPresent()) {
+			return rejected.get();
 		}
 		try {
 			es.setUpSSLCertificates();
@@ -158,13 +204,12 @@ public class GoogleReportsController {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
 					.body(new GenericResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error fetching report", null));
 		} finally {
-			lock.set(false);
+			sem.release();
 		}
 	}
 
 /**
- * Pure data-fetch logic. Lock acquisition and release are handled by the caller.
- * This method never touches the per-office lock.
+ * Pure data-fetch logic. Concurrency and permit release for Google report APIs are handled by the caller.
  */
 private List<Object> fetchData(String selectcolumns, String query, String ids,
         int columnCount, String password, String office,
@@ -252,24 +297,16 @@ public ResponseEntity<Object> fethESGoogleresponse(
         HttpServletRequest request,
         HttpServletResponse response) throws JSONException, MalformedURLException, ClassNotFoundException {
 
-    AtomicBoolean lock = getOfficeLock(office);
-    if (!lock.compareAndSet(false, true)) {
-        // Another request for this office is already in-flight.
-        // Return 503 immediately — no thread blocking, no sleeping.
-        // The caller (Google Apps Script) should retry after a few seconds.
-        RuleEngineLogger.generateLogs(clazz,
-            "googleESReport: office busy, rejecting request for office=" + office,
-            Constants.rule_log_debug, null);
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
-                .body(new GenericResponse(HttpStatus.SERVICE_UNAVAILABLE,
-                      "Server is busy processing a report for " + office + ". Please retry in a few seconds.",
-                      null));
+    Semaphore sem = semaphoreForOffice(office);
+    Optional<ResponseEntity<Object>> rejected = tryAcquireGoogleReport(sem, office, "googleESReport");
+    if (rejected.isPresent()) {
+        return rejected.get();
     }
     try {
         List<Object> l = fetchData(selectcolumns, query, ids, columnCount, password, office, request, response);
         return ResponseEntity.ok(new GenericResponse(HttpStatus.OK, "", l));
     } finally {
-        lock.set(false);
+        sem.release();
     }
 }
 
