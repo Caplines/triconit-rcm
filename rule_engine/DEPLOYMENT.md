@@ -278,7 +278,7 @@ Config files are mounted as nginx templates (`/etc/nginx/templates/default.conf.
 | **ruleengine-client-app/Dockerfile** | Multi-stage build: Angular `--configuration=production` → nginx:1.21-alpine. Copies `nginx.${ENV}.conf` as template. |
 | **ruleengine-client-app/nginx.prod.conf** | Listens 80. Two backend route patterns: (1) `/api/v1/*` → `backend:8080` with path prefix strip, (2) legacy regex matching ~70 direct backend paths without prefix (for backward compatibility with older integrations). Serves Angular SPA with `try_files`. |
 
-Backend uses Spring profile `prod` (`application-prod.properties`). JVM heap is configurable via `JAVA_OPTS` in `.env` (default: `-Xms512m -Xmx2048m`). Container memory limit is set to 3072MB in `docker-compose.yml`.
+Backend uses Spring profile `prod` (`application-prod.properties`). JVM heap is configurable via `JAVA_OPTS` in `.env` (default: `-Xms256m -Xmx1536m` for ~4GB hosts with RE+FE). Container memory limit is set to 2560MB in `docker-compose.yml`. To enable a heap dump on OOM, add the `-XX:+HeapDumpOnOutOfMemoryError` and `-XX:HeapDumpPath=...` flags to `JAVA_OPTS`.
 
 ### 5.4 RCM
 
@@ -561,12 +561,13 @@ Same pattern for RCM with `RCM_DOMAIN` → `rcm-frontend` → `rcm-backend:8081`
 
 | Setting | Where | Default | Notes |
 |---------|-------|---------|-------|
-| `JAVA_OPTS` | `.env` | `-Xms512m -Xmx2048m` | JVM heap. Adjust based on server RAM. |
-| Container memory limit | `docker-compose.yml` | `3072m` | `deploy.resources.limits.memory` |
+| `JAVA_OPTS` | `.env` | `-Xms256m -Xmx1536m` | JVM heap. Adjust based on server RAM. Heap dump on OOM is off by default. |
+| Container memory limit | `docker-compose.yml` | `2560m` | `deploy.resources.limits.memory` |
 
 **Guidelines:**
-- 4GB server, RE only: `-Xmx2048m`, container limit `3072m`
-- 4GB server, RE + RCM: `-Xmx1024m`, container limit `2048m`
+- 4GB server, RE+FE (compose defaults): `-Xmx1536m`, container limit `2560m`
+- 4GB server, RE only or more headroom: can raise `-Xmx` in `.env` and container limit
+- 4GB server, RE + RCM: reduce each app (e.g. `-Xmx1024m` per service), match container limits
 
 ### CORS
 
