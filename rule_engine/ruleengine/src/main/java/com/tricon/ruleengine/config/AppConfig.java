@@ -134,7 +134,9 @@ public class AppConfig {
 		sessionFactoryBean.setPackagesToScan(ENTITYMANAGER_PACKAGES_TO_SCAN);
 		Properties hibernateProperties = new Properties();
 		hibernateProperties.put("hibernate.dialect", HIBERNATE_DIALECT);
-		hibernateProperties.put("hibernate.show_sql", HIBERNATE_SHOW_SQL);
+		// Parse as boolean so only "true" enables stdout "Hibernate: ..." SQL (avoids accidental truthy strings).
+		hibernateProperties.put("hibernate.show_sql",
+				Boolean.toString(Boolean.parseBoolean(HIBERNATE_SHOW_SQL != null ? HIBERNATE_SHOW_SQL.trim() : "false")));
 		hibernateProperties.put("hibernate.hbm2ddl.auto", HIBERNATE_HBM2DDL_AUTO);
 		hibernateProperties.put("hibernate.search.default.directory_provider", "filesystem");
 		hibernateProperties.put("hibernate.search.default.indexwriter.ram_buffer_size", "64");

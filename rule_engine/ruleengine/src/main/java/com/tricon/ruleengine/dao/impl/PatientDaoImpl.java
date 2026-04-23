@@ -8,8 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.Hibernate;
-
 import org.hibernate.Criteria;
 import org.hibernate.Hibernate;
 import org.hibernate.HibernateException;
@@ -152,51 +150,55 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			+ " d5130_40_percentage as d513040Percentage,d5810_c_percentage as d5810CPercentage,d9310 as d9310,d9310_fr as d9310fr,"
 			+ " d6011 as d6011,d6011_fr as d6011fr,d5862 as d5862,d5862_fr as d5862fr,d7311_select as d7311Select,d5213142625 as d5213142625,d5213142625_fr as d5213142625fr,d2954 as d2954,d2954_fr as d2954fr,"
 			+ " policy21 as policy21,share_fr2 as shareFr2,policy20 as policy20,exams5 as exams5,d0367 as d0367,d0180 as d0180,exams6 as exams6";
-	
-	@Override
-	public Patient checkforPatientWithId(String patientid, Office off) {
-		// Retry once: transient TCP drops to AWS RDS can cause the @OneToOne secondary
-		// SELECTs to fail mid-session. A fresh C3P0 connection (tested on checkout) fixes it.
-		String hql = "SELECT DISTINCT p FROM Patient p " +
-			"LEFT JOIN FETCH p.patientDetails " +
-			"LEFT JOIN FETCH p.patientHistory " +
-			"WHERE p.patientId = :pid AND p.office.uuid = :officeUuid";
-		for (int attempt = 1; attempt <= 2; attempt++) {
-			Session session = getSession();
-			try {
-				@SuppressWarnings("unchecked")
-				java.util.List<Patient> patients = session.createQuery(hql)
-					.setParameter("pid", patientid)
-					.setParameter("officeUuid", off.getUuid())
-					.list();
-				return patients.isEmpty() ? null : patients.get(0);
-			} catch (Exception e) {
-				RuleEngineLogger.generateLogs(clazz,
-					"checkforPatientWithId attempt " + attempt + " failed for patient ["
-					+ patientid + "]: " + e.getMessage(),
-					Constants.rule_log_debug, null);
-				// PatientDetail2 duplicate-row issue: clean up the duplicate and retry via
-				// the Criteria-based path that already handles this case correctly.
-				if (attempt == 1 && e.getMessage() != null
-						&& e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")
-						&& e.getMessage().contains("More than one row with the given identifier was found: ")) {
-					try {
-						String pdId = e.getMessage()
-							.split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0]
-							.split("More than one row with the given identifier was found: ")[1].trim();
-						Patient cleaned = checkForDuplicatePatDetials2(patientid, off, null, false, pdId);
-						if (cleaned != null) return cleaned;
-					} catch (Exception ex) {
-						RuleEngineLogger.generateLogs(clazz,
-							"checkForDuplicatePatDetials2 fallback failed for patient [" + patientid + "]: " + ex.getMessage(),
-							Constants.rule_log_debug, null);
-					}
-				}
-			} finally {
-				closeSession(session);
+
+	/**
+	 * {@link com.tricon.ruleengine.service.impl.CaplineIVFGoogleFormServiceImpl#saveAllData} uses
+	 * {@code Patient} after this DAO closes its session. Initialize every lazy association that
+	 * code path may read (after Criteria lookup, including duplicate-PatientDetail2 fallback).
+	 */
+	private void eagerInitPatientGraphForIvfSave(Patient loaded) {
+		if (loaded == null) {
+			return;
+		}
+		Hibernate.initialize(loaded.getPatientDetails());
+		Hibernate.initialize(loaded.getPatientHistory());
+		Hibernate.initialize(loaded.getPatientDetails2());
+		if (loaded.getPatientDetails() != null) {
+			for (PatientDetail pdEager : loaded.getPatientDetails()) {
+				Hibernate.initialize(pdEager.getiVFormType());
+				Hibernate.initialize(pdEager.getPatientDetails2());
 			}
 		}
-		return null;
+		if (loaded.getPatientHistory() != null) {
+			for (PatientHistory phEager : loaded.getPatientHistory()) {
+				if (phEager.getPd() != null) {
+					Hibernate.initialize(phEager.getPd());
+					Hibernate.initialize(phEager.getPd().getiVFormType());
+				}
+			}
+		}
+	}
+
+	@Override
+	public Patient checkforPatientWithId(String patientid, Office off) {
+		Session session = getSession();
+		Patient pat = null;
+		try {
+			Criteria criteria = session.createCriteria(Patient.class);
+			criteria.add(Restrictions.eq("patientId", patientid));
+			criteria.createAlias("office", "off");
+			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
+			pat = (Patient) criteria.uniqueResult();
+			if (pat != null) {
+				eagerInitPatientGraphForIvfSave(pat);
+			}
+		} catch (HibernateException e) {
+			closeSession(session);
+		} catch (Exception e) {
+		} finally {
+			closeSession(session);
+		}
+		return pat;
 	}
 	@Override
 	public Patient checkforPatientWithIdAndOffice(String patientid, Office off,Patient patH,boolean chekcforException) {
@@ -205,61 +207,39 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 	}
 
 	@Override
-	public Patient checkforPatientWithIdAndOfficeAndGeneralDate(String patientid, Office off,Patient patH,boolean chekcforException,String generalDate) {
-		// Retry once on transient connection failure (same reason as checkforPatientWithId).
-		String hql = "SELECT DISTINCT p FROM Patient p " +
-			"LEFT JOIN FETCH p.patientDetails pd " +
-			"LEFT JOIN FETCH p.patientHistory " +
-			"WHERE p.patientId = :pid AND p.office.uuid = :officeUuid";
-		if (generalDate != null && !generalDate.isEmpty()) {
-			hql += " AND pd.generalDateIVwasDone = :generalDate";
-		}
-		for (int attempt = 1; attempt <= 2; attempt++) {
-			Session session = getSession();
-			try {
-				org.hibernate.Query q = session.createQuery(hql);
-				q.setParameter("pid", patientid);
-				q.setParameter("officeUuid", off.getUuid());
-				if (generalDate != null && !generalDate.isEmpty()) {
-					q.setParameter("generalDate", generalDate);
-				}
-				@SuppressWarnings("unchecked")
-				java.util.List<Patient> results = q.list();
-				if (results.isEmpty()) {
-					return null;
-				}
-				Patient loaded = results.get(0);
-				// patientDetails2 is lazy; must initialize before session closes, otherwise
-				// updatePatientDataWithDetailsAndHistory2() hits LazyInitializationException on .size()
-				Hibernate.initialize(loaded.getPatientDetails2());
-				return loaded;
-			} catch (Exception e) {
-				RuleEngineLogger.generateLogs(clazz,
-					"checkforPatientWithIdAndOfficeAndGeneralDate attempt " + attempt
-					+ " failed for patient [" + patientid + "]: " + e.getMessage(),
-					Constants.rule_log_debug, null);
-				// PatientDetail2 duplicate-row issue: clean up the duplicate and fall back
-				// to the no-date lookup so the patient is always found.
-				if (attempt == 1 && e.getMessage() != null
-						&& e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")
-						&& e.getMessage().contains("More than one row with the given identifier was found: ")) {
-					try {
-						String pdId = e.getMessage()
-							.split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0]
-							.split("More than one row with the given identifier was found: ")[1].trim();
-						Patient cleaned = checkForDuplicatePatDetials2(patientid, off, null, false, pdId);
-						if (cleaned != null) return cleaned;
-					} catch (Exception ex) {
-						RuleEngineLogger.generateLogs(clazz,
-							"checkForDuplicatePatDetials2 fallback failed for patient [" + patientid + "]: " + ex.getMessage(),
-							Constants.rule_log_debug, null);
-					}
-				}
-			} finally {
-				closeSession(session);
+	public Patient checkforPatientWithIdAndOfficeAndGeneralDate(String patientid, Office off, Patient patH,
+			boolean chekcforException, String generalDate) {
+		Session session = getSession();
+		Patient pat = null;
+		try {
+			Criteria criteria = session.createCriteria(Patient.class);
+			criteria.add(Restrictions.eq("patientId", patientid));
+			criteria.createAlias("office", "off");
+			criteria.createAlias("patientHistory", "patientHistory", JoinType.LEFT_OUTER_JOIN);
+			criteria.createAlias("patientDetails", "patientDetails", JoinType.INNER_JOIN);
+			criteria.createAlias("patientDetails2", "patientDetails2", JoinType.LEFT_OUTER_JOIN);
+			criteria.add(Restrictions.eq("off.uuid", off.getUuid()));
+			if (generalDate != null && !generalDate.equals("")) {
+				criteria.add(Restrictions.eq("patientDetails.generalDateIVwasDone", generalDate));
 			}
+			pat = (Patient) criteria.uniqueResult();
+			if (pat != null) {
+				eagerInitPatientGraphForIvfSave(pat);
+			}
+		} catch (HibernateException e) {
+			closeSession(session);
+			if (chekcforException && e.getMessage() != null
+					&& e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")
+					&& e.getMessage().contains("More than one row with the given identifier was found: ")) {
+				pat = checkForDuplicatePatDetials2(patientid, off, patH, false,
+						e.getMessage().split(", for class: com.tricon.ruleengine.model.db.PatientDetail2")[0]
+								.split("More than one row with the given identifier was found: ")[1]);
+			}
+		} catch (Exception e) {
+		} finally {
+			closeSession(session);
 		}
-		return null;
+		return pat;
 	}
 
 	private Patient checkforPatient(String patientid, Office off,Patient patH,boolean chekcforException,String generalDate) {
@@ -285,8 +265,9 @@ public class PatientDaoImpl extends BaseDaoImpl implements PatientDao {
 			}
             */
 		pat = (Patient) criteria.uniqueResult();
-		if (pat != null) Hibernate.initialize(pat.getPatientDetails());
-		if (pat != null) Hibernate.initialize(pat.getPatientHistory());
+		if (pat != null) {
+			eagerInitPatientGraphForIvfSave(pat);
+		}
 	}catch(HibernateException e){
 		closeSession(session);
 		if (chekcforException && e.getMessage().contains("com.tricon.ruleengine.model.db.PatientDetail2")) {
@@ -435,7 +416,7 @@ public Patient updatePatientDataWithDetailsAndHistory2(Patient pat, boolean deta
             // Fix: Re-fetch patientDetails2 within an active session to avoid LazyInitializationException
             Set<PatientDetail2> setPD2 = null;
             try {
-                Patient freshPat = (Patient) getSession().get(Patient.class, pat.getPatientId());
+                Patient freshPat = (Patient) getSession().get(Patient.class, pat.getId());
                 if (freshPat != null) {
                     Hibernate.initialize(freshPat.getPatientDetails2());
                     setPD2 = freshPat.getPatientDetails2();
