@@ -1018,96 +1018,60 @@ public class ConnectAndReadSheets {
 						obj.get(++x), obj.get(++x));
                      */
 					try {
-						dto.setSrNo(obj.get(++x));//A
+    					dto.setSrNo(obj.get(++x));//A
+					} catch (Exception e) { dto.setSrNo(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setSrNo("");//A
-					}
 					try {
-						dto.setProviders(obj.get(++x));//B
+    					dto.setProviders(obj.get(++x));//B
+					} catch (Exception e) { dto.setProviders(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setProviders("");//B
-					}
 					try {
-						dto.setProviderCodes(obj.get(++x));//C
+    					dto.setProviderCodes(obj.get(++x));//C
+					} catch (Exception e) { dto.setProviderCodes(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setProviderCodes("");//C
-					}
 					try {
-						dto.setProvideStatus(obj.get(++x));//D
+    					dto.setProvideStatus(obj.get(++x));//D
+					} catch (Exception e) { dto.setProvideStatus(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setProvideStatus("");//D
-					}
 					try {
-						dto.setD9230Nirtrous(obj.get(++x));//E
+					    dto.setD9230Nirtrous(obj.get(++x));//E
+					} catch (Exception e) { dto.setD9230Nirtrous(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setD9230Nirtrous("");//E
-					}
 					try {
-						dto.setD9248Anesthesia(obj.get(++x));//F
+ 					   dto.setD9248Anesthesia(obj.get(++x));//F
+					} catch (Exception e) { dto.setD9248Anesthesia(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setD9248Anesthesia("");//F
-					}
 					try {
-						dto.setEmpty(obj.get(++x));//G
+					    dto.setD9245Sedation(obj.get(++x));//G - NEW COLUMN
+					} catch (Exception e) { dto.setD9245Sedation(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setEmpty("");//G
-					}
 					try {
-						dto.setFirstHomeD0145(obj.get(++x));//H
+ 					   dto.setEmpty(obj.get(++x));//H - empty
+					} catch (Exception e) { dto.setEmpty(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setFirstHomeD0145("");//H
-					}
 					try {
-						dto.setFDHEffectiveDate(obj.get(++x));//I
+					    dto.setFirstHomeD0145(obj.get(++x));//I - was H
+					} catch (Exception e) { dto.setFirstHomeD0145(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setFDHEffectiveDate("");//I
-					}
 					try {
-						dto.setUpdatedWithMCNA(obj.get(++x));//J
+					    dto.setFDHEffectiveDate(obj.get(++x));//J - was I
+					} catch (Exception e) { dto.setFDHEffectiveDate(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setUpdatedWithMCNA("");//J
-					}
 					try {
-						dto.setUpdatedWithDQ(obj.get(++x));//K
+					    dto.setUpdatedWithMCNA(obj.get(++x));//K - was J
+					} catch (Exception e) { dto.setUpdatedWithMCNA(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setUpdatedWithDQ("");//K
-					}
 					try {
-						dto.setUpdatedWithUHC(obj.get(++x));//L
+					    dto.setUpdatedWithDQ(obj.get(++x));//L - was K
+					} catch (Exception e) { dto.setUpdatedWithDQ(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setUpdatedWithUHC("");//L
-					}
 					try {
-						dto.setRemark(obj.get(++x));//M
+ 					   dto.setUpdatedWithUHC(obj.get(++x));//M - was L
+					} catch (Exception e) { dto.setUpdatedWithUHC(""); }
 
-					} catch (Exception e) {
-						// TODO: handle exception
-						dto.setRemark("");//M
-					}
+					try {
+ 					   dto.setRemark(obj.get(++x));//N - was M
+					} catch (Exception e) { dto.setRemark(""); }
 					
 				list.add(dto);
 			} catch (Exception ex) {
